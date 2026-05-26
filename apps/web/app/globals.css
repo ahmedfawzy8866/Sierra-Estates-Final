@@ -183,6 +183,10 @@ section {
   55% { transform: translateX(-4px) rotate(-0.8deg) scale(1.015); }
   100% { opacity: 1; transform: translateX(0) rotate(0) scale(1); }
 }
+@keyframes subtle-zoom {
+  0%, 100% { transform: scale(1) translateX(0); }
+  50% { transform: scale(1.04) translateX(2px); }
+}
 
 /* ══ Card-dealing animation ══ */
 .deal-card { opacity: 0; }

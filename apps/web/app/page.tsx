@@ -581,72 +581,96 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* ══ HERO ══ */}
+      {/* ══ HERO: UPTOWN CAIRO LUXURY ══ */}
       <section style={{ position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center', overflow: 'hidden', background: th.heroBg }}>
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: "url('https://images.unsplash.com/photo-1602941525421-8f8b81d3edbb?w=1800&q=80')", backgroundSize: 'cover', backgroundPosition: 'center 40%', transform: loaded ? 'scale(1)' : 'scale(1.06)', transition: 'transform 2s cubic-bezier(.16,1,.3,1)', opacity: mode === 'dark' ? 0.55 : 0.15 }} />
-        <div style={{ position: 'absolute', inset: 0, background: mode === 'dark' ? 'linear-gradient(105deg,rgba(10,21,32,.97) 0%,rgba(13,32,53,.85) 45%,rgba(10,21,32,.4) 100%)' : 'linear-gradient(105deg,rgba(192,214,212,.98) 0%,rgba(213,232,230,.95) 50%,rgba(192,214,212,.7) 100%)' }} />
+        {/* Premium golf course background */}
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: "url('https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1800&q=80')", backgroundSize: 'cover', backgroundPosition: 'center 35%', animation: loaded ? 'subtle-zoom 20s ease-in-out infinite' : 'none', opacity: mode === 'dark' ? 0.6 : 0.2 }} />
+
+        {/* Layered gradient overlays */}
+        <div style={{ position: 'absolute', inset: 0, background: mode === 'dark' ? 'linear-gradient(90deg,rgba(13,32,53,0.92) 0%,rgba(13,32,53,0.75) 50%,rgba(13,32,53,0.4) 100%)' : 'linear-gradient(90deg,rgba(192,214,212,0.95) 0%,rgba(213,232,230,0.88) 50%,rgba(213,232,230,0.5) 100%)' }} />
+
         <ParticleCanvas />
 
-        <div style={{ ...sec, position: 'relative', zIndex: 2, width: '100%' }}>
-          <div className="grid md:grid-cols-[55%_45%] gap-14 items-center" style={{ paddingTop: 120, paddingBottom: 80 }}>
-            <div style={{ order: isAr ? 2 : 1 }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, flexDirection: isAr ? 'row-reverse' : 'row', animation: loaded ? 'fadeUp .6s ease .1s both' : 'none' }}>
-                <div style={{ width: 28, height: 1, background: G }} />
-                <span style={{ fontSize: 10, letterSpacing: isAr ? '.04em' : '.28em', color: G, fontWeight: 500, fontFamily: isAr ? "'Cairo', sans-serif" : "'Jost', sans-serif" }}>{T.tagline}</span>
-              </div>
-              <div style={{ marginTop: 14, marginBottom: 6, display: 'inline-flex', alignItems: 'center', gap: 8, border: `1px solid ${th.border}`, borderRadius: 999, padding: '6px 12px', background: mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.45)' }}>
-                <span style={{ fontSize: 9, color: G, letterSpacing: '.14em', textTransform: 'uppercase', fontFamily: "'Jost', sans-serif" }}>{T.heroPulseLabel}</span>
-                <span style={{ fontSize: 11, color: th.textSub, fontFamily: isAr ? "'Cairo', sans-serif" : "'Jost', sans-serif" }}>{T.heroPulseValue}</span>
+        <div style={{ ...sec, position: 'relative', zIndex: 2, width: '100%', paddingTop: 120, paddingBottom: 120 }}>
+          <div className="grid md:grid-cols-2 gap-12 items-center" style={{ flexDirection: isAr ? 'row-reverse' : 'row' }}>
+
+            {/* Left: Headline & Description */}
+            <div style={{ order: isAr ? 2 : 1, animation: loaded ? 'fadeUp .7s ease .15s both' : 'none' }}>
+              {/* Emaar badge */}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, border: `1px solid ${th.border}`, borderRadius: 999, padding: '6px 12px', background: mode === 'dark' ? 'rgba(255,255,255,0.055)' : 'rgba(255,255,255,0.4)', marginBottom: 20 }}>
+                <span style={{ fontSize: 9, color: G, letterSpacing: '.12em', textTransform: 'uppercase', fontFamily: "'Jost', sans-serif", fontWeight: 500 }}>Emaar</span>
+                <div style={{ width: 1, height: 12, background: th.border }} />
+                <span style={{ fontSize: 9, color: th.textSub, letterSpacing: '.08em', fontFamily: "'Jost', sans-serif" }}>Uptown Cairo</span>
               </div>
 
-              <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(40px, 5.5vw, 80px)', fontWeight: 300, color: th.text, lineHeight: 1.05, letterSpacing: '-0.02em', margin: '20px 0 16px', textAlign: isAr ? 'right' : 'left', animation: loaded ? 'fadeUp .7s ease .2s both' : 'none' }}>
-                {T.heroH1[0]}<br />{T.heroH1[1]}<br />
-                <em className="gold-text" style={{ fontStyle: 'italic' }}>{T.heroItalic}</em>
+              {/* Main headline */}
+              <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(42px, 6vw, 84px)', fontWeight: 300, color: th.text, lineHeight: 1.08, letterSpacing: '-0.025em', margin: '12px 0 24px', textAlign: isAr ? 'right' : 'left', animation: loaded ? 'fadeUp .8s ease .25s both' : 'none' }}>
+                {lang === 'en' ? 'Wake up to the Signature Golf Views' : 'استيقظ على مناظر الجولف التوقيعية'}
               </h1>
 
-              <div style={{ fontSize: isAr ? 14 : 12, letterSpacing: isAr ? '.04em' : '.22em', textTransform: 'uppercase', color: G, fontWeight: 500, fontFamily: isAr ? "'Cairo', sans-serif" : "'Jost', sans-serif", marginBottom: 18, animation: loaded ? 'fadeUp .7s ease .3s both' : 'none' }}>{T.heroSub}</div>
+              {/* Subheadline */}
+              <p style={{ fontSize: 16, fontWeight: 300, lineHeight: 1.7, color: th.textSub, maxWidth: 480, textAlign: isAr ? 'right' : 'left', marginBottom: 32, fontFamily: isAr ? "'Cairo', sans-serif" : "'Jost', sans-serif", animation: loaded ? 'fadeUp .8s ease .32s both' : 'none' }}>
+                {lang === 'en' ? 'Discover Egypt\'s most prestigious address. Premium residences designed for those who demand the finest in luxury, location, and lifestyle.' : 'اكتشف أرقى عنوان في مصر. منازل فاخرة مصممة لمن يطالب بأفضل ما في الفخامة والموقع ونمط الحياة.'}
+              </p>
 
-              <p style={{ fontSize: 15, fontWeight: 300, lineHeight: 1.8, color: th.textSub, maxWidth: 500, textAlign: isAr ? 'right' : 'left', marginBottom: 32, fontFamily: isAr ? "'Cairo', sans-serif" : "'Jost', sans-serif", animation: loaded ? 'fadeUp .7s ease .38s both' : 'none' }}>{T.heroDesc}</p>
-
-              <div className="flex gap-3" style={{ flexDirection: isAr ? 'row-reverse' : 'row', marginBottom: 48, animation: loaded ? 'fadeUp .7s ease .46s both' : 'none' }}>
-                <button onClick={scrollToListings} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: `linear-gradient(135deg,${G2},${G})`, color: '#071422', border: 'none', cursor: 'pointer', fontFamily: isAr ? "'Cairo', sans-serif" : "'Jost', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: isAr ? '.02em' : '.14em', textTransform: 'uppercase', padding: '12px 26px', borderRadius: 4, boxShadow: '0 4px 20px rgba(233,193,118,0.26)' }}>{T.btnDiscover}</button>
-                <button style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'transparent', color: th.text, border: `1px solid ${th.border}`, cursor: 'pointer', fontFamily: isAr ? "'Cairo', sans-serif" : "'Jost', sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: isAr ? '.02em' : '.14em', textTransform: 'uppercase', padding: '11px 26px', borderRadius: 4 }}>{T.btnView}</button>
-              </div>
-
-              {/* Stats */}
-              <div className="grid grid-cols-4" style={{ background: mode === 'dark' ? 'rgba(255,255,255,0.045)' : 'rgba(7,20,34,0.06)', border: `1px solid ${th.border}`, borderRadius: 8, overflow: 'hidden', backdropFilter: 'blur(12px)', animation: loaded ? 'fadeUp .7s ease .56s both' : 'none' }}>
-                {T.stats.map(([val, lbl], i) => (
-                  <div key={i} style={{ textAlign: 'center', padding: '18px 12px', borderRight: i < T.stats.length - 1 ? `1px solid ${th.border}` : 'none' }}>
-                    <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 28, fontWeight: 500, color: G, lineHeight: 1, letterSpacing: '-.02em' }}>{val}</div>
-                    <div style={{ fontSize: 9, fontWeight: 400, letterSpacing: isAr ? '.02em' : '.12em', textTransform: 'uppercase', color: th.textMuted, marginTop: 6, fontFamily: isAr ? "'Cairo', sans-serif" : "'Jost', sans-serif" }}>{lbl}</div>
-                  </div>
-                ))}
+              {/* CTA Button */}
+              <div style={{ animation: loaded ? 'fadeUp .8s ease .4s both' : 'none' }}>
+                <button onClick={scrollToListings} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: `linear-gradient(135deg,${G2},${G})`, color: '#071422', border: 'none', cursor: 'pointer', fontFamily: isAr ? "'Cairo', sans-serif" : "'Jost', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: isAr ? '.02em' : '.14em', textTransform: 'uppercase', padding: '13px 32px', borderRadius: 4, boxShadow: '0 8px 24px rgba(233,193,118,0.3)', transition: 'all .3s ease', position: 'relative', overflow: 'hidden' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(233,193,118,0.4)'; }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(233,193,118,0.3)'; }}>
+                  {lang === 'en' ? 'Explore Residences' : 'استكشف الوحدات'}
+                </button>
               </div>
             </div>
 
-            {/* Hero card stack */}
-            <div className="hidden md:block relative h-[520px]" style={{ order: isAr ? 1 : 2, animation: loaded ? 'fadeUp .9s ease .45s both' : 'none' }}>
-              <div className="absolute inset-0 flex items-center justify-center" style={{ opacity: mode === 'dark' ? 0.03 : 0.025 }}>
-                <ShieldLogo size={340} />
-              </div>
-              {[{ off: 2, op: 0.4 }, { off: 1, op: 0.65 }, { off: 0, op: 1 }].map(({ off, op }, idx) => (
-                <div key={idx} style={{ position: 'absolute', top: off * 20, left: off * 20, right: -(off * 20), bottom: -(off * 20), background: off === 0 ? th.card : th.surface, borderRadius: 18, overflow: off === 0 ? 'hidden' : undefined, border: off > 0 ? `1px solid ${th.border}` : undefined, opacity: op, boxShadow: off === 0 ? '0 40px 80px rgba(0,0,0,.4)' : undefined, zIndex: 3 - off }}>
-                  {off === 0 && (
-                    <>
-                      <img src={STATIC_LISTINGS[1].img} alt="" style={{ width: '100%', height: '62%', objectFit: 'cover' }} />
-                      <div style={{ position: 'absolute', top: 12, left: 12, background: G2, color: '#fff', fontSize: 9, fontWeight: 700, letterSpacing: '.08em', padding: '4px 10px', borderRadius: 50, fontFamily: "'Jost', sans-serif", textTransform: 'uppercase' }}>{STATIC_LISTINGS[1].badge}</div>
-                      <div style={{ padding: '18px 22px' }}>
-                        <div style={{ fontSize: 10, fontWeight: 500, letterSpacing: '.14em', textTransform: 'uppercase', color: G, marginBottom: 4, fontFamily: "'Jost', sans-serif" }}>{isAr ? STATIC_LISTINGS[1].locationAr : STATIC_LISTINGS[1].location}</div>
-                        <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 22, fontWeight: 600, color: th.text, marginBottom: 8 }}>{isAr ? STATIC_LISTINGS[1].titleAr : STATIC_LISTINGS[1].title}</div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 20, fontWeight: 500, color: G }}>{STATIC_LISTINGS[1].price}</span>
-                          <span style={{ fontSize: 11, color: th.textMuted, fontFamily: "'DM Mono', monospace", fontWeight: 300 }}>{STATIC_LISTINGS[1].beds} {T.beds} · {STATIC_LISTINGS[1].baths} {T.baths}</span>
-                        </div>
-                      </div>
-                    </>
-                  )}
+            {/* Right: Glassmorphic Smart Filter */}
+            <div style={{ order: isAr ? 1 : 2, animation: loaded ? 'fadeUp .9s ease .35s both' : 'none' }} className="hidden md:block">
+              <div style={{ background: mode === 'dark' ? 'rgba(13,32,53,0.45)' : 'rgba(255,255,255,0.35)', backdropFilter: 'blur(18px)', borderRadius: 20, border: `1.5px solid ${th.border}`, padding: 32, boxShadow: mode === 'dark' ? '0 8px 32px rgba(0,0,0,0.3)' : '0 8px 32px rgba(13,32,53,0.1)' }}>
+
+                {/* Filter title */}
+                <div style={{ marginBottom: 28 }}>
+                  <div style={{ fontSize: 10, letterSpacing: '.16em', textTransform: 'uppercase', color: G, fontFamily: "'Jost', sans-serif", fontWeight: 600, marginBottom: 8 }}>{lang === 'en' ? 'Find Your Match' : 'ابحث عن طابقك'}</div>
+                  <div style={{ fontSize: 13, color: th.textSub, fontFamily: isAr ? "'Cairo', sans-serif" : "'Jost', sans-serif", lineHeight: 1.5 }}>
+                    {lang === 'en' ? 'Use AI smart matching to find your perfect residence.' : 'استخدم المطابقة الذكية للعثور على منزلك المثالي.'}
+                  </div>
                 </div>
-              ))}
+
+                {/* Property Type Filter */}
+                <div style={{ marginBottom: 20 }}>
+                  <label style={{ fontSize: 9, fontWeight: 500, letterSpacing: '.1em', textTransform: 'uppercase', color: th.textMuted, display: 'block', marginBottom: 8, fontFamily: "'Jost', sans-serif" }}>{lang === 'en' ? 'Property Type' : 'نوع العقار'}</label>
+                  <select style={{ width: '100%', background: mode === 'dark' ? 'rgba(255,255,255,0.045)' : 'rgba(255,255,255,0.35)', border: `1px solid ${th.border}`, color: th.text, fontFamily: isAr ? "'Cairo', sans-serif" : "'Jost', sans-serif", fontSize: 13, padding: '10px 12px', borderRadius: 8, outline: 'none', cursor: 'pointer', transition: 'all .2s ease' }} onChange={(e) => setFilters({ ...filters })} onFocus={(e) => { e.target.style.background = mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.5)'; e.target.style.borderColor = G; }} onBlur={(e) => { e.target.style.background = mode === 'dark' ? 'rgba(255,255,255,0.045)' : 'rgba(255,255,255,0.35)'; e.target.style.borderColor = th.border; }}>
+                    <option>{lang === 'en' ? 'All Types' : 'جميع الأنواع'}</option>
+                    <option>{lang === 'en' ? 'Villa' : 'فيلا'}</option>
+                    <option>{lang === 'en' ? 'Penthouse' : 'بنت هاوس'}</option>
+                    <option>{lang === 'en' ? 'Twin House' : 'تاون هاوس'}</option>
+                  </select>
+                </div>
+
+                {/* View Preference Filter */}
+                <div style={{ marginBottom: 20 }}>
+                  <label style={{ fontSize: 9, fontWeight: 500, letterSpacing: '.1em', textTransform: 'uppercase', color: th.textMuted, display: 'block', marginBottom: 8, fontFamily: "'Jost', sans-serif" }}>{lang === 'en' ? 'Desired View' : 'المنظر المرغوب'}</label>
+                  <select style={{ width: '100%', background: mode === 'dark' ? 'rgba(255,255,255,0.045)' : 'rgba(255,255,255,0.35)', border: `1px solid ${th.border}`, color: th.text, fontFamily: isAr ? "'Cairo', sans-serif" : "'Jost', sans-serif", fontSize: 13, padding: '10px 12px', borderRadius: 8, outline: 'none', cursor: 'pointer', transition: 'all .2s ease' }} onChange={(e) => setFilters({ ...filters })} onFocus={(e) => { e.target.style.background = mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.5)'; e.target.style.borderColor = G; }} onBlur={(e) => { e.target.style.background = mode === 'dark' ? 'rgba(255,255,255,0.045)' : 'rgba(255,255,255,0.35)'; e.target.style.borderColor = th.border; }}>
+                    <option>{lang === 'en' ? 'Golf Course' : 'ملعب الجولف'}</option>
+                    <option>{lang === 'en' ? 'Lake' : 'البحيرة'}</option>
+                    <option>{lang === 'en' ? 'Garden' : 'الحديقة'}</option>
+                    <option>{lang === 'en' ? 'Open' : 'مفتوح'}</option>
+                  </select>
+                </div>
+
+                {/* Budget Filter */}
+                <div style={{ marginBottom: 24 }}>
+                  <label style={{ fontSize: 9, fontWeight: 500, letterSpacing: '.1em', textTransform: 'uppercase', color: th.textMuted, display: 'block', marginBottom: 8, fontFamily: "'Jost', sans-serif" }}>{lang === 'en' ? 'Budget Range (EGP)' : 'نطاق الميزانية'}</label>
+                  <select style={{ width: '100%', background: mode === 'dark' ? 'rgba(255,255,255,0.045)' : 'rgba(255,255,255,0.35)', border: `1px solid ${th.border}`, color: th.text, fontFamily: isAr ? "'Cairo', sans-serif" : "'Jost', sans-serif", fontSize: 13, padding: '10px 12px', borderRadius: 8, outline: 'none', cursor: 'pointer', transition: 'all .2s ease' }} onChange={(e) => setFilters({ ...filters })} onFocus={(e) => { e.target.style.background = mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.5)'; e.target.style.borderColor = G; }} onBlur={(e) => { e.target.style.background = mode === 'dark' ? 'rgba(255,255,255,0.045)' : 'rgba(255,255,255,0.35)'; e.target.style.borderColor = th.border; }}>
+                    <option>{lang === 'en' ? 'Any Budget' : 'أي ميزانية'}</option>
+                    <option>5M - 10M</option>
+                    <option>10M - 20M</option>
+                    <option>20M+</option>
+                  </select>
+                </div>
+
+                {/* AI Match Button */}
+                <button style={{ width: '100%', background: `linear-gradient(135deg,${G2},${G})`, color: '#071422', border: 'none', cursor: 'pointer', fontFamily: isAr ? "'Cairo', sans-serif" : "'Jost', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: isAr ? '.02em' : '.14em', textTransform: 'uppercase', padding: '12px 20px', borderRadius: 8, boxShadow: '0 8px 20px rgba(233,193,118,0.25)', transition: 'all .3s ease', position: 'relative', overflow: 'hidden' }} onClick={scrollToListings} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 28px rgba(233,193,118,0.35)'; }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(233,193,118,0.25)'; }}>
+                  ✨ {lang === 'en' ? 'Find Your Exact Match with AI' : 'ابحث عن طابقك الدقيق'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
