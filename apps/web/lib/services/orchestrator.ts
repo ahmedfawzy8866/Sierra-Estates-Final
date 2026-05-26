@@ -1,5 +1,4 @@
 import 'server-only'; // gRPC dependency — server only
-import * as admin from 'firebase-admin';
 import { adminDb } from '../server/firebase-admin';
 import { COLLECTIONS } from '../models/schema';
 import { instrumentAgent } from '../arize';
@@ -7,7 +6,7 @@ import { runScribe } from '../agents/scribe';
 import { runCurator } from '../agents/curator';
 import { runMatchmaker } from '../agents/matchmaker';
 import { runCloser } from '../agents/closer';
-import { Timestamp } from 'firebase-admin/firestore';
+import { Timestamp, FieldValue } from 'firebase-admin/firestore';
 
 /** Inline Telegram alert — avoids loading the client-SDK telegram-controller in server context */
 async function notifyTelegram(text: string) {
@@ -184,7 +183,7 @@ export class OrchestratorService {
         engineVersion: '12.0.0-quiet-luxury',
         error: errorMessage || null
       },
-      orchestrationHistory: admin.firestore.FieldValue.arrayUnion(historyEntry)
+      orchestrationHistory: FieldValue.arrayUnion(historyEntry)
     }, { merge: true });
   }
 }

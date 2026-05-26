@@ -61,7 +61,9 @@ const nextConfig: NextConfig = {
       '@opentelemetry/sdk-trace-node': './lib/stubs/empty.js',
       '@opentelemetry/instrumentation-http': './lib/stubs/empty.js',
       '@opentelemetry/instrumentation-express': './lib/stubs/empty.js',
-      'firebase-admin': './lib/stubs/empty.js',
+      'firebase-admin': './lib/stubs/firebase-admin.js',
+      'firebase-admin/firestore': './lib/stubs/empty.js',
+      'firebase-admin/storage': './lib/stubs/empty.js',
     }
   },
   webpack(config, { isServer }) {
@@ -70,6 +72,9 @@ const nextConfig: NextConfig = {
       SERVER_ONLY_PACKAGES.forEach(pkg => {
         config.resolve.alias[pkg] = false;
       });
+      config.resolve.alias['firebase-admin'] = false;
+      config.resolve.alias['firebase-admin/firestore'] = false;
+      config.resolve.alias['firebase-admin/storage'] = false;
     }
     return config;
   },
