@@ -581,103 +581,93 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* ══ HERO: UPTOWN CAIRO LUXURY ══ */}
-      <section style={{ position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center', overflow: 'hidden', background: th.heroBg }}>
-        {/* Premium golf course background */}
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: "url('https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1800&q=80')", backgroundSize: 'cover', backgroundPosition: 'center 35%', animation: loaded ? 'subtle-zoom 20s ease-in-out infinite' : 'none', opacity: mode === 'dark' ? 0.6 : 0.2 }} />
+      {/* ══ HERO: UPTOWN CAIRO PREMIUM GOLF VIEWS ══ */}
+      <section style={{ position: 'relative', minHeight: '100vh', width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', overflow: 'hidden', background: th.bg }} dir={isAr ? 'rtl' : 'ltr'}>
 
-        {/* Layered gradient overlays */}
-        <div style={{ position: 'absolute', inset: 0, background: mode === 'dark' ? 'linear-gradient(90deg,rgba(13,32,53,0.92) 0%,rgba(13,32,53,0.75) 50%,rgba(13,32,53,0.4) 100%)' : 'linear-gradient(90deg,rgba(192,214,212,0.95) 0%,rgba(213,232,230,0.88) 50%,rgba(213,232,230,0.5) 100%)' }} />
+        {/* Premium Background Image with Layered Gradients */}
+        <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
+          <div style={{ position: 'absolute', inset: 0, backgroundImage: "url('https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1800&q=80')", backgroundSize: 'cover', backgroundPosition: 'center 30%', animation: loaded ? 'subtle-zoom 20s ease-in-out infinite' : 'none', transform: 'scale(1.05)' }} />
+          <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(to right, ${mode === 'dark' ? 'rgba(13,32,53,0.88)' : 'rgba(192,214,212,0.92)'} 0%, ${mode === 'dark' ? 'rgba(13,32,53,0.6)' : 'rgba(213,232,230,0.7)'} 50%, transparent 100%)` }} />
+          <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(to bottom, transparent 0%, ${mode === 'dark' ? 'rgba(13,32,53,0.5)' : 'rgba(192,214,212,0.4)'} 100%)` }} />
+        </div>
 
-        <ParticleCanvas />
+        {/* Main Content Wrapper */}
+        <div style={{ position: 'relative', zIndex: 10, maxWidth: 1280, margin: '0 auto', padding: '0 48px', width: '100%', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingTop: 96, paddingBottom: 48 }}>
 
-        <div style={{ ...sec, position: 'relative', zIndex: 2, width: '100%', paddingTop: 120, paddingBottom: 120 }}>
-          <div className="grid md:grid-cols-2 gap-12 items-center" style={{ flexDirection: isAr ? 'row-reverse' : 'row' }}>
+          {/* Hero Headline Group */}
+          <div style={{ maxWidth: 800, marginBottom: 48, textAlign: isAr ? 'right' : 'left', animation: loaded ? 'fadeUp .7s ease .1s both' : 'none' }}>
 
-            {/* Left: Headline & Description */}
-            <div style={{ order: isAr ? 2 : 1, animation: loaded ? 'fadeUp .7s ease .15s both' : 'none' }}>
-              {/* Emaar badge */}
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, border: `1px solid ${th.border}`, borderRadius: 999, padding: '6px 12px', background: mode === 'dark' ? 'rgba(255,255,255,0.055)' : 'rgba(255,255,255,0.4)', marginBottom: 20 }}>
-                <span style={{ fontSize: 9, color: G, letterSpacing: '.12em', textTransform: 'uppercase', fontFamily: "'Jost', sans-serif", fontWeight: 500 }}>Emaar</span>
-                <div style={{ width: 1, height: 12, background: th.border }} />
-                <span style={{ fontSize: 9, color: th.textSub, letterSpacing: '.08em', fontFamily: "'Jost', sans-serif" }}>Uptown Cairo</span>
-              </div>
-
-              {/* Main headline */}
-              <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(42px, 6vw, 84px)', fontWeight: 300, color: th.text, lineHeight: 1.08, letterSpacing: '-0.025em', margin: '12px 0 24px', textAlign: isAr ? 'right' : 'left', animation: loaded ? 'fadeUp .8s ease .25s both' : 'none' }}>
-                {lang === 'en' ? 'Wake up to the Signature Golf Views' : 'استيقظ على مناظر الجولف التوقيعية'}
-              </h1>
-
-              {/* Subheadline */}
-              <p style={{ fontSize: 16, fontWeight: 300, lineHeight: 1.7, color: th.textSub, maxWidth: 480, textAlign: isAr ? 'right' : 'left', marginBottom: 32, fontFamily: isAr ? "'Cairo', sans-serif" : "'Jost', sans-serif", animation: loaded ? 'fadeUp .8s ease .32s both' : 'none' }}>
-                {lang === 'en' ? 'Discover Egypt\'s most prestigious address. Premium residences designed for those who demand the finest in luxury, location, and lifestyle.' : 'اكتشف أرقى عنوان في مصر. منازل فاخرة مصممة لمن يطالب بأفضل ما في الفخامة والموقع ونمط الحياة.'}
-              </p>
-
-              {/* CTA Button */}
-              <div style={{ animation: loaded ? 'fadeUp .8s ease .4s both' : 'none' }}>
-                <button onClick={scrollToListings} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: `linear-gradient(135deg,${G2},${G})`, color: '#071422', border: 'none', cursor: 'pointer', fontFamily: isAr ? "'Cairo', sans-serif" : "'Jost', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: isAr ? '.02em' : '.14em', textTransform: 'uppercase', padding: '13px 32px', borderRadius: 4, boxShadow: '0 8px 24px rgba(233,193,118,0.3)', transition: 'all .3s ease', position: 'relative', overflow: 'hidden' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(233,193,118,0.4)'; }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(233,193,118,0.3)'; }}>
-                  {lang === 'en' ? 'Explore Residences' : 'استكشف الوحدات'}
-                </button>
-              </div>
+            {/* Emaar Badge */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, border: `1px solid ${th.border}`, borderRadius: 999, padding: '8px 14px', background: mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.35)', marginBottom: 24, backdropFilter: 'blur(8px)' }}>
+              <span style={{ fontSize: 9, color: G, letterSpacing: '.12em', textTransform: 'uppercase', fontFamily: "'Jost', sans-serif", fontWeight: 600 }}>Emaar</span>
+              <div style={{ width: 1, height: 14, background: th.border }} />
+              <span style={{ fontSize: 9, color: th.textSub, letterSpacing: '.08em', fontFamily: "'Jost', sans-serif" }}>Uptown Cairo</span>
             </div>
 
-            {/* Right: Glassmorphic Smart Filter */}
-            <div style={{ order: isAr ? 1 : 2, animation: loaded ? 'fadeUp .9s ease .35s both' : 'none' }} className="hidden md:block">
-              <div style={{ background: mode === 'dark' ? 'rgba(13,32,53,0.45)' : 'rgba(255,255,255,0.35)', backdropFilter: 'blur(18px)', borderRadius: 20, border: `1.5px solid ${th.border}`, padding: 32, boxShadow: mode === 'dark' ? '0 8px 32px rgba(0,0,0,0.3)' : '0 8px 32px rgba(13,32,53,0.1)' }}>
+            {/* Main Headline */}
+            <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(42px, 6.5vw, 84px)', fontWeight: 300, color: th.text, lineHeight: 1.08, letterSpacing: '-0.025em', marginBottom: 24, animation: loaded ? 'fadeUp .8s ease .2s both' : 'none' }}>
+              {lang === 'en' ? (
+                <>Wake up to the <br /><span style={{ fontWeight: 500, background: `linear-gradient(135deg, ${th.text} 0%, ${G} 50%, ${G2} 100%)`, backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Signature Golf Views</span></>
+              ) : (
+                <>استيقظ على <br /><span style={{ fontWeight: 500, background: `linear-gradient(135deg, ${th.text} 0%, ${G} 50%, ${G2} 100%)`, backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>مناظر الجولف التوقيعية</span></>
+              )}
+            </h1>
 
-                {/* Filter title */}
-                <div style={{ marginBottom: 28 }}>
-                  <div style={{ fontSize: 10, letterSpacing: '.16em', textTransform: 'uppercase', color: G, fontFamily: "'Jost', sans-serif", fontWeight: 600, marginBottom: 8 }}>{lang === 'en' ? 'Find Your Match' : 'ابحث عن طابقك'}</div>
-                  <div style={{ fontSize: 13, color: th.textSub, fontFamily: isAr ? "'Cairo', sans-serif" : "'Jost', sans-serif", lineHeight: 1.5 }}>
-                    {lang === 'en' ? 'Use AI smart matching to find your perfect residence.' : 'استخدم المطابقة الذكية للعثور على منزلك المثالي.'}
-                  </div>
-                </div>
+            {/* Subheadline */}
+            <p style={{ fontSize: 16, fontWeight: 300, lineHeight: 1.7, color: th.textSub, maxWidth: 560, marginBottom: 32, fontFamily: isAr ? "'Cairo', sans-serif" : "'Jost', sans-serif", animation: loaded ? 'fadeUp .8s ease .28s both' : 'none' }}>
+              {lang === 'en'
+                ? 'Elevated luxury living 200 meters above sea level. Find your tailored villa or apartment overlooking the pristine green fairways.'
+                : 'العيش الفاخر المرتفع 200 متر فوق مستوى سطح البحر. ابحث عن فيلتك أو شقتك المخصصة إطلالة على ملاعب الجولف الخضراء النقية.'}
+            </p>
+          </div>
 
-                {/* Property Type Filter */}
-                <div style={{ marginBottom: 20 }}>
-                  <label style={{ fontSize: 9, fontWeight: 500, letterSpacing: '.1em', textTransform: 'uppercase', color: th.textMuted, display: 'block', marginBottom: 8, fontFamily: "'Jost', sans-serif" }}>{lang === 'en' ? 'Property Type' : 'نوع العقار'}</label>
-                  <select style={{ width: '100%', background: mode === 'dark' ? 'rgba(255,255,255,0.045)' : 'rgba(255,255,255,0.35)', border: `1px solid ${th.border}`, color: th.text, fontFamily: isAr ? "'Cairo', sans-serif" : "'Jost', sans-serif", fontSize: 13, padding: '10px 12px', borderRadius: 8, outline: 'none', cursor: 'pointer', transition: 'all .2s ease' }} onChange={(e) => setFilters({ ...filters })} onFocus={(e) => { e.target.style.background = mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.5)'; e.target.style.borderColor = G; }} onBlur={(e) => { e.target.style.background = mode === 'dark' ? 'rgba(255,255,255,0.045)' : 'rgba(255,255,255,0.35)'; e.target.style.borderColor = th.border; }}>
-                    <option>{lang === 'en' ? 'All Types' : 'جميع الأنواع'}</option>
-                    <option>{lang === 'en' ? 'Villa' : 'فيلا'}</option>
-                    <option>{lang === 'en' ? 'Penthouse' : 'بنت هاوس'}</option>
-                    <option>{lang === 'en' ? 'Twin House' : 'تاون هاوس'}</option>
-                  </select>
-                </div>
+          {/* AI Smart Filter Search Bar */}
+          <div style={{ width: '100%', maxWidth: 1100, background: mode === 'dark' ? 'rgba(13,32,53,0.5)' : 'rgba(255,255,255,0.4)', backdropFilter: 'blur(16px)', borderRadius: 16, border: `1px solid ${th.border}`, padding: 24, boxShadow: mode === 'dark' ? '0 8px 32px rgba(0,0,0,0.4)' : '0 8px 32px rgba(13,32,53,0.1)', animation: loaded ? 'fadeUp .9s ease .35s both' : 'none' }} className="grid md:grid-cols-4 gap-4 items-end">
 
-                {/* View Preference Filter */}
-                <div style={{ marginBottom: 20 }}>
-                  <label style={{ fontSize: 9, fontWeight: 500, letterSpacing: '.1em', textTransform: 'uppercase', color: th.textMuted, display: 'block', marginBottom: 8, fontFamily: "'Jost', sans-serif" }}>{lang === 'en' ? 'Desired View' : 'المنظر المرغوب'}</label>
-                  <select style={{ width: '100%', background: mode === 'dark' ? 'rgba(255,255,255,0.045)' : 'rgba(255,255,255,0.35)', border: `1px solid ${th.border}`, color: th.text, fontFamily: isAr ? "'Cairo', sans-serif" : "'Jost', sans-serif", fontSize: 13, padding: '10px 12px', borderRadius: 8, outline: 'none', cursor: 'pointer', transition: 'all .2s ease' }} onChange={(e) => setFilters({ ...filters })} onFocus={(e) => { e.target.style.background = mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.5)'; e.target.style.borderColor = G; }} onBlur={(e) => { e.target.style.background = mode === 'dark' ? 'rgba(255,255,255,0.045)' : 'rgba(255,255,255,0.35)'; e.target.style.borderColor = th.border; }}>
-                    <option>{lang === 'en' ? 'Golf Course' : 'ملعب الجولف'}</option>
-                    <option>{lang === 'en' ? 'Lake' : 'البحيرة'}</option>
-                    <option>{lang === 'en' ? 'Garden' : 'الحديقة'}</option>
-                    <option>{lang === 'en' ? 'Open' : 'مفتوح'}</option>
-                  </select>
-                </div>
-
-                {/* Budget Filter */}
-                <div style={{ marginBottom: 24 }}>
-                  <label style={{ fontSize: 9, fontWeight: 500, letterSpacing: '.1em', textTransform: 'uppercase', color: th.textMuted, display: 'block', marginBottom: 8, fontFamily: "'Jost', sans-serif" }}>{lang === 'en' ? 'Budget Range (EGP)' : 'نطاق الميزانية'}</label>
-                  <select style={{ width: '100%', background: mode === 'dark' ? 'rgba(255,255,255,0.045)' : 'rgba(255,255,255,0.35)', border: `1px solid ${th.border}`, color: th.text, fontFamily: isAr ? "'Cairo', sans-serif" : "'Jost', sans-serif", fontSize: 13, padding: '10px 12px', borderRadius: 8, outline: 'none', cursor: 'pointer', transition: 'all .2s ease' }} onChange={(e) => setFilters({ ...filters })} onFocus={(e) => { e.target.style.background = mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.5)'; e.target.style.borderColor = G; }} onBlur={(e) => { e.target.style.background = mode === 'dark' ? 'rgba(255,255,255,0.045)' : 'rgba(255,255,255,0.35)'; e.target.style.borderColor = th.border; }}>
-                    <option>{lang === 'en' ? 'Any Budget' : 'أي ميزانية'}</option>
-                    <option>5M - 10M</option>
-                    <option>10M - 20M</option>
-                    <option>20M+</option>
-                  </select>
-                </div>
-
-                {/* AI Match Button */}
-                <button style={{ width: '100%', background: `linear-gradient(135deg,${G2},${G})`, color: '#071422', border: 'none', cursor: 'pointer', fontFamily: isAr ? "'Cairo', sans-serif" : "'Jost', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: isAr ? '.02em' : '.14em', textTransform: 'uppercase', padding: '12px 20px', borderRadius: 8, boxShadow: '0 8px 20px rgba(233,193,118,0.25)', transition: 'all .3s ease', position: 'relative', overflow: 'hidden' }} onClick={scrollToListings} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 28px rgba(233,193,118,0.35)'; }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(233,193,118,0.25)'; }}>
-                  ✨ {lang === 'en' ? 'Find Your Exact Match with AI' : 'ابحث عن طابقك الدقيق'}
-                </button>
-              </div>
+            {/* Filter 1: Property Type */}
+            <div>
+              <label style={{ fontSize: 9, fontWeight: 600, letterSpacing: '.1em', textTransform: 'uppercase', color: th.textMuted, display: 'block', marginBottom: 8, fontFamily: "'Jost', sans-serif" }}>{lang === 'en' ? 'Property Type' : 'نوع العقار'}</label>
+              <select style={{ width: '100%', background: 'transparent', color: th.text, fontSize: 13, fontWeight: 400, fontFamily: isAr ? "'Cairo', sans-serif" : "'Jost', sans-serif", border: 'none', outline: 'none', cursor: 'pointer', padding: '8px 0' }}>
+                <option style={{ background: th.bg, color: th.text }}>{lang === 'en' ? 'Golf Villa' : 'فيلا الجولف'}</option>
+                <option style={{ background: th.bg, color: th.text }}>{lang === 'en' ? 'Luxury Townhouse' : 'تاون هاوس فاخر'}</option>
+                <option style={{ background: th.bg, color: th.text }}>{lang === 'en' ? 'Premium Apartment' : 'شقة فاخرة'}</option>
+              </select>
             </div>
+
+            {/* Filter 2: View Type */}
+            <div style={{ borderLeft: isAr ? 'none' : `1px solid ${th.border}`, borderRight: isAr ? `1px solid ${th.border}` : 'none', paddingLeft: isAr ? 0 : 16, paddingRight: isAr ? 16 : 0 }}>
+              <label style={{ fontSize: 9, fontWeight: 600, letterSpacing: '.1em', textTransform: 'uppercase', color: th.textMuted, display: 'block', marginBottom: 8, fontFamily: "'Jost', sans-serif" }}>{lang === 'en' ? 'Desired View' : 'المنظر المرغوب'}</label>
+              <select style={{ width: '100%', background: 'transparent', color: th.text, fontSize: 13, fontWeight: 400, fontFamily: isAr ? "'Cairo', sans-serif" : "'Jost', sans-serif", border: 'none', outline: 'none', cursor: 'pointer', padding: '8px 0' }}>
+                <option style={{ background: th.bg, color: th.text }}>{lang === 'en' ? 'Full Golf Course' : 'ملعب الجولف كاملاً'}</option>
+                <option style={{ background: th.bg, color: th.text }}>{lang === 'en' ? 'City Skyline & Greenery' : 'أفق المدينة والمساحات الخضراء'}</option>
+                <option style={{ background: th.bg, color: th.text }}>{lang === 'en' ? 'Private Pool & Garden' : 'حمام سباحة خاص وحديقة'}</option>
+              </select>
+            </div>
+
+            {/* Filter 3: Budget Range */}
+            <div style={{ borderLeft: isAr ? 'none' : `1px solid ${th.border}`, borderRight: isAr ? `1px solid ${th.border}` : 'none', paddingLeft: isAr ? 0 : 16, paddingRight: isAr ? 16 : 0 }}>
+              <label style={{ fontSize: 9, fontWeight: 600, letterSpacing: '.1em', textTransform: 'uppercase', color: th.textMuted, display: 'block', marginBottom: 8, fontFamily: "'Jost', sans-serif" }}>{lang === 'en' ? 'Price Range (EGP)' : 'نطاق السعر'}</label>
+              <select style={{ width: '100%', background: 'transparent', color: th.text, fontSize: 13, fontWeight: 400, fontFamily: isAr ? "'Cairo', sans-serif" : "'Jost', sans-serif", border: 'none', outline: 'none', cursor: 'pointer', padding: '8px 0' }}>
+                <option style={{ background: th.bg, color: th.text }}>{lang === 'en' ? 'Premium Tier' : 'الفئة الفاخرة'}</option>
+                <option style={{ background: th.bg, color: th.text }}>{lang === 'en' ? 'Ultra-Luxury Tier' : 'الفئة الفائقة الفخامة'}</option>
+                <option style={{ background: th.bg, color: th.text }}>20M+</option>
+              </select>
+            </div>
+
+            {/* AI Action Button */}
+            <button onClick={scrollToListings} style={{ width: '100%', background: `linear-gradient(135deg, ${G2}, ${G})`, color: '#071422', border: 'none', cursor: 'pointer', fontFamily: isAr ? "'Cairo', sans-serif" : "'Jost', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: isAr ? '.02em' : '.14em', textTransform: 'uppercase', padding: '14px 20px', borderRadius: 12, boxShadow: `0 8px 24px rgba(233,193,118,0.3)`, transition: 'all .3s ease', position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 12px 32px rgba(233,193,118,0.4)`; const icon = e.currentTarget.querySelector('svg'); if (icon) icon.style.transform = 'translateX(4px)'; }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = `0 8px 24px rgba(233,193,118,0.3)`; const icon = e.currentTarget.querySelector('svg'); if (icon) icon.style.transform = 'translateX(0)'; }}>
+              <span>✨ {lang === 'en' ? 'Find with AI' : 'ابحث بالذكاء الاصطناعي'}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" style={{ width: 16, height: 16, transition: 'transform .3s ease' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </button>
           </div>
         </div>
 
-        <div style={{ position: 'absolute', bottom: 28, left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, opacity: 0.4, zIndex: 2 }}>
+        {/* Scroll Indicator */}
+        <div style={{ position: 'absolute', bottom: 28, left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, opacity: 0.4, zIndex: 20 }}>
           <span style={{ fontSize: 9, letterSpacing: '.24em', textTransform: 'uppercase', color: th.textMuted, fontFamily: "'Jost', sans-serif" }}>{T.scroll}</span>
-          <div className="animate-shimmer" style={{ width: 1, height: 32, background: `linear-gradient(180deg,${G},transparent)` }} />
+          <div className="animate-shimmer" style={{ width: 1, height: 32, background: `linear-gradient(180deg, ${G}, transparent)` }} />
         </div>
       </section>
 
