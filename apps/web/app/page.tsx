@@ -586,9 +586,23 @@ export default function LandingPage() {
 
         {/* Premium Background Image with Layered Gradients */}
         <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
+          {/* Base Image Layer */}
           <div style={{ position: 'absolute', inset: 0, backgroundImage: "url('https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1800&q=80')", backgroundSize: 'cover', backgroundPosition: 'center 30%', animation: loaded ? 'subtle-zoom 20s ease-in-out infinite' : 'none', transform: 'scale(1.05)' }} />
-          <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(to right, ${mode === 'dark' ? 'rgba(13,32,53,0.88)' : 'rgba(192,214,212,0.92)'} 0%, ${mode === 'dark' ? 'rgba(13,32,53,0.6)' : 'rgba(213,232,230,0.7)'} 50%, transparent 100%)` }} />
-          <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(to bottom, transparent 0%, ${mode === 'dark' ? 'rgba(13,32,53,0.5)' : 'rgba(192,214,212,0.4)'} 100%)` }} />
+
+          {/* Radial Light Gradient - Creates depth and focal point */}
+          <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse 120% 80% at 50% 40%, ${mode === 'dark' ? 'rgba(13,32,53,0.3)' : 'rgba(192,214,212,0.25)'} 0%, transparent 70%)` }} />
+
+          {/* Left Directional Gradient */}
+          <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(to right, ${mode === 'dark' ? 'rgba(13,32,53,0.92)' : 'rgba(192,214,212,0.95)'} 0%, ${mode === 'dark' ? 'rgba(13,32,53,0.65)' : 'rgba(213,232,230,0.75)'} 45%, ${mode === 'dark' ? 'rgba(13,32,53,0.45)' : 'rgba(213,232,230,0.5)'} 100%)` }} />
+
+          {/* Top-to-Bottom Gradient */}
+          <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(to bottom, ${mode === 'dark' ? 'rgba(13,32,53,0.2)' : 'rgba(192,214,212,0.15)'} 0%, transparent 30%, transparent 70%, ${mode === 'dark' ? 'rgba(13,32,53,0.65)' : 'rgba(192,214,212,0.5)'} 100%)` }} />
+
+          {/* Accent Color Rim - Subtle gold/amber glow */}
+          <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(135deg, ${mode === 'dark' ? 'rgba(233,193,118,0.08)' : 'rgba(233,193,118,0.12)'} 0%, transparent 30%, transparent 70%, ${mode === 'dark' ? 'rgba(200,150,26,0.06)' : 'rgba(200,150,26,0.08)'} 100%)` }} />
+
+          {/* Subtle Texture Overlay */}
+          <div style={{ position: 'absolute', inset: 0, backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")", opacity: 0.3 }} />
         </div>
 
         {/* Main Content Wrapper */}
