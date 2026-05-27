@@ -9,7 +9,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { adminAuth } from './firebase-admin';
+import { adminAuth } from './server/firebase-admin';
 
 // FIX: Support both env vars — CRON_SECRET (Vercel cron) + SBR_SECRET_KEY (internal)
 const SBR_SECRET   = process.env.SBR_SECRET_KEY  || process.env.CRON_SECRET || '';

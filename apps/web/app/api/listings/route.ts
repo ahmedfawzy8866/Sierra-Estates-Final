@@ -28,7 +28,7 @@ function extractValue(field: FirestoreValue): any {
   if (field.mapValue?.fields) {
     const obj: any = {};
     for (const [key, val] of Object.entries(field.mapValue.fields)) {
-      obj[key] = extractValue(val);
+      obj[key] = extractValue(val as FirestoreValue);
     }
     return obj;
   }
@@ -66,7 +66,7 @@ async function queryFirestoreRest(
 
     if (docId) {
       // Single document response
-      return { doc: data };
+      return { doc: data, docs: [] };
     } else {
       // Collection query response
       return { docs: data.documents || [] };

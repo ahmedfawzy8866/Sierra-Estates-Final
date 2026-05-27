@@ -7,10 +7,10 @@ import { GoogleAIService } from '../server/google-ai';
 import { db } from '../firebase';
 import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { COLLECTIONS, type Lead, type Unit } from '../models/schema';
-import { generateOptionsPackage } from './sales-engine';
-import { runMatchingForLead } from './matching-engine';
-import { assessLegalRisk, generateLegalSummary } from './legal-brain';
-import { extractProfileFromChat, getNextInterviewQuestion } from './profiling-service';
+import { generateOptionsPackage } from '../services/sales-engine';
+import { runMatchingForLead } from '../services/matching-engine';
+import { assessLegalRisk, generateLegalSummary } from '../services/legal-brain';
+import { extractProfileFromChat, getNextInterviewQuestion } from '../services/profiling-service';
 import { doc, updateDoc, arrayUnion, serverTimestamp } from 'firebase/firestore';
 
 export interface AgentResponse {
@@ -134,7 +134,7 @@ async function handleGenerateProposal(name: string, text: string): Promise<Agent
   if (text.includes('handover')) {
     const leadId = text.match(/[a-zA-Z0-9]{20,}/)?.[0];
     if (leadId) {
-       const { generateCloserHandoff } = await import('./handoff-service');
+       const { generateCloserHandoff } = await import('../services/handoff-service');
        const summary = await generateCloserHandoff(leadId);
        return {
          message: `<b>🏆 STAGE 9: CLOSER HANDOFF COMPLETE</b>\n\n<b>Stakeholder:</b> ${summary.leadName}\n<b>Phone:</b> ${summary.phone}\n\n<b>Intelligence Profile:</b>\n${summary.intelligenceProfile}\n\n<b>Strategic Intent:</b>\n${summary.strategicIntent}\n\n<b>High Interest Assets:</b>\n${summary.highInterestAssets.map(a => `• ${a.code} (Match: ${a.matchScore}%)`).join('\n')}\n\n<b>Next Steps:</b>\n${summary.nextSteps}`,
@@ -241,7 +241,7 @@ async function handleStakeholderInterview(chatId: number, text: string): Promise
   const profile = await extractProfileFromChat(text);
   
   // V9.0 Intelligence Upgrade: Detect Rejections/Feedback
-  const { extractFeedbackAndSentiment } = await import('./profiling-service');
+  const { extractFeedbackAndSentiment } = await import('../services/profiling-service');
   const feedback = await extractFeedbackAndSentiment(text);
   
   // 3. Update Lead Intelligence Profile & Neural Memory

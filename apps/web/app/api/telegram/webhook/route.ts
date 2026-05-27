@@ -121,7 +121,7 @@ Commands:
         }
 
         let leadText = "<b>Latest 5 Leads:</b>\n\n";
-        snap.forEach(doc => {
+        snap.forEach((doc: FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData>) => {
             const d = doc.data();
             const dateStr = d.createdAt?.toDate ? d.createdAt.toDate().toLocaleDateString() : 'N/A';
             leadText += `👤 ${d.name || 'Unknown'} (${d.phone || 'No Phone'})\n📅 ${dateStr}\n---\n`;
@@ -165,7 +165,7 @@ Commands:
         }
 
         let listingText = "<b>Latest 5 Listings:</b>\n\n";
-        snap.forEach(doc => {
+        snap.forEach((doc: FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData>) => {
             const d = doc.data();
             listingText += `🏢 ${d.title || 'Untitled'} - EGP ${d.price || 0}\n📍 ${d.location || 'Unknown'}\n---\n`;
         });

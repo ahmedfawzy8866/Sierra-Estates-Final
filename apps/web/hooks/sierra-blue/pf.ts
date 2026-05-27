@@ -93,16 +93,17 @@ export function usePFLeads(
 
   useEffect(() => {
     const db = getFirestore();
-    const constraints = [orderBy("createdAt", "desc")];
+    const whereConstraints: any[] = [];
 
     if (sourceFilter === "property_finder") {
-      constraints.unshift(where("source", "==", "property_finder"));
+      whereConstraints.push(where("source", "==", "property_finder"));
     }
 
     if (options.agentId) {
-      constraints.unshift(where("agentAssigned", "==", options.agentId));
+      whereConstraints.push(where("agentAssigned", "==", options.agentId));
     }
 
+    const constraints = [...whereConstraints, orderBy("createdAt", "desc")];
     const q = query(collection(db, "leads"), ...constraints);
 
     const unsub = onSnapshot(
@@ -210,8 +211,8 @@ import {
   serverTimestamp as _serverTimestamp,
   DocumentData as _DocumentData,
 } from "firebase/firestore";
-import type { SBRListing, PFSyncResult } from "./property-finder";
-import { pushListingToPF, getPFListingAnalytics } from "./property-finder";
+import type { SBRListing, PFSyncResult } from "../../lib/integrations/property-finder";
+import { pushListingToPF, getPFListingAnalytics } from "../../lib/integrations/property-finder";
 
 export interface ListingWithAnalytics extends SBRListing {
   pfViews?: number;
@@ -219,6 +220,8 @@ export interface ListingWithAnalytics extends SBRListing {
   pfPhoneReveals?: number;
   pfImpressions?: number;
   pfCTR?: number;
+  syncedToPF?: boolean;
+  dealStatus?: string;
 }
 
 export function usePFListings(options: {

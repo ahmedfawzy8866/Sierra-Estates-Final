@@ -64,7 +64,7 @@ export async function GET(req: NextRequest) {
         .get();
 
       const dealsByMonth: Record<string, number> = {};
-      dealsSnap.forEach(doc => {
+      dealsSnap.forEach((doc: FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData>) => {
         const date = doc.data().createdAt?.toDate?.() || new Date();
         const month = date.toLocaleDateString('en-US', { month: 'short' });
         dealsByMonth[month] = (dealsByMonth[month] || 0) + 1;

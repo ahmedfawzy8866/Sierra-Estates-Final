@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const usersSnap = await adminDb.collection('users').where('role', 'in', ['admin', 'agent', 'broker']).get();
-    const team = usersSnap.docs.map(doc => ({
+    const team = usersSnap.docs.map((doc: FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData>) => ({
       id: doc.id,
       ...doc.data(),
     }));
