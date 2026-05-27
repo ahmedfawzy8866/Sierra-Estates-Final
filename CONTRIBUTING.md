@@ -46,7 +46,7 @@ FIREBASE_PRIVATE_KEY='-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY----
 
 # API Security
 X-SBR-SECRET-KEY=your-secret-key-here
-NEXT_PUBLIC_SBR_SECRET_KEY=your-secret-key-here
+SBR_SECRET_KEY=your-secret-key-here
 
 # Optional Integrations
 GOOGLE_AI_API_KEY=sk-...
@@ -239,7 +239,7 @@ describe('/api/listings', () => {
   it('returns property listings', async () => {
     const request = new NextRequest(
       new URL('http://localhost:3000/api/listings'),
-      { headers: { 'X-SBR-SECRET-KEY': process.env.X_SBR_SECRET_KEY } }
+      { headers: { 'X-SBR-SECRET-KEY': process.env.SBR_SECRET_KEY } }
     );
 
     const response = await GET(request);

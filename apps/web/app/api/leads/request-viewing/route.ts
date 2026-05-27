@@ -1,4 +1,5 @@
 import { adminDb } from '@/lib/server/firebase-admin';
+import { COLLECTIONS } from '@/lib/models/schema';
 import { Timestamp } from 'firebase-admin/firestore';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -31,14 +32,12 @@ export const POST = async (req: NextRequest) => {
     });
 
     // Update lead record
-    await adminDb.collection('stakeholders').doc(leadId).update({
-      'viewingRequests': {
-        [unitId]: {
-          requestedAt: Timestamp.now(),
-          status: 'pending',
-        },
+    await adminDb.collection(COLLECTIONS.stakeholders).doc(leadId).update({
+      [`viewingRequests.${unitId}`]: {
+        requestedAt: Timestamp.now(),
+        status: 'pending',
       },
-      'lastViewingRequestAt': Timestamp.now(),
+      lastViewingRequestAt: Timestamp.now(),
     });
 
     // TODO: Send Telegram alert to sales team about viewing request
