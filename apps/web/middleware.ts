@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const VALID_SECRET = process.env.SBR_SECRET_KEY || '';
+const VALID_SECRET = process.env.SBR_SECRET_KEY;
 
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
