@@ -29,4 +29,13 @@ describe('middleware', () => {
 
     expect(response.status).toBe(401);
   });
+
+  test('allows requests with the correct secret header', async () => {
+    process.env.SBR_SECRET_KEY = 'expected-secret';
+
+    const { middleware } = await import('@/middleware');
+    const response = middleware(makeRequest({ 'x-sbr-secret-key': 'expected-secret' }));
+
+    expect(response.headers.get('x-middleware-next')).toBe('1');
+  });
 });
