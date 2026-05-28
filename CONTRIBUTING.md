@@ -45,7 +45,6 @@ FIREBASE_CLIENT_EMAIL=firebase-adminsdk@...iam.gserviceaccount.com
 FIREBASE_PRIVATE_KEY='-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n'
 
 # API Security
-X-SBR-SECRET-KEY=your-secret-key-here
 SBR_SECRET_KEY=your-secret-key-here
 
 # Optional Integrations
