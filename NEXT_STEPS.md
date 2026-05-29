@@ -20,7 +20,14 @@ Helper: `import { verifyAdminRequest, unauthorizedResponse } from '@/lib/server/
 ## Pre-deploy gates (all must pass before production)
 1. Rules deployed (above).
 2. API auth closed (above).
-3. ~45 env secrets set in Vercel/GitHub (never in chat). Rotate SBR_SECRET_KEY, JWT_SECRET, ENCRYPTION_KEY, and the Firebase admin key if ever shared.
+3. Secrets set (see "Secrets placement" below). Rotate SBR_SECRET_KEY, JWT_SECRET, ENCRYPTION_KEY, and the Firebase admin key if ever shared.
+
+## Secrets placement (owner leans toward Firebase)
+Secrets must live where the code that reads them runs:
+- **Next.js web app** — currently deploys to **Vercel** (vercel.json, deploy.yml), so its server secrets must be **Vercel env vars** (encrypted). They can't be read "from Firebase" while hosted on Vercel.
+- **Firebase Cloud Functions** (`functions/`) — use **Firebase Functions secrets / Google Secret Manager** (`firebase functions:secrets:set`), never committed.
+- **To consolidate ALL secrets on Firebase** (owner's preference): also host the web app on **Firebase Hosting + Functions** (firebase.json already has web/admin targets) instead of Vercel, then everything uses **Google Secret Manager**. Tradeoff: Vercel is the stronger Next.js host; all-Firebase = one-platform simplicity. Decide host first, then place secrets accordingly.
+- `NEXT_PUBLIC_*` vars are **not** secret (they ship in the client bundle). Only the non-prefixed ones (Firebase admin key, SBR_SECRET_KEY, JWT_SECRET, ENCRYPTION_KEY, third-party API keys) are real secrets.
 
 ## Recommendations
 - Consolidate the project into THIS monorepo (scattered repos cause lost work).
