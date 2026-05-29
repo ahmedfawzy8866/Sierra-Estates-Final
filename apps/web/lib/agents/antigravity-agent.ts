@@ -288,7 +288,7 @@ async function handleStakeholderInterview(chatId: number, text: string): Promise
     1. Branded greeting.
     2. Subtle question about Nationality.
     3. Transition to Budget.
-    
+
     Current missing points: ${[
       !profile.nationality && 'Nationality',
       !profile.budget && 'Budget',

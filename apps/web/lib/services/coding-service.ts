@@ -33,7 +33,7 @@ export function generateSmartCode(params: CodingParams, region: 'matareya' | 'ne
   // [Compound]-[Bedrooms][Furnish]-[PriceShort]
   // Example: VS-3S-45K
   const compCode = getCompoundShortCode(compound);
-  const _furnishedCode = params.type === 'commercial' ? 'OFF' : (getFurnishingCode(params.floor || '') || 'U'); 
+  const _furnishedCode = params.type === 'commercial' ? 'OFF' : (getFurnishingCode(params.floor || '') || 'U');
   // Wait, user example VS-3S-45K. 3S = 3 Bedrooms, Semi-furnished.
   const bedsCode = rooms ? `${rooms}` : 'X';
   const furnLetter = params.floor?.toUpperCase().includes('F') ? 'F' : (params.floor?.toUpperCase().includes('S') ? 'S' : 'U');

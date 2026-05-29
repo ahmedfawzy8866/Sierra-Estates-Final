@@ -95,7 +95,7 @@ async function cmdMatches(unitId: string, chatId: string) {
   // Logic to find leads who have this unit in their topMatches
   const _leadsQuery = query(
     collection(db, COLLECTIONS.stakeholders),
-    where('aiProfiling.topMatches', 'array-contains-any', [{ unitId: unitId }]) 
+    where('aiProfiling.topMatches', 'array-contains-any', [{ unitId: unitId }])
     // Note: array-contains-any with object is tricky in Firestore, 
     // usually we search by unitId list.
   );

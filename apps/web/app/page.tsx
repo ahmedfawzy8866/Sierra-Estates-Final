@@ -9,7 +9,6 @@ import { InventoryService, Property } from '@/lib/services/InventoryService';
 import ShieldLogo from '@/components/Landing/ShieldLogo';
 import PropCard from '@/components/Landing/PropCard';
 
-const _ParticleCanvas = dynamic(() => import('@/components/Landing/ParticleCanvas'), { ssr: false });
 const LiveMap = dynamic(() => import('@/components/Maps/LiveMap'), {
   ssr: false,
   loading: () => <div className="w-full h-full bg-slate-900/50 animate-pulse flex items-center justify-center text-slate-500 font-serif">Initializing Intelligence Map...</div>,

@@ -37,6 +37,6 @@
     "apps/**/*",
     "bots/**/*",
     "functions/**/*",
-    "public/**/*"
+    "public/assets/**/*"
   ]
 }
