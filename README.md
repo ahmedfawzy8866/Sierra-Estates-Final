@@ -2,22 +2,30 @@
 
 > Luxury Real Estate Intelligence Platform with AI-Powered Insights
 
-A production-ready, unified monorepo combining two distinct Sierra Blu systems into one cohesive, high-performance platform.
+A production-ready, unified monorepo consolidating all Sierra-related repositories into one cohesive, high-performance platform.
+
+> **Migration complete**: Code and history from `Sierra-Blu-Systm`, `68e6464b...` (hash-repo), `frontend`, and `New-folder` have been consolidated here. See [MIGRATION.md](./MIGRATION.md) for details.
 
 ## 📦 Repository Structure
 
 ```
-sierra-blu-unified/
+i-sierra-2027/
 ├── apps/
-│   ├── web/                    # Main customer-facing app (Next.js 16 + Turbopack)
+│   ├── web/                    # Main customer-facing app (Next.js + Turbopack)
 │   │   ├── app/               # App Router pages & layouts
 │   │   ├── components/        # React components (13+ modules)
 │   │   ├── hooks/             # Custom React hooks
 │   │   ├── lib/               # Utilities, services, models
 │   │   └── public/            # Static assets
-│   └── admin/                 # Admin portal (Vite SPA)
-│       ├── src/               # React source
-│       └── dist/              # Built output
+│   ├── admin/                 # Admin portal (Vite SPA)
+│   │   └── src/               # React source
+│   ├── api/                   # Python backend (FastAPI)
+│   │   ├── main.py            # FastAPI entry point
+│   │   ├── requirements.txt   # Python dependencies
+│   │   └── Dockerfile         # Container definition
+│   └── agents/                # AI agents & bots
+│       ├── stage-9-closer/    # Closer agent (TypeScript)
+│       └── whatsapp-scraper/  # WhatsApp bot (Node.js)
 ├── packages/
 │   ├── api/                   # Shared API types & clients
 │   ├── db/                    # Firestore models & utilities
@@ -27,21 +35,19 @@ sierra-blu-unified/
 │   ├── config/                # Shared configuration
 │   └── ui/                    # Component library (shadcn/ui)
 ├── functions/                 # Firebase Cloud Functions (Node.js 20)
-│   ├── src/
-│   │   ├── api/              # REST endpoints
-│   │   ├── webhooks/         # External integrations
-│   │   ├── batch/            # Scheduled batch jobs
-│   │   ├── agents/           # Agent orchestration
-│   │   └── middleware/       # Auth, logging, etc.
-│   └── package.json
-├── infra/                     # Infrastructure as Code (Terraform)
-├── scripts/                   # Build & deployment scripts
-├── docs/                      # Documentation
-├── .github/workflows/         # CI/CD pipelines
+│   └── src/
+│       └── index.ts           # collectData, processDataForApp, api, healthCheck
+├── scripts/
+│   └── create-migrate-branches.sh  # Run by repo admin to push migrate/* branches
+├── .github/workflows/         # CI/CD pipelines (ci, build, test, deploy, codeql)
 ├── pnpm-workspace.yaml        # Monorepo workspace config
 ├── turbo.json                 # Turborepo build cache config
 ├── package.json               # Root workspace dependencies
-└── firebase.json              # Firebase hosting & functions config
+├── firebase.json              # Firebase hosting & functions config
+├── vercel.json                # Vercel deployment config
+├── MIGRATION.md               # Migration map & branch reference
+├── ARCHITECTURE.md            # Full architecture overview
+└── DEPLOYMENT_GUIDE.md        # End-to-end deployment steps
 ```
 
 ## 🚀 Quick Start
