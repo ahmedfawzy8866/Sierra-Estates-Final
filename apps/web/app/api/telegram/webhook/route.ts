@@ -194,7 +194,7 @@ Commands:
             body: JSON.stringify({ chat_id: chatId, action: 'typing' }),
         });
 
-        const { processAgentCommand } = await import('@/lib/services/antigravity-agent');
+        const { processAgentCommand } = await import('@/lib/agents/antigravity-agent');
         const response = await processAgentCommand(chatId, queryText || "Hello! I am Antigravity. How can I assist your operations today?");
         await sendMessage(response.message);
     }
