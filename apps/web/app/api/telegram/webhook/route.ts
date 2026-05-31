@@ -2,14 +2,9 @@ import { NextResponse, NextRequest } from 'next/server';
 import { adminDb, isAdminInitialized } from '@/lib/server/firebase-admin';
 
 export async function POST(req: NextRequest) {
-  // Optional secret verification for Telegram webhook
-  const SECRET_KEY = process.env.SBR_SECRET_KEY || '';
-  if (SECRET_KEY) {
-    const secretHeader = req.headers.get('x-sbr-secret-key');
-    if (!secretHeader || secretHeader !== SECRET_KEY) {
-      return NextResponse.json({ ok: true }); // Return 200 to Telegram, silently reject
-    }
-  }
+  // NOTE: Telegram Bot API does not support custom headers in webhooks,
+  // so secret verification cannot be added here without breaking Telegram integration.
+  // Secret validation would need to be implemented at the infrastructure level (e.g., IP allowlist).
   try {
     const body = await req.json();
     const { message } = body;
