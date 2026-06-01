@@ -88,7 +88,7 @@ export default function ConciergePage({ params }: { params: Promise<{ leadId: st
       // Track engagement
       await trackEngagement(portfolio.id, 'requested_viewing');
 
-      alert('Viewing request sent! Laila will contact you shortly to arrange the visit.');
+      alert('Viewing request sent! Sierra will contact you shortly to arrange the visit.');
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to request viewing');
     }

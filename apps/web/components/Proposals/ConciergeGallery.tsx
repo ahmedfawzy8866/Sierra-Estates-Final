@@ -230,7 +230,7 @@ export default function ConciergeGallery({
                   {currentUnit.description}
                 </p>
                 <div className="p-4 bg-[#0A1628] text-[#F4F0E8] rounded-sm text-xs italic leading-relaxed border-l-4 border-[#C9A84C]">
-                  "Laila's Insight: {currentUnit.reason}"
+                  "Sierra's Insight: {currentUnit.reason}"
                 </div>
               </div>
 
