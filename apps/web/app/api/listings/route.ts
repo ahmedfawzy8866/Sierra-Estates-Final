@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { COLLECTIONS } from '@/lib/models/schema';
+import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
 
 const API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'AIzaSyBZLN2jTTKV34SneGPoWRz1zoRpX5uODjs';
 const PROJECT_ID = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'sierra-blu';
@@ -103,7 +104,10 @@ function transformToListing(doc: FirestoreDocument): any {
   };
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
+  const rateLimitResponse = applyRateLimit(request, publicEndpointLimiter);
+  if (rateLimitResponse) return rateLimitResponse;
+
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');

@@ -1,7 +1,8 @@
 import { adminDb } from '@/lib/server/firebase-admin';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { Timestamp } from 'firebase-admin/firestore';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
+import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
 
 interface ViewingRequest {
   leadId: string;
@@ -9,7 +10,10 @@ interface ViewingRequest {
   portfolioId: string;
 }
 
-export const POST = async (req: NextRequest) => {
+export const POST = async (req: Request) => {
+  const rateLimitResponse = applyRateLimit(req, publicEndpointLimiter);
+  if (rateLimitResponse) return rateLimitResponse;
+
   try {
     const body: ViewingRequest = await req.json();
     const { leadId, unitId, portfolioId } = body;

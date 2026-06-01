@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint && node scripts/validate-configs.mjs",
     "type-check": "tsc --noEmit",
     "fix-build": "rimraf .next && npm run build",
     "check-node": "node scripts/diagnostic.mjs",

@@ -1,11 +1,15 @@
 import { adminDb } from '@/lib/server/firebase-admin';
 import { COLLECTIONS } from '@/lib/models/schema';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
+import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
 
 export const GET = async (
-  req: NextRequest,
+  req: Request,
   { params }: { params: Promise<{ leadId: string }> }
 ) => {
+  const rateLimitResponse = applyRateLimit(req, publicEndpointLimiter);
+  if (rateLimitResponse) return rateLimitResponse;
+
   try {
     const { leadId } = await params;
 

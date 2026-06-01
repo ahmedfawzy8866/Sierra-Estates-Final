@@ -3,8 +3,12 @@ import { adminDb } from '@/lib/server/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { sendTelegramMessage } from '@/lib/telegram';
+import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
 
 export async function POST(req: Request) {
+  const rateLimitResponse = applyRateLimit(req, publicEndpointLimiter);
+  if (rateLimitResponse) return rateLimitResponse;
+
   try {
     const data = await req.json();
     const { name, email, phone, message, locale } = data;

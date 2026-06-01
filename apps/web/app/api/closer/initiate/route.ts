@@ -1,11 +1,15 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { closerAgent } from '@/agents/stage-9-closer/CloserAgent';
+import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
 
 /**
  * API: INITIATE CLOSING (STAGE 9)
  * Triggers the Closer Agent to handle a viewing request and initialize a deal.
  */
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
+  const rateLimitResponse = applyRateLimit(request, publicEndpointLimiter);
+  if (rateLimitResponse) return rateLimitResponse;
+
   try {
     const { leadId, propertyCode, visitorName, visitorEmail: _visitorEmail, visitorPhone: _visitorPhone } = await request.json();
 
