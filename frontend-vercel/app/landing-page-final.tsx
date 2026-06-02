@@ -171,6 +171,7 @@ export default function LandingPage() {
   const [submitted, setSubmitted] = useState(false);
   const [listings, setListings] = useState<any[]>([]);
   const [mounted, setMounted] = useState(false);
+  const [heroView, setHeroView] = useState<'A' | 'B'>('A'); // View A: Default Backdrop, View B: Virtual Tour
 
   const T = COPY[locale as keyof typeof COPY] || COPY.en;
   const th = THEMES[mode];
@@ -348,109 +349,209 @@ export default function LandingPage() {
           </div>
         </nav>
 
-        {/* ══ HERO SECTION ══ */}
+        {/* ══ FRAMED SPLIT-HERO EXPERIENCE ══ */}
         <section
+          className="relative w-full h-[100dvh] overflow-hidden"
           style={{
-            padding: '96px 60px',
             background: `linear-gradient(135deg, ${th.bg} 0%, ${th.bg2} 100%)`,
-            minHeight: '90vh',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
           }}
         >
-          <div className="reveal" style={{ maxWidth: '800px', textAlign: 'center' }}>
-            <div
-              style={{
-                fontSize: '12px',
-                fontWeight: 500,
-                letterSpacing: '0.2em',
-                textTransform: 'uppercase',
-                color: COLORS.gold,
-                marginBottom: '16px',
-              }}
-            >
-              {T.heroTag}
+          {/* VIEW A: AI Smart Filter & Voucher Alert */}
+          <div
+            className="absolute inset-0 w-full h-full transition-transform duration-700 ease-silk"
+            style={{
+              transform: heroView === 'A' ? 'translateY(0)' : 'translateY(-100%)',
+              zIndex: 10,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '96px 60px',
+            }}
+          >
+            <div className="absolute inset-0 bg-navy-80 z-0">
+              {/* Fallback lightweight backdrop (30%) */}
+              <div
+                className="absolute inset-0 opacity-30"
+                style={{
+                  backgroundImage: "url('/design/hero/hero-careers.jpg')", // Placeholder
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              />
             </div>
+            
+            <div className="relative z-10 reveal" style={{ maxWidth: '800px', textAlign: 'center' }}>
+              <div
+                style={{
+                  display: 'inline-block',
+                  background: 'rgba(230, 57, 70, 0.1)',
+                  border: `1px solid ${COLORS.gold}`,
+                  color: COLORS.gold,
+                  padding: '4px 12px',
+                  borderRadius: '20px',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  marginBottom: '24px',
+                }}
+              >
+                10% Off WhatsApp Voucher Alert
+              </div>
 
-            <h1
-              style={{
-                fontFamily: '"Cormorant Garamond", serif',
-                fontSize: 'clamp(48px, 8vw, 96px)',
-                fontWeight: 300,
-                lineHeight: 1.1,
-                letterSpacing: '-0.02em',
-                marginBottom: '16px',
-              }}
-            >
-              {T.heroH1.map((word, i) => (
-                <div key={i}>
-                  {i === T.heroH1.length - 1 ? (
-                    <span className="gold-text">{word}</span>
-                  ) : (
-                    word
-                  )}
-                </div>
-              ))}
-            </h1>
+              <div
+                style={{
+                  fontSize: '12px',
+                  fontWeight: 500,
+                  letterSpacing: '0.2em',
+                  textTransform: 'uppercase',
+                  color: COLORS.gold,
+                  marginBottom: '16px',
+                }}
+              >
+                {T.heroTag}
+              </div>
 
-            <p
-              style={{
-                fontSize: '18px',
-                fontWeight: 300,
-                color: th.textSub,
-                maxWidth: '600px',
-                margin: '0 auto 40px',
-                lineHeight: 1.7,
-              }}
-            >
-              {T.heroDesc}
+              <h1
+                style={{
+                  fontFamily: '"Cormorant Garamond", serif',
+                  fontSize: 'clamp(48px, 8vw, 96px)',
+                  fontWeight: 300,
+                  lineHeight: 1.1,
+                  letterSpacing: '-0.02em',
+                  marginBottom: '16px',
+                  color: COLORS.white,
+                }}
+              >
+                {T.heroH1.map((word, i) => (
+                  <div key={i}>
+                    {i === T.heroH1.length - 1 ? (
+                      <span className="gold-text">{word}</span>
+                    ) : (
+                      word
+                    )}
+                  </div>
+                ))}
+              </h1>
+
+              <p
+                style={{
+                  fontSize: '18px',
+                  fontWeight: 300,
+                  color: 'rgba(255,255,255,0.8)',
+                  maxWidth: '600px',
+                  margin: '0 auto 40px',
+                  lineHeight: 1.7,
+                }}
+              >
+                {T.heroDesc}
+              </p>
+
+              {/* AI Smart Filter Bar (Placeholder UI) */}
+              <div
+                className="glass-card"
+                style={{
+                  display: 'flex',
+                  gap: '12px',
+                  padding: '16px',
+                  borderRadius: '12px',
+                  background: 'rgba(10, 30, 53, 0.6)',
+                  border: `1px solid ${COLORS.goldDark}`,
+                  backdropFilter: 'blur(16px)',
+                  margin: '0 auto',
+                  maxWidth: '600px',
+                }}
+              >
+                <input
+                  type="text"
+                  placeholder="AI Match Driven Search..."
+                  style={{
+                    flex: 1,
+                    background: 'transparent',
+                    border: 'none',
+                    color: COLORS.white,
+                    outline: 'none',
+                    fontSize: '14px',
+                    padding: '8px',
+                  }}
+                />
+                <button
+                  style={{
+                    background: `linear-gradient(135deg, ${COLORS.gold}, ${COLORS.goldDark})`,
+                    color: COLORS.navy,
+                    border: 'none',
+                    borderRadius: '6px',
+                    padding: '10px 24px',
+                    fontWeight: 600,
+                    fontSize: '12px',
+                    textTransform: 'uppercase',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Search
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* VIEW B: Interactive Virtual Tour */}
+          <div
+            className="absolute inset-0 w-full h-full transition-transform duration-700 ease-silk"
+            style={{
+              transform: heroView === 'B' ? 'translateY(0)' : 'translateY(100%)',
+              zIndex: 10,
+              background: COLORS.navy,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            {/* Placeholder for Virtual Tour iFrame/SDK */}
+            <div style={{ color: COLORS.gold, fontSize: '24px', fontFamily: '"Cormorant Garamond", serif' }}>
+              Interactive High-Tech Virtual Tour
+            </div>
+            <p style={{ color: 'rgba(255,255,255,0.6)', marginTop: '8px' }}>
+              Powered by Virtual Tour Provider Key
             </p>
+          </div>
 
-            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <button
-                style={{
-                  background: `linear-gradient(135deg, ${COLORS.gold}, ${COLORS.goldDark})`,
-                  color: COLORS.navy,
-                  border: 'none',
-                  borderRadius: '6px',
-                  padding: '14px 32px',
-                  fontWeight: 600,
-                  fontSize: '12px',
-                  letterSpacing: '0.14em',
-                  textTransform: 'uppercase',
-                  cursor: 'pointer',
-                  boxShadow: `0 8px 30px rgba(233,193,118,0.35)`,
-                }}
-              >
-                {T.btnDiscover}
-              </button>
-              <button
-                style={{
-                  background: 'transparent',
-                  color: th.text,
-                  border: `1px solid ${th.border}`,
-                  borderRadius: '6px',
-                  padding: '13px 32px',
-                  fontWeight: 600,
-                  fontSize: '12px',
-                  letterSpacing: '0.14em',
-                  textTransform: 'uppercase',
-                  cursor: 'pointer',
-                  transition: 'all 300ms ease',
-                }}
-                onMouseEnter={(e) => {
-                  (e.target as HTMLElement).style.borderColor = COLORS.gold;
-                  (e.target as HTMLElement).style.color = COLORS.gold;
-                }}
-                onMouseLeave={(e) => {
-                  (e.target as HTMLElement).style.borderColor = th.border;
-                  (e.target as HTMLElement).style.color = th.text;
-                }}
-              >
-                {T.btnView}
-              </button>
-            </div>
+          {/* Floating Frame Control Button */}
+          <div
+            className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20"
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            <span style={{ fontSize: '10px', textTransform: 'uppercase', color: COLORS.gold, letterSpacing: '0.1em' }}>
+              {heroView === 'A' ? 'Virtual Tour' : 'Back to Home'}
+            </span>
+            <button
+              onClick={() => setHeroView(heroView === 'A' ? 'B' : 'A')}
+              style={{
+                width: '48px',
+                height: '48px',
+                borderRadius: '50%',
+                background: `linear-gradient(135deg, ${COLORS.gold}, ${COLORS.goldDark})`,
+                border: 'none',
+                color: COLORS.navy,
+                fontSize: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                boxShadow: `0 8px 30px rgba(233,193,118,0.35)`,
+                transition: 'transform 300ms ease',
+              }}
+              onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.transform = 'scale(1.1)')}
+              onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.transform = 'scale(1)')}
+            >
+              {heroView === 'A' ? '🔽' : '🔼'}
+            </button>
           </div>
         </section>
 
@@ -577,6 +678,94 @@ export default function LandingPage() {
                   </p>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ══ AI INVESTMENT MAP ══ */}
+        <section style={{ padding: '96px 60px', background: th.bg, borderTop: `1px solid ${th.border}` }}>
+          <div style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'center' }}>
+            <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(32px, 5vw, 56px)', marginBottom: '32px' }}>
+              <span className="gold-text">AI Investment Map</span>
+            </h2>
+            <div style={{ height: '400px', background: th.card, border: `1px solid ${th.cardBorder}`, borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+               <p style={{ color: th.textMuted }}>Map Powered by {process.env.NEXT_PUBLIC_AI_MAP_ENGINE_TOKEN ? 'AI Engine' : 'Map Engine (Configure Token)'}</p>
+            </div>
+          </div>
+        </section>
+
+        {/* ══ GRID / FEATURED PROPERTIES ══ */}
+        <section style={{ padding: '96px 60px', background: th.bg2, borderTop: `1px solid ${th.border}` }}>
+          <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+            <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(32px, 5vw, 56px)', marginBottom: '48px', textAlign: 'center' }}>
+               Curated <span className="gold-text">Collection</span>
+            </h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '32px' }}>
+              {[1, 2, 3].map((i) => (
+                <div key={i} style={{ background: th.card, border: `1px solid ${th.cardBorder}`, borderRadius: '12px', padding: '24px', transition: 'transform 300ms ease' }}
+                     onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-5px)')}
+                     onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
+                >
+                  <div style={{ height: '200px', background: 'rgba(233,193,118,0.1)', borderRadius: '8px', marginBottom: '16px' }}></div>
+                  <h3 style={{ fontSize: '18px', marginBottom: '8px', color: th.text }}>Luxury Villa #{i}</h3>
+                  <p style={{ fontSize: '14px', color: th.textSub }}>Exclusive property in prime location.</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ══ AI HUB ══ */}
+        <section style={{ padding: '96px 60px', background: th.bg, borderTop: `1px solid ${th.border}` }}>
+           <div style={{ maxWidth: '1000px', margin: '0 auto', textAlign: 'center' }}>
+            <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(32px, 5vw, 56px)', marginBottom: '24px' }}>
+              The <span className="gold-text">AI Hub</span>
+            </h2>
+            <p style={{ fontSize: '16px', color: th.textSub, marginBottom: '40px', maxWidth: '600px', margin: '0 auto 40px' }}>
+              Leverage advanced machine learning algorithms to predict market trends and find your perfect investment.
+            </p>
+            <div style={{ padding: '40px', background: th.card, border: `1px solid ${th.cardBorder}`, borderRadius: '12px' }}>
+              <div style={{ color: COLORS.gold, fontSize: '24px', marginBottom: '16px' }}>AI Match Engine Active</div>
+              <button style={{
+                  background: `linear-gradient(135deg, ${COLORS.gold}, ${COLORS.goldDark})`,
+                  color: COLORS.navy,
+                  border: 'none',
+                  borderRadius: '6px',
+                  padding: '12px 24px',
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  cursor: 'pointer'
+              }}>Start AI Matching</button>
+            </div>
+           </div>
+        </section>
+
+        {/* ══ ROI CALCULATOR ══ */}
+        <section style={{ padding: '96px 60px', background: th.bg2, borderTop: `1px solid ${th.border}` }}>
+          <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
+            <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(32px, 5vw, 56px)', marginBottom: '40px' }}>
+              ROI <span className="gold-text">Calculator</span>
+            </h2>
+            <div style={{ padding: '40px', background: th.card, border: `1px solid ${th.cardBorder}`, borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${th.border}`, paddingBottom: '16px' }}>
+                <span style={{ fontSize: '16px', color: th.textSub }}>Investment Amount</span>
+                <span style={{ fontSize: '20px', fontWeight: 600, color: th.text }}>$1,000,000</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${th.border}`, paddingBottom: '16px' }}>
+                <span style={{ fontSize: '16px', color: th.textSub }}>Expected Return (5 Yrs)</span>
+                <span style={{ fontSize: '20px', fontWeight: 600, color: COLORS.gold }}>+45%</span>
+              </div>
+              <button style={{
+                  background: 'transparent',
+                  color: th.text,
+                  border: `1px solid ${COLORS.gold}`,
+                  borderRadius: '6px',
+                  padding: '12px 24px',
+                  marginTop: '16px',
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  cursor: 'pointer'
+              }}>Customize Calculation</button>
             </div>
           </div>
         </section>

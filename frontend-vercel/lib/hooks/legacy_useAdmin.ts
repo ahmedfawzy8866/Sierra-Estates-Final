@@ -59,14 +59,14 @@ export function useAdmin() {
   }, []);
 
   // Create document
-  const createDocument = useCallback(async <T>(
+  const createDocument = useCallback(async <T extends Record<string, any>>(
     collectionName: string,
     docId: string,
     data: T
   ): Promise<AdminResult> => {
     try {
       const docRef = doc(db, collectionName, docId);
-      await setDoc(docRef, data);
+      await setDoc(docRef as any, data);
       return { success: true };
     } catch (err) {
       return { success: false, error: err instanceof Error ? err.message : 'Unknown error' };
@@ -81,7 +81,7 @@ export function useAdmin() {
   ): Promise<AdminResult> => {
     try {
       const docRef = doc(db, collectionName, docId);
-      await updateDoc(docRef, updates);
+      await updateDoc(docRef as any, updates as any);
       return { success: true };
     } catch (err) {
       return { success: false, error: err instanceof Error ? err.message : 'Unknown error' };

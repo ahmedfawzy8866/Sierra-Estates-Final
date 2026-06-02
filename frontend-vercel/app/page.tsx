@@ -71,28 +71,14 @@ const DICTIONARY = {
 export default function UnifiedHomepage() {
   const [isAr, setIsAr] = useState(false);
   const [activeMobileTab, setActiveMobileTab] = useState('explore');
+  const [filters, setFilters] = useState({
+    purpose: '',
+    type: '',
+    compound: '',
+    budget: '',
+  });
+  
   const t = isAr ? DICTIONARY.ar : DICTIONARY.en;
-
-  // 3-Axis Parallax cursor tracker setup
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const { clientX, clientY } = e;
-      const { innerWidth, innerHeight } = window;
-      const x = (clientX / innerWidth - 0.5) * 40; // 3-axis multiplier
-      const y = (clientY / innerHeight - 0.5) * 40;
-      mouseX.set(x);
-      mouseY.set(y);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [mouseX, mouseY]);
-
-  const bgParallaxX = useTransform(mouseX, (x) => x * 0.5);
-  const bgParallaxY = useTransform(mouseY, (y) => y * 0.5);
 
   const toggleLanguage = () => {
     setIsAr((prev) => !prev);
@@ -140,71 +126,21 @@ export default function UnifiedHomepage() {
       <div className="pt-20">
         {activeMobileTab === 'explore' && (
           <>
-            {/* Cinematic Parallax Hero Section */}
-            <div className="relative overflow-hidden min-h-[90vh] flex items-center justify-center py-20 px-6">
-              {/* Dynamic 3-Axis Parallax Background */}
-              <motion.div
-                style={{ x: bgParallaxX, y: bgParallaxY }}
-                className="absolute inset-0 bg-cover bg-center pointer-events-none opacity-20 dark:opacity-30"
-                backgroundImage="url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600&q=80')"
-              />
-              <div className="absolute inset-0 bg-gradient-to-b from-[#F4F0E8]/40 via-[#F4F0E8]/90 to-[#F4F0E8] dark:from-[#071422]/60 dark:via-[#071422]/95 dark:to-[#071422]" />
-
-              <div className="relative z-10 max-w-4xl mx-auto text-center mt-8">
-                <motion.span
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#C9A84C]/10 border border-[#C9A84C]/35 text-[#C9A84C] text-[10px] tracking-[0.25em] font-semibold uppercase font-mono mb-6"
-                >
-                  <Award size={12} />
-                  {t.tagline}
-                </motion.span>
-
-                <motion.h1
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="font-playfair text-4xl sm:text-5xl md:text-6xl text-[#071422] dark:text-white font-light tracking-tight leading-tight mb-6"
-                >
-                  {isAr ? 'عقارات سيادية مصممة خصيصاً للنخبة' : t.title}
-                </motion.h1>
-
-                <motion.p
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="text-md md:text-lg text-[#071422]/70 dark:text-white/70 font-light max-w-2xl mx-auto leading-relaxed mb-10"
-                >
-                  {t.desc}
-                </motion.p>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="flex flex-col sm:flex-row items-center justify-center gap-4"
-                >
-                  <a
-                    href="#inventory"
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#071422] text-white dark:bg-white dark:text-[#071422] font-semibold text-xs rounded-xl shadow-lg hover:shadow-2xl transition-all uppercase tracking-widest border border-[#071422]/10 dark:border-white/10"
-                  >
-                    {t.ctaExplore}
-                    <ArrowRight size={14} className={isAr ? 'rotate-180' : ''} />
-                  </a>
-                  <a
-                    href="#contact"
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-transparent border border-[#071422]/20 dark:border-white/20 text-[#071422] dark:text-white hover:border-[#C9A84C] transition-colors font-semibold text-xs rounded-xl uppercase tracking-widest"
-                  >
-                    {t.ctaContact}
-                  </a>
-                </motion.div>
-              </div>
-            </div>
+            {/* Interactive AR Virtual Tour & Refined Filter Hero Section */}
+            <PremiumHero
+              isArabic={isAr}
+              onSearch={(searchFilters) => {
+                setFilters(searchFilters);
+                const element = document.getElementById('inventory');
+                if (element) {
+                  element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }}
+            />
 
             {/* Live Synchronized High-Fidelity Inventory Showcase */}
             <div id="inventory" className="relative z-10">
-              <InventoryShowcase />
+              <InventoryShowcase filters={filters} />
             </div>
 
             {/* Testimonials Carousel Section */}

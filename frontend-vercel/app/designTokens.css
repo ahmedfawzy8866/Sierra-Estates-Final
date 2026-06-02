@@ -8,21 +8,22 @@
 
 :root {
   /* ── Brand Colors ───────────────────────────────────────────── */
-  --navy:          #071422;
-  --navy-80:       rgba(7, 20, 34, 0.8);
-  --navy-60:       rgba(7, 20, 34, 0.6);
-  --navy-40:       rgba(7, 20, 34, 0.4);
-  --navy-15:       rgba(7, 20, 34, 0.15);
-  --navy-08:       rgba(7, 20, 34, 0.08);
+  --navy:          #0A1628; /* Primary Navy Background */
+  --navy-secondary:#10233F; /* Secondary Navy accents */
+  --navy-80:       rgba(10, 22, 40, 0.8);
+  --navy-60:       rgba(10, 22, 40, 0.6);
+  --navy-40:       rgba(10, 22, 40, 0.4);
+  --navy-15:       rgba(10, 22, 40, 0.15);
+  --navy-08:       rgba(10, 22, 40, 0.08);
 
-  --ivory:         #F4F0E8;
+  --ivory:         #F7F4EE; /* Light Canvas Background */
   --ivory-soft:    #FAF8F3;
   --ivory-mid:     #F0EDE5;
 
-  --gold:          #C8961A;
-  --gold-light:    #E9C176;
-  --gold-pale:     rgba(200, 150, 26, 0.15);
-  --gold-shadow:   rgba(200, 150, 26, 0.4);
+  --gold:          #C9A84C; /* Elegant Gold Accent */
+  --gold-light:    #D8BB6A; /* Soft Gold Interactive Glow */
+  --gold-pale:     rgba(201, 168, 76, 0.15);
+  --gold-shadow:   rgba(201, 168, 76, 0.4);
 
   --red:           #E63946;
   --red-deep:      #B71C2C;

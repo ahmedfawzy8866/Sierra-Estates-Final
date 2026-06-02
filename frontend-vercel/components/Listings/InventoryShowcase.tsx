@@ -12,16 +12,89 @@ import { useSierraBlu } from '@/hooks/useSierraBlu';
 import { LuxuryCard, EditorialHeading, SectionBadge } from '@/components/UI/LuxurySkeleton';
 import { MapPin, TrendingUp, ArrowRight } from 'lucide-react';
 
-export default function InventoryShowcase() {
+interface InventoryShowcaseProps {
+  filters?: {
+    purpose: string;
+    type: string;
+    compound: string;
+    budget: string;
+  };
+}
+
+export default function InventoryShowcase({ filters }: InventoryShowcaseProps) {
   const { units, loading, error } = useSierraBlu();
 
-  // Sort and limit units for showcase (top 6)
+  // Sort and limit units for showcase (top 6 filtered)
   const featuredUnits = useMemo(() => {
-    return units
-      ?.filter(u => u.status === 'available')
+    let result = units || [];
+
+    // Filter available units
+    result = result.filter(u => u.status === 'available');
+
+    if (filters) {
+      const { purpose, type, compound, budget } = filters;
+
+      // 1. Filter by Purpose (heuristic pricing threshold)
+      if (purpose === 'rent') {
+        result = result.filter(u => u.price < 200000);
+      } else if (purpose === 'resale') {
+        result = result.filter(u => u.price >= 200000);
+      }
+
+      // 2. Filter by Property Type (case-insensitive fuzzy/exact check)
+      if (type && type !== 'Apartment' && type !== 'شقة') {
+        const tLower = type.toLowerCase();
+        result = result.filter(u => {
+          const uType = (u.propertyType || u.type || '').toLowerCase();
+          
+          // Arabic translations mapping helper
+          const arabicMap: Record<string, string> = {
+            'فيلا': 'villa',
+            'دوبلكس': 'duplex',
+            'بنتهاوس': 'penthouse',
+            'توين هاوس': 'twin house',
+            'تاون هاوس': 'townhouse',
+            'شقة': 'apartment'
+          };
+          const mappedType = arabicMap[type] || tLower;
+          return uType.includes(mappedType) || mappedType.includes(uType);
+        });
+      }
+
+      // 3. Filter by Compound (fuzzy matching)
+      if (compound && compound.trim()) {
+        const cLower = compound.toLowerCase().trim();
+        result = result.filter(u => {
+          const uComp = (u.compound || u.location || '').toLowerCase();
+          return uComp.includes(cLower) || cLower.includes(uComp);
+        });
+      }
+
+      // 4. Filter by Budget
+      if (budget && budget.trim()) {
+        const b = budget.toLowerCase();
+        result = result.filter(u => {
+          const price = u.price || 0;
+          if (purpose === 'rent') {
+            if (b.includes('under 20k') || b.includes('أقل من ٢٠')) return price < 20000;
+            if (b.includes('20k–50k') || b.includes('٢٠–٥٠')) return price >= 20000 && price <= 50000;
+            if (b.includes('50k–100k') || b.includes('٥٠–١٠٠')) return price >= 50000 && price <= 100000;
+            if (b.includes('100k+') || b.includes('أكثر من ١٠٠')) return price > 100000;
+          } else {
+            if (b.includes('under 5m') || b.includes('أقل من ٥')) return price < 5000000;
+            if (b.includes('5m–10m') || b.includes('٥–١٠')) return price >= 5000000 && price <= 10000000;
+            if (b.includes('10m–20m') || b.includes('١٠–٢٠')) return price >= 10000000 && price <= 20000000;
+            if (b.includes('20m+') || b.includes('أكثر من ٢٠')) return price > 20000000;
+          }
+          return true;
+        });
+      }
+    }
+
+    return result
       .sort((a, b) => (b.intelligence?.roi || 0) - (a.intelligence?.roi || 0))
-      .slice(0, 6) || [];
-  }, [units]);
+      .slice(0, 6);
+  }, [units, filters]);
 
   if (error) {
     return (

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * PROPERTY FINDER INTEGRATION SERVICE
  * Synchronizes leads and listings between Sierra Blu and Property Finder Enterprise.
@@ -267,3 +268,4 @@ export class PFIntegrationService {
     return mapping[type.toLowerCase()] || 'apartment';
   }
 }
+

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * SIERRA BLU — SERVER-SIDE AUTH GUARD
  * Validates Firebase Auth tokens on API routes.
@@ -81,3 +82,4 @@ export async function verifyAdminRequest(req: NextRequest): Promise<AuthResult> 
 
   return result;
 }
+

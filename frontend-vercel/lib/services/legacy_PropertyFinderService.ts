@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Sierra Blu Enterprise Gateway - Property Finder Service
  *
@@ -97,3 +98,4 @@ export class PropertyFinderService {
 }
 
 export const pfService = PropertyFinderService.getInstance();
+

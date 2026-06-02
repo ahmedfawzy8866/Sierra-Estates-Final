@@ -10,33 +10,45 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Sierra Blu Official Palette V3.0
+        navy: "var(--navy)",
+        "navy-secondary": "var(--navy-secondary)",
+        "navy-deep": "var(--navy-deep)",
+        sky: "var(--sky)",
+        ivory: "var(--ivory)",
         gold: {
           50: '#FFFBF5',
           100: '#F5E070',
           300: '#E9C176',
-          400: '#C9A84C',
-          500: '#B08E35',
+          400: '#D8BB6A',
+          500: '#C9A84C',
           DEFAULT: '#C9A84C',
-        },
-        navy: {
-          50: '#E0E8F0',
-          100: '#0D2035',
-          200: '#0A1520',
-          300: '#071422',
-          DEFAULT: '#071422',
-        },
-        ivory: {
-          DEFAULT: '#F4F0E8',
         },
         pinblue: {
           DEFAULT: '#1E88D9',
         },
       },
       fontFamily: {
-        serif: ['Cormorant Garamond', 'serif'],
-        sans: ['Inter', 'sans-serif'],
-        arabic: ['Tajawal', 'sans-serif'],
+        display: ["var(--font-display)", "serif"],
+        ui: ["var(--font-ui)", "sans-serif"],
+        arabic: ["var(--font-arabic)", "sans-serif"],
+      },
+      spacing: {
+        sm: "var(--spacing-sm)",
+        md: "var(--spacing-md)",
+        lg: "var(--spacing-lg)",
+      },
+      borderRadius: {
+        sm: "var(--radius-sm)",
+        md: "var(--radius-md)",
+        lg: "var(--radius-lg)",
+        pill: "var(--radius-pill)",
+      },
+      boxShadow: {
+        xs: "var(--shadow-xs)",
+        sm: "var(--shadow-sm)",
+        md: "var(--shadow-md)",
+        lg: "var(--shadow-lg)",
+        glow: "var(--shadow-glow-md)",
       },
       backgroundImage: {
         'gold-gradient': 'linear-gradient(135deg, #C9A84C 0%, #E9C176 50%, #987734 100%)',

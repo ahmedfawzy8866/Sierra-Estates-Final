@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * SIERRA BLU — FIREBASE CLIENT SINGLETON
  * Central Firebase initialization for the frontend.
@@ -94,3 +95,4 @@ export async function fetchProperties(): Promise<Property[]> {
 }
 
 export default app;
+

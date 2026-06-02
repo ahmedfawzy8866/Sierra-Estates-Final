@@ -3,7 +3,7 @@ import { Inter } from 'next/font/google';
 import { Providers } from './providers';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import './designTokens.css';
+import './styles/design.css';
 import './globals.css';
 
 const inter = Inter({
