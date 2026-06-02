@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MessageSquare, Terminal, FileJson, CheckCircle, AlertCircle, RefreshCw, Database, Plus, Sparkles } from 'lucide-react';
+import { MessageSquare, Terminal, FileJson, CheckCircle, AlertCircle, Database, Sparkles } from 'lucide-react';
 
 interface NormalizedListing {
   code: string;
@@ -57,7 +57,6 @@ export const TheScribeModule = () => {
       let priceVal = 10000000; // default 10M
       let isOwner = 'Owner';
       let contactNum = '+20 100 000 0000';
-      let contactName = 'Sourced Contact';
 
       // Advanced parser simulation
       if (text.includes('ميفيدا') || text.includes('mivida')) {
@@ -66,7 +65,7 @@ export const TheScribeModule = () => {
         locationName = 'Golden Square, New Cairo';
       } else if (text.includes('ليك فيو') || text.includes('lake view')) {
         compound = 'LV';
-        title = 'Lake View Residences Residence';
+        title = 'Lake View Residence Apartment';
         locationName = 'Golden Square, New Cairo';
       } else if (text.includes('هايد بارك') || text.includes('hyde park')) {
         compound = 'HP';

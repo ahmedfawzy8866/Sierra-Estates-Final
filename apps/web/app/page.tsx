@@ -5,12 +5,11 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useI18n } from '@/lib/I18nContext';
 import { useTheme } from 'next-themes';
-import { InventoryService, Property } from '@/lib/services/InventoryService';
 import ShieldLogo from '@/components/Landing/ShieldLogo';
 import PropCard from '@/components/Landing/PropCard';
 import { 
-  Sparkles, Smartphone, MapPin, TrendingUp, DollarSign, Calculator, 
-  Bot, User, ChevronRight, X, Check, Heart, Shield, HelpCircle, Layers, Award
+  Sparkles, Smartphone, MapPin, TrendingUp, DollarSign, 
+  Bot, ChevronRight, X, Check, Heart, HelpCircle, Layers
 } from 'lucide-react';
 
 const LiveMap = dynamic(() => import('@/components/Maps/LiveMap'), {
@@ -102,8 +101,6 @@ export default function LandingPage() {
   
   // Basic states
   const [mounted, setMounted] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [activeZone, setActiveZone] = useState<number | null>(null);
   
   // Custom Filter State
   const [dealType, setDealType] = useState<'rent' | 'resale'>('resale');
@@ -129,11 +126,9 @@ export default function LandingPage() {
   // Pricing Engine
   const [calcCompound, setCalcCompound] = useState('lake-view');
   const [calcArea, setCalcArea] = useState(180);
-  const [calcBedrooms, setCalcBedrooms] = useState(3);
 
   // Dream Advisor
   const [dreamStep, setDreamStep] = useState(1);
-  const [dreamPriority, setDreamPriority] = useState('');
   const [dreamBudget, setDreamBudget] = useState('');
 
   // S24 Ultra Drag State
@@ -148,51 +143,6 @@ export default function LandingPage() {
 
   useEffect(() => {
     setMounted(true);
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  // Keyboard Shortcut & Secret Command Hook ("sierra")
-  useEffect(() => {
-    let typedSequence = '';
-    const secretWord = 'sierra';
-    
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // 1. Shortcut: Ctrl + I or Ctrl + Shift + S
-      if ((e.ctrlKey && e.key.toLowerCase() === 'i') || (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 's')) {
-        e.preventDefault();
-        setShowAiSupport(prev => !prev);
-        setAiSupportTab('menu');
-        return;
-      }
-      
-      // 2. Secret Word: typing 'sierra' on the body/window
-      const key = e.key.toLowerCase();
-      // Ignore modifier keys and ensure we don't intercept input when typing inside text boxes
-      const activeEl = document.activeElement;
-      const isInputFocused = activeEl && (
-        activeEl.tagName === 'INPUT' || 
-        activeEl.tagName === 'TEXTAREA' || 
-        activeEl.getAttribute('contenteditable') === 'true'
-      );
-      
-      if (!isInputFocused && key.length === 1) {
-        typedSequence += key;
-        if (typedSequence.length > secretWord.length) {
-          typedSequence = typedSequence.slice(-secretWord.length);
-        }
-        if (typedSequence === secretWord) {
-          setShowAiSupport(true);
-          setAiSupportTab('menu');
-          typedSequence = ''; // Reset
-          console.log("🌌 Sierra Blu AI Engine Secret Activated. Welcome!");
-        }
-      }
-    };
-    
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   if (!mounted) return null;
@@ -240,7 +190,6 @@ export default function LandingPage() {
 
   // ROI calculations
   const grossYield = ((roiRent * 12) / roiPrice) * 100;
-  const netYield = grossYield - 1.2;
 
   // S24 Ultra Drag handlers
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -1011,8 +960,8 @@ export default function LandingPage() {
                       <div>
                         <h4 style={{ margin: '0 0 1rem 0' }}>What is your core investment priority?</h4>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                          <button onClick={() => { setDreamPriority('luxury'); setDreamStep(2); }} style={{ padding: '10px', background: 'transparent', border: `1px solid ${th.border}`, borderRadius: '8px', color: '#fff', cursor: 'pointer' }}>Luxury Lifestyles</button>
-                          <button onClick={() => { setDreamPriority('yield'); setDreamStep(2); }} style={{ padding: '10px', background: 'transparent', border: `1px solid ${th.border}`, borderRadius: '8px', color: '#fff', cursor: 'pointer' }}>High Occupancy Yields</button>
+                          <button onClick={() => setDreamStep(2)} style={{ padding: '10px', background: 'transparent', border: `1px solid ${th.border}`, borderRadius: '8px', color: '#fff', cursor: 'pointer' }}>Luxury Lifestyles</button>
+                          <button onClick={() => setDreamStep(2)} style={{ padding: '10px', background: 'transparent', border: `1px solid ${th.border}`, borderRadius: '8px', color: '#fff', cursor: 'pointer' }}>High Occupancy Yields</button>
                         </div>
                       </div>
                     ) : (

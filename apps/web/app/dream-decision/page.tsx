@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
-import { ArrowLeft, Sparkles, Heart, HelpCircle, CheckCircle, Compass } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Compass } from 'lucide-react';
 
 const G = '#E9C176';
 const G2 = '#C8961A';
@@ -26,12 +26,10 @@ export default function DreamDecisionPage() {
 
   const [step, setStep] = useState(1);
   const [priority, setPriority] = useState('');
-  const [familySize, setFamilySize] = useState('');
   const [budget, setBudget] = useState('');
 
   const handleNext = (val: string) => {
     if (step === 1) setPriority(val);
-    if (step === 2) setFamilySize(val);
     if (step === 3) setBudget(val);
     setStep(prev => prev + 1);
   };

@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
-import { ArrowLeft, Sparkles, Send, Bot, User, Shield, HelpCircle } from 'lucide-react';
+import { ArrowLeft, Send, Bot, User, Shield, HelpCircle } from 'lucide-react';
 
 const G = '#E9C176';
 const G2 = '#C8961A';

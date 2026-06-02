@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
-import { ArrowLeft, Sparkles, DollarSign, Calculator, Percent, Layers, Home } from 'lucide-react';
+import { ArrowLeft, Percent, Layers, Home } from 'lucide-react';
 
 const G = '#E9C176';
 const G2 = '#C8961A';
@@ -50,7 +50,7 @@ export default function UnitPricingPage() {
   let furnishedMultiplier = 1;
   if (furnished === 'fully-furnished') furnishedMultiplier = 1.2;
 
-  let bedroomPremium = bedrooms * 150000; // premium per bedroom count
+  const bedroomPremium = bedrooms * 150000; // premium per bedroom count
 
   const calculatedBase = (area * basePricePerSqm * finishingMultiplier * furnishedMultiplier) + bedroomPremium;
   const rangeMin = calculatedBase * 0.93;

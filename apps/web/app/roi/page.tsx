@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
-import { ArrowLeft, Sparkles, TrendingUp, DollarSign, Calculator, HelpCircle } from 'lucide-react';
+import { ArrowLeft, TrendingUp, Calculator, HelpCircle } from 'lucide-react';
 
 const G = '#E9C176';
 const G2 = '#C8961A';

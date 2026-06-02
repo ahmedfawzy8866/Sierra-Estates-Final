@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, Sparkles, Terminal, FileText, Calendar, Check, Play, User, Bot, AlertCircle } from 'lucide-react';
+import { Send, Sparkles, Terminal, FileText, User, Bot } from 'lucide-react';
 
 interface ChatMessage {
   id: number;
@@ -20,7 +20,7 @@ export const LolaAssistantModule = () => {
     {
       id: 1,
       sender: 'lola',
-      text: 'Good day, Master Sierra! 💎 I am Lola, your lovely AI executive assistant for Sierra Blu. I am connected directly to your Obsidian Vault Truth Engine and the New Cairo active inventory. How can I assist you in securing owner properties or coordinating viewings today?',
+      text: 'Good day. I am Lola, your AI executive assistant for Sierra Blu. I am connected to the Obsidian Vault Truth Engine and the active New Cairo inventory. How can I help you secure owner properties or coordinate viewings today?',
       time: '11:14 PM'
     }
   ]);

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { AlertCircle, ExternalLink, Home, Loader2, MapPin, ShieldCheck, Plus, X, Tag, User, Phone } from 'lucide-react';
+import { AlertCircle, ExternalLink, Home, Loader2, MapPin, ShieldCheck, Plus, X, Tag, User } from 'lucide-react';
 
 type ListingSource = 'EasyListing' | 'Property Finder';
 

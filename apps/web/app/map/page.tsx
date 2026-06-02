@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
-import { ArrowLeft, MapPin, Sparkles, Home, DollarSign, Layers } from 'lucide-react';
+import { ArrowLeft, MapPin, Sparkles, Layers } from 'lucide-react';
 
 const G = '#E9C176';
 const G2 = '#C8961A';

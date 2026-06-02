@@ -312,7 +312,7 @@ async function handleStakeholderInterview(chatId: number, text: string): Promise
         Focus on qualifying the lead: Nationality, Family Size, Budget, Move-in Date.
         Be warm, professional, and precise. Speak exclusively in refined English with quiet confidence.`
       },
-      { role: 'user', content: `Previous context: ${text}\nGenerate the next Sierra-style question.` }
+      { role: 'user', content: `${welcomeSequence}\n\nPrevious context: ${text}\nGenerate the next Sierra-style question.` }
     ],
     { model: 'gemini-1.5-flash' }
   );

@@ -44,7 +44,7 @@ const MOCK_PROPERTIES = [
 ];
 
 export default function SierraBluSystem() {
-  const { locale, setLocale } = useI18n();
+  const { locale } = useI18n();
   const [search, setSearch] = useState('');
   const [purposeFilter, setPurposeFilter] = useState('All');
   const isAr = locale === 'ar';

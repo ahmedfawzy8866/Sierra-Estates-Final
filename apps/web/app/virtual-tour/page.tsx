@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
-import { ArrowLeft, Sparkles, Smartphone, Upload, Eye, Check, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Smartphone, Upload, AlertCircle } from 'lucide-react';
 
 const G = '#E9C176';
-const G2 = '#C8961A';
 
 const THEMES = {
   dark: {
