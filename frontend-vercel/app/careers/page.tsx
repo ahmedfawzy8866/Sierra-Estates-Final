@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useI18n } from '@/lib/I18nContext';
 import { motion } from 'framer-motion';
+import Head from 'next/head';
 import JobCard from '@/components/UI/JobCard';
 
 const COPY = {
@@ -68,14 +69,21 @@ export default function CareersPage() {
 
   if (!mounted) {
     return (
-      <div className="min-h-screen bg-navy text-ivory flex items-center justify-center">
-        <div className="w-8 h-8 rounded-full border-2 border-gold border-t-transparent animate-spin" />
+      <div className="min-h-screen bg-navy text-ivory flex items-center justify-center" dir={T.dir}>
+        <div className="relative flex items-center justify-center">
+          <div className="w-12 h-12 rounded-full border-2 border-gold/25" />
+          <div className="absolute w-12 h-12 rounded-full border-2 border-transparent border-t-gold animate-spin" />
+          <span className="sr-only">Loading</span>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-navy text-ivory" dir={T.dir}>
+      <Head>
+        <title>{T.pageTitle}</title>
+      </Head>
       {/* Hero */}
       <section className="relative min-h-[50vh] flex items-center justify-center overflow-hidden py-24 border-b border-white/5">
         {/* Background Overlay */}

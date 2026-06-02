@@ -92,7 +92,7 @@ export default function PremiumHero({ onSearch, isArabic = false }: PremiumHeroP
   useEffect(() => {
     setSelectedType(propertyTypes[0]);
     setSelectedBudget(budgets[0]);
-  }, [purpose, isArabic]);
+  }, [propertyTypes, budgets]);
 
   // Click outside listener for combobox
   useEffect(() => {
@@ -130,17 +130,18 @@ export default function PremiumHero({ onSearch, isArabic = false }: PremiumHeroP
 
   // Auto-drift gentle rotation
   useEffect(() => {
-    let intervalId: any;
-    const tick = () => {
+    const intervalId = window.setInterval(() => {
       if (isDragging || !stageRef.current || !panoRef.current) return;
       const maxPan = stageRef.current.clientWidth - panoRef.current.clientWidth;
       let newX = pointerX.current - 0.4; // slow drift
       if (newX <= maxPan) newX = 0;
       pointerX.current = newX;
       panoRef.current.style.transform = `translateX(${newX}px)`;
+    }, 30);
+
+    return () => {
+      window.clearInterval(intervalId);
     };
-    intervalId = setInterval(tick, 30);
-    return () => clearInterval(intervalId);
   }, [isDragging]);
 
   // S24 Ultra Upload State
@@ -250,6 +251,7 @@ export default function PremiumHero({ onSearch, isArabic = false }: PremiumHeroP
                 <button
                   key={room}
                   onClick={() => setCurrentRoom(room)}
+                  aria-label={isArabic ? `عرض ${room}` : `View ${room}`}
                   className={`px-5 py-2.5 rounded-full text-xs font-semibold tracking-wide border ease-silk transition-all ${
                     currentRoom === room 
                       ? 'bg-[#071422] dark:bg-white text-white dark:text-[#071422] border-transparent shadow-md'
@@ -280,6 +282,7 @@ export default function PremiumHero({ onSearch, isArabic = false }: PremiumHeroP
             <div className="flex p-1 bg-[#071422]/5 dark:bg-white/5 rounded-2xl mb-5">
               <button 
                 onClick={() => setPurpose('rent')}
+                aria-label={isArabic ? 'اختيار الإيجار' : 'Select rent'}
                 className={`flex-1 py-3 text-center text-xs font-bold uppercase tracking-wider rounded-xl ease-silk transition-all ${
                   purpose === 'rent' 
                     ? 'bg-[#071422] dark:bg-white text-white dark:text-[#071422] shadow-md' 
@@ -290,6 +293,7 @@ export default function PremiumHero({ onSearch, isArabic = false }: PremiumHeroP
               </button>
               <button 
                 onClick={() => setPurpose('resale')}
+                aria-label={isArabic ? 'اختيار إعادة البيع' : 'Select resale'}
                 className={`flex-1 py-3 text-center text-xs font-bold uppercase tracking-wider rounded-xl ease-silk transition-all ${
                   purpose === 'resale' 
                     ? 'bg-[#071422] dark:bg-white text-white dark:text-[#071422] shadow-md' 
@@ -356,6 +360,7 @@ export default function PremiumHero({ onSearch, isArabic = false }: PremiumHeroP
                             setCompoundQuery(name);
                             setIsComboOpen(false);
                           }}
+                          aria-label={isArabic ? `اختيار ${name}` : `Select ${name}`}
                           onMouseEnter={() => setActiveComboIndex(i)}
                           className={`w-full text-left px-4 py-3 text-xs flex items-center justify-between transition-all ${
                             i === activeComboIndex 
@@ -407,6 +412,7 @@ export default function PremiumHero({ onSearch, isArabic = false }: PremiumHeroP
 
             <button
               onClick={handleSearchSubmit}
+              aria-label={isArabic ? 'تنفيذ بحث المحفظة المخصصة' : 'Submit custom portfolio search'}
               className="w-full mt-6 py-4 bg-[#071422] text-white dark:bg-gradient-to-r dark:from-[#C9A84C] dark:to-[#E9C176] dark:text-[#071422] font-semibold text-xs rounded-xl shadow-lg hover:shadow-2xl transition-all uppercase tracking-widest flex items-center justify-center gap-2"
             >
               <Search size={14} />
