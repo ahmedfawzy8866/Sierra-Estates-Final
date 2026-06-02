@@ -159,9 +159,17 @@ export default function LandingPage() {
     const secretWord = 'sierra';
     
     const handleKeyDown = (e: KeyboardEvent) => {
-      // 1. Shortcut: Ctrl + I or Ctrl + Shift + S
+      // Guard: don't intercept shortcuts or secret word when typing inside text boxes
+      const activeEl = document.activeElement;
+      const isInputFocused = activeEl && (
+        activeEl.tagName === 'INPUT' ||
+        activeEl.tagName === 'TEXTAREA' ||
+        activeEl.getAttribute('contenteditable') === 'true'
+      );
+
+      // 1. Shortcut: Ctrl/Cmd + I or Ctrl/Cmd + Shift + S (skip when focus is in an input field)
       const mod = e.ctrlKey || e.metaKey;
-      if ((mod && e.key.toLowerCase() === 'i') || (mod && e.shiftKey && e.key.toLowerCase() === 's')) {
+      if (!isInputFocused && ((mod && e.key.toLowerCase() === 'i') || (mod && e.shiftKey && e.key.toLowerCase() === 's'))) {
         e.preventDefault();
         setShowAiSupport(prev => !prev);
         setAiSupportTab('menu');
@@ -170,13 +178,6 @@ export default function LandingPage() {
       
       // 2. Secret Word: typing 'sierra' on the body/window
       const key = e.key.toLowerCase();
-      // Ignore modifier keys and ensure we don't intercept input when typing inside text boxes
-      const activeEl = document.activeElement;
-      const isInputFocused = activeEl && (
-        activeEl.tagName === 'INPUT' || 
-        activeEl.tagName === 'TEXTAREA' || 
-        activeEl.getAttribute('contenteditable') === 'true'
-      );
       
       if (!isInputFocused && key.length === 1) {
         typedSequence += key;
