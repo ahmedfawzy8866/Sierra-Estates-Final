@@ -42,7 +42,7 @@ export async function POST(request: Request) {
       if (cleanMobileId.startsWith('0020')) cleanMobileId = cleanMobileId.substring(4);
       if (!cleanMobileId.startsWith('0') && cleanMobileId.length === 10) cleanMobileId = '0' + cleanMobileId;
 
-      // 2. Deterministic sync key: sync_hash = SHA256(normalized Location-RentPeriodType-Code-Owner tuple)
+      // 2. Deterministic sync key: sync_hash = SHA256(normalized Location-RentPeriodType-Code-Owner raw payload tuple)
       const location = String(row.Location || 'New Cairo').trim();
       const spaceBua = String(row.RentPeriodType || '150').trim(); 
       const codeField = String(row.Code || '0').trim(); 

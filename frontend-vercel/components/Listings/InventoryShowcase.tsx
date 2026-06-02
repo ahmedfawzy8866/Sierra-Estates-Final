@@ -23,10 +23,16 @@ interface InventoryShowcaseProps {
 
 export default function InventoryShowcase({ filters }: InventoryShowcaseProps) {
   const { units, loading, error } = useSierraBlu();
-  const purposeFilter = filters?.purpose?.trim() ?? '';
-  const typeFilter = filters?.type?.trim() ?? '';
-  const compoundFilter = filters?.compound?.trim() ?? '';
-  const budgetFilter = filters?.budget?.trim() ?? '';
+  const normalizedFilters = useMemo(
+    () => ({
+      purposeFilter: filters?.purpose?.trim() ?? '',
+      typeFilter: filters?.type?.trim() ?? '',
+      compoundFilter: filters?.compound?.trim() ?? '',
+      budgetFilter: filters?.budget?.trim() ?? '',
+    }),
+    [filters?.purpose, filters?.type, filters?.compound, filters?.budget]
+  );
+  const { purposeFilter, typeFilter, compoundFilter, budgetFilter } = normalizedFilters;
   const hasActiveFilters = Boolean(purposeFilter || typeFilter || compoundFilter || budgetFilter);
 
   // Sort and limit units for showcase (top 6 filtered)

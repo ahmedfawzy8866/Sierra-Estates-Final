@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import type { CSSProperties } from 'react';
 import { useI18n } from '@/lib/I18nContext';
 
 // Constants & Design Tokens
@@ -41,6 +42,24 @@ const THEMES = {
     textMuted: 'rgba(7,20,34,0.35)',
   },
 };
+
+interface ListingCard {
+  id: number;
+  title: string;
+  description: string;
+}
+
+const MOCK_LISTINGS: ListingCard[] = [
+  { id: 1, title: 'Luxury Villa #1', description: 'Exclusive property in prime location.' },
+  { id: 2, title: 'Luxury Villa #2', description: 'Exclusive property in prime location.' },
+  { id: 3, title: 'Luxury Villa #3', description: 'Exclusive property in prime location.' },
+];
+
+const LANDING_STYLE_VARS = {
+  '--lp-gap-md': '12px',
+  '--lp-card-radius': '12px',
+  '--lp-filter-padding': '16px',
+} as CSSProperties;
 
 // i18n Copy
 const COPY = {
@@ -167,17 +186,7 @@ export default function LandingPage() {
   const [mode, setMode] = useState<'dark' | 'light'>('dark');
   const [formData, setFormData] = useState({ name: '', phone: '' });
   const [submitted, setSubmitted] = useState(false);
-  interface ListingCard {
-    id: number;
-    title: string;
-    description: string;
-  }
-
-  const [listings] = useState<ListingCard[]>([
-    { id: 1, title: 'Luxury Villa #1', description: 'Exclusive property in prime location.' },
-    { id: 2, title: 'Luxury Villa #2', description: 'Exclusive property in prime location.' },
-    { id: 3, title: 'Luxury Villa #3', description: 'Exclusive property in prime location.' },
-  ]);
+  const listings = MOCK_LISTINGS;
   const [mounted, setMounted] = useState(false);
   const [heroView, setHeroView] = useState<'A' | 'B'>('A'); // View A: Default Backdrop, View B: Virtual Tour
 
@@ -256,9 +265,7 @@ export default function LandingPage() {
           fontFamily: '"Jost", "Inter", sans-serif',
           direction: T.dir as 'ltr' | 'rtl',
           transition: 'background 500ms ease, color 500ms ease',
-          ['--lp-gap-md' as string]: '12px',
-          ['--lp-card-radius' as string]: '12px',
-          ['--lp-filter-padding' as string]: '16px',
+          ...LANDING_STYLE_VARS,
         }}
       >
         {/* ══ NAVIGATION ══ */}

@@ -83,15 +83,22 @@ export default function PremiumHero({ onSearch, isArabic = false }: PremiumHeroP
     'Terrace': 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=2400&q=80',
   };
 
-  const propertyTypes = isArabic ? PROPERTY_TYPES_AR : PROPERTY_TYPES_EN;
-  const budgets = purpose === 'rent' 
-    ? (isArabic ? BUDGETS_RENT_AR : BUDGETS_RENT_EN)
-    : (isArabic ? BUDGETS_RESALE_AR : BUDGETS_RESALE_EN);
+  const propertyTypes = useMemo(
+    () => (isArabic ? PROPERTY_TYPES_AR : PROPERTY_TYPES_EN),
+    [isArabic]
+  );
+  const budgets = useMemo(
+    () =>
+      purpose === 'rent'
+        ? (isArabic ? BUDGETS_RENT_AR : BUDGETS_RENT_EN)
+        : (isArabic ? BUDGETS_RESALE_AR : BUDGETS_RESALE_EN),
+    [purpose, isArabic]
+  );
 
   // Sync types and budgets on language/purpose change
   useEffect(() => {
-    setSelectedType(propertyTypes[0]);
-    setSelectedBudget(budgets[0]);
+    setSelectedType((prev) => (propertyTypes.includes(prev) ? prev : (propertyTypes[0] ?? prev)));
+    setSelectedBudget((prev) => (budgets.includes(prev) ? prev : (budgets[0] ?? prev)));
   }, [propertyTypes, budgets]);
 
   // Click outside listener for combobox
@@ -130,7 +137,7 @@ export default function PremiumHero({ onSearch, isArabic = false }: PremiumHeroP
 
   // Auto-drift gentle rotation
   useEffect(() => {
-    const intervalId = window.setInterval(() => {
+    const intervalId = setInterval(() => {
       if (isDragging || !stageRef.current || !panoRef.current) return;
       const maxPan = stageRef.current.clientWidth - panoRef.current.clientWidth;
       let newX = pointerX.current - 0.4; // slow drift
@@ -140,7 +147,7 @@ export default function PremiumHero({ onSearch, isArabic = false }: PremiumHeroP
     }, 30);
 
     return () => {
-      window.clearInterval(intervalId);
+      clearInterval(intervalId);
     };
   }, [isDragging]);
 

@@ -7,6 +7,8 @@ import Footer from '@/components/Footer';
 import './styles/design.css';
 import './globals.css';
 
+const LOCALE_COOKIE_KEY = 'sb_locale';
+
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
@@ -31,7 +33,8 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const locale = cookies().get('sb_locale')?.value === 'ar' ? 'ar' : 'en';
+  const cookieStore = cookies();
+  const locale = cookieStore.get(LOCALE_COOKIE_KEY)?.value === 'ar' ? 'ar' : 'en';
 
   return (
     <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'} suppressHydrationWarning className={inter.variable}>

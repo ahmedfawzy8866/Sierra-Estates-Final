@@ -10,8 +10,8 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { client_name, client_mobile, extracted_metrics, conversation_summary } = body;
-    const normalizedClientName = String(client_name ?? '').trim();
-    const normalizedClientMobile = String(client_mobile ?? '').trim();
+    const normalizedClientName = typeof client_name === 'string' ? client_name.trim() : '';
+    const normalizedClientMobile = typeof client_mobile === 'string' ? client_mobile.trim() : '';
 
     if (!normalizedClientName || !normalizedClientMobile) {
       return NextResponse.json(
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!extracted_metrics || typeof extracted_metrics !== 'object') {
+    if (!extracted_metrics || typeof extracted_metrics !== 'object' || Array.isArray(extracted_metrics)) {
       return NextResponse.json(
         {
           success: false,
