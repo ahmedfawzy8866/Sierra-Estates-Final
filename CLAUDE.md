@@ -39,6 +39,7 @@ Pre-production. Some services are mock/scaffolded (`MockAIService`, unwired i18n
 - **Graph Alignment:** Maintain double-bracket `[[Links]]` when editing vault files to preserve the Obsidian graph view.
 
 ## Constraints & Pull Request Policy
-- **Branch Protection Active:** The `main` branch is protected on GitHub. Direct commits are blocked.
+- **Repo Scope:** GitHub access is scoped to `ahmedfawzy8866/i-sierra-2027` only — do not touch other repos.
+- **Branch Protection Active:** The `main` branch is protected on GitHub. Direct commits are blocked. Never force-push or delete `main`.
 - **Workflow:** For all changes, checkout a new branch (e.g. `feature/name`), push it to remote, and open a Pull Request using `gh pr create`.
-- **Do Not Deploy** without explicit approval. Never place API keys or credentials in raw code.
+- **Do Not Deploy** without explicit approval. Never place API keys or credentials in raw code or in chat.
