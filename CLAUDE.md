@@ -6,7 +6,7 @@ Context for Claude Code / AI sessions. Keep this updated as the project evolves.
 Sierra Blu / Sierra Estates — a luxury real-estate (PropTech) platform for the New Cairo market. pnpm + Turborepo monorepo.
 
 ## Stack
-Next.js 16 (App Router, Turbopack) · React 19 · TypeScript 5 (strict) · Tailwind 4 · Firebase (client SDK 12 + Admin SDK 13) · Leaflet maps · next-intl (en/ar) · **Docker n8n Workflow Engine** (`localhost:5678`). Deploy: Vercel (web) + Firebase (Hosting + Cloud Functions).
+Next.js 16 (App Router, Turbopack) · React 19 · TypeScript 5 (strict) · Tailwind 4 · Firebase (client SDK 12 + Admin SDK 13: Firestore, Storage, Auth) · Leaflet maps · next-intl (en/ar) · **Docker n8n Workflow Engine** (`localhost:5678`). Deploy: Vercel (web) + Firebase (Hosting + Cloud Functions). Observability: OpenTelemetry + Arize.
 
 ## Layout
 - `apps/web` — main Next.js app and the real codebase (~26 pages, 38 API routes, ~78 components, ~39 services).
@@ -39,6 +39,7 @@ Pre-production. Some services are mock/scaffolded (`MockAIService`, unwired i18n
 - **Graph Alignment:** Maintain double-bracket `[[Links]]` when editing vault files to preserve the Obsidian graph view.
 
 ## Constraints & Pull Request Policy
-- **Branch Protection Active:** The `main` branch is protected on GitHub. Direct commits are blocked.
+- **Repo Scope:** GitHub access is scoped to `ahmedfawzy8866/i-sierra-2027` only — do not touch other repos.
+- **Branch Protection Active:** The `main` branch is protected on GitHub. Direct commits are blocked. Never force-push or delete `main`.
 - **Workflow:** For all changes, checkout a new branch (e.g. `feature/name`), push it to remote, and open a Pull Request using `gh pr create`.
-- **Do Not Deploy** without explicit approval. Never place API keys or credentials in raw code.
+- **Do Not Deploy** without explicit approval. Never place API keys or credentials in raw code or in chat.
