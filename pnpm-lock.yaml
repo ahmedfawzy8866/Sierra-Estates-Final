@@ -137,6 +137,12 @@ importers:
       '@opentelemetry/semantic-conventions':
         specifier: ^1.40.0
         version: 1.41.1
+      '@sierra-blu/agents':
+        specifier: workspace:*
+        version: link:../../packages/agents
+      '@sierra-blu/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@types/leaflet':
         specifier: ^1.9.21
         version: 1.9.21
