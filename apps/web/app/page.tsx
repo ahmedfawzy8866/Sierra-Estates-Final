@@ -160,7 +160,8 @@ export default function LandingPage() {
     
     const handleKeyDown = (e: KeyboardEvent) => {
       // 1. Shortcut: Ctrl + I or Ctrl + Shift + S
-      if ((e.ctrlKey && e.key.toLowerCase() === 'i') || (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 's')) {
+      const mod = e.ctrlKey || e.metaKey;
+      if ((mod && e.key.toLowerCase() === 'i') || (mod && e.shiftKey && e.key.toLowerCase() === 's')) {
         e.preventDefault();
         setShowAiSupport(prev => !prev);
         setAiSupportTab('menu');
