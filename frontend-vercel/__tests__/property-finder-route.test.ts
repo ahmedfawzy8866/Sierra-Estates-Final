@@ -25,7 +25,7 @@ describe('POST /api/crm/property-finder', () => {
     expect(response.status).toBe(400);
     expect(body).toEqual({
       success: false,
-      message: 'Invalid payload: rows must be an array.',
+      error: 'Invalid payload: rows must be an array.',
     });
     expect(collectionMock).not.toHaveBeenCalled();
   });
@@ -42,7 +42,7 @@ describe('POST /api/crm/property-finder', () => {
     expect(response.status).toBe(400);
     expect(body).toEqual({
       success: false,
-      message: 'Invalid payload: rows array cannot be empty.',
+      error: 'Invalid payload: rows array cannot be empty.',
     });
     expect(collectionMock).not.toHaveBeenCalled();
   });
