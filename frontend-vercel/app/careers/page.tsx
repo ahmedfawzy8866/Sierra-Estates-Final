@@ -76,7 +76,7 @@ export default function CareersPage() {
         <div className="relative flex items-center justify-center">
           <div className="w-12 h-12 rounded-full border-2 border-gold/25" />
           <div className="absolute w-12 h-12 rounded-full border-2 border-transparent border-t-gold animate-spin" />
-          <span className="sr-only">Loading</span>
+          <span className="sr-only">{isAr ? 'جارٍ التحميل' : 'Loading'}</span>
         </div>
       </div>
     );
