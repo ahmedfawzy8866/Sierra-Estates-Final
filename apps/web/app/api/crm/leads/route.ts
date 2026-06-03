@@ -1,6 +1,14 @@
 import { NextResponse } from 'next/server';
 import { adminDb } from '@/lib/server/firebase-admin';
 
+const SCORE_FOR_KNOWN_INTENT = 3;
+const SCORE_FOR_VALID_BUDGET = 4;
+const SCORE_FOR_URGENT_TIMELINE = 3;
+const SCORE_FOR_NEAR_TERM_TIMELINE = 2;
+const SCORE_FOR_LONG_TERM_TIMELINE = 1;
+const URGENT_TIMELINE_WEEKS = 4;
+const NEAR_TERM_TIMELINE_WEEKS = 12;
+
 interface InboundLeadPayload {
   client_name: string;
   client_mobile: string;
@@ -17,7 +25,7 @@ interface InboundLeadPayload {
 function routeLeadToSpecialtyPool(compound: string): string {
   const normalized = compound.toLowerCase().trim();
   if (normalized.includes('uptown') || normalized.includes('mokattam')) return 'CLOSER_MOKATTAM_SPECIALIST';
-  if (normalized.includes('mivida') || normalized.includes('sodic')) return 'CLOSER_FIFTH_SETTLEMENT_EXPERT';
+  if (normalized.includes('mivida')) return 'CLOSER_VIP_GOLDEN_SQUARE';
   return 'GENERAL_ACTIVE_REPS_POOL';
 }
 
@@ -27,11 +35,11 @@ export async function POST(request: Request) {
     const { client_name, client_mobile, extracted_metrics, conversation_summary } = payload;
 
     let leadScoreValue = 0;
-    if (extracted_metrics.intent !== 'UNKNOWN') leadScoreValue += 3;
-    if (extracted_metrics.capital_budget > 0) leadScoreValue += 4;
-    if (extracted_metrics.timeline_weeks > 0 && extracted_metrics.timeline_weeks <= 4) leadScoreValue += 3;
-    else if (extracted_metrics.timeline_weeks > 4 && extracted_metrics.timeline_weeks <= 12) leadScoreValue += 2;
-    else leadScoreValue += 1;
+    if (extracted_metrics.intent !== 'UNKNOWN') leadScoreValue += SCORE_FOR_KNOWN_INTENT;
+    if (extracted_metrics.capital_budget > 0) leadScoreValue += SCORE_FOR_VALID_BUDGET;
+    if (extracted_metrics.timeline_weeks > 0 && extracted_metrics.timeline_weeks <= URGENT_TIMELINE_WEEKS) leadScoreValue += SCORE_FOR_URGENT_TIMELINE;
+    else if (extracted_metrics.timeline_weeks > URGENT_TIMELINE_WEEKS && extracted_metrics.timeline_weeks <= NEAR_TERM_TIMELINE_WEEKS) leadScoreValue += SCORE_FOR_NEAR_TERM_TIMELINE;
+    else leadScoreValue += SCORE_FOR_LONG_TERM_TIMELINE;
 
     const leadDocumentId = `SBR-LEAD-${Date.now()}`;
     const selectedSalesCloserRepId = routeLeadToSpecialtyPool(String(extracted_metrics.compound_target || ''));

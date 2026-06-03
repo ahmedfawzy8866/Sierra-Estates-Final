@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { adminDb } from '@/lib/server/firebase-admin';
 import crypto from 'crypto';
 
+// 7-day TTL for session buffer logs in milliseconds
+const SESSION_LOG_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+
 export async function POST(request: Request) {
   try {
     const payload = await request.json();
@@ -84,14 +87,14 @@ export async function POST(request: Request) {
       // Write short-lived tracking counters utilizing a strict 7-day Firestore TTL index expiration parameters
       const sessionBufferLogId = `LOG-BUF-${computedSyncHash}-${Date.now()}`;
       const logBufferDocRef = adminDb.collection('SessionBufferLogs').doc(sessionBufferLogId);
-      const expirationTimestamp = new Date(Date.now() + (7 * 24 * 60 * 60 * 1000));
+      const expirationTimestamp = new Date(Date.now() + SESSION_LOG_TTL_MS);
 
       await logBufferDocRef.set({
         id: sessionBufferLogId,
         target_sync_hash: computedSyncHash,
         event_type: "SPREADSHEET_ROW_INGESTION",
         agent_identity: "Sierra AI Ingestion Pipeline",
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
         expireAt: expirationTimestamp
       });
     }
