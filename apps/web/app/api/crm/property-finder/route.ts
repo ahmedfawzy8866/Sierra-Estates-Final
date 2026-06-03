@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/firebase';
-import { doc, getDoc, setDoc, updateDoc, Timestamp } from 'firebase/firestore';
+import { adminDb } from '@/lib/server/firebase-admin';
 import crypto from 'crypto';
 
 export async function POST(request: Request) {
@@ -32,8 +31,8 @@ export async function POST(request: Request) {
       const rawTokenSignature = `${location}-${spaceBua}-${codeField}-${ownerField}`.toLowerCase().trim();
       const computedSyncHash = crypto.createHash('sha256').update(rawTokenSignature).digest('hex');
 
-      const propertyDocumentRef = doc(db, 'Properties', computedSyncHash);
-      const snapshotInstance = await getDoc(propertyDocumentRef);
+      const propertyDocumentRef = adminDb.collection('Properties').doc(computedSyncHash);
+      const snapshotInstance = await propertyDocumentRef.get();
 
       // 3. Synthesize uniform SBR tracking code using formula: Prefix-Rooms[Furnish]-Price
       const compPrefix = location.substring(0, 3).toUpperCase();
@@ -62,17 +61,17 @@ export async function POST(request: Request) {
         last_sync_timestamp: new Date().toISOString()
       };
 
-      if (snapshotInstance.exists()) {
-        await updateDoc(propertyDocumentRef, {
+      if (snapshotInstance.exists) {
+        await propertyDocumentRef.update({
           price: normalizedPropertyPayload.price,
           last_sync_timestamp: normalizedPropertyPayload.last_sync_timestamp
         });
         migrationSummaryLogs.push({ sync_hash: computedSyncHash, state: "DEDUPLICATION_MUTATED_PRICE" });
       } else {
-        await setDoc(propertyDocumentRef, normalizedPropertyPayload);
+        await propertyDocumentRef.set(normalizedPropertyPayload);
         
-        const ownerDocumentRef = doc(db, 'Owners', cleanMobileId);
-        await setDoc(ownerDocumentRef, {
+        const ownerDocumentRef = adminDb.collection('Owners').doc(cleanMobileId);
+        await ownerDocumentRef.set({
           id: cleanMobileId,
           owner_name: ownerField,
           primary_mobile: cleanMobileId,
@@ -84,21 +83,22 @@ export async function POST(request: Request) {
 
       // Write short-lived tracking counters utilizing a strict 7-day Firestore TTL index expiration parameters
       const sessionBufferLogId = `LOG-BUF-${computedSyncHash}-${Date.now()}`;
-      const logBufferDocRef = doc(db, 'SessionBufferLogs', sessionBufferLogId);
-      const expirationTimestamp = Timestamp.fromMillis((Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60)) * 1000);
+      const logBufferDocRef = adminDb.collection('SessionBufferLogs').doc(sessionBufferLogId);
+      const expirationTimestamp = new Date(Date.now() + (7 * 24 * 60 * 60 * 1000));
 
-      await setDoc(logBufferDocRef, {
+      await logBufferDocRef.set({
         id: sessionBufferLogId,
         target_sync_hash: computedSyncHash,
         event_type: "SPREADSHEET_ROW_INGESTION",
         agent_identity: "Sierra AI Ingestion Pipeline",
-        createdAt: new Date().toISOString(),
+        createdAt: new Date(),
         expireAt: expirationTimestamp
       });
     }
 
     return NextResponse.json({ success: true, tracking_summary: migrationSummaryLogs });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
