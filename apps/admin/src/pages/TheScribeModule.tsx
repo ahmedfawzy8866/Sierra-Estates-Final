@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MessageSquare, Terminal, FileJson, CheckCircle, AlertCircle, Database, Sparkles } from 'lucide-react';
+import { MessageSquare, Terminal, FileJson, CheckCircle, AlertCircle, Database, Sparkles, Loader2 } from 'lucide-react';
 
 interface NormalizedListing {
   code: string;
