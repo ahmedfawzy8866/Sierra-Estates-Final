@@ -10,8 +10,8 @@ export interface SierraMessage {
   field?: string;
 }
 
-// Custom lightweight ID generator
-const generateId = () => Math.random().toString(36).substring(7);
+// Custom lightweight ID generator (cryptographically secure)
+const generateId = () => crypto.randomUUID();
 
 export function useSierra() {
   const [messages, setMessages] = useState<SierraMessage[]>([]);
