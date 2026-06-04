@@ -56,7 +56,8 @@
     "recharts": "^3.8.1",
     "server-only": "^0.0.1",
     "sharp": "^0.34.5",
-    "uuid": "^14.0.0"
+    "uuid": "^14.0.0",
+    "zod": "^3.22"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

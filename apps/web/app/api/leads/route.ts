@@ -4,14 +4,22 @@ import { Timestamp } from 'firebase-admin/firestore';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { sendTelegramMessage } from '@/lib/telegram';
 import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
+import { LeadSchema } from '@/lib/server/schemas';
 
 export async function POST(req: Request) {
   const rateLimitResponse = applyRateLimit(req, publicEndpointLimiter);
   if (rateLimitResponse) return rateLimitResponse;
 
   try {
-    const data = await req.json();
-    const { name, email, phone, message, locale } = data;
+    const raw = await req.json();
+    const parsed = LeadSchema.safeParse(raw);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { success: false, error: parsed.error.issues[0]?.message ?? 'Invalid request' },
+        { status: 400 }
+      );
+    }
+    const { name, email, phone, message, locale } = parsed.data;
 
     // 1. Add to Firestore
     const leadRef = await adminDb.collection(COLLECTIONS.stakeholders).add({
