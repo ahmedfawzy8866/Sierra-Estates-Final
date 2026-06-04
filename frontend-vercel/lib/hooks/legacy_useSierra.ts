@@ -10,7 +10,7 @@ export interface SierraMessage {
   field?: string;
 }
 
-// Custom lightweight ID generator
+// Custom lightweight ID generator (cryptographically secure)
 const generateId = () => {
   const bytes = new Uint8Array(16);
   crypto.getRandomValues(bytes);
