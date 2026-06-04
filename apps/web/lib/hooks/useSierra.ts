@@ -33,7 +33,7 @@ export function useSierra() {
     setIsTyping(true);
     setTimeout(() => {
       const newMessage: SierraMessage = {
-        id: Math.random().toString(36).substring(7),
+        id: crypto.randomUUID(),
         sender: 'sierra',
         text,
         options,
@@ -46,7 +46,7 @@ export function useSierra() {
 
   const addUserMessage = (text: string) => {
     const newMessage: SierraMessage = {
-      id: Math.random().toString(36).substring(7),
+      id: crypto.randomUUID(),
       sender: 'user',
       text
     };
