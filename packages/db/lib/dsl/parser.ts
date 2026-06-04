@@ -162,7 +162,8 @@ function parseFilterLine(line: string): FilterClause | null {
   // PERCENT: FILTER "Field" >= 85 PERCENT
   const pct = line.match(/FILTER\s+"(.+?)"\s+(>=|<=|>|<|=|!=)\s+([\d.]+)\s+PERCENT/i);
   if (pct) {
-    return { field: pct[1], operator: pct[2] as WhereFilterOp, value: parseFloat(pct[3]) };
+    const op = pct[2] === "=" ? "==" : pct[2];
+    return { field: pct[1], operator: op as WhereFilterOp, value: parseFloat(pct[3]) };
   }
 
   // Standard: FILTER "Field" op "value" | number
@@ -206,17 +207,17 @@ export function parseDSL(dsl: string, collectionName = "listings"): ParsedView {
       result.visibility = (line.split(/\s+/)[1]?.toLowerCase() ?? "public") as Visibility;
     }
 
-    // ── SHOW ─────────────────────────────────────────────────────
-    else if (U.startsWith("SHOW") && !U.startsWith("SHOW \"SBR")) {
-      const fields = extractQuoted(line.replace(/^SHOW\s+/i, ""));
-      result.showFields = fields;
-      for (const f of fields) result.showFieldsMap[f] = true;
-    }
-
     // ── SHOW "SBR_Code" AS PRIMARY_ID ───────────────────────────
     else if (U.startsWith("SHOW") && U.includes("AS PRIMARY_ID")) {
       const f = extractQuoted(line)[0];
       if (f) result.primaryIdField = f;
+    }
+
+    // ── SHOW ─────────────────────────────────────────────────────
+    else if (U.startsWith("SHOW")) {
+      const fields = extractQuoted(line.replace(/^SHOW\s+/i, ""));
+      result.showFields = fields;
+      for (const f of fields) result.showFieldsMap[f] = true;
     }
 
     // ── HIDE ─────────────────────────────────────────────────────

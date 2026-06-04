@@ -74,10 +74,6 @@ export async function pushListingToPF(listing: SBRListing): Promise<PFSyncResult
     return { success: false, error: String(err) };
   }
 }
-  } catch (err) {
-    return { success: false, error: String(err) };
-  }
-}
 
 export async function getPFListingAnalytics(_pfListingId: string): Promise<PFListingAnalytics> {
   return { views: 0, leads: 0, phoneReveals: 0, impressions: 0, ctr: 0 };
