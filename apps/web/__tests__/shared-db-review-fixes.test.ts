@@ -16,6 +16,11 @@ describe('shared db review fixes', () => {
     mockedGetAuth.mockReset();
     mockFetch.mockReset();
     global.fetch = mockFetch as typeof fetch;
+    Object.defineProperty(globalThis, 'window', {
+      value: {},
+      configurable: true,
+      writable: true,
+    });
   });
 
   it('keeps SHOW fields when a view starts with SBR_Code and preserves PRIMARY_ID', () => {
@@ -58,7 +63,10 @@ describe('shared db review fixes', () => {
       status: 'active',
     });
 
-    expect(result).toEqual({ success: false, error: 'listing.id is required' });
+    expect(result).toEqual({
+      success: false,
+      error: 'Cannot publish listing: listing.id is required for Property Finder sync',
+    });
     expect(mockFetch).not.toHaveBeenCalled();
   });
 
