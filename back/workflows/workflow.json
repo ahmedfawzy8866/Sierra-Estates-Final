@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json.schemastore.org/sierra-workflow.json",
+  "name": "sierra-estates-ingestion",
+  "version": "1.0.0",
+  "description": "Orchestration layer: drives the WhatsApp -> Gemini -> Firestore pipeline and exposes uptime/telemetry to the .agent state directory.",
+  "runtime": {
+    "engine": "bots/whatsapp-scraper-bot/engine_core.py",
+    "interpreter": ".venv/bin/python",
+    "state_dir": ".agent",
+    "env_file": "/etc/sierra-estates/.env"
+  },
+  "stages": [
+    {
+      "id": "drain-intake",
+      "source": "firestore:whatsapp_intake",
+      "filter": { "processed": false },
+      "batch": 20
+    },
+    {
+      "id": "parse",
+      "uses": "gemini-1.5-pro",
+      "module": "packages.core_modules.schema",
+      "output": "normalized_listing"
+    },
+    {
+      "id": "validate",
+      "rule": "compound in COMPOUND_MATRIX AND price_egp > 0",
+      "on_reject": "log_and_skip"
+    },
+    {
+      "id": "persist",
+      "sink": "firestore:listings",
+      "mode": "upsert",
+      "dedupe_key": "sha256(compound|unit_type|price_egp|area_sqm)"
+    }
+  ],
+  "telemetry": {
+    "uptime_flag": ".agent/uptime.flag",
+    "heartbeat": "telegram",
+    "poll_interval_sec": 60
+  },
+  "anti_gravity": {
+    "tier1_client": { "app": "apps/sierra-blu-realty", "access": "read-only", "host": "vercel" },
+    "tier2_admin":  { "app": "apps/sierra-blu-admin-portal", "access": "write-control", "host": "vercel-private" },
+    "writer_of_record": "bots/whatsapp-scraper-bot/engine_core.py (Admin SDK service account)"
+  }
+}

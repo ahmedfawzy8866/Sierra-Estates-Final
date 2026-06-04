@@ -81,7 +81,7 @@ Deliverables (JSON):
         });
         console.log(`✅ [CURATOR] S3 Branding completed for ${docId}`);
       } catch (error) {
-        console.error(`[CURATOR] S3 Error for ${docId}:`, error);
+        console.error('[CURATOR] S3 Error for %s:', docId, error);
         await StateManager.failStage(docId, collection, stage, 'Branding AI failed');
       }
     }
