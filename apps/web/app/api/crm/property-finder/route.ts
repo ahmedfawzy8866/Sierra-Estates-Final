@@ -81,6 +81,19 @@ export async function POST(request: Request) {
       }
     }
 
+    // Persist this sync batch as a system trace log carrying a TTL `expireAt`
+    // timestamp so a Firestore TTL policy on `SystemTraceLogs.expireAt` performs
+    // zero-cost background garbage collection (keeps us inside free-tier quotas).
+    const SYNC_LOG_TTL_DAYS = 7;
+    const expireAt = new Date(Date.now() + SYNC_LOG_TTL_DAYS * 24 * 60 * 60 * 1000);
+    await adminDb.collection('SystemTraceLogs').add({
+      type: 'PROPERTY_FINDER_SYNC',
+      processed_count: executionLogs.length,
+      results: executionLogs,
+      created_at: new Date().toISOString(),
+      expireAt,
+    });
+
     return NextResponse.json({ success: true, telemetry_log: executionLogs });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);

@@ -18,7 +18,7 @@ interface InboundLeadPayload {
 function routeLeadToSpecialtyPool(compound: string): string {
   const norm = compound.toLowerCase().trim();
   if (norm.includes('uptown') || norm.includes('mokattam')) return 'CLOSER_MOKATTAM_SPECIALIST';
-  if (norm.includes('mivida') || norm.includes('sodic')) return 'CLOSER_FIFTH_SETTLEMENT_EXPERT';
+  if (norm.includes('mivida') || norm.includes('sodic')) return 'CLOSER_VIP_GOLDEN_SQUARE';
   return 'GENERAL_SALES_ACTIVE_POOL';
 }
 
