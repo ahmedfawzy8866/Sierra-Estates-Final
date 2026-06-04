@@ -74,4 +74,54 @@ describe('POST /api/leads', () => {
     expect(body).toEqual({ success: false, error: 'Internal Server Error' });
     expect(sendTelegramMessageMock).not.toHaveBeenCalled();
   });
+
+  test('returns 400 when email is invalid', async () => {
+    const res = await POST(
+      new Request('http://localhost:3000/api/leads', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: 'Jane Doe',
+          email: 'not-an-email',
+          phone: '+201000000000',
+          message: 'Hi',
+        }),
+      }),
+    );
+    const body = await res.json();
+
+    expect(res.status).toBe(400);
+    expect(body.success).toBe(false);
+    expect(addMock).not.toHaveBeenCalled();
+  });
+
+  test('returns 400 when required fields are missing', async () => {
+    const res = await POST(
+      new Request('http://localhost:3000/api/leads', {
+        method: 'POST',
+        body: JSON.stringify({ email: 'jane@example.com' }),
+      }),
+    );
+    const body = await res.json();
+
+    expect(res.status).toBe(400);
+    expect(body.success).toBe(false);
+    expect(addMock).not.toHaveBeenCalled();
+  });
+
+  test('accepts optional fields with defaults', async () => {
+    const res = await POST(
+      new Request('http://localhost:3000/api/leads', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: 'Ahmed',
+          email: 'ahmed@example.com',
+          phone: '+201111111111',
+        }),
+      }),
+    );
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body).toEqual({ success: true, id: 'lead-123' });
+  });
 });

@@ -3,27 +3,22 @@ import { COLLECTIONS } from '@/lib/models/schema';
 import { Timestamp } from 'firebase-admin/firestore';
 import { NextResponse } from 'next/server';
 import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
-
-interface ViewingRequest {
-  leadId: string;
-  unitId: string;
-  portfolioId: string;
-}
+import { ViewingRequestSchema } from '@/lib/server/schemas';
 
 export const POST = async (req: Request) => {
   const rateLimitResponse = applyRateLimit(req, publicEndpointLimiter);
   if (rateLimitResponse) return rateLimitResponse;
 
   try {
-    const body: ViewingRequest = await req.json();
-    const { leadId, unitId, portfolioId } = body;
-
-    if (!leadId || !unitId) {
+    const raw = await req.json();
+    const parsed = ViewingRequestSchema.safeParse(raw);
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Lead ID and Unit ID are required' },
+        { error: parsed.error.issues[0]?.message ?? 'Invalid request' },
         { status: 400 }
       );
     }
+    const { leadId, unitId, portfolioId } = parsed.data;
 
     // Create viewing request record
     const viewingRef = await adminDb.collection('viewing_requests').add({
