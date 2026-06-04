@@ -111,7 +111,7 @@ Deliverables (JSON):
           'automation.whatsappAdGenerated': true,
         });
       } catch (error) {
-        console.error(`[CURATOR] S4 Error for ${docId}:`, error);
+        console.error('[CURATOR] S4 Error for %s:', docId, error);
         await StateManager.failStage(docId, collection, stage, 'Distribution AI failed');
       }
     }
