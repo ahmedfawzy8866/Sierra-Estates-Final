@@ -168,7 +168,8 @@ function parseFilterLine(line: string): FilterClause | null {
   // Standard: FILTER "Field" op "value" | number
   const std = line.match(/FILTER\s+"(.+?)"\s+(>=|<=|>|<|!=|=)\s+("?[^";\n]+"?)/i);
   if (std) {
-    return { field: std[1], operator: std[2] as WhereFilterOp, value: coerce(std[3]) };
+    const op = std[2] === "=" ? "==" : std[2];
+    return { field: std[1], operator: op as WhereFilterOp, value: coerce(std[3]) };
   }
 
   return null;
