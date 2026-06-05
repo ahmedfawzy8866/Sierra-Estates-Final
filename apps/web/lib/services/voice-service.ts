@@ -2,7 +2,7 @@ import { db } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 /**
- * SIERRA BLU — VOICE SERVICE (V1.0)
+ * SIERRA ESTATES — VOICE SERVICE (V1.0)
  * Handles ElevenLabs integration for Sierra's voice cloning and TTS notes.
  */
 

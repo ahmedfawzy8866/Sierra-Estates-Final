@@ -1,5 +1,5 @@
 /**
- * SIERRA BLU — DESIGN TOKENS V2.0
+ * SIERRA ESTATES — DESIGN TOKENS V2.0
  * "Gold & Diamond" — خليها زي الذهب والماس
  * ─────────────────────────────────────────────────────────────
  * Light = Ivory/Tiffany · Dark = Midnight Navy · Accent = Real Gold
