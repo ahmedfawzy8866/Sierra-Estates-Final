@@ -1,5 +1,5 @@
 // sierra-blue/config/views.ts
-// 10 Official Sierra Estatese View Configurations
+// 10 Official Sierra Estates View Configurations
 // Each view maps to a specific agent, audience, and Firestore collection.
 
 export interface ViewConfig {

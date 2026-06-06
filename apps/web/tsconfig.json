@@ -20,7 +20,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@agents-core/*": ["../../packages/agents-core/src/*"],
+      "@obedian/*": ["../../packages/obedian/src/*"]
     }
   },
   "include": [

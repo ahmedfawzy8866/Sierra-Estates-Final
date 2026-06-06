@@ -1,13 +1,16 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Zap, 
   Database, 
   RefreshCcw, 
+  Trash2, 
   Clock, 
   Terminal, 
-  CheckCircle2,
+  AlertTriangle, 
+  CheckCircle2, 
+  ChevronRight,
   Shield,
   Cpu,
   Activity

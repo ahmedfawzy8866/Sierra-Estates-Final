@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { useI18n } from '@/lib/I18nContext';
+import React, { useState } from 'react';
 
 // Mock Data updated for the New Cairo Rent & Resale Market
 const MOCK_PROPERTIES = [
@@ -44,10 +43,8 @@ const MOCK_PROPERTIES = [
 ];
 
 export default function SierraBluSystem() {
-  const { locale } = useI18n();
   const [search, setSearch] = useState('');
   const [purposeFilter, setPurposeFilter] = useState('All');
-  const isAr = locale === 'ar';
 
   // Filter properties based on purpose (Rent/Resale) and search term
   const filteredProperties = MOCK_PROPERTIES.filter(property => {
@@ -58,7 +55,7 @@ export default function SierraBluSystem() {
   });
 
   return (
-    <div dir={isAr ? 'rtl' : 'ltr'} className="flex flex-col h-screen bg-gray-50 text-gray-800 antialiased font-sans">
+    <div className="flex flex-col h-screen bg-gray-50 text-gray-800 antialiased font-sans">
       
       {/* 1. SYSTEM HEADER & BRANDING */}
       <header className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200 z-10 shrink-0 shadow-sm">

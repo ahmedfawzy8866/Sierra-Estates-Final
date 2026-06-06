@@ -24,10 +24,12 @@ export default function AdminSyncPage() {
   const [syncingLeads, setSyncingLeads] = useState(false);
   const [syncingFull, setSyncingFull] = useState(false);
   const [syncingAirtable, setSyncingAirtable] = useState(false);
+  const [syncingObsidian, setSyncingObsidian] = useState(false);
   const [listingsResult, setListingsResult] = useState<SyncResult | null>(null);
   const [leadsResult, setLeadsResult] = useState<SyncResult | null>(null);
   const [fullResult, setFullResult] = useState<SyncResult | null>(null);
   const [airtableResult, setAirtableResult] = useState<SyncResult | null>(null);
+  const [obsidianResult, setObsidianResult] = useState<SyncResult | null>(null);
   const [activities, setActivities] = useState<ActivityLog[]>([]);
   const [credits, setCredits] = useState<any>(null);
   const [loadingCredits, setLoadingCredits] = useState(false);
@@ -131,6 +133,15 @@ export default function AdminSyncPage() {
       result: airtableResult,
       action: () => postSync('/api/sync/airtable', setSyncingAirtable, setAirtableResult),
       color: '#8B5CF6',
+    },
+    {
+      title: 'Sync Obsidian Vault',
+      desc: 'Sync agent behaviors, prompts, workflows and guidelines from the local I: drive',
+      icon: Database,
+      loading: syncingObsidian,
+      result: obsidianResult,
+      action: () => postSync('/api/sync/obsidian', setSyncingObsidian, setObsidianResult),
+      color: '#C9A84C',
     },
   ];
 

@@ -11,15 +11,23 @@ import {
 } from '../../lib/firebase/inventory';
 import { 
   Plus, 
-  MapPin,
+  MapPin, 
+  DollarSign,
   Search, 
+  Filter, 
+  Download, 
   Import, 
   MoreHorizontal, 
   Star, 
+  Globe, 
   Clock, 
   LayoutGrid, 
   List,
+  ChevronLeft,
+  ChevronRight,
+  TrendingUp,
   Package,
+  AlertTriangle,
   CheckCircle2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -40,7 +48,7 @@ export default function PortfolioAssets() {
     offer_type: filters.offer_type || undefined
   });
 
-  const { stats, loading: _statsLoading } = usePropertyStats();
+  const { stats, loading: statsLoading } = usePropertyStats();
 
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -65,7 +73,7 @@ export default function PortfolioAssets() {
       setIsFormOpen(false);
       setIsPasteOpen(false);
       refetch();
-    } catch (_err) {
+    } catch (err) {
       toast.error("Failed to synchronize asset data.");
     }
   };
@@ -78,7 +86,7 @@ export default function PortfolioAssets() {
       setIsFormOpen(false);
       setEditingProperty(undefined);
       refetch();
-    } catch (_err) {
+    } catch (err) {
       toast.error("Update synchronization failed.");
     }
   };
@@ -90,7 +98,7 @@ export default function PortfolioAssets() {
       toast.success("Asset removed from portfolio.");
       setSelectedProperty(null);
       refetch();
-    } catch (_err) {
+    } catch (err) {
       toast.error("Asset termination failed.");
     }
   };

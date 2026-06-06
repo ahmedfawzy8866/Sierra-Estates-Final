@@ -40,8 +40,8 @@
     "poll_interval_sec": 60
   },
   "anti_gravity": {
-    "tier1_client": { "app": "apps/sierra-blu-realty", "access": "read-only", "host": "vercel" },
-    "tier2_admin":  { "app": "apps/sierra-blu-admin-portal", "access": "write-control", "host": "vercel-private" },
+    "tier1_client": { "app": "apps/web", "access": "read-only", "host": "vercel" },
+    "tier2_admin":  { "app": "apps/admin", "access": "write-control", "host": "vercel-private" },
     "writer_of_record": "bots/whatsapp-scraper-bot/engine_core.py (Admin SDK service account)"
   }
 }

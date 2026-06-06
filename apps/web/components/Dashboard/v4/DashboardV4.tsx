@@ -3,7 +3,9 @@ import {
   Briefcase, 
   TrendingUp, 
   Users, 
-  Activity,
+  Activity, 
+  Globe, 
+  ShieldCheck,
   Zap,
   ChevronRight
 } from 'lucide-react';

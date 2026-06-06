@@ -23,7 +23,7 @@ export default function AdminPortal() {
   const { locale, t } = useI18n();
   const router = useRouter();
   const [activeScreen, setActiveScreen] = useState<AdminScreen>('dashboard');
-  const [_direction, _setDirection] = useState(1); // 1 for forward, -1 for backward
+  const [direction, setDirection] = useState(1); // 1 for forward, -1 for backward
 
   const [mounted, setMounted] = useState(false);
   const [greeting, setGreeting] = useState('Welcome');

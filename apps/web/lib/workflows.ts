@@ -2,7 +2,7 @@
  * SIERRA ESTATESE — الورك فلوز الخارجية
  * ─────────────────────────────────────────────────────────────────────
  * المجلد ده يروح في:
- * H:\Sierra Estatese SaaS Program Locally V2\workflows\
+ * H:\Sierra Estates SaaS Program Locally V2\workflows\
  *
  * الهيكل:
  *   workflows/

@@ -350,7 +350,7 @@ export async function GET(req: NextRequest) {
   if (challenge) {
     return new NextResponse(challenge, { status: 200 });
   }
-  return NextResponse.json({ status: "Sierra Estatese PF Webhook Active" });
+  return NextResponse.json({ status: "Sierra Estates PF Webhook Active" });
 }
 */
 

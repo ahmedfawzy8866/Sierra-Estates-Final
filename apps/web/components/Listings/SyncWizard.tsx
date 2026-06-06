@@ -15,7 +15,7 @@ type WizardStage = 'CHOOSE_TYPE' | 'CHOOSE_SOURCE' | 'UPLOAD' | 'PORTAL' | 'MAPP
 type ImportValue = string | number | boolean | null | undefined;
 type ImportRow = Record<string, ImportValue>;
 
-interface _ImportedListing {
+interface ImportedListing {
   title: string;
   location: string;
   price: string;

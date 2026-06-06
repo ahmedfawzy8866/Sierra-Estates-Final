@@ -9,10 +9,14 @@ import {
   CheckCircle2, 
   AlertCircle, 
   Phone, 
+  Home, 
+  DollarSign, 
+  Bed, 
   Image as ImageIcon,
   Save,
   FileSpreadsheet,
   Search,
+  ExternalLink,
   Trash2,
   TrendingUp,
   History
@@ -110,14 +114,14 @@ export default function EasyListing() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [_searchHistory, setSearchHistory] = useState<string[]>([]);
+  const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'forge' | 'nexus' | 'spatial'>('forge');
   const [activeTour, setActiveTour] = useState<string | null>(null);
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const _isArabic = locale === 'ar';
+  const isArabic = locale === 'ar';
 
   // --- Real-time Inventory ---
   useEffect(() => {
@@ -218,9 +222,9 @@ export default function EasyListing() {
       const code = `${compoundCode}-${bedrooms}${furnished}-${pricePart}`;
       
       // Social Templates
-      const whatsapp = `✦ SIERRA ESTATES REALTY ✦\n\nUnit Code: ${code}\nLocation: ${compound || 'Custom'}\nDetails: ${bedrooms} BR | ${furnished === 'F' ? 'Fully Furnished' : 'Luxury Finish'}\nPrice: ${price.toLocaleString()} ${currency}\n\nContact: ${phone || 'Available Upon Request'}\n#SierraBlu #BeyondBrokerage`;
+      const whatsapp = `✦ SIERRA ESTATES REALTY ✦\n\nUnit Code: ${code}\nLocation: ${compound || 'Custom'}\nDetails: ${bedrooms} BR | ${furnished === 'F' ? 'Fully Furnished' : 'Luxury Finish'}\nPrice: ${price.toLocaleString()} ${currency}\n\nContact: ${phone || 'Available Upon Request'}\n#SierraEstates #BeyondBrokerage`;
       
-      const facebook = `✨ LUXURY PORTFOLIO UPDATE ✨\n\nWe are pleased to present this exclusive listing in ${compound || 'New Cairo'}.\n\n💎 Code: ${code}\n🛏️ Bedrooms: ${bedrooms}\n💰 Price: ${price.toLocaleString()} ${currency}\n\nOur AI-driven platform ensures this is the highest value available today. Experience the Sierra Estates standard.\n\n📞 Call us: ${phone}\n\n#RealEstateEgypt #SierraBlu #Investment`;
+      const facebook = `✨ LUXURY PORTFOLIO UPDATE ✨\n\nWe are pleased to present this exclusive listing in ${compound || 'New Cairo'}.\n\n💎 Code: ${code}\n🛏️ Bedrooms: ${bedrooms}\n💰 Price: ${price.toLocaleString()} ${currency}\n\nOur AI-driven platform ensures this is the highest value available today. Experience the Sierra Estates standard.\n\n📞 Call us: ${phone}\n\n#RealEstateEgypt #SierraEstates #Investment`;
 
       setExtractedData({
         compound,
@@ -238,7 +242,7 @@ export default function EasyListing() {
       // Update Canvas
       setTimeout(() => generateBrandedImage(), 100);
 
-    } catch (_err) {
+    } catch (err) {
       setErrorMessage("Failed to analyze text logic.");
     } finally {
       setIsProcessing(false);
@@ -336,7 +340,7 @@ export default function EasyListing() {
         URL.revokeObjectURL(previewUrl);
       }
       setPreviewUrl(null);
-    } catch (_err) {
+    } catch (err) {
       setErrorMessage("Firebase save error.");
     } finally {
       setIsSaving(false);

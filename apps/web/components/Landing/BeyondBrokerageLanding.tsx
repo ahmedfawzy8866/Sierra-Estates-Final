@@ -8,7 +8,7 @@ export default function BeyondBrokerageLanding() {
   const heroBgRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
   const cursorRingRef = useRef<HTMLDivElement>(null);
-  const [_navScrolled, setNavScrolled] = useState(false);
+  const [navScrolled, setNavScrolled] = useState(false);
   const mapRef = useRef<any>(null);
 
   useEffect(() => {

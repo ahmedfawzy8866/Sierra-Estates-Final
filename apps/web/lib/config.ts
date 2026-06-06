@@ -17,7 +17,7 @@ export const SiteConfig = {
     // These are currently flagging as 'wrong' by the user. 
     // Will update as soon as they provide the new data.
     phone: "+20 10 61399688", 
-    email: "EmeraldEstatesegypt@gmail.com",
+    email: "EmeraldEstatesgypt@gmail.com",
     telegramBot: "https://t.me/Sierrablurealtybot",
   },
   contact: {
