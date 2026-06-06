@@ -33,7 +33,7 @@ export class LeilaAgent {
 
     // Simulation of AI reading the Knowledge Base for rules
     const rules = await this.memorySync.scanVault();
-    const hasRoiRule = rules.some(r => r.tags?.includes('roi-calculation'));
+    const hasRoiRule = rules.some((r: any) => r.tags?.includes('roi-calculation'));
 
     // Calculate match scores
     const matchedUnits = allProperties

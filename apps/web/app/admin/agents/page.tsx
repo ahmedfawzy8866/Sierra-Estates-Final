@@ -1,6 +1,6 @@
+'use client';
+
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Shield, BrainCircuit, Users, Activity, Settings2, RefreshCw } from 'lucide-react';
 
 export default function AgentControlCenter() {
@@ -44,15 +44,17 @@ export default function AgentControlCenter() {
   ];
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-8">
+    <div className="p-8 max-w-7xl mx-auto space-y-8" style={{ fontFamily: 'var(--font-body)' }}>
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Agent Control Center</h1>
-          <p className="text-muted-foreground mt-2">
+          <h1 className="text-3xl font-bold tracking-tight text-[#071422]" style={{ fontFamily: 'var(--font-display)' }}>
+            Agent Control Center
+          </h1>
+          <p className="text-[#3a5570] mt-2 text-sm">
             Monitor and manually intervene with autonomous agents across the Sierra Estates network.
           </p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md font-medium hover:bg-primary/90 transition">
+        <button className="flex items-center gap-2 px-4 py-2 bg-[#031632] text-white rounded-xl font-semibold text-sm hover:bg-[#031632]/90 transition shadow-sm">
           <RefreshCw className="h-4 w-4" />
           Sync Agents
         </button>
@@ -60,77 +62,87 @@ export default function AgentControlCenter() {
 
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
         {agents.map((agent) => (
-          <Card key={agent.id} className="border-border bg-card">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {agent.name}
-              </CardTitle>
-              {agent.icon}
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold mb-1">{agent.tasksHandled}</div>
-              <p className="text-xs text-muted-foreground mb-4">Operations handled</p>
-              
-              <div className="space-y-3">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Role:</span>
-                  <span className="font-medium text-right max-w-[150px] truncate">{agent.role}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Status:</span>
-                  <Badge variant={agent.status === 'online' ? 'default' : 'secondary'} className="capitalize">
-                    {agent.status}
-                  </Badge>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Last Ping:</span>
-                  <span className="font-medium">{agent.lastActive}</span>
+          <div key={agent.id} className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] hover:shadow-[0_8px_32px_-4px_rgba(3,22,50,0.1)] transition-all border border-[#f3f4f5] flex flex-col justify-between">
+            <div>
+              <div className="flex flex-row items-center justify-between pb-2 mb-4 border-b border-[#f3f4f5] pb-4">
+                <h3 className="text-xs font-bold text-[#071422] uppercase tracking-widest max-w-[170px] truncate">
+                  {agent.name}
+                </h3>
+                {agent.icon}
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-[#031632] mb-1 font-display">{agent.tasksHandled}</div>
+                <p className="text-xs text-[#3a5570]/60 mb-4 uppercase tracking-wider font-semibold">Operations handled</p>
+                
+                <div className="space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-[#3a5570]/60">Role:</span>
+                    <span className="font-semibold text-[#071422] text-right max-w-[150px] truncate">{agent.role}</span>
+                  </div>
+                  <div className="flex justify-between text-sm items-center">
+                    <span className="text-[#3a5570]/60">Status:</span>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                      agent.status === 'online' || agent.status === 'active'
+                        ? 'bg-green-50 text-green-700'
+                        : 'bg-yellow-50 text-yellow-700'
+                    }`}>
+                      {agent.status}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-[#3a5570]/60">Last Ping:</span>
+                    <span className="font-semibold text-[#071422]">{agent.lastActive}</span>
+                  </div>
                 </div>
               </div>
+            </div>
 
-              <div className="mt-6 pt-4 border-t flex justify-end gap-2">
-                <button className="text-xs flex items-center gap-1 text-muted-foreground hover:text-foreground transition">
-                  <Settings2 className="h-3 w-3" />
-                  Configure
-                </button>
-              </div>
-            </CardContent>
-          </Card>
+            <div className="mt-6 pt-4 border-t border-[#f3f4f5] flex justify-end">
+              <button className="text-xs flex items-center gap-1 text-[#3a5570] hover:text-[#031632] transition font-medium">
+                <Settings2 className="h-3 w-3" />
+                Configure
+              </button>
+            </div>
+          </div>
         ))}
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Memory Explorer (Obedian)</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="rounded-md border bg-muted/50 p-4 font-mono text-sm">
-              <div className="flex justify-between items-center mb-4 border-b pb-2">
-                <span className="text-muted-foreground">Global Knowledge Graph</span>
-                <Badge variant="outline">Connected</Badge>
+        <div className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] border border-[#f3f4f5]">
+          <div className="pb-4 border-b border-[#f3f4f5] mb-6">
+            <h2 className="font-bold text-[#071422] text-lg" style={{ fontFamily: 'var(--font-display)' }}>
+              Memory Explorer (Obedian)
+            </h2>
+          </div>
+          <div>
+            <div className="rounded-xl border border-[#f3f4f5] bg-[#f8f9fa] p-5 font-mono text-xs leading-relaxed">
+              <div className="flex justify-between items-center mb-4 border-b border-[#f3f4f5] pb-2">
+                <span className="text-[#3a5570]/60 font-semibold uppercase tracking-wider">Global Knowledge Graph</span>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-green-50 text-green-700">
+                  Connected
+                </span>
               </div>
-              <p className="text-green-500 mb-1">✓ System state synchronized</p>
-              <p className="text-green-500 mb-1">✓ 1,245 user preferences indexed</p>
-              <p className="text-green-500">✓ Vector cache warmed up</p>
+              <p className="text-green-600 font-semibold mb-1">✓ System state synchronized</p>
+              <p className="text-green-600 font-semibold mb-1">✓ 1,245 user preferences indexed</p>
+              <p className="text-green-600 font-semibold">✓ Vector cache warmed up</p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Manual Intervention Queue</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col items-center justify-center py-8 text-center">
-              <Shield className="h-12 w-12 text-muted-foreground mb-4 opacity-50" />
-              <h3 className="text-lg font-medium">No alerts requiring human override.</h3>
-              <p className="text-sm text-muted-foreground max-w-sm mt-1">
-                The Orchestrator will escalate items here if an agent reaches its confidence threshold or requests permission for a destructive action.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] border border-[#f3f4f5]">
+          <div className="pb-4 border-b border-[#f3f4f5] mb-6">
+            <h2 className="font-bold text-[#071422] text-lg" style={{ fontFamily: 'var(--font-display)' }}>
+              Manual Intervention Queue
+            </h2>
+          </div>
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <Shield className="h-12 w-12 text-[#3a5570]/40 mb-4" />
+            <h3 className="text-base font-bold text-[#071422] mb-1">No alerts requiring human override.</h3>
+            <p className="text-xs text-[#3a5570]/70 max-w-sm leading-relaxed">
+              The Orchestrator will escalate items here if an agent reaches its confidence threshold or requests permission for a destructive action.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

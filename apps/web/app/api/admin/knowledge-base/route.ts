@@ -8,7 +8,7 @@ export async function GET() {
     
     // For admin UI, we don't want to send the entire content of every note over the wire,
     // just the metadata.
-    const metadataList = notes.map(n => ({
+    const metadataList = notes.map((n: any) => ({
       id: n.id,
       title: n.title,
       tags: n.tags,
