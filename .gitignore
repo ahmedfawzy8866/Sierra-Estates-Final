@@ -11,3 +11,4 @@ node_modules/
 .turbo/
 antigravity-ide/
 free-claude-code/
+.vercel
