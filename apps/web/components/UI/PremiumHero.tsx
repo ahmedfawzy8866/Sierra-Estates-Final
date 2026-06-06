@@ -135,7 +135,6 @@ export default function PremiumHero({ onSearch, isArabic = false }: PremiumHeroP
 
   // Auto-drift gentle rotation
   useEffect(() => {
-    let intervalId: any;
     const tick = () => {
       if (isDragging || !stageRef.current || !panoRef.current) return;
       const maxPan = stageRef.current.clientWidth - panoRef.current.clientWidth;
@@ -144,7 +143,7 @@ export default function PremiumHero({ onSearch, isArabic = false }: PremiumHeroP
       pointerX.current = newX;
       panoRef.current.style.transform = `translateX(${newX}px)`;
     };
-    intervalId = setInterval(tick, 30);
+    const intervalId: any = setInterval(tick, 30);
     return () => clearInterval(intervalId);
   }, [isDragging]);
 
