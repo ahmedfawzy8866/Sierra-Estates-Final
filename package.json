@@ -6,11 +6,11 @@
   "type": "module",
   "packageManager": "pnpm@9.0.0",
   "scripts": {
-    "dev": "NODE_OPTIONS=--max-old-space-size=8192 turbo run dev --parallel",
+    "dev": "cross-env NODE_OPTIONS=--max-old-space-size=8192 turbo run dev --parallel",
     "dev:web": "cd apps/web && npm run dev",
     "dev:admin": "cd apps/admin && npm run dev",
     "dev:functions": "cd functions && npm run dev",
-    "build": "NODE_OPTIONS=--max-old-space-size=8192 turbo run build",
+    "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 turbo run build",
     "build:web": "cd apps/web && npm run build",
     "build:admin": "cd apps/admin && npm run build",
     "build:functions": "cd functions && npm run build",
@@ -27,6 +27,7 @@
     "pre-commit": "npm run lint && npm run type-check"
   },
   "devDependencies": {
+    "cross-env": "^10.1.0",
     "turbo": "^2.9.16",
     "typescript": "^5.3.3"
   },

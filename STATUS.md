@@ -32,7 +32,6 @@
 - [ ] vercel.json valid JSON (CI validation confirms)
 
 ## Known Gaps / Tech Debt
-- Mock services: MockAIService, MockMatchingService (should be replaced with real/stub implementations)
 - i18n: next-intl wired but not fully used
 - Older docs: Orphaned TODO/STATUS refs in PR descriptions and closed issues (audit when needed)
 
