@@ -7,6 +7,7 @@ import { ArrowLeft, CheckCircle, Compass } from 'lucide-react';
 
 const G = '#E9C176';
 const G2 = '#C8961A';
+const TOTAL_STEPS = 2;
 
 const THEMES = {
   dark: {
@@ -30,8 +31,14 @@ export default function DreamDecisionPage() {
 
   const handleNext = (val: string) => {
     if (step === 1) setPriority(val);
-    if (step === 3) setBudget(val);
+    if (step === 2) setBudget(val);
     setStep(prev => prev + 1);
+  };
+
+  const handleRestart = () => {
+    setPriority('');
+    setBudget('');
+    setStep(1);
   };
 
   const getRecommendation = () => {
@@ -85,15 +92,15 @@ export default function DreamDecisionPage() {
       {/* Main Form Area */}
       <div style={{ maxWidth: 700, margin: '4rem auto', width: '100%', padding: '0 2rem', flex: 1, display: 'flex', flexDirection: 'column', justifyItems: 'center' }}>
         
-        {step <= 3 ? (
+        {step <= TOTAL_STEPS ? (
           <div style={{ background: th.card, border: `1px solid ${th.border}`, borderRadius: '24px', padding: '3rem', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             {/* Step Counter */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontSize: '0.8rem', color: G, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                Question {step} of 3
+                Question {step} of {TOTAL_STEPS}
               </span>
               <div style={{ display: 'flex', gap: '6px' }}>
-                {[1, 2, 3].map((s) => (
+                {[1, 2].map((s) => (
                   <span key={s} style={{ width: '24px', height: '4px', borderRadius: '2px', backgroundColor: step >= s ? G : 'rgba(255,255,255,0.08)' }} />
                 ))}
               </div>
@@ -122,27 +129,8 @@ export default function DreamDecisionPage() {
               </div>
             )}
 
-            {/* Step 2: Family Size */}
+            {/* Step 2: Budget */}
             {step === 2 && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                <h3 style={{ margin: 0, fontSize: '1.75rem', fontFamily: "'Cormorant Garamond', serif", fontWeight: 400 }}>
-                  Who will be living in your dream home?
-                </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  <button onClick={() => handleNext('single')} style={{ padding: '1.25rem', textAlign: 'left', background: 'rgba(255,255,255,0.01)', border: `1px solid ${th.border}`, borderRadius: '16px', color: th.text, cursor: 'pointer' }}>
-                    <strong style={{ display: 'block', color: G, fontSize: '1rem' }}>Single / Professional couple</strong>
-                    <span style={{ fontSize: '0.8rem', color: th.textSub }}>Seeking modern smart-penthouses, close to premium hubs/cafes.</span>
-                  </button>
-                  <button onClick={() => handleNext('family')} style={{ padding: '1.25rem', textAlign: 'left', background: 'rgba(255,255,255,0.01)', border: `1px solid ${th.border}`, borderRadius: '16px', color: th.text, cursor: 'pointer' }}>
-                    <strong style={{ display: 'block', color: G, fontSize: '1rem' }}>Family with children</strong>
-                    <span style={{ fontSize: '0.8rem', color: th.textSub }}>Requires 3-5 bedrooms, expansive gardens, secure compounds, and nearby clubs.</span>
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Step 3: Budget */}
-            {step === 3 && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 <h3 style={{ margin: 0, fontSize: '1.75rem', fontFamily: "'Cormorant Garamond', serif", fontWeight: 400 }}>
                   What is your target budget for this investment?
@@ -193,7 +181,7 @@ export default function DreamDecisionPage() {
                 </button>
               </Link>
               <button 
-                onClick={() => setStep(1)}
+                onClick={handleRestart}
                 style={{ padding: '14px 28px', background: 'transparent', border: `1px solid ${th.border}`, color: th.text, borderRadius: '12px', cursor: 'pointer', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}
               >
                 Restart Quiz
