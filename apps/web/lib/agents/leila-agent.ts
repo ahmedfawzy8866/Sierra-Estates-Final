@@ -1,4 +1,4 @@
-import { ObsidianVaultSync } from '@obedian/index';
+import { ObsidianVaultSync } from '@sierra-estates/obedian';
 
 export interface ClientNeeds {
   budget: number;
@@ -42,7 +42,7 @@ export class LeilaAgent {
         let score = 80; // Base score
         if (p.propertyType === clientNeeds.propertyType) score += 10;
         
-        let projectedRoi = p.roi;
+        const projectedRoi = p.roi;
         if (hasRoiRule && clientNeeds.roiTarget && p.roi >= clientNeeds.roiTarget) {
           score += 10;
         }

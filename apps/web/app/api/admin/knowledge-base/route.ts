@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { adminDb } from '@/lib/server/firebase-admin';
-import { ObsidianVaultSync } from '@obedian/index';
+import { ObsidianVaultSync } from '@sierra-estates/obedian';
 
 export async function GET() {
   try {

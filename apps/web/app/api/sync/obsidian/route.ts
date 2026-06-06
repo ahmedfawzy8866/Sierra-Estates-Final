@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { COLLECTIONS } from '@/lib/models/schema';
-import { ObsidianVaultSync } from '@obedian/index';
+import { ObsidianVaultSync } from '@sierra-estates/obedian';
 
 export async function POST() {
   try {

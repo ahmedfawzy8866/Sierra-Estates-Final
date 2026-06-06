@@ -13,6 +13,13 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    rules: {
+      // Next.js layout/page files legitimately export metadata alongside
+      // components — this rule produces false positives in that pattern.
+      "react-refresh/only-export-components": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

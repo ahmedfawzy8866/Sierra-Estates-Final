@@ -20,4 +20,11 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  {
+    rules: {
+      // Next.js layout/page files legitimately export metadata alongside
+      // components — this rule produces false positives for that pattern.
+      'react-refresh/only-export-components': 'off',
+    },
+  },
 ])
