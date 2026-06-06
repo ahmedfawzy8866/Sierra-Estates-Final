@@ -14,6 +14,18 @@ const API_KEY = process.env.GOOGLE_AI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 export class WhatsAppParserService {
+  static formatWhatsAppMessage(data: { compound: string; price: number; bedrooms: number; [key: string]: any }): string {
+    const brandingTag = process.env.BRANDING_TAG || 'Sierra Estates | Excellence in Living.';
+    return [
+      '*BEYOND BROKERAGE.*',
+      `*${brandingTag}*`,
+      '',
+      `*${data.compound}*`,
+      `Price: ${data.price} EGP`,
+      `Bedrooms: ${data.bedrooms}`,
+    ].join('\n');
+  }
+
   /**
    * Raw parser that returns extracted JSON without persistence.
    */
