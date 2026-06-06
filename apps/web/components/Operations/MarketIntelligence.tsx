@@ -3,7 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { useI18n } from '../../lib/I18nContext';
 import { motion } from 'framer-motion';
 import { 
+  TrendingUp, 
   Activity, 
+  Map as MapIcon, 
+  LineChart, 
+  BarChart3, 
   Compass,
   ArrowUpRight,
   ArrowDownRight,
@@ -18,9 +22,9 @@ import { collection, query, limit, getDocs, orderBy } from 'firebase/firestore';
  */
 
 export default function MarketIntelligence() {
-  const { t: _t } = useI18n();
+  const { t } = useI18n();
   const [marketData, setMarketData] = useState<any[]>([]);
-  const [_loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchInsights() {

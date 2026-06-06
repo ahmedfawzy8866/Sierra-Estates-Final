@@ -9,10 +9,14 @@ import {
   CheckCircle2, 
   AlertCircle, 
   Phone, 
+  Home, 
+  DollarSign, 
+  Bed, 
   Image as ImageIcon,
   Save,
   FileSpreadsheet,
   Search,
+  ExternalLink,
   Trash2,
   TrendingUp,
   History
@@ -110,14 +114,14 @@ export default function EasyListing() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [_searchHistory, setSearchHistory] = useState<string[]>([]);
+  const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'forge' | 'nexus' | 'spatial'>('forge');
   const [activeTour, setActiveTour] = useState<string | null>(null);
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const _isArabic = locale === 'ar';
+  const isArabic = locale === 'ar';
 
   // --- Real-time Inventory ---
   useEffect(() => {
@@ -238,7 +242,7 @@ export default function EasyListing() {
       // Update Canvas
       setTimeout(() => generateBrandedImage(), 100);
 
-    } catch (_err) {
+    } catch (err) {
       setErrorMessage("Failed to analyze text logic.");
     } finally {
       setIsProcessing(false);
@@ -336,7 +340,7 @@ export default function EasyListing() {
         URL.revokeObjectURL(previewUrl);
       }
       setPreviewUrl(null);
-    } catch (_err) {
+    } catch (err) {
       setErrorMessage("Firebase save error.");
     } finally {
       setIsSaving(false);

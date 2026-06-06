@@ -1,12 +1,15 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { motion, type Variants } from 'framer-motion';
+import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import { 
   Search, 
   Filter, 
   MoreVertical, 
   Mail, 
-  Phone,
+  Phone, 
+  TrendingUp, 
+  Award,
+  CircleDot,
   ArrowUpRight,
   ShieldCheck
 } from 'lucide-react';
@@ -18,7 +21,7 @@ import AddAdvisorModal from './AddAdvisorModal';
 import { useI18n } from '../../lib/I18nContext';
 
 export default function TeamCRM() {
-  const { locale: _locale, t } = useI18n();
+  const { locale, t } = useI18n();
   const [team, setTeam] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -141,7 +144,7 @@ export default function TeamCRM() {
           <div className="col-span-full py-20 text-center text-white/20 font-black uppercase tracking-[0.4em] border border-white/5 rounded-[3rem] bg-white/[0.01]">
             {t('admin.noAdvisors')}
           </div>
-        ) : filteredTeam.map((member, _idx) => {
+        ) : filteredTeam.map((member, idx) => {
           const initials = member.displayName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
           return (
             <motion.div

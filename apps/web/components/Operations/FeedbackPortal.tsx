@@ -29,7 +29,7 @@ export const FeedbackPortal: React.FC = () => {
     try {
       await submitStakeholderFeedback(leadId, score, comment);
       toast.success('Feedback recorded. Pipeline cycle complete.');
-    } catch (_error) {
+    } catch (error) {
       toast.error('Error submitting feedback.');
     }
   };
