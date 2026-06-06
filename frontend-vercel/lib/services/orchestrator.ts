@@ -109,7 +109,7 @@ export class OrchestratorService {
         console.log(`✅ Orchestration complete for ${docId}`);
 
       } catch (error: any) {
-        console.error(`❌ Orchestration failed for ${docId}:`, error);
+        console.error('❌ Orchestration failed for %s:', docId, error);
         await this.updateState(docId, collection, currentStage, 'failed', error.message);
 
         // DLQ: write to failed_orchestrations for manual intervention

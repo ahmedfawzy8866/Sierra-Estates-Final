@@ -324,6 +324,8 @@ TELEGRAM_BOT_TOKEN=...
 - `DEPLOYMENT_GUIDE.md` - Deployment procedures & runbooks
 - `API.md` - REST API specifications
 - `CONTRIBUTING.md` - Developer setup & workflow
+- `RESOURCES.md` - Consolidated archive resources
+
 
 ## 🤝 Contributing
 
