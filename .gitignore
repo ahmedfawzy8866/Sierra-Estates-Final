@@ -12,3 +12,4 @@ node_modules/
 antigravity-ide/
 free-claude-code/
 .vercel
+.tsbuildinfo
