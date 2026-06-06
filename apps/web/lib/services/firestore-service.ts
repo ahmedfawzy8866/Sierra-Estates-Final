@@ -1,5 +1,5 @@
 /**
- * SIERRA ESTATES — FIRESTORE SERVICE LAYER
+ * SIERRA BLU — FIRESTORE SERVICE LAYER
  * Generic CRUD operations for all collections.
  * Type-safe wrappers around Firestore SDK.
  */

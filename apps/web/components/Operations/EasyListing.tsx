@@ -375,7 +375,7 @@ export default function EasyListing() {
       ctx.fillStyle = "#FFFFFF";
       ctx.font = "bold 42px serif";
       ctx.textAlign = "center";
-      ctx.fillText("✦ SIERRA ESTATES ✦", 540, 1160);
+      ctx.fillText("✦ SIERRA BLU ✦", 540, 1160);
 
       ctx.fillStyle = "#C9A24A";
       ctx.font = "italic 24px sans-serif";
@@ -457,7 +457,7 @@ export default function EasyListing() {
             {t('easyListing.title')}
           </h1>
           <p className="text-slate-400 font-medium tracking-tight max-w-xl">
-             Luxury portfolio management powered by Sierra Estates Artificial Intelligence. 
+             Luxury portfolio management powered by Sierra Blu Artificial Intelligence. 
              Forge specific listings or tap into the global broker nexus.
           </p>
         </div>
@@ -788,7 +788,7 @@ export default function EasyListing() {
         {activeTour && (
           <VirtualTourViewer 
             sceneUrl={activeTour} 
-            title="Sierra Estates Neural Tour" 
+            title="Sierra Blu Neural Tour" 
             onClose={() => setActiveTour(null)} 
           />
         )}

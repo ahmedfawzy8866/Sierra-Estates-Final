@@ -1,5 +1,5 @@
 /**
- * SIERRA ESTATES — FIREBASE CLIENT SINGLETON
+ * SIERRA BLU — FIREBASE CLIENT SINGLETON
  * Central Firebase initialization for the frontend.
  * Admin SDK (service-account.json) is for server/scripts only.
  */

@@ -5,7 +5,7 @@ import { Timestamp } from 'firebase-admin/firestore';
 import { COLLECTIONS } from '@/lib/models/schema';
 
 /**
- * SIERRA ESTATES — CRON: PROPERTY FINDER LISTING SYNC
+ * SIERRA BLU — CRON: PROPERTY FINDER LISTING SYNC
  * Runs every 6 hours via Vercel Cron to pull listings from PF into Firestore.
  */
 

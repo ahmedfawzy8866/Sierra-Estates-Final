@@ -17,7 +17,7 @@ import { db } from '../../lib/firebase';
 import { collection, query, limit, getDocs, orderBy } from 'firebase/firestore';
 
 /**
- * SIERRA ESTATES: MARKET INTELLIGENCE TERMINAL
+ * SIERRA BLU: MARKET INTELLIGENCE TERMINAL
  * Visualizes real-time market trends ingested from the WhatsApp & Portal Intelligence streams.
  */
 

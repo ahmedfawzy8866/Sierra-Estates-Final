@@ -1,5 +1,5 @@
 /**
- * SIERRA ESTATES — ASSET ENCODING SERVICE
+ * SIERRA BLU — ASSET ENCODING SERVICE
  * Implements the "Encoding Program" logic for rapid unit registration via copy-paste.
  */
 
@@ -11,11 +11,11 @@ export interface EncodedAsset extends Partial<Unit> {
 }
 
 /**
- * Parses raw copied listing information into the Sierra Estates Unit schema.
+ * Parses raw copied listing information into the Sierra Blu Unit schema.
  * Uses the "Sierra Codification Protocol."
  */
 export async function encodeListingFromText(rawText: string): Promise<Partial<Unit>> {
-  const systemPrompt = `ROLE: You are "Sierra," the Lead Logic Agent for Asset Registration at Sierra Estates.
+  const systemPrompt = `ROLE: You are "Sierra," the Lead Logic Agent for Asset Registration at Sierra Blu.
 TASK: Extract structured property details from raw text (WhatsApp, OLX, or PDFs).
 
 EXTRACTION PROTOCOL:

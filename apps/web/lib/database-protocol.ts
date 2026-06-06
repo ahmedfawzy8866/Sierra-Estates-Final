@@ -8,7 +8,7 @@ import {
 } from 'firebase/firestore';
 
 /**
- * SIERRA ESTATES — DATA INTERFACE MODEL
+ * SIERRA BLU — DATA INTERFACE MODEL
  * Strict TypeScript schema for all property documents
  */
 export interface SierraProperty {

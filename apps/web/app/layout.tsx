@@ -3,9 +3,9 @@ import { Providers } from './providers';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Sierra Estates Realty | سييرا إستيتس العقارية',
+  title: 'Sierra Blu Realty | سييرا بلو العقارية',
   description: 'Cinematic Luxury Real Estate — Premium properties across Egypt\'s most exclusive communities | عقارات فاخرة في أرقى المجتمعات المصرية',
-  keywords: ['real estate', 'luxury', 'Egypt', 'عقارات', 'فاخرة', 'مصر', 'Sierra Estates'],
+  keywords: ['real estate', 'luxury', 'Egypt', 'عقارات', 'فاخرة', 'مصر', 'Sierra Blu'],
 };
 
 export default function RootLayout({

@@ -9,8 +9,8 @@ Sierra Blu / Sierra Estates — a luxury real-estate (PropTech) platform for the
 Next.js 16 (App Router, Turbopack) · React 19 · TypeScript 5 (strict) · Tailwind 4 · Firebase (client SDK 12 + Admin SDK 13: Firestore, Storage, Auth) · Leaflet maps · next-intl (en/ar) · **Docker n8n Workflow Engine** (`localhost:5678`). Deploy: Vercel (web) + Firebase (Hosting + Cloud Functions). Observability: OpenTelemetry + Arize.
 
 ## Layout
-- `apps/web` (`sierra-estates-realty`) — **public, read-only** client hub over Firestore streams. Main Next.js app and the real codebase (~26 pages, 38 API routes, ~78 components, ~39 services).
-- `apps/admin` (`sierra-estates-admin-portal`) — **private** master write/control admin CRM & bot telemetry. Separate Vite + React admin SPA.
+- `apps/web` — main Next.js app and the real codebase (~26 pages, 38 API routes, ~78 components, ~39 services).
+- `apps/admin` — separate Vite + React admin SPA.
 - `functions` — Firebase Cloud Functions (ingestion pipeline: collectData, processDataForApp, + pure transform module).
 - `packages/db` — shared Firestore data layer (substantial). `packages/agents` is small. `packages/{api,auth,batch,config,ui}` are empty stubs.
 

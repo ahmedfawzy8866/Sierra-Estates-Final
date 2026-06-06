@@ -16,3 +16,5 @@ free-claude-code/
 # test coverage output
 coverage/
 **/coverage/
+__pycache__/
+*.pyc

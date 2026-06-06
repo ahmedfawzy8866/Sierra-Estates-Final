@@ -1,7 +1,7 @@
 import { google } from 'googleapis';
 
 /**
- * SIERRA ESTATES — GOOGLE SHEETS DUAL-INGESTION PROTOCOL
+ * SIERRA BLU — GOOGLE SHEETS DUAL-INGESTION PROTOCOL
  */
 export const GoogleSheetsSync = {
   /**

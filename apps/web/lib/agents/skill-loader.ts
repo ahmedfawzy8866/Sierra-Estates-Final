@@ -1,5 +1,5 @@
 /**
- * SIERRA ESTATES — SKILL REGISTRY & LOADER (V2)
+ * SIERRA BLU — SKILL REGISTRY & LOADER (V2)
  * Real implementations for all Nexus Agent tools.
  */
 
@@ -115,7 +115,7 @@ class SkillRegistry {
             adminDb.collection(COLLECTIONS.sales).count().get()
           ]);
           return [
-            `📊 Sierra Estates Live Stats:`,
+            `📊 Sierra Blu Live Stats:`,
             `🏢 Total Units: ${units.data().count}`,
             `👤 Total Leads: ${leads.data().count}`,
             `✅ Closed Sales: ${sales.data().count}`

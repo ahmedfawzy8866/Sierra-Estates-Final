@@ -1,5 +1,5 @@
 /**
- * SIERRA ESTATES — DETERMINISTIC FINANCIAL ENGINE
+ * SIERRA BLU — DETERMINISTIC FINANCIAL ENGINE
  * "AI explains, code decides."
  * All financial metrics are pure, testable functions — never AI-guessed.
  */

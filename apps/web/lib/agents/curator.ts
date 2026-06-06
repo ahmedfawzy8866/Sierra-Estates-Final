@@ -27,7 +27,7 @@ export const runCurator = async (
 
       const mediaUrls = doc?.mediaUrls || [];
 
-      const systemPrompt = `You are "The Curator", the Architect of Desire for Sierra Estates Realty.
+      const systemPrompt = `You are "The Curator", the Architect of Desire for Sierra Blu Realty.
 Your job is to craft high-fidelity, cinematic branding for luxury properties.
 Tone: Sophisticated, institutional, exclusive (Quiet Luxury).
 Deliverables (JSON):
@@ -81,7 +81,7 @@ Deliverables (JSON):
         });
         console.log(`✅ [CURATOR] S3 Branding completed for ${docId}`);
       } catch (error) {
-        console.error('[CURATOR] S3 Error for %s:', docId, error);
+        console.error(`[CURATOR] S3 Error for ${docId}:`, error);
         await StateManager.failStage(docId, collection, stage, 'Branding AI failed');
       }
     }

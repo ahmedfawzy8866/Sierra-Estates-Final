@@ -4,22 +4,14 @@ import { Timestamp } from 'firebase-admin/firestore';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { sendTelegramMessage } from '@/lib/telegram';
 import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
-import { LeadSchema } from '@/lib/server/schemas';
 
 export async function POST(req: Request) {
   const rateLimitResponse = applyRateLimit(req, publicEndpointLimiter);
   if (rateLimitResponse) return rateLimitResponse;
 
   try {
-    const raw = await req.json();
-    const parsed = LeadSchema.safeParse(raw);
-    if (!parsed.success) {
-      return NextResponse.json(
-        { success: false, error: parsed.error.issues[0]?.message ?? 'Invalid request' },
-        { status: 400 }
-      );
-    }
-    const { name, email, phone, message, locale } = parsed.data;
+    const data = await req.json();
+    const { name, email, phone, message, locale } = data;
 
     // 1. Add to Firestore
     const leadRef = await adminDb.collection(COLLECTIONS.stakeholders).add({
@@ -48,7 +40,7 @@ export async function POST(req: Request) {
 
     // 2. Send Telegram Notification
     const text = `
-<b>🚀 New Lead - Sierra Estates Realty</b>
+<b>🚀 New Lead - Sierra Blu Realty</b>
 <b>Name:</b> ${name}
 <b>Email:</b> ${email}
 <b>Phone:</b> ${phone}

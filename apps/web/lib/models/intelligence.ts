@@ -1,5 +1,5 @@
 /**
- * SIERRA ESTATES — INTELLIGENCE DATA STRUCTURES
+ * SIERRA BLU — INTELLIGENCE DATA STRUCTURES
  * Shared types for neural services and frontend consumption.
  */
 

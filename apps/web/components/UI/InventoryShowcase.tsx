@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * SIERRA ESTATES — INVENTORY SHOWCASE
+ * SIERRA BLU — INVENTORY SHOWCASE
  * High-fidelity grid of exclusive properties with hover states and cinematic reveals.
  * Design: Quiet Luxury (Navy/Gold/Ivory)
  */

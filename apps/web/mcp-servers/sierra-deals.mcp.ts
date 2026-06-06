@@ -1,5 +1,5 @@
 /**
- * SIERRA ESTATESE STRATEGIC PIPELINE MCP SERVER (PRODUCTION READY)
+ * SIERRA BLUE STRATEGIC PIPELINE MCP SERVER (PRODUCTION READY)
  * Handles Strategic Pipeline state management & orchestration logic.
  */
 

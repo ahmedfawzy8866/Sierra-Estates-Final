@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * SIERRA ESTATES — CONCIERGE GALLERY (S8)
+ * SIERRA BLU — CONCIERGE GALLERY (S8)
  * Mobile-first swipeable gallery showing top 3-5 curated properties.
  * 
  * Design: Quiet Luxury (Deep Navy, Gold, Ivory).
@@ -56,7 +56,7 @@ export default function ConciergeGallery({
       {/* --- TOP NAVIGATION BAR --- */}
       <nav className="h-20 border-b border-[#C9A84C]/10 flex items-center justify-between px-6 md:px-12 bg-white/50 backdrop-blur-md sticky top-0 z-50">
         <div className="flex flex-col">
-          <span className="text-[10px] uppercase tracking-[0.3em] text-[#0A1628]/40 font-bold">Sierra Estates Realty</span>
+          <span className="text-[10px] uppercase tracking-[0.3em] text-[#0A1628]/40 font-bold">Sierra Blu Realty</span>
           <span className="text-xs text-[#C9A84C] font-semibold italic">Private Portfolio</span>
         </div>
         <div className="flex items-center gap-4">
@@ -230,7 +230,7 @@ export default function ConciergeGallery({
                   {currentUnit.description}
                 </p>
                 <div className="p-4 bg-[#0A1628] text-[#F4F0E8] rounded-sm text-xs italic leading-relaxed border-l-4 border-[#C9A84C]">
-                  "Sierra's Insight: {currentUnit.reason}"
+                  "Laila's Insight: {currentUnit.reason}"
                 </div>
               </div>
 
@@ -260,7 +260,7 @@ export default function ConciergeGallery({
           Confidentiality Agreement Active
         </p>
         <p className="text-[11px] text-[#0A1628]/50 max-w-lg mx-auto leading-relaxed italic">
-          This portfolio is curated exclusively for {portfolio.leadName}. All projections are based on current market trends and historical performance by Sierra Estates Realty.
+          This portfolio is curated exclusively for {portfolio.leadName}. All projections are based on current market trends and historical performance by Sierra Blu Realty.
         </p>
       </footer>
     </div>
