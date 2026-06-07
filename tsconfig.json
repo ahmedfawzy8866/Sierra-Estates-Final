@@ -19,6 +19,8 @@
       "@auth/*": ["packages/auth/src/*"],
       "@config/*": ["packages/config/src/*"],
       "@agents/*": ["packages/agents/src/*"],
+      "@agents-core/*": ["packages/agents-core/src/*"],
+      "@obedian/*": ["packages/obedian/src/*"],
       "@batch/*": ["packages/batch/src/*"],
       "@ui/*": ["packages/ui/src/*"]
     },

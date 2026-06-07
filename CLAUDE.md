@@ -84,7 +84,13 @@ Option B (fallback): Root Directory = repo root → uses root `vercel.json` with
 ## Reality check
 Pre-production. Some services are mock/scaffolded (`MockAIService`, unwired i18n). Test coverage is thin. Older `STATUS.md`/`TODO.md` are aspirational/stale.
 
+## Obsidian Memory Engine & AI Sourcing
+- **Vault Location:** `docs/obsidian-vault/` contains the core cognitive and database architecture notes.
+- **Rules of Engagement:** For every new task, feature, or bugfix, the AI agent MUST search and read the relevant node in the Obsidian vault (e.g. `Sourcing Pipeline & Lead Aggregator.md`, `WhatsApp CRM & Hand-off Pipeline.md`).
+- **Graph Alignment:** Maintain double-bracket `[[Links]]` when editing vault files to preserve the Obsidian graph view.
+
 ## Constraints for AI sessions
 - GitHub access is scoped to `ahmedfawzy8866/i-sierra-2027` only — do not touch other repos.
-- Develop on branch `claude/compassionate-cori-6Q0bx`. Never force-push or delete `main`.
-- Do not deploy without explicit approval. Never put secrets in chat.
+- The `main` branch is protected on GitHub. Direct commits are blocked. Never force-push or delete `main`.
+- For all changes, checkout a new branch, push it to remote, and open a Pull Request.
+- Do not deploy without explicit approval. Never place API keys or credentials in raw code or in chat.
