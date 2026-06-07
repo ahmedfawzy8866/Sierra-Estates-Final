@@ -79,7 +79,7 @@
     },
     {
       "source": "/admin",
-      "destination": "/admin",
+      "destination": "/admin/dashboard",
       "permanent": false
     }
   ]
