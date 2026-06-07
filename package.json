@@ -1,43 +1,38 @@
 {
-  "name": "sierra-estates-system",
+  "name": "sierra-estates-platform",
   "version": "1.0.0",
-  "description": "Sierra Estates - Luxury Real Estate Platform",
+  "description": "Sierra Blu - Luxury Real Estate Platform",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@9.0.0",
   "scripts": {
-    "dev": "cross-env NODE_OPTIONS=--max-old-space-size=8192 turbo run dev --parallel",
-    "dev:web": "cd apps/web && npm run dev",
-    "dev:admin": "cd apps/admin && npm run dev",
-    "dev:functions": "cd functions && npm run dev",
-    "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 turbo run build",
-    "build:web": "cd apps/web && npm run build",
-    "build:admin": "cd apps/admin && npm run build",
-    "build:functions": "cd functions && npm run build",
-    "start": "cd apps/web && npm start",
+    "dev": "pnpm --filter sierra-estates-platform dev",
+    "dev:functions": "pnpm --filter sierra-blu-functions dev",
+    "build": "pnpm --filter sierra-estates-platform build",
+    "build:functions": "pnpm --filter sierra-blu-functions build",
+    "start": "pnpm --filter sierra-estates-platform start",
     "lint": "turbo run lint",
     "test": "turbo run test",
     "test:ci": "turbo run test:ci",
     "type-check": "turbo run type-check",
-    "clean": "turbo run clean && rm -rf node_modules pnpm-lock.yaml",
-    "deploy": "firebase deploy --project sierra-blu-prod",
-    "deploy:staging": "firebase deploy --project sierra-blu-staging",
-    "deploy:preview": "firebase deploy --only hosting:preview",
-    "validate-build": "npm run lint && npm run type-check && npm run build",
-    "pre-commit": "npm run lint && npm run type-check"
+    "clean": "turbo run clean && rm -rf node_modules",
+    "deploy:firebase": "firebase deploy --only firestore:rules,storage,functions",
+    "deploy:rules": "firebase deploy --only firestore:rules,storage",
+    "deploy:functions": "firebase deploy --only functions",
+    "validate": "pnpm lint && pnpm type-check && pnpm test:ci && pnpm build"
   },
   "devDependencies": {
-    "cross-env": "^10.1.0",
     "turbo": "^2.9.16",
-    "typescript": "^5.9.3",
-    "eslint": "^8.57.0",
-    "eslint-plugin-unused-imports": "^3.1.0",
-    "jest": "^29.7.0",
-    "ts-jest": "^29.1.1",
-    "@types/jest": "^29.5.12"
+    "typescript": "^5.3.3"
   },
   "engines": {
     "node": ">=20.0.0",
     "pnpm": ">=9.0.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "postcss": ">=8.5.10",
+      "uuid": ">=11.1.1"
+    }
   }
 }

@@ -1,5 +1,5 @@
 // sierra-blue/hooks/useDSLView.ts
-// Sierra Blue — Universal DSL View Hook
+// Sierra Estates — Universal DSL View Hook
 //
 // Converts any DSL string into:
 //   → Live Firestore real-time subscription

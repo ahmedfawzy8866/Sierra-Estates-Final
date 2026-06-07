@@ -1,5 +1,8 @@
 {
   "version": 2,
+  "name": "sierra-blu-web",
+  "framework": "nextjs",
+  "regions": ["iad1"],
   "crons": [
     {
       "path": "/api/cron/sync-leads",
@@ -73,6 +76,11 @@
       "source": "/old-landing",
       "destination": "/",
       "permanent": true
+    },
+    {
+      "source": "/admin",
+      "destination": "/admin/dashboard",
+      "permanent": false
     }
   ]
 }

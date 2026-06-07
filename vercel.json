@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "buildCommand": "pnpm run build",
-  "devCommand": "pnpm run dev",
+  "name": "sierra-blu-web",
+  "buildCommand": "pnpm --filter sierra-estates-platform build",
+  "outputDirectory": "apps/web/.next",
   "installCommand": "pnpm install",
   "framework": "nextjs",
+  "regions": ["iad1"],
   "crons": [
     {
       "path": "/api/cron/sync-leads",
@@ -77,6 +79,11 @@
       "source": "/old-landing",
       "destination": "/",
       "permanent": true
+    },
+    {
+      "source": "/admin",
+      "destination": "/admin/dashboard",
+      "permanent": false
     }
   ]
 }

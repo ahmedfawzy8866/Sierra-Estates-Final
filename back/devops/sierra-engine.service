@@ -1,0 +1,39 @@
+[Unit]
+# Sierra Estates 1.0 — Python Autopilot daemon (engine_core.py)
+# Install: sudo cp sierra-engine.service /etc/systemd/system/ && sudo systemctl daemon-reload
+#          sudo systemctl enable --now sierra-engine
+# Logs:    journalctl -u sierra-engine -f
+Description=Sierra Estates Autopilot Engine (WhatsApp -> Gemini -> Firestore)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=sierra
+WorkingDirectory=/opt/sierra-estates/back
+EnvironmentFile=/etc/sierra-estates/.env
+ExecStart=/opt/sierra-estates/back/.venv/bin/python -u bots/whatsapp-scraper-bot/engine_core.py
+Restart=always
+RestartSec=5
+
+# Crash / restart-loop protection
+StartLimitIntervalSec=0
+
+# Memory-leak containment: hard RSS cap + 6-hourly self-heal recycle
+MemoryHigh=400M
+MemoryMax=512M
+RuntimeMaxSec=21600
+
+# Logging to journald
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=sierra-engine
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/opt/sierra-estates/back/.agent
+
+[Install]
+WantedBy=multi-user.target

@@ -19,9 +19,9 @@ export class AgentRegistry {
     
     if (!resolvedDir) {
       const pathsToTry = [
-        path.join(process.cwd(), 'public/agents'),
-        path.join(process.cwd(), 'apps/web/public/agents'),
-        path.join(process.cwd(), 'packages/agents-core/src'),
+        path.join(/*turbopackIgnore: true*/ process.cwd(), 'public/agents'),
+        path.join(/*turbopackIgnore: true*/ process.cwd(), 'apps/web/public/agents'),
+        path.join(/*turbopackIgnore: true*/ process.cwd(), 'packages/agents-core/src'),
         __dirname
       ];
       

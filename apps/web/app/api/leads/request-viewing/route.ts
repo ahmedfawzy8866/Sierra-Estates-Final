@@ -1,22 +1,14 @@
+import { NextResponse } from 'next/server';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { COLLECTIONS } from '@/lib/models/schema';
-import { Timestamp } from 'firebase-admin/firestore';
-import { NextResponse } from 'next/server';
 import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
 
-interface ViewingRequest {
-  leadId: string;
-  unitId: string;
-  portfolioId: string;
-}
-
-export const POST = async (req: Request) => {
+export async function POST(req: Request) {
   const rateLimitResponse = applyRateLimit(req, publicEndpointLimiter);
   if (rateLimitResponse) return rateLimitResponse;
 
   try {
-    const body: ViewingRequest = await req.json();
-    const { leadId, unitId, portfolioId } = body;
+    const { leadId, unitId, portfolioId } = await req.json();
 
     if (!leadId || !unitId) {
       return NextResponse.json(
@@ -25,38 +17,45 @@ export const POST = async (req: Request) => {
       );
     }
 
-    // Create viewing request record
-    const viewingRef = await adminDb.collection('viewing_requests').add({
+    // Create a viewing request record
+    const viewingDoc = await adminDb.collection(COLLECTIONS.viewings).add({
       leadId,
       unitId,
-      portfolioId,
-      status: 'pending',
-      createdAt: Timestamp.now(),
-      requestedAt: new Date().toISOString(),
+      portfolioId: portfolioId || null,
+      status: 'pending_approval',
+      createdAt: new Date(),
+      updatedAt: new Date()
     });
 
-    // Update lead record
-    await adminDb.collection(COLLECTIONS.stakeholders).doc(leadId).update({
-      [`viewingRequests.${unitId}`]: {
-        requestedAt: Timestamp.now(),
-        status: 'pending',
-      },
-      lastViewingRequestAt: Timestamp.now(),
-    });
+    // Update the lead status
+    const leadRef = adminDb.collection(COLLECTIONS.stakeholders).doc(leadId);
+    const leadSnap = await leadRef.get();
 
-    // TODO: Send Telegram alert to sales team about viewing request
-    console.log(`📍 Viewing request created for ${leadId} - ${unitId}`);
+    if (leadSnap.exists) {
+      await leadRef.update({
+        status: 'Viewing Requested',
+        stage: 2,
+        updatedAt: new Date()
+      });
+    }
+
+    // Update the concierge selection if provided
+    if (portfolioId) {
+      const portfolioRef = adminDb.collection(COLLECTIONS.conciergeSelections).doc(portfolioId);
+      await portfolioRef.update({
+        [`engagement.requested_viewing`]: new Date(),
+        status: 'viewing_requested',
+        lastUpdatedUnit: unitId
+      });
+    }
 
     return NextResponse.json({
       success: true,
-      viewingId: viewingRef.id,
-      message: 'Viewing request submitted successfully',
+      viewingId: viewingDoc.id,
+      message: 'Viewing request received. Laila is preparing matches for agent confirmation.'
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error requesting viewing:', error);
-    return NextResponse.json(
-      { error: 'Failed to request viewing' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
-};
+}

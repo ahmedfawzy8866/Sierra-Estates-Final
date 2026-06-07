@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+export { ObsidianVaultSync } from './obsidian-sync';
 export class ObedianMemory {
     constructor(customPath) {
         Object.defineProperty(this, "filePath", {

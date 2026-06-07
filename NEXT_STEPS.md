@@ -1,40 +1,105 @@
 # NEXT_STEPS — Sierra Blu (pre-deploy)
 
-Snapshot as of 2026-05-29. Trim items as they are completed.
+Updated: 2026-06-07. Trim items as completed.
+
+---
+
+## Deployment Architecture (RESOLVED ✅)
+
+**ONE Vercel deployment** (`apps/web`) serves everything:
+- `/` → Public site: listings, search, contact
+- `/admin/*` → Staff admin panel (Firebase Auth gated by `app/admin/layout.tsx`)
+- `/api/*` → All backend APIs (auth-guarded per route)
+
+**Firebase** = infrastructure only: Firestore + Storage + Auth + Cloud Functions.
+No Firebase Hosting needed for the web app.
+
+`apps/admin` (Vite SPA) = **DEPRECATED** (all mock data). Real admin = `apps/web/app/admin/`.
+
+---
 
 ## URGENT — deploy security rules
-Production Firestore currently allows `read, write: if request.auth != null` (ANY signed-in account can read/write ALL data). PR #10 replaces this with staff-gated rules.
-1. Merge PR #10.
-2. Verify every staff user has a `users/{uid}` doc with role admin|manager|agent.
-3. Deploy: `firebase deploy --only firestore:rules,storage`
-4. Rollback = redeploy the previous rules file.
 
-## API auth hardening (audit done; implement next)
-Helper: `import { verifyAdminRequest, unauthorizedResponse } from '@/lib/server/auth-guard'` (pattern in `app/api/proposals/route.ts`).
-- LOCK with admin (no client callers, safe): `viewing-requests`, `concierge/send-whatsapp`, `telegram/setup`, `wealth/roi`.
-- `admin/ingest`: use `verifyRequest` (accepts SBR secret OR Firebase token); its comment wrongly assumes middleware covers it (middleware = only `/api/orchestrate`).
-- `agent/hub`: called by `components/UI/SierraTerminal.tsx` — check if that surface is admin-only; lock if yes, else add rate-limiting.
-- Webhooks `telegram/webhook`, `whatsapp/webhook`, `ingest/whatsapp`: add CONDITIONAL secret verification (verify only if the secret env is set → non-breaking). Consider consolidating with `/api/webhooks/whatsapp` (already verifies a signature).
-- KEEP PUBLIC (add rate-limiting): `listings`, `leads`, `leads/request-viewing`, `closer/initiate`, `concierge/[leadId]`, `wealth/portfolio`, `whatsapp/heartbeat`.
+Production Firestore currently allows `read, write: if request.auth != null`.
+The hardened rules are ready in the repo — just need deploying.
 
-## Pre-deploy gates (all must pass before production)
-1. Rules deployed (above).
-2. API auth closed (above).
-3. Secrets set (see "Secrets placement" below). Rotate SBR_SECRET_KEY, JWT_SECRET, ENCRYPTION_KEY, and the Firebase admin key if ever shared.
+1. Confirm every staff user has a `users/{uid}` doc with role `admin|manager|agent`.
+2. Deploy: `pnpm deploy:rules` (= `firebase deploy --only firestore:rules,storage`)
+3. Rollback = redeploy previous rules file from git history.
 
-## Secrets placement (owner leans toward Firebase)
-Secrets must live where the code that reads them runs:
-- **Next.js web app** — currently deploys to **Vercel** (vercel.json, deploy.yml), so its server secrets must be **Vercel env vars** (encrypted). They can't be read "from Firebase" while hosted on Vercel.
-- **Firebase Cloud Functions** (`functions/`) — use **Firebase Functions secrets / Google Secret Manager** (`firebase functions:secrets:set`), never committed.
-- **To consolidate ALL secrets on Firebase** (owner's preference): also host the web app on **Firebase Hosting + Functions** (firebase.json already has web/admin targets) instead of Vercel, then everything uses **Google Secret Manager**. Tradeoff: Vercel is the stronger Next.js host; all-Firebase = one-platform simplicity. Decide host first, then place secrets accordingly.
-- `NEXT_PUBLIC_*` vars are **not** secret (they ship in the client bundle). Only the non-prefixed ones (Firebase admin key, SBR_SECRET_KEY, JWT_SECRET, ENCRYPTION_KEY, third-party API keys) are real secrets.
+---
 
-## Recommendations
-- Consolidate the project into THIS monorepo (scattered repos cause lost work).
-- Enable branch protection on `main` (require PRs; block force-push and deletion).
-- Stand up a staging Firebase/Vercel project; smoke-test before prod.
-- Replace mock services (MockAIService, etc.); raise test coverage.
+## Vercel Setup (one-time in dashboard)
 
-## Done (on main or in open PRs)
-- main: real type-check CI gate, functions tests, lint 256 to 0, turbo 2.9.16 (CVEs fixed), recovered concierge backend, dependency cleanup.
-- PR #10 (open draft): Firestore/Storage rules + vercel cron path fixes + `ignoreBuildErrors: false`.
+**Option A — recommended (Root Directory = `apps/web`):**
+- Set Root Directory = `apps/web`
+- Framework = Next.js (auto-detected)
+- Build command = `pnpm build`
+- Output directory = `.next` (auto-detected)
+- Env vars: copy from `apps/web/.env.local.example`
+
+**Option B — fallback (Root Directory = repo root):**
+- Build command = `pnpm --filter sierra-estates-platform build`
+- Output directory = `apps/web/.next`
+- Install command = `pnpm install --frozen-lockfile`
+
+---
+
+## Secrets — set before going live
+
+### In Vercel dashboard (for the Next.js web app)
+```
+NEXT_PUBLIC_FIREBASE_*          ← from Firebase console
+FIREBASE_PROJECT_ID
+FIREBASE_CLIENT_EMAIL
+FIREBASE_PRIVATE_KEY            ← from service account JSON
+SBR_SECRET_KEY                  ← openssl rand -hex 32
+CRON_SECRET                     ← openssl rand -hex 32
+TELEGRAM_BOT_TOKEN
+TELEGRAM_CHAT_ID
+GOOGLE_SHEETS_CREDENTIALS
+GOOGLE_SHEETS_SPREADSHEET_ID
+```
+
+### In Firebase (for Cloud Functions)
+```bash
+firebase functions:secrets:set SBR_SECRET_KEY
+firebase functions:secrets:set ENCRYPTION_KEY
+firebase deploy --only functions
+```
+
+---
+
+## Pre-deploy gates
+
+1. ✅ API auth hardened (all endpoints locked)
+2. ✅ Type-check CI gate (`ignoreBuildErrors: false`)
+3. ✅ 47 tests passing
+4. ✅ Deployment architecture fixed (one Vercel, no broken Firebase hosting)
+5. ⏳ Firestore/Storage rules deployed (see above)
+6. ⏳ Secrets set in Vercel dashboard
+7. ⏳ Vercel project configured (Option A or B above)
+
+---
+
+## Recommendations (nice to have)
+- Enable branch protection on `main` (require PRs; block force-push)
+- Stand up staging Firebase + Vercel project
+- Replace `MockAIService` with real AI
+- Raise test coverage (currently ~2%)
+- Add rate-limiting to public endpoints (listings, leads)
+
+---
+
+## Done ✅
+- Real type-check CI gate, functions tests, lint 256→0, turbo 2.9.16 CVEs fixed
+- Recovered concierge backend, dependency cleanup
+- Firestore/Storage rules hardened (staff-gated, ready to deploy)
+- Vercel cron paths fixed
+- API auth hardening (all 8 endpoints secured)
+- `vercel.json` fixed for monorepo (correct build cmd + outputDirectory)
+- `firebase.json` cleaned (removed broken web/admin hosting targets)
+- `.firebaserc` created (project: sierra-blu-prod)
+- `apps/admin` Vite SPA deprecated (DEPRECATED.md added)
+- `CLAUDE.md` updated with correct deployment architecture
+- `NEXT_STEPS.md` this file updated

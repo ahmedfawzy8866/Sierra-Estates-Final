@@ -1,3 +1,4 @@
+export { ObsidianVaultSync, type ObsidianNote } from './obsidian-sync';
 export interface MemoryEntry {
     id: string;
     value: any;

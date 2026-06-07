@@ -14,7 +14,27 @@ export class AgentRegistry {
             writable: true,
             value: {}
         });
-        this.srcDir = customSrcDir || __dirname;
+        let resolvedDir = customSrcDir;
+        if (!resolvedDir) {
+            const pathsToTry = [
+                path.join(/*turbopackIgnore: true*/ process.cwd(), 'public/agents'),
+                path.join(/*turbopackIgnore: true*/ process.cwd(), 'apps/web/public/agents'),
+                path.join(/*turbopackIgnore: true*/ process.cwd(), 'packages/agents-core/src'),
+                __dirname
+            ];
+            for (const p of pathsToTry) {
+                try {
+                    if (fs.existsSync(p) && fs.readdirSync(p).some(f => f.endsWith('.md'))) {
+                        resolvedDir = p;
+                        break;
+                    }
+                }
+                catch (e) {
+                    // ignore and try next path
+                }
+            }
+        }
+        this.srcDir = resolvedDir || __dirname;
         this.loadAllProfiles();
     }
     loadAllProfiles() {
