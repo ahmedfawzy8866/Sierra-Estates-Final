@@ -65,7 +65,7 @@ export async function generateOptionsPackage(leadId: string): Promise<string> {
   const summary = await generateAIPackageSummary(lead, unitsData);
 
   // 4. Create Proposal
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sierrablu.luxury';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sierraestates.luxury';
   
   const proposalData: Partial<Proposal> = {
     leadId,
@@ -113,7 +113,7 @@ export async function generateConciergeSelection(leadId: string): Promise<string
   }
 
   // 2. Generate a unique selection URL
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sierrablu.luxury';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sierraestates.luxury';
   const selectionUrl = `${siteUrl}/select/${leadId}`;
 
   // 3. Mark selection as deployed

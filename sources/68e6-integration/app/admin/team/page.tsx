@@ -28,7 +28,7 @@ export default function AdminTeamPage() {
     {
       id: '2',
       name: 'Sarah Hassan',
-      email: 'sarah@sierrablu.luxury',
+      email: 'sarah@sierraestates.luxury',
       role: 'agent',
       status: 'active',
       joinDate: '2026-02-20',
@@ -37,7 +37,7 @@ export default function AdminTeamPage() {
     {
       id: '3',
       name: 'Mohamed Ali',
-      email: 'mali@sierrablu.luxury',
+      email: 'mali@sierraestates.luxury',
       role: 'agent',
       status: 'active',
       joinDate: '2026-03-10',

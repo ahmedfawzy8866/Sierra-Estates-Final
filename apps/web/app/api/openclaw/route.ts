@@ -125,7 +125,7 @@ Generate 3–4 actionable insights based on this data. Highlight high-priority i
         'Authorization': `Bearer ${gateway.token}`,
       },
       body: JSON.stringify({
-        model: 'gemini-2.5-flash-lite',
+        model: 'gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userMessage },

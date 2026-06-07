@@ -15,7 +15,7 @@ interface EmailConfig {
 
 export class EmailService {
   private static SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
-  private static FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || 'noreply@sierrablu.luxury';
+  private static FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || 'noreply@sierraestates.luxury';
   private static RESEND_API_KEY = process.env.RESEND_API_KEY;
 
   /**

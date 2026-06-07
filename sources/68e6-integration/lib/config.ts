@@ -15,7 +15,7 @@ export const SiteConfig = {
     name: "Ahmed Fawzy",
     role: "Founding Executive & Strategic Lead",
     phone: process.env.NEXT_PUBLIC_SUPPORT_PHONE || "+20 10 61399688",
-    email: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@sierrablu.luxury",
+    email: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@sierraestates.luxury",
     telegramBot: process.env.NEXT_PUBLIC_TELEGRAM_BOT_URL || "https://t.me/Sierrablurealtybot",
   },
   contact: {
@@ -35,7 +35,7 @@ export const SBR_CONFIG = {
   phone: SiteConfig.executive.phone,
   email: SiteConfig.executive.email,
   whatsappUrl: SiteConfig.contact.whatsapp,
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://sierrablu.luxury',
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://sierraestates.luxury',
   telegramUrl: SiteConfig.executive.telegramBot,
 };
 
