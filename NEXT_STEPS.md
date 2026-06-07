@@ -39,7 +39,7 @@ The hardened rules are ready in the repo — just need deploying.
 - Env vars: copy from `apps/web/.env.local.example`
 
 **Option B — fallback (Root Directory = repo root):**
-- Build command = `pnpm --filter sierra-blu-platform build`
+- Build command = `pnpm --filter sierra-estates-platform build`
 - Output directory = `apps/web/.next`
 - Install command = `pnpm install --frozen-lockfile`
 

@@ -1,7 +1,7 @@
 {
   "version": 2,
   "name": "sierra-blu-web",
-  "buildCommand": "pnpm --filter sierra-blu-platform build",
+  "buildCommand": "pnpm --filter sierra-estates-platform build",
   "outputDirectory": "apps/web/.next",
   "installCommand": "pnpm install",
   "framework": "nextjs",
