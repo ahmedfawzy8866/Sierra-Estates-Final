@@ -176,7 +176,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
- * SIERRA BLU — ASSET ENCODING SERVICE
+ * sierra estates — ASSET ENCODING SERVICE
  * Implements the "Encoding Program" logic for rapid unit registration via copy-paste.
  */
 &nbsp;
@@ -188,11 +188,11 @@ export interface EncodedAsset extends Partial&lt;Unit&gt; {
 }
 &nbsp;
 /**
- * Parses raw copied listing information into the Sierra Blu Unit schema.
+ * Parses raw copied listing information into the Sierra Estates Unit schema.
  * Uses the "Sierra Codification Protocol."
  */
 <span class="cstat-no" title="statement not covered" >export a</span>sync function <span class="fstat-no" title="function not covered" >encodeListingFromText(</span>rawText: string): Promise&lt;Partial&lt;Unit&gt;&gt; {
-  const systemPrompt = <span class="cstat-no" title="statement not covered" >`ROLE: You are "Sierra," the Lead Logic Agent for Asset Registration at Sierra Blu.</span>
+  const systemPrompt = <span class="cstat-no" title="statement not covered" >`ROLE: You are "Sierra," the Lead Logic Agent for Asset Registration at Sierra Estates.</span>
 TASK: Extract structured property details from raw text (WhatsApp, OLX, or PDFs).
 &nbsp;
 EXTRACTION PROTOCOL:

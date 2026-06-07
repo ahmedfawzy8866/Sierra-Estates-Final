@@ -36,7 +36,7 @@ export async function POST(req: Request) {
 
     // 2. Send Telegram Notification (Strategic Pipeline Update)
     const text = `
-<b>🚀 New Investment Stakeholder - Sierra Blue Intelligence OS</b>
+<b>🚀 New Investment Stakeholder - Sierra Estatese Intelligence OS</b>
 <b>Name:</b> ${name}
 <b>Email:</b> ${email}
 <b>Phone:</b> ${phone}

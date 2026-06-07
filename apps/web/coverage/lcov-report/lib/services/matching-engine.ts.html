@@ -538,7 +538,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
- * SIERRA BLU — STAGE 6: AI MATCHING ENGINE
+ * sierra estates — STAGE 6: AI MATCHING ENGINE
  * Orchestrates cross-referencing Leads with Listings/Units
  * using high-fidelity NLP scoring.
  */
@@ -608,7 +608,7 @@ export interface MatchResult {
           propertyTitle: unit.title,
           matchScore: match.matchScore,
           budget: `${lead.budgetMax || lead.budget} EGP`,
-          proposalUrl: `https://sierra-blu.web.app/concierge/${leadId}?unit=${unit.id}`,
+          proposalUrl: `https://sierra-estates.web.app/concierge/${leadId}?unit=${unit.id}`,
           roi: unit.intelligence?.roi || '8-12%'
         });
       }
@@ -654,7 +654,7 @@ export interface MatchResult {
  * Uses the OpenClaw / Gemini gateway to rank units against a lead's profile.
  */
 async function <span class="fstat-no" title="function not covered" >scoreMatchesWithAI(</span>lead: Lead, units: Unit[]): Promise&lt;MatchResult[]&gt; {
-  const systemPrompt = <span class="cstat-no" title="statement not covered" >`You are the Sierra Blu Strategic Intelligence Core (Neural Matching Unit V10.0).</span>
+  const systemPrompt = <span class="cstat-no" title="statement not covered" >`You are the Sierra Estates Strategic Intelligence Core (Neural Matching Unit V10.0).</span>
 Task: Rank high-value property assets against specific investment stakeholders using the "Neural Memory Layer" and "Neural Wealth Mode."
 &nbsp;
 Terminology Protocol:

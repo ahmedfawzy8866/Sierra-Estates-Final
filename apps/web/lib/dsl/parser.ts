@@ -1,4 +1,4 @@
-// sierra-blue/lib/dsl/parser.ts
+// sierra-estatese/lib/dsl/parser.ts
 // Sierra Estates DSL V2.0 — Full Parser + Firestore Query Builder
 //
 // Usage:

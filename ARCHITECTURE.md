@@ -11,7 +11,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    SIERRA BLU REALTY 2027                   │
+│                    sierra estates REALTY 2027                   │
 │              Egypt's AI-Powered Real Estate OS              │
 └─────────────────────────────────────────────────────────────┘
                               ▲
@@ -332,13 +332,13 @@ User.customClaims = {
 
 ## n8n Workflow Automation (Docker-Hosted)
 
-Sierra Blu uses a self-hosted **n8n Workflow Automation Engine** running locally inside Docker containers. This engine automates property listings synchronization, owner scraping, automated WhatsApp messaging, and stakeholder follow-ups.
+Sierra Estates uses a self-hosted **n8n Workflow Automation Engine** running locally inside Docker containers. This engine automates property listings synchronization, owner scraping, automated WhatsApp messaging, and stakeholder follow-ups.
 
 ### Docker Configuration (`docker-compose.n8n.yml`)
 The engine is spun up using a WSL 2 backend running the official `n8nio/n8n:latest` image:
 *   **Port Mapping:** `5678:5678` (Dashboard available at `http://localhost:5678`)
 *   **Timezone:** `Africa/Cairo` (for localized scheduling and appointment syncing)
-*   **Volume Mount:** `sierra_blu_n8n_data` mapped to `/home/node/.n8n` for workflow state persistence
+*   **Volume Mount:** `sierra_estates_n8n_data` mapped to `/home/node/.n8n` for workflow state persistence
 
 ### Orchestrated Workflows
 The platform houses 5 production scripts under the `workflows/` package, which are triggered via cron patterns or HTTP webhooks:
@@ -382,9 +382,9 @@ https://sierra-2027-preview.vercel.app
 ```
 Merge to main
   ↓
-Vercel Auto-Deploy (firebase: sierra-blu-production)
+Vercel Auto-Deploy (firebase: sierra-estates-production)
   ↓
-https://sierra-blu.vercel.app
+https://sierra-estates.vercel.app
 ```
 
 ### Scheduled Jobs (Cloud Functions)

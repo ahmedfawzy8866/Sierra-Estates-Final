@@ -1,5 +1,5 @@
 /**
- * SIERRA BLU — STAGE 10: FEEDBACK LOOP
+ * sierra estates — STAGE 10: FEEDBACK LOOP
  * Closes the circle by capturing stakeholder satisfaction and triggering re-match logic.
  */
 

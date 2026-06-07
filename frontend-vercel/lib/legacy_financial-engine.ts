@@ -1,5 +1,5 @@
 /**
- * SIERRA BLU — DETERMINISTIC FINANCIAL ENGINE
+ * sierra estates — DETERMINISTIC FINANCIAL ENGINE
  * "AI explains, code decides."
  * All financial metrics are pure, testable functions — never AI-guessed.
  */

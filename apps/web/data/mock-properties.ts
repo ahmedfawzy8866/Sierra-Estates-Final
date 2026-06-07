@@ -1,4 +1,4 @@
-import { PropertyCard } from '../types/sierra-blu';
+import { PropertyCard } from '../types/sierra-estates';
 
 export const MOCK_PROPERTIES: PropertyCard[] = [
   {

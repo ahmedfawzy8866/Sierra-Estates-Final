@@ -72,14 +72,14 @@ describe('GET /api/cron/ingest-from-sheets', () => {
 
   test('returns 401 when Authorization header is missing', async () => {
     // CRON_SECRET must be set so the route enforces the check
-    process.env.CRON_SECRET = 'sierra_blu_dev_secret_2026';
+    process.env.CRON_SECRET = 'sierra_estates_dev_secret_2026';
     const req = makeReq('GET', '/api/cron/ingest-from-sheets');
     const res = await GET(req);
     expect(res.status).toBe(401);
   });
 
   test('returns 401 when Bearer token is wrong', async () => {
-    process.env.CRON_SECRET = 'sierra_blu_dev_secret_2026';
+    process.env.CRON_SECRET = 'sierra_estates_dev_secret_2026';
     const req = makeReq('GET', '/api/cron/ingest-from-sheets', { authorization: 'Bearer wrong-secret' });
     const res = await GET(req);
     expect(res.status).toBe(401);

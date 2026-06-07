@@ -14,9 +14,9 @@ table maps each named item to what actually exists, so this manifest targets rea
 | Mandate said | Exists? | Actual artifact to deploy |
 |---|---|---|
 | Repo `sierra-2026` | ❌ No | This repo is `ahmedfawzy8866/Sierra-Blu-Systm`. Use its real name, or create/rename a repo before wiring Vercel/Firebase. |
-| `Sierra Blu Omega Final.html` (client hub) | ❌ No | The client hub is the **Next.js 16 app** in `frontend/`. `frontend/hero-filter.html` is a *standalone static design mockup*, not the deployable app. |
+| `Sierra Estates Omega Final.html` (client hub) | ❌ No | The client hub is the **Next.js 16 app** in `frontend/`. `frontend/hero-filter.html` is a *standalone static design mockup*, not the deployable app. |
 | `Sierra Estates Admin (1).html` (admin console) | ❌ No | The admin console already lives **inside the same Next app** at `frontend/app/admin/*` (dashboard, deals, login, sync, units). It is **not** a separate HTML SPA and needs **no separate deploy**. |
-| `scraper_core.py` | ❌ No | The real Python services are `backend/property_finder_sync.py` (sync hub) and `scripts/sierra_blue_bot_implementation.py` (712-line bot). Pick one as the daemon entrypoint. |
+| `scraper_core.py` | ❌ No | The real Python services are `backend/property_finder_sync.py` (sync hub) and `scripts/sierra_estatese_bot_implementation.py` (712-line bot). Pick one as the daemon entrypoint. |
 | Firebase project `sierra-2026` | ❌ Not created | `firebase` + `firebase-admin` are wired in code (`frontend/lib/firebase.ts`, `frontend/lib/server/firebase-admin.ts`), but there is **no `firebase.json` / `firestore.rules`** in the repo yet — they are authored in §2. |
 
 ### Hard deploy gates (must be green before any production push)
@@ -147,7 +147,7 @@ firebase deploy --only firestore:rules,firestore:indexes
 ## 3. Local/VPS Automation Engine — Python Autopilot Daemon
 
 > Entrypoint is the real file (`backend/property_finder_sync.py` **or**
-> `scripts/sierra_blue_bot_implementation.py`), **not** `scraper_core.py`. Examples below use a
+> `scripts/sierra_estatese_bot_implementation.py`), **not** `scraper_core.py`. Examples below use a
 > placeholder `AUTOPILOT_ENTRY` — set it to your chosen script.
 
 ### 3.1 Environment variable injection matrix (secrets never in git)

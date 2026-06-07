@@ -1,5 +1,5 @@
 /**
- * SIERRA BLU — PAYMENT SERVICE
+ * sierra estates — PAYMENT SERVICE
  * Handles down payments, escrow holds, and transaction management.
  * Integration with Stripe for payment processing.
  */

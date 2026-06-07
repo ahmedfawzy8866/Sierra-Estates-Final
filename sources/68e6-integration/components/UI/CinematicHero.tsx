@@ -20,7 +20,7 @@ interface CinematicHeroProps {
 }
 
 /**
- * CINEMATIC HERO — The Gateway to Sierra Blu
+ * CINEMATIC HERO — The Gateway to Sierra Estates
  * 
  * This component serves as the primary entry point for Investment Stakeholders.
  * It utilizes a high-fidelity space-to-earth background video to establish 
@@ -108,7 +108,7 @@ export default function CinematicHero({ T, onPortfolioClick, onAdvisorClick }: C
         <div className="absolute inset-0 shadow-[inset_0_0_150px_rgba(0,0,0,0.9)] z-10" />
       </motion.div>
 
-      {/* 2. LAYER TWO: Sierra Blu Subtle Watermark (Top Right) */}
+      {/* 2. LAYER TWO: Sierra Estates Subtle Watermark (Top Right) */}
       <motion.div 
         className={`absolute top-24 ${isAr ? 'left-12' : 'right-12'} z-20 opacity-20 pointer-events-none`}
         initial={{ opacity: 0, x: isAr ? -20 : 20 }}

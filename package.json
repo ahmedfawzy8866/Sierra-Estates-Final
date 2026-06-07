@@ -1,15 +1,15 @@
 {
   "name": "sierra-estates-platform",
   "version": "1.0.0",
-  "description": "Sierra Blu - Luxury Real Estate Platform",
+  "description": "Sierra Estates - Luxury Real Estate Platform",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@9.0.0",
   "scripts": {
     "dev": "pnpm --filter sierra-estates-platform dev",
-    "dev:functions": "pnpm --filter sierra-blu-functions dev",
+    "dev:functions": "pnpm --filter sierra-estates-functions dev",
     "build": "pnpm --filter sierra-estates-platform build",
-    "build:functions": "pnpm --filter sierra-blu-functions build",
+    "build:functions": "pnpm --filter sierra-estates-functions build",
     "start": "pnpm --filter sierra-estates-platform start",
     "lint": "turbo run lint",
     "test": "turbo run test",

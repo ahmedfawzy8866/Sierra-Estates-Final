@@ -272,7 +272,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
- * SIERRA BLU — WEALTH INTELLIGENCE ENGINE
+ * sierra estates — WEALTH INTELLIGENCE ENGINE
  * Stage 7 Core: Financial ROI &amp; Portfolio Analysis
  */
 &nbsp;
@@ -309,7 +309,7 @@ const LOCATION_GROWTH: Record&lt;string, number&gt; = <span class="cstat-no" tit
   const urgencyFactor = <span class="cstat-no" title="statement not covered" >(unit.intelligence?.urgencyScore || 0) / 10; </span>
   const valScore = <span class="cstat-no" title="statement not covered" >(unit.intelligence?.valuationScore || 50) / 100;</span>
 &nbsp;
-  // --- SIERRA BLU UPGRADE: Use FinancialService for Valuation Context ---
+  // --- sierra estates UPGRADE: Use FinancialService for Valuation Context ---
   const valuation = <span class="cstat-no" title="statement not covered" >FinancialService.calcAppraisedValue(unit);</span>
   const marketEdge = <span class="cstat-no" title="statement not covered" >valuation.marketDifference &gt; 0 ? valuation.marketDifference : 0;</span>
 &nbsp;
@@ -347,7 +347,7 @@ const LOCATION_GROWTH: Record&lt;string, number&gt; = <span class="cstat-no" tit
  * Uses Gemini to generate a clinical wealth-focused reasoning.
  */
 async function <span class="fstat-no" title="function not covered" >generateValuationReasoning(</span>unit: Unit, roi: number, yieldPercent: number): Promise&lt;string&gt; {
-  const systemPrompt = <span class="cstat-no" title="statement not covered" >`You are the Sierra Blu Wealth Analytics Bot (Neural ROI Core V10.0).</span>
+  const systemPrompt = <span class="cstat-no" title="statement not covered" >`You are the Sierra Estates Wealth Analytics Bot (Neural ROI Core V10.0).</span>
 Task: Provide a clinical, premium financial justification for a property investment.
 &nbsp;
 Tone: Focus on wealth preservation, capital appreciation, and institutional-grade logic.

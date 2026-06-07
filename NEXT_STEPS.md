@@ -1,4 +1,4 @@
-# NEXT_STEPS — Sierra Blu (pre-deploy)
+# NEXT_STEPS — Sierra Estates (pre-deploy)
 
 Updated: 2026-06-07. Trim items as completed.
 
@@ -99,7 +99,7 @@ firebase deploy --only functions
 - API auth hardening (all 8 endpoints secured)
 - `vercel.json` fixed for monorepo (correct build cmd + outputDirectory)
 - `firebase.json` cleaned (removed broken web/admin hosting targets)
-- `.firebaserc` created (project: sierra-blu-prod)
+- `.firebaserc` created (project: sierra-estates-prod)
 - `apps/admin` Vite SPA deprecated (DEPRECATED.md added)
 - `CLAUDE.md` updated with correct deployment architecture
 - `NEXT_STEPS.md` this file updated

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Check } from 'lucide-react';
-import { PropertyCard } from '../../types/sierra-blu';
+import { PropertyCard } from '../../types/sierra-estates';
 
 export function FinTechTerminal({ property }: { property: PropertyCard }) {
   const [downPaymentPercent, setDownPaymentPercent] = useState(20);

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "sierra-blu-web",
+  "name": "sierra-estates-web",
   "framework": "nextjs",
   "regions": ["iad1"],
   "crons": [

@@ -1,7 +1,7 @@
 {
   "name": "@sierra/property-finder-api",
   "version": "1.0.0",
-  "description": "Property Finder API integration for Sierra Blu",
+  "description": "Property Finder API integration for Sierra Estates",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "dependencies": {

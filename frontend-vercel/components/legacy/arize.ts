@@ -59,9 +59,9 @@ export const instrumentAgent = async <T>(
     `${agentName}:${stage}`,
     {
       attributes: {
-        "sierra_blu.agent": agentName,
-        "sierra_blu.stage": stage,
-        "sierra_blu.doc_id": docId,
+        "sierra_estates.agent": agentName,
+        "sierra_estates.stage": stage,
+        "sierra_estates.doc_id": docId,
         "openinference.span.kind": "CHAIN",
       },
     },

@@ -344,7 +344,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
- * SIERRA BLU — TELEGRAM COMMAND OS
+ * sierra estates — TELEGRAM COMMAND OS
  * Enables real-time backend interaction via Telegram.
  */
 &nbsp;
@@ -398,7 +398,7 @@ const DEFAULT_CHAT_ID = <span class="cstat-no" title="statement not covered" >pr
     case 'maintenance':
 <span class="cstat-no" title="statement not covered" >      return await cmdMaintenance(chatId);</span>
     case 'start':
-<span class="cstat-no" title="statement not covered" >      return await sendTelegramMessage("Welcome to the &lt;b&gt;Sierra Blu Intelligence Platform&lt;/b&gt;. Send me a Signature Asset ID to analyze.", chatId);</span>
+<span class="cstat-no" title="statement not covered" >      return await sendTelegramMessage("Welcome to the &lt;b&gt;Sierra Estates Intelligence Platform&lt;/b&gt;. Send me a Signature Asset ID to analyze.", chatId);</span>
     default:
 <span class="cstat-no" title="statement not covered" >      return await sendTelegramMessage("Unknown command. Supported: /score, /matches, /maintenance", chatId);</span>
   }
@@ -429,7 +429,7 @@ async function <span class="fstat-no" title="function not covered" >cmdScore(</s
                `ROI (Projected): ${formatPercent(unit.intelligence?.valuationScore || 0)}\n` +
                `Legal Status: ${legal.riskLevel.toUpperCase()}\n` +
                `Summary: ${legalSummary}\n\n` +
-               `&lt;i&gt;Analysis powered by Sierra Blu OS&lt;/i&gt;`;
+               `&lt;i&gt;Analysis powered by Sierra Estates OS&lt;/i&gt;`;
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  await sendTelegramMessage(text, chatId);</span>
 }

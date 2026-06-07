@@ -301,7 +301,7 @@ export async function updatePFListingPrice(
         price:    newPrice,
         currency: "EGP",
         reason,
-        updated_by: "sierra_blue_ai",
+        updated_by: "sierra_estatese_ai",
       }),
     });
 

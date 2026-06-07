@@ -3,13 +3,13 @@ $targetBackend = "I:\28-5 Si\firebase-backend"
 
 $sourceRepos = @(
     "I:\Sierra 2031",
-    "I:\Identity\Sierra Blue",
+    "I:\Identity\Sierra Estatese",
     "I:\sierrs 2030\Sierra 2027",
-    "I:\sierrs 2030\Sierra Blue",
+    "I:\sierrs 2030\Sierra Estatese",
     "I:\sierrs 2030\Sierra-Engine",
     "I:\sierrs 2030\sierrablu-core-engine",
-    "H:\sierra-final\Sierra Blue SaaS Program Locally V2",
-    "F:\allll\sierra-blu-unified",
+    "H:\sierra-final\Sierra Estatese SaaS Program Locally V2",
+    "F:\allll\sierra-estates-unified",
     "F:\allll\Sierra_Blu_Master",
     "F:\allll\project 555\my-sierra-project",
     "C:\Users\sierr\Sierra-Blu-Systm",

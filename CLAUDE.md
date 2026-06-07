@@ -1,9 +1,9 @@
-# CLAUDE.md — Sierra Blu (i-sierra-2027)
+# CLAUDE.md — Sierra Estates (i-sierra-2027)
 
 Context for Claude Code / AI sessions. Keep this updated as the project evolves.
 
 ## What this is
-Sierra Blu / Sierra Estates — a luxury real-estate (PropTech) platform for the New Cairo market. pnpm + Turborepo monorepo.
+Sierra Estates / Sierra Estates — a luxury real-estate (PropTech) platform for the New Cairo market. pnpm + Turborepo monorepo.
 
 ## Stack
 Next.js 16 (App Router, Turbopack) · React 19 · TypeScript 5 (strict) · Tailwind 4 · Firebase (client SDK 12 + Admin SDK 13: Firestore, Storage, Auth) · Leaflet maps · next-intl (en/ar) · **Docker n8n Workflow Engine** (`localhost:5678`) · Python API (Docker/Cloud Run). Observability: OpenTelemetry + Arize.
@@ -42,7 +42,7 @@ Do not deploy it. See `apps/admin/DEPRECATED.md`. Real admin = `apps/web/app/adm
 - `vercel.json` (root) — Vercel config when root dir = repo root (buildCommand points to apps/web)
 - `apps/web/vercel.json` — Vercel config when root dir = `apps/web` in Vercel dashboard
 - `firebase.json` — Functions + Firestore rules + Storage rules + emulators (no hosting)
-- `.firebaserc` — Firebase project: `sierra-blu-prod`
+- `.firebaserc` — Firebase project: `sierra-estates-prod`
 
 ## Layout
 - `apps/web` — main Next.js app and the real codebase (~26 pages, 38 API routes, ~78 components, ~39 services).

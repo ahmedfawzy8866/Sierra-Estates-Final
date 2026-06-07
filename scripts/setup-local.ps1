@@ -1,7 +1,7 @@
-# 🌌 Sierra Blu 2027 — Local One-Command Setup Script (Windows PowerShell)
+# 🌌 Sierra Estates 2027 — Local One-Command Setup Script (Windows PowerShell)
 
 Write-Host "==========================================================" -ForegroundColor Cyan
-Write-Host "    🪐 SIERRA BLU 2027 PROPTECH OS LOCAL SETUP ENGINE" -ForegroundColor Cyan
+Write-Host "    🪐 sierra estates 2027 PROPTECH OS LOCAL SETUP ENGINE" -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -50,7 +50,7 @@ Write-Host "✅ Dependencies installed successfully!" -ForegroundColor Green
 # 5. Provide launch commands
 Write-Host ""
 Write-Host "==========================================================" -ForegroundColor Green
-Write-Host " 🎉 SIERRA BLU IS READY FOR LOCAL DEVELOPMENT!" -ForegroundColor Green
+Write-Host " 🎉 sierra estates IS READY FOR LOCAL DEVELOPMENT!" -ForegroundColor Green
 Write-Host "==========================================================" -ForegroundColor Green
 Write-Host ""
 Write-Host "To start the client-facing portal & admin dashboard:" -ForegroundColor Cyan

@@ -34,9 +34,9 @@ export const runScribe = async (
       
       const rawText = data?.rawMessage || data?.description || JSON.stringify(data || {});
       
-      const systemPrompt = `You are "The Scribe", the Architect of Truth for Sierra Blu Realty.
+      const systemPrompt = `You are "The Scribe", the Architect of Truth for Sierra Estates Realty.
 Your job is to take raw, messy property data and normalize it into a precise institutional record.
-Enforce Sierra Blu standards:
+Enforce Sierra Estates standards:
 - Identify Compound Name precisely.
 - Extract Floor, Building Number, and Unit Number.
 - Determine Finishing Grade (e.g., Core & Shell, Semi-finished, Ultra-lux).
@@ -57,7 +57,7 @@ Output ONLY a JSON object.`;
 
         const normalized = JSON.parse(resultText);
 
-        // --- SIERRA BLU UPGRADE: Automated Valuation (S2.5) ---
+        // --- sierra estates UPGRADE: Automated Valuation (S2.5) ---
         const unitData = { ...data, intelligence: { ...data?.intelligence, ...normalized } } as any;
         const valuation = FinancialService.calcAppraisedValue(unitData);
 

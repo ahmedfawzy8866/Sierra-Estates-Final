@@ -1,7 +1,7 @@
 rules_version = '2';
 // Sierra Estates 1.0 — Firestore Security Rules (Firebase Spark / zero-cost tier)
 // Anti-Gravity separation enforced AT THE DATABASE:
-//   • Tier-1 client hub (sierra-blu-realty on Vercel)  = READ-ONLY, public listings only.
+//   • Tier-1 client hub (sierra-estates-realty on Vercel)  = READ-ONLY, public listings only.
 //   • Tier-2 admin portal (authenticated staff)        = read/write CRM + intake.
 //   • engine_core.py uses the Admin SDK service account = BYPASSES these rules by design.
 service cloud.firestore {

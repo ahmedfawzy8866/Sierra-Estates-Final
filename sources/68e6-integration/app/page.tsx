@@ -265,7 +265,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══ WHY SIERRA BLU ══ */}
+      {/* ══ WHY sierra estates ══ */}
       <section id="about" className="relative py-24 overflow-hidden bg-[var(--bg)]">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-[0.02] dark:opacity-[0.025]">
           <ShieldLogo size={600} />
@@ -341,7 +341,7 @@ export default function LandingPage() {
             <div className={`reveal h-[520px] relative ${isAr ? 'order-1' : 'order-2'}`}>
               <div className="h-full rounded-2xl overflow-hidden lux-glass border border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.5)]">
                 <LiveMap mode={mode} activeZoneIndex={activeZone} zones={T.zones} />
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[1000] text-[8px] tracking-[0.4em] lux-gold-text opacity-40 font-body pointer-events-none">SIERRA BLU INTELLIGENCE</div>
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[1000] text-[8px] tracking-[0.4em] lux-gold-text opacity-40 font-body pointer-events-none">sierra estates INTELLIGENCE</div>
               </div>
             </div>
           </div>

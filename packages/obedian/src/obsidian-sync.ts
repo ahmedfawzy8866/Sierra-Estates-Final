@@ -16,7 +16,7 @@ export class ObsidianVaultSync {
 
   constructor(vaultPath?: string) {
     // Default to the provided hard drive path if not overridden
-    this.vaultPath = vaultPath || 'I:\\Work Sierra Blu\\Sierra Engine Brain\\obsidian-vault';
+    this.vaultPath = vaultPath || 'I:\\Work Sierra Estates\\Sierra Engine Brain\\obsidian-vault';
   }
 
   async scanVault(): Promise<ObsidianNote[]> {

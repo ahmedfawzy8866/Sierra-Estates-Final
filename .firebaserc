@@ -1,6 +1,6 @@
 {
   "projects": {
-    "default": "sierra-blu-prod",
-    "production": "sierra-blu-prod"
+    "default": "sierra-estates-prod",
+    "production": "sierra-estates-prod"
   }
 }

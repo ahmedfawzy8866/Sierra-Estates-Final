@@ -1,4 +1,4 @@
-# Deploying Sierra Blu to Vercel
+# Deploying Sierra Estates to Vercel
 
 This is a **monorepo**. The deployable Next.js 14 app lives in **`frontend-vercel/`**
 (the repository root has no `package.json`). The single most important setting is the

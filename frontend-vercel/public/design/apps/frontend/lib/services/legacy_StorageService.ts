@@ -2,7 +2,7 @@ import { adminApp, isAdminInitialized } from '../server/firebase-admin';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
- * SIERRA BLU STORAGE SERVICE
+ * sierra estates STORAGE SERVICE
  * Manages institutional asset storage with high-integrity pathing.
  */
 export class StorageService {

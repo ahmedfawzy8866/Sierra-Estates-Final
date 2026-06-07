@@ -144,7 +144,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
- * SIERRA BLU — VECTOR INTELLIGENCE SERVICE
+ * sierra estates — VECTOR INTELLIGENCE SERVICE
  * Bridge to Gemini text-embedding-004 for Semantic Memory.
  */
 &nbsp;
@@ -155,7 +155,7 @@ const genAI = <span class="cstat-no" title="statement not covered" >new GoogleGe
 &nbsp;
 /**
  * Generates a 768-dimensional vector embedding for the provided text.
- * Optimized for Sierra Blu's real estate and stakeholder datasets.
+ * Optimized for Sierra Estates's real estate and stakeholder datasets.
  */
 <span class="cstat-no" title="statement not covered" >export a</span>sync function <span class="fstat-no" title="function not covered" >generateEmbedding(</span>text: string): Promise&lt;number[]&gt; {
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!API_KEY) {</span>
@@ -177,7 +177,7 @@ const genAI = <span class="cstat-no" title="statement not covered" >new GoogleGe
  * Combines multiple attributes into a single semantic string for embedding.
  */
 <span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >c</span>reateSemanticString(</span>data: Record&lt;string, any&gt;): string {
-  // Sierra Blu PropTech Contextualization
+  // Sierra Estates PropTech Contextualization
 <span class="cstat-no" title="statement not covered" >  return Object.entries(data)</span>
     .filter(<span class="fstat-no" title="function not covered" >([</span>, value]) =&gt; <span class="cstat-no" title="statement not covered" >value !== undefined &amp;&amp; value !== null &amp;&amp; value !== "")</span>
     .map(<span class="fstat-no" title="function not covered" >([</span>key, value]) =&gt; <span class="cstat-no" title="statement not covered" >`${key}: ${value}`)</span>

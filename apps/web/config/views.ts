@@ -1,4 +1,4 @@
-// sierra-blue/config/views.ts
+// sierra-estatese/config/views.ts
 // 10 Official Sierra Estates View Configurations
 // Each view maps to a specific agent, audience, and Firestore collection.
 

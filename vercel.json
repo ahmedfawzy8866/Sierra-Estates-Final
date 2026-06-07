@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "sierra-blu-web",
+  "name": "sierra-estates-web",
   "buildCommand": "pnpm --filter sierra-estates-platform build",
   "outputDirectory": "apps/web/.next",
   "installCommand": "pnpm install",

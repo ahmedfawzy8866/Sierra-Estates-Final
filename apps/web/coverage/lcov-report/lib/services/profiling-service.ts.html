@@ -480,7 +480,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
- * SIERRA BLU — PROFILING SERVICE (STAGE 6)
+ * sierra estates — PROFILING SERVICE (STAGE 6)
  * Extracts stakeholder intelligence using generative AI.
  */
 &nbsp;
@@ -524,7 +524,7 @@ export interface ExtractedProfile {
     const data = <span class="cstat-no" title="statement not covered" >await GoogleAIService.chatCompletions(</span>
       'scribe', 'profiling',
       [
-        { role: 'system', content: 'You are an institutional data extractor for Sierra Blu.' },
+        { role: 'system', content: 'You are an institutional data extractor for Sierra Estates.' },
         { role: 'user', content: prompt }
       ],
       { model: 'gemini-1.5-flash', temperature: 0 }
@@ -598,7 +598,7 @@ export interface ExtractedProfile {
 <span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >g</span>etNextInterviewQuestion(</span>profile: Partial&lt;ExtractedProfile&gt;): string {
   // Intro for completely new interactions
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!profile.location &amp;&amp; !profile.budget &amp;&amp; !profile.moveInDate) {</span>
-<span class="cstat-no" title="statement not covered" >    return "&lt;b&gt;✦ SIERRA BLU | CONCIERGE ✦&lt;/b&gt;\n\nWelcome. I am &lt;b&gt;Antigravity&lt;/b&gt;, your Senior Intelligence Partner. To curate an institutional portfolio proposal for you, I require 4 strategic data points:\n\n1. 🏙️ Target Location?\n2. 📅 Move-in Date?\n3. 👤 Family Size?\n4. 💰 Budget Range?\n\nWhich area are you currently focusing on for your next luxury residence?";</span>
+<span class="cstat-no" title="statement not covered" >    return "&lt;b&gt;✦ sierra estates | CONCIERGE ✦&lt;/b&gt;\n\nWelcome. I am &lt;b&gt;Antigravity&lt;/b&gt;, your Senior Intelligence Partner. To curate an institutional portfolio proposal for you, I require 4 strategic data points:\n\n1. 🏙️ Target Location?\n2. 📅 Move-in Date?\n3. 👤 Family Size?\n4. 💰 Budget Range?\n\nWhich area are you currently focusing on for your next luxury residence?";</span>
   }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!profile.location) <span class="cstat-no" title="statement not covered" >return "Perfect. To accurately filter our Nexus inventory, which specific area (e.g., New Cairo, Shourouk, Matareya) are we targeting?";</span></span>

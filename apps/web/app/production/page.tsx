@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Phone, Mail } from 'lucide-react';
-import { UserIntent } from '../../types/sierra-blu';
+import { UserIntent } from '../../types/sierra-estates';
 import { MOCK_PROPERTIES } from '../../data/mock-properties';
 
 // Import newly refactored components
@@ -85,7 +85,7 @@ export default function SierraBluProductionPage() {
           </div>
 
           <div className="border-t border-[#C9A84C]/20 pt-8 text-center text-[#F4F0E8]/50 text-xs">
-            <p>© 2026 Sierra Blu Realty. Beyond Brokerage.</p>
+            <p>© 2026 Sierra Estates Realty. Beyond Brokerage.</p>
           </div>
         </div>
       </footer>

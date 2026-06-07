@@ -1,6 +1,6 @@
 // @ts-nocheck
 /**
- * SIERRA BLU — WEALTH SERVICE BRIDGE
+ * sierra estates — WEALTH SERVICE BRIDGE
  * Orchestrates between raw Inventory and Neural Intelligence.
  */
 

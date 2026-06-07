@@ -3,7 +3,7 @@
   "configVersion": 0,
   "workspaces": {
     "": {
-      "name": "sierra-blu-platform",
+      "name": "sierra-estates-platform",
       "devDependencies": {
         "@types/jest": "^29.5.12",
         "cross-env": "^10.1.0",

@@ -1,4 +1,4 @@
-# Sierra Blu Platform - Unified Monorepo
+# Sierra Estates Platform - Unified Monorepo
 
 > Luxury Real Estate Intelligence Platform with AI-Powered Insights
 
@@ -240,7 +240,7 @@ pnpm test --watch
 ### Staging
 ```bash
 pnpm build
-firebase deploy --project sierra-blu-staging
+firebase deploy --project sierra-estates-staging
 ```
 
 ### Production (with approval)
@@ -249,7 +249,7 @@ firebase deploy --project sierra-blu-staging
 pnpm validate-build
 
 # Deploy to production
-firebase deploy --project sierra-blu-prod
+firebase deploy --project sierra-estates-prod
 
 # Monitor deployment
 firebase functions:log --region us-central1
@@ -290,7 +290,7 @@ See `.env.example` for complete list. Key variables:
 
 ```env
 # Firebase
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=sierra-blu-prod
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=sierra-estates-prod
 FIREBASE_ADMIN_SDK_KEY=...
 
 # APIs
@@ -339,11 +339,11 @@ TELEGRAM_BOT_TOKEN=...
 
 - **Issues**: GitHub Issues (this repo)
 - **Docs**: See `ARCHITECTURE.md`, `API.md`, `DEPLOYMENT_GUIDE.md`
-- **Team**: Slack #sierra-blu
+- **Team**: Slack #sierra-estates
 
 ## 📄 License
 
-Proprietary - Sierra Blu Inc.
+Proprietary - Sierra Estates Inc.
 
 ---
 
