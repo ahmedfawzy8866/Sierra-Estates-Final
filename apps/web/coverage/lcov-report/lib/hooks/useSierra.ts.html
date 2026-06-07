@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/68</span>
+                <span class='fraction'>0/79</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/17</span>
+                <span class='fraction'>0/25</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/13</span>
+                <span class='fraction'>0/15</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/61</span>
+                <span class='fraction'>0/71</span>
             </div>
         
             
@@ -222,7 +222,23 @@
 <a name='L157'></a><a href='#L157'>157</a>
 <a name='L158'></a><a href='#L158'>158</a>
 <a name='L159'></a><a href='#L159'>159</a>
-<a name='L160'></a><a href='#L160'>160</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L160'></a><a href='#L160'>160</a>
+<a name='L161'></a><a href='#L161'>161</a>
+<a name='L162'></a><a href='#L162'>162</a>
+<a name='L163'></a><a href='#L163'>163</a>
+<a name='L164'></a><a href='#L164'>164</a>
+<a name='L165'></a><a href='#L165'>165</a>
+<a name='L166'></a><a href='#L166'>166</a>
+<a name='L167'></a><a href='#L167'>167</a>
+<a name='L168'></a><a href='#L168'>168</a>
+<a name='L169'></a><a href='#L169'>169</a>
+<a name='L170'></a><a href='#L170'>170</a>
+<a name='L171'></a><a href='#L171'>171</a>
+<a name='L172'></a><a href='#L172'>172</a>
+<a name='L173'></a><a href='#L173'>173</a>
+<a name='L174'></a><a href='#L174'>174</a>
+<a name='L175'></a><a href='#L175'>175</a>
+<a name='L176'></a><a href='#L176'>176</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -242,6 +258,22 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -403,6 +435,22 @@ export interface SierraMessage {
   field?: keyof Lead | string;
 }
 &nbsp;
+const generateId = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (typeof crypto !== 'undefined' &amp;&amp; typeof crypto.randomUUID === 'function') {</span>
+<span class="cstat-no" title="statement not covered" >    return crypto.randomUUID();</span>
+  }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (typeof crypto !== 'undefined' &amp;&amp; typeof crypto.getRandomValues === 'function') {</span>
+    const bytes = <span class="cstat-no" title="statement not covered" >crypto.getRandomValues(new Uint8Array(16));</span>
+<span class="cstat-no" title="statement not covered" >    bytes[6] = (bytes[6] &amp; 0x0f) | 0x40;</span>
+<span class="cstat-no" title="statement not covered" >    bytes[8] = (bytes[8] &amp; 0x3f) | 0x80;</span>
+    const hex = <span class="cstat-no" title="statement not covered" >Array.from(bytes, <span class="fstat-no" title="function not covered" >(b</span>) =&gt; <span class="cstat-no" title="statement not covered" >b.toString(16).padStart(2, '0'))</span>.join('');</span>
+<span class="cstat-no" title="statement not covered" >    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;</span>
+  }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  return `id_${Date.now().toString(16)}_${typeof performance !== 'undefined' ? performance.now().toString(16) : '0'}`;</span>
+};
+&nbsp;
 <span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >u</span>seSierra(</span>) {
   const [stage, setStage] = <span class="cstat-no" title="statement not covered" >useState&lt;SierraStage&gt;('WELCOME');</span>
   const [messages, setMessages] = <span class="cstat-no" title="statement not covered" >useState&lt;SierraMessage[]&gt;([]);</span>
@@ -416,7 +464,7 @@ export interface SierraMessage {
 <span class="cstat-no" title="statement not covered" >    setIsTyping(true);</span>
 <span class="cstat-no" title="statement not covered" >    setTimeout(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
       const newMessage: SierraMessage = <span class="cstat-no" title="statement not covered" >{</span>
-        id: crypto.randomUUID(),
+        id: generateId(),
         sender: 'sierra',
         text,
         options,
@@ -429,7 +477,7 @@ export interface SierraMessage {
 &nbsp;
   const addUserMessage = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>ext: string) =&gt; {</span>
     const newMessage: SierraMessage = <span class="cstat-no" title="statement not covered" >{</span>
-      id: crypto.randomUUID(),
+      id: generateId(),
       sender: 'user',
       text
     };
@@ -547,7 +595,7 @@ export interface SierraMessage {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-06-06T04:38:05.706Z
+                at 2026-06-07T18:48:37.098Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
