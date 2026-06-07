@@ -1,9 +1,6 @@
 {
   "version": 2,
   "name": "sierra-blu-web",
-  "buildCommand": "pnpm --filter sierra-blu-platform build",
-  "outputDirectory": "apps/web/.next",
-  "installCommand": "pnpm install --frozen-lockfile",
   "framework": "nextjs",
   "regions": ["iad1"],
   "crons": [

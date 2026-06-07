@@ -39,9 +39,9 @@ lerna-debug.log*
 
 # Firebase
 .firebase/
-.firebaserc
 functions/lib/
 functions/dist/
+# .firebaserc is tracked — it contains project IDs, not secrets
 
 # Emulator
 firebase-debug.log
