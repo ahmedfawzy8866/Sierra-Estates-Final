@@ -1,6 +1,7 @@
 const collectionMock = jest.fn();
 const addMock = jest.fn();
 const updateMock = jest.fn();
+const getMock = jest.fn();
 const docMock = jest.fn();
 
 jest.mock('@/lib/server/firebase-admin', () => ({
@@ -22,10 +23,11 @@ const makeReq = (body: unknown) =>
 describe('POST /api/leads/request-viewing', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    docMock.mockReturnValue({ update: updateMock });
+    docMock.mockReturnValue({ update: updateMock, get: getMock });
     collectionMock.mockReturnValue({ add: addMock, doc: docMock });
     addMock.mockResolvedValue({ id: 'viewing-abc' });
     updateMock.mockResolvedValue(undefined);
+    getMock.mockResolvedValue({ exists: true });
   });
 
   test('creates viewing request with valid payload', async () => {

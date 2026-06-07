@@ -17,7 +17,29 @@ export async function POST(req: Request) {
       );
     }
 
-    // Update the concierge selection/portfolio engagement in Firestore
+    // Create a viewing request record
+    const viewingDoc = await adminDb.collection(COLLECTIONS.viewings).add({
+      leadId,
+      unitId,
+      portfolioId: portfolioId || null,
+      status: 'pending_approval',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    });
+
+    // Update the lead status
+    const leadRef = adminDb.collection(COLLECTIONS.stakeholders).doc(leadId);
+    const leadSnap = await leadRef.get();
+
+    if (leadSnap.exists) {
+      await leadRef.update({
+        status: 'Viewing Requested',
+        stage: 2,
+        updatedAt: new Date()
+      });
+    }
+
+    // Update the concierge selection if provided
     if (portfolioId) {
       const portfolioRef = adminDb.collection(COLLECTIONS.conciergeSelections).doc(portfolioId);
       await portfolioRef.update({
@@ -27,21 +49,9 @@ export async function POST(req: Request) {
       });
     }
 
-    // In a production app, we would also update the Lead status or create a task
-    // for the agent to approve/schedule the viewing.
-    const leadRef = adminDb.collection(COLLECTIONS.stakeholders).doc(leadId);
-    const leadSnap = await leadRef.get();
-    
-    if (leadSnap.exists) {
-      await leadRef.update({
-        status: 'Viewing Requested',
-        stage: 2, // Moves to Stage 2: Agent Approval & Scheduling
-        updatedAt: new Date()
-      });
-    }
-
     return NextResponse.json({
       success: true,
+      viewingId: viewingDoc.id,
       message: 'Viewing request received. Laila is preparing matches for agent confirmation.'
     });
   } catch (error: any) {
