@@ -68,3 +68,4 @@ service cloud.firestore {
 ## 🚨 Guard rails for future migrations
 1.  **Do not deploy rules without local test checks!** Running `pnpm test` executes the unit tests which validate these rules against the Firebase Emulator before they are uploaded.
 2.  **Ensure every staff user has a corresponding document in `/users` collection** specifying their role, otherwise they will be blocked from accessing the CRM dashboard.
+

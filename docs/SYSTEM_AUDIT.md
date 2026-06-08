@@ -1,5 +1,10 @@
 # 🏛️ Sierra Estates: Complete System Audit & Roadmap
 
+## Audit Entry — 2026-06-02
+- Added 5 new Python utility scripts (lead-scorer, firestore-exporter, property-sync, whatsapp-broadcast, analytics-report)
+- Added LeadScoreBadge and StatsCard UI components
+- Updated design system CSS with gold/navy tokens
+
 ## Part 1: Frontend Design — Final Inventory
 
 ### 🟢 BUILT & FUNCTIONAL (16 Screens)
@@ -119,3 +124,4 @@
 3. **Firebase Storage migration** → All images in cloud
 4. **Investor Intelligence Page** → Price-per-meter analytics
 5. **Interactive Compound Map** → Leaflet + live inventory overlay
+

@@ -59,3 +59,4 @@ We maintain a strict lead response standard to ensure clients are captured insta
     *   `a.fawzy8866@gmail.com` (Ahmed Fawzy).
     *   The corresponding owner or broker's contact details.
 5.  **Direct Email Notification:** A detailed notification email (formatted in `[[Sales Scripts & Outreach]]`) is sent to `a.fawzy8866@gmail.com` with the date, property code, owner/broker coordinates, and the appropriate co-broke pitch.
+

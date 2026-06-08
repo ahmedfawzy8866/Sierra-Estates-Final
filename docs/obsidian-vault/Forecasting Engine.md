@@ -39,3 +39,4 @@ THEN
 ```
 
 When this filter triggers, **Sierra Bot** highlights the listing on our website homepage as a **"Premium Investment Opportunity (Direct from Owner)"**, giving our buyers the ultimate competitive edge.
+

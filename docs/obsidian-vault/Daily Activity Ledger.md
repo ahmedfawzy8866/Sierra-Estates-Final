@@ -39,3 +39,4 @@ Every 24 hours, the system generates a new ledger entry with the following layou
 
 ## 📈 Yield Performance Tracking
 The n8n workflow monitors this ledger to generate weekly reports. If active leads drop or scraper failures occur, it triggers an immediate **Telegram Bot Alert** to keep the Egypt brokerage team fully informed.
+

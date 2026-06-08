@@ -9,15 +9,12 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.11.0",
+    "zod": "^3.22",
     "@sierra-estates/obedian": "workspace:*",
-    "googleapis": "^171.4.0",
-    "node-telegram-bot-api": "^0.67.0",
-    "zod": "^3.22"
+    "@google/generative-ai": "^0.11.0"
   },
   "devDependencies": {
-    "@types/node": "^20",
-    "@types/node-telegram-bot-api": "^0.64.14",
-    "typescript": "^5.3"
+    "typescript": "^5.3",
+    "@types/node": "^20"
   }
 }

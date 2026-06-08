@@ -42,3 +42,4 @@ If you edit files in the left column, you MUST verify the packages/apps in the r
 ## 🚨 Critical Compile Warnings
 1.  **TypeScript Gating:** The monorepo enforces `ignoreBuildErrors: false` inside `apps/web/next.config.ts`. Any TypeScript error on the frontend will completely fail the production deployment build on Vercel. Always run `pnpm type-check` before pushing to origin.
 2.  **PostCSS v4:** Next.js uses the new CSS-first Tailwind configuration. Customize styling variables inside `apps/web/app/globals.css` rather than trying to use traditional tailwind.config files.
+

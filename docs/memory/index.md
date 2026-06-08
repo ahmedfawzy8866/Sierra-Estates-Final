@@ -43,3 +43,4 @@ Before pushing any change, verify the following gates:
 *   **Rule 1: Never change a collection field without updating `apps/web/lib/models/schema.ts` first!** The entire schema validation relies on typescript interfaces declared there.
 *   **Rule 2: Never modify public endpoints without checking `lib/server/auth-guard.ts`!** High-risk routes must remain protected.
 *   **Rule 3: Ensure that any new property model respects the UAE/Dubai DLD listing types!** (Refer to `property_finder_integration.md` for permit mapping rules).
+

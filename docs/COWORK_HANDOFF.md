@@ -557,7 +557,7 @@ git push origin feature/phase-2-admin-shell
 | Document | Location |
 |---|---|
 | Design Rules | `I:\5 May\Frontend\DESIGN.md` |
-| Master Project Brief | `I:\5 May\Frontend\sierra_estates_realty_master_handoff_no_references.txt` |
+| Master Project Brief | `I:\5 May\Frontend\sierra_blu_realty_master_handoff_no_references.txt` |
 | UI Kit Components (JSX) | `I:\5 May\Frontend\ui_kits\website\` |
 | CSS Design Tokens | `I:\5 May\Frontend\colors_and_type.css` |
 | Agent Roles | `AGENTS.md` (project root) |
@@ -565,3 +565,4 @@ git push origin feature/phase-2-admin-shell
 ---
 
 *End of Handoff — Sierra Estates Realty V13.0 · Digital Concierge*
+

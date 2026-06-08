@@ -1,4 +1,4 @@
-# ✦ sierra estates REALTY — V12.0 FINAL SYSTEM HANDOVER ✦
+# ✦ Sierra Estates REALTY — V12.0 FINAL SYSTEM HANDOVER ✦
 **Date:** April 2026
 **Environment:** Next.js + Firebase + Google Gemini (OpenClaw)
 **Status:** Unified & Production-Ready (Merged V11.5 + V12.0 logic)

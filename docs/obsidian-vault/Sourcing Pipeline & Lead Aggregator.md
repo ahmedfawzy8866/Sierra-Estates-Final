@@ -54,3 +54,4 @@ When a new property is aggregated, it passes through this vetting sequence:
           ├── YES (Undervalued by >= 10%) ───────────────► Feature on Website Home
           └── NO (Market Average or Overpriced) ─────────► Save in Backup CRM Database
 ```
+

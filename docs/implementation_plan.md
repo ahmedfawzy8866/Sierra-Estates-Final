@@ -74,3 +74,4 @@ Goal: Visual excellence (Cinzel/Josefin Sans/Noto) and RTL support.
 ### Manual Verification
 - Deploy UI components and verify Luxury Typography (Cinzel/Noto) in the dashboard.
 - Simulate WhatsApp webhook for lead classification.
+

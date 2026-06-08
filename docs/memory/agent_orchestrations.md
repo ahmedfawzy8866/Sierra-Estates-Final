@@ -64,10 +64,11 @@ sequenceDiagram
     participant PF as Property Finder / Scraper
     participant DB as Firestore
     participant F as Cloud Functions / n8n
-    participant A as Sierra AI / CRM
+    participant A as Sierra Estates / CRM
     
     PF->>F: 1. Push Raw Listing / Lead
     F->>DB: 2. Normalize and Save into collections
     DB-->>A: 3. Firestore Listener updates client interface
     A->>DB: 4. Client purchases property -> close deal
 ```
+

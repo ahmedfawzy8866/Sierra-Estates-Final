@@ -28,3 +28,4 @@ When an owner lists a property at an overpriced bracket (determined by the `[[Ma
 ```
 
 This structural prompt allows Leila to negotiate prices down, securing exclusive under-market assets for Sierra Estates's buyers.
+

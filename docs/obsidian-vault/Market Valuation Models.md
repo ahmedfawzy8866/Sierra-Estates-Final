@@ -45,3 +45,4 @@ $$\text{Rent-to-Price Ratio} = \frac{\text{Average Purchase Price}}{\text{Averag
 
 *   **Ratio $< 10$:** **"Strong Buy Signal"** — Buy is significantly cheaper than renting.
 *   **Ratio $> 15$:** **"Rent Signal"** — Property prices are inflated relative to rents; renting is financially optimal.
+

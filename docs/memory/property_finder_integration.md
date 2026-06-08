@@ -62,3 +62,4 @@ if (signature !== expected) {
 
 ## 🛠️ Diagnostics and Manual Ingestion
 You can manually run a listing synchronization directly from the Admin Panel, which runs the internal `pfService.fetchListings()` hook, ensuring zero latency when listing updates occur.
+

@@ -15,8 +15,8 @@ This branch finalizes the missing low-risk migration pieces that were still abse
 - `sierra-estatese-pf-hooks-and-routes.ts` → migrated to `packages/agents/src/pf-hooks-routes.ts`
 - Handoff and audit docs → copied into `docs/`
 - `sierra-estates-mcp.json` → copied to `docs/mcp/sierra-estates-mcp.json`
-- `sierra_estatese_api_integration.py` → `scripts/python/api-integration.py`
-- `sierra_estatese_bot_implementation.py` → `scripts/python/bot-implementation.py`
+- `sierra_blue_api_integration.py` → `scripts/python/api-integration.py`
+- `sierra_blue_bot_implementation.py` → `scripts/python/bot-implementation.py`
 - `system_prompt_and_deployment.py` → `scripts/python/system-prompt-deployment.py`
 - `install.sh` → `scripts/install.sh`
 
@@ -55,3 +55,4 @@ This branch finalizes the missing low-risk migration pieces that were still abse
 - `pnpm build`
 - `pnpm type-check`
 - `pnpm test:ci`
+
