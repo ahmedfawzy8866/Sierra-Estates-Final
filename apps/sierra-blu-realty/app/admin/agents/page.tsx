@@ -4,6 +4,26 @@ import React from 'react';
 import { Shield, BrainCircuit, Users, Activity, Settings2, RefreshCw } from 'lucide-react';
 
 export default function AgentControlCenter() {
+  // Top-line Strategic Pipeline KPIs (mirrors the executive metrics surfaced to staff).
+  const metrics = [
+    { label: 'Active Investment Stakeholders', value: '184', delta: '+12 this week' },
+    { label: 'Strategic Pipeline Value', value: 'EGP 1.24B', delta: '+8.4%' },
+    { label: 'Portfolio Assets Listed', value: '62', delta: '+5 new' },
+    { label: 'Deals In Closing', value: '9', delta: '3 awaiting signature' },
+  ];
+
+  // The autonomous Intelligence Pipeline an Investment Stakeholder flows through.
+  const pipelineStages = [
+    'Sourcing',
+    'Enrichment',
+    'Qualification',
+    'Matching',
+    'Engagement',
+    'Viewing',
+    'Proposal',
+    'Closing',
+  ];
+
   const agents = [
     {
       id: 'core-orchestrator',
@@ -58,6 +78,39 @@ export default function AgentControlCenter() {
           <RefreshCw className="h-4 w-4" />
           Sync Agents
         </button>
+      </div>
+
+      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+        {metrics.map((metric) => (
+          <div key={metric.label} className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] border border-[#f3f4f5]">
+            <p className="text-xs text-[#3a5570]/60 uppercase tracking-wider font-semibold">{metric.label}</p>
+            <p className="mt-3 text-3xl font-bold tracking-tight text-[#031632]" style={{ fontFamily: 'var(--font-display)' }}>
+              {metric.value}
+            </p>
+            <p className="mt-2 text-xs font-semibold text-emerald-600">{metric.delta}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] border border-[#f3f4f5]">
+        <div className="pb-4 border-b border-[#f3f4f5] mb-6">
+          <h2 className="font-bold text-[#071422] text-lg" style={{ fontFamily: 'var(--font-display)' }}>
+            Strategic Pipeline Stages
+          </h2>
+        </div>
+        <ol className="flex flex-wrap items-center gap-3">
+          {pipelineStages.map((stage, index) => (
+            <li key={stage} className="flex items-center gap-3">
+              <span className="rounded-full border border-[#f3f4f5] bg-[#f8f9fa] px-4 py-2 text-sm text-[#071422]">
+                <span className="mr-2 font-bold text-[#b88a2d]">{index + 1}</span>
+                {stage}
+              </span>
+              {index < pipelineStages.length - 1 && (
+                <span aria-hidden className="text-[#3a5570]/40">→</span>
+              )}
+            </li>
+          ))}
+        </ol>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
