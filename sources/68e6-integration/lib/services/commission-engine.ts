@@ -1,5 +1,5 @@
 /**
- * Sierra Blue — COMMISSION & KPI ENGINE
+ * Sierra Estates — COMMISSION & KPI ENGINE
  * Calculates commissions and tracks targets for Inside Sales, Closers, and Team Leaders.
  */
 
