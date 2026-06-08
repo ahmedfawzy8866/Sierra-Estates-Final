@@ -1,7 +1,7 @@
 {
   "name": "sierra-estates-platform",
   "version": "1.0.0",
-  "description": "Sierra Estates 1.0 - Master Monorepo",
+  "description": "Sierra Estates 2027 - Master Monorepo",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@9.0.0",
@@ -10,9 +10,12 @@
     "dev:admin": "pnpm --filter sierra-estates-admin-portal dev",
     "build:realty": "pnpm --filter sierra-estates-realty build",
     "build:admin": "pnpm --filter sierra-estates-admin-portal build",
-    "bootstrap:memory": "node scripts/bootstrap-vector-memory.js",
+    "dev": "pnpm --filter sierra-estates-realty dev",
+    "build": "pnpm --filter sierra-estates-realty build",
     "lint": "turbo run lint",
-    "test": "turbo run test"
+    "type-check": "turbo run type-check",
+    "test": "turbo run test",
+    "test:ci": "turbo run test"
   },
   "devDependencies": {
     "turbo": "^2.9.16",
