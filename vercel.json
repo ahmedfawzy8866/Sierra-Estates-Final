@@ -1,10 +1,6 @@
 {
   "version": 2,
-<<<<<<< HEAD
-  "name": "sierra-estates-platform",
-=======
   "name": "sierra-estates-web",
->>>>>>> origin/main
   "buildCommand": "pnpm --filter sierra-estates-platform build",
   "outputDirectory": "apps/web/.next",
   "installCommand": "pnpm install",
