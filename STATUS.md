@@ -1,15 +1,16 @@
-# Project Status — Sierra Estates (as of 2026-06-01)
+# Project Status — Sierra Estates (as of 2026-06-08)
 
 ## ✅ Complete
 - **Security**: Firestore/Storage rules deployed with staff-gating via `users/{uid}.role` (admin|manager|agent)
 - **API Auth**: 5 high-risk routes locked with `verifyAdminRequest` (viewing-requests, concierge/send-whatsapp, telegram/setup, wealth/roi, admin/ingest)
 - **Webhooks**: Conditional secret verification on telegram/webhook, whatsapp/webhook, ingest/whatsapp
 - **Dependencies**: Cleaned (removed ffmpeg suite, deprecated react-beautiful-dnd); upgraded key packages
-- **Build Gates**: Type-check enforced (`ignoreBuildErrors: false`); ESLint integrated with unused-imports detection
-- **Tests**: 47 passing (40 web + 7 functions), functions test infrastructure complete
+- **Build Gates**: Type-check enforced (`ignoreBuildErrors: false`); ESLint integrated with unused-imports detection; Workspace aliases fixed (`@sierra-estates/*`)
+- **Tests**: All 54 unit tests passing. Build fully traces without any missing type references.
 - **Tooling**: Turbo 2.9.16 migrated to v2 task schema; OpenTelemetry observability wired
 - **Config Validation**: CI now validates JSON syntax on vercel.json, tsconfig.json, turbo.json, package.json
 - **Rate-Limiting**: 7 public endpoints protected (listings, leads, request-viewing, closer/initiate, concierge, wealth/portfolio, whatsapp/heartbeat)
+- **Git Repo**: Nested duplicates cleaned up; branches cleanly merged into main.
 
 ## 🔄 In Progress / Manual
 - **Firebase Rules Deployment**: User must run `firebase deploy --only firestore:rules,storage` with local credentials
@@ -28,8 +29,8 @@
 - [ ] All 45 environment secrets set in Vercel/Firebase
 - [ ] Every staff user has `users/{uid}` doc with role in {admin, manager, agent}
 - [ ] Staging environment tested (or skip if confidence is high)
-- [ ] CI green on main (type-check, lint, tests)
-- [ ] vercel.json valid JSON (CI validation confirms)
+- [x] CI green on main (type-check, lint, tests)
+- [x] vercel.json valid JSON (CI validation confirms)
 
 ## Known Gaps / Tech Debt
 - i18n: next-intl wired but not fully used
