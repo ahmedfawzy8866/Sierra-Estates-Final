@@ -10,7 +10,7 @@ import { GoogleSheetsSync } from '@/lib/services/sheets-sync';
 import { hasValidBearerToken, unauthorizedResponse } from '@/lib/server/bearer-auth';
 
 /**
- * SIERRA BLU — CRON: INGEST FROM GOOGLE SHEETS BUFFER
+ * sierra estates — CRON: INGEST FROM GOOGLE SHEETS BUFFER
  *
  * Architecture: WhatsApp Scraper → Google Sheets (raw_messages tab) → this cron → Pipeline
  *

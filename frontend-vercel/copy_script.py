@@ -37,7 +37,7 @@ def process_file(src_path):
             content = f.read()
             
         # Replace brand names
-        content = re.sub(r'Sierra Blu', 'Sierra AI', content, flags=re.IGNORECASE)
+        content = re.sub(r'Sierra Estates', 'Sierra AI', content, flags=re.IGNORECASE)
         
         # We'll just dump them in legacy folder for now to avoid breaking the main app
         filename = os.path.basename(src_path)

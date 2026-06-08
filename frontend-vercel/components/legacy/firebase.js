@@ -3,9 +3,9 @@ import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBZLN2jTTKV34SneGPoWRz1zoRpX5uODjs",
-  authDomain: "sierra-blu.firebaseapp.com",
-  projectId: "sierra-blu",
-  storageBucket: "sierra-blu.firebasestorage.app",
+  authDomain: "sierra-estates.firebaseapp.com",
+  projectId: "sierra-estates",
+  storageBucket: "sierra-estates.firebasestorage.app",
   messagingSenderId: "941030513456",
   appId: "1:941030513456:web:56209a1495d69f217086f5",
   measurementId: "G-ZP054BPJ8Q"

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# SIERRA BLU REALTY V12.0 - COMPLETE AUTO SETUP
+# sierra estates REALTY V12.0 - COMPLETE AUTO SETUP
 # ONE COMMAND. EVERYTHING DONE. NO QUESTIONS ASKED.
 # Just run it and wait for "✅ COMPLETE"
 
@@ -21,7 +21,7 @@ SETUP_LOG="${PROJECT_ROOT}/.setup-log.txt"
 # Start logging
 {
   echo "==================================="
-  echo "Sierra Blu Setup - $TIMESTAMP"
+  echo "Sierra Estates Setup - $TIMESTAMP"
   echo "Project: $PROJECT_ROOT"
   echo "==================================="
   echo ""
@@ -80,7 +80,7 @@ echo -e "${BLUE}[3/5] Generating config files...${NC}" | tee -a "$SETUP_LOG"
 cat > .claude/sync-repos.md << 'SYNC_EOF'
 # Task: Keep Three Repos in Sync
 
-## Automated Sync for Sierra Blu Realty V12.0
+## Automated Sync for Sierra Estates Realty V12.0
 - design-motion-principles (Kyle Zantos)
 - taste-skill (Leonxlnx)  
 - impeccable (pbakaus)
@@ -129,7 +129,7 @@ SYNC_EOF
 cat > scripts/sync-repos.sh << 'SCRIPT_EOF'
 #!/bin/bash
 PROJECT_ROOT=$(pwd)
-echo "🔄 Sierra Blu - Repo Sync"
+echo "🔄 Sierra Estates - Repo Sync"
 echo ""
 if ! command -v claude &> /dev/null; then
   echo "Installing Claude Code..."

@@ -1,5 +1,5 @@
 /**
- * SIERRA BLU — EMAIL SERVICE
+ * sierra estates — EMAIL SERVICE
  * Sends transactional emails for confirmations, proposals, and notifications.
  * Integrates with SendGrid or resend.dev
  */
@@ -131,14 +131,14 @@ export class EmailService {
       <html>
       <head><meta charset="UTF-8"></head>
       <body style="font-family: Arial, sans-serif; color: #333;">
-        <h2>Your Investment Proposal from Sierra Blu</h2>
+        <h2>Your Investment Proposal from Sierra Estates</h2>
         <p>Dear ${investorName},</p>
         <p>We're excited to present your personalized investment proposal.</p>
         <p><strong>Proposal ID:</strong> ${proposalId}</p>
         <p>Please find your detailed analysis attached. Your proposal is valid for 30 days.</p>
         <p>To schedule a consultation or discuss next steps, reply to this email or contact our concierge team.</p>
         <p style="margin-top: 30px; color: #999; font-size: 12px;">
-          Sierra Blu Realty | Ultra-Cinematic Asset Intelligence<br/>
+          Sierra Estates Realty | Ultra-Cinematic Asset Intelligence<br/>
           Cairo, Egypt | +20 10 61399688
         </p>
       </body>
@@ -147,7 +147,7 @@ export class EmailService {
 
     return this.sendEmail({
       to: investorEmail,
-      subject: `Your Investment Proposal - Sierra Blu Realty [${proposalId}]`,
+      subject: `Your Investment Proposal - Sierra Estates Realty [${proposalId}]`,
       html: htmlContent,
       attachments: pdfBuffer ? [{ filename: `proposal-${proposalId}.pdf`, content: pdfBuffer }] : undefined,
     });
@@ -178,7 +178,7 @@ export class EmailService {
         </div>
         <p>Our team will meet you at the property. If you need to reschedule, please contact us at least 24 hours in advance.</p>
         <p style="margin-top: 30px; color: #999; font-size: 12px;">
-          Sierra Blu Realty | +20 10 61399688
+          Sierra Estates Realty | +20 10 61399688
         </p>
       </body>
       </html>
@@ -216,7 +216,7 @@ export class EmailService {
         </div>
         <p>Our legal team will be in touch with final documents and timeline.</p>
         <p style="margin-top: 30px; color: #999; font-size: 12px;">
-          Sierra Blu Realty | Legal & Closing Team
+          Sierra Estates Realty | Legal & Closing Team
         </p>
       </body>
       </html>

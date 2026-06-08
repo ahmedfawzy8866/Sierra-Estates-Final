@@ -1,5 +1,5 @@
 # ==============================================================================
-# Sierra Blu - Obsidian Memory Vault Sync Script
+# Sierra Estates - Obsidian Memory Vault Sync Script
 # Updates the Obsidian Vault with Sierra-2026 Codebase Status and Git Sourcing Data
 # Scheduled to run automatically every 2 hours
 # ==============================================================================
@@ -8,7 +8,7 @@ $ErrorActionPreference = "Stop"
 
 # Paths Definition
 $workspacePath = "F:\Final"
-$vaultPath = "I:\Work Sierra Blu\Sierra Engine Brain\obsidian-vault"
+$vaultPath = "I:\Work Sierra Estates\Sierra Engine Brain\obsidian-vault"
 $logPath = "F:\Final\scripts\obsidian-sync.log"
 
 function Log-Message($msg) {
@@ -115,10 +115,10 @@ try {
         [System.IO.File]::WriteAllText($ledgerPath, $ledgerContent, [System.Text.Encoding]::UTF8)
     }
 
-    # 5. Update absolute link paths in Sierra Blu Memory Engine.md to use current local paths
-    $enginePath = Join-Path $vaultPath "Sierra Blu Memory Engine.md"
+    # 5. Update absolute link paths in Sierra Estates Memory Engine.md to use current local paths
+    $enginePath = Join-Path $vaultPath "Sierra Estates Memory Engine.md"
     if (Test-Path $enginePath) {
-        Log-Message "Updating local workspace references in Sierra Blu Memory Engine.md..."
+        Log-Message "Updating local workspace references in Sierra Estates Memory Engine.md..."
         $engineContent = [System.IO.File]::ReadAllText($enginePath, [System.Text.Encoding]::UTF8)
         
         $oldPathPattern = "file:///C:/Users/sierr/.gemini/antigravity/worktrees/Final/refine-full-stack-ecosystem/docs/obsidian-vault"
@@ -127,7 +127,7 @@ try {
         if ($engineContent.Contains($oldPathPattern)) {
             $engineContent = $engineContent.Replace($oldPathPattern, $newPathPattern)
             [System.IO.File]::WriteAllText($enginePath, $engineContent, [System.Text.Encoding]::UTF8)
-            Log-Message "Successfully updated absolute file links in Sierra Blu Memory Engine.md."
+            Log-Message "Successfully updated absolute file links in Sierra Estates Memory Engine.md."
         }
     }
 

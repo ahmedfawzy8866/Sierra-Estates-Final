@@ -1,4 +1,4 @@
-# Sierra Blu PropTech OS — Coworker Execution Handoff
+# Sierra Estates PropTech OS — Coworker Execution Handoff
 **Version**: V13.0 — "The Digital Concierge"
 **Date**: May 4, 2026
 **Status**: Active Development — Production-Ready Shell
@@ -12,7 +12,7 @@
 
 ## 1. System Overview
 
-Sierra Blu is a **bilingual luxury real estate operating system** (Arabic + English) with two halves:
+Sierra Estates is a **bilingual luxury real estate operating system** (Arabic + English) with two halves:
 
 | Half | Purpose | Status |
 |---|---|---|
@@ -50,7 +50,7 @@ Create a file at `I:\5 May\my-app\.env.local` and fill in these values:
 # Firebase (Required)
 NEXT_PUBLIC_FIREBASE_API_KEY=
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=sierra-blu
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=sierra-estates
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
 NEXT_PUBLIC_FIREBASE_APP_ID=
@@ -70,7 +70,7 @@ DOCUSIGN_CLIENT_SECRET=
 cd "I:\5 May\my-app"
 & "C:\Program Files\nodejs\npm.cmd" run dev
 ```
-Open `http://localhost:3000` — you should see the Sierra Blu landing page.
+Open `http://localhost:3000` — you should see the Sierra Estates landing page.
 
 ---
 
@@ -557,11 +557,11 @@ git push origin feature/phase-2-admin-shell
 | Document | Location |
 |---|---|
 | Design Rules | `I:\5 May\Frontend\DESIGN.md` |
-| Master Project Brief | `I:\5 May\Frontend\sierra_blu_realty_master_handoff_no_references.txt` |
+| Master Project Brief | `I:\5 May\Frontend\sierra_estates_realty_master_handoff_no_references.txt` |
 | UI Kit Components (JSX) | `I:\5 May\Frontend\ui_kits\website\` |
 | CSS Design Tokens | `I:\5 May\Frontend\colors_and_type.css` |
 | Agent Roles | `AGENTS.md` (project root) |
 
 ---
 
-*End of Handoff — Sierra Blu Realty V13.0 · Digital Concierge*
+*End of Handoff — Sierra Estates Realty V13.0 · Digital Concierge*

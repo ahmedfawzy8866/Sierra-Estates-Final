@@ -12,8 +12,8 @@ Python runtime) under strict **Anti-Gravity separation of concerns**.
 > | repo `back` | did not exist — this scaffold **is** it (created fresh) |
 > | `engine_core.py` (Python) | the only existing scraper was **Node.js** (`3030/.../whatsapp-scraper-bot/index.js`); this Python engine is new |
 > | `packages/core-modules/` | renamed to **`core_modules`** — a hyphen is not a legal Python import name |
-> | `apps/sierra-blu-realty` | the top-level `sierra-blu-realty` repo is currently **empty** |
-> | `Sierra Blu Omega Final.html`, `Sierra Estates Admin (1).html` | not present anywhere in the workspace |
+> | `apps/sierra-estates-realty` | the top-level `sierra-estates-realty` repo is currently **empty** |
+> | `Sierra Estates Omega Final.html`, `Sierra Estates Admin (1).html` | not present anywhere in the workspace |
 
 ## Repository layout
 
@@ -43,8 +43,8 @@ back/
 
 | Tier | App | Access | Host |
 |------|-----|--------|------|
-| **1 — Client Hub** | `apps/sierra-blu-realty` | **Read-only.** Streams published listings from the 21-compound matrix via Firestore real-time listeners. Never writes. | Vercel (public) |
-| **2 — Admin & CRM** | `apps/sierra-blu-admin-portal` | **Write-control.** Manual unit creation, CRM lead tracking, WhatsApp intake, telemetry. | Vercel (private route, auth-gated) |
+| **1 — Client Hub** | `apps/sierra-estates-realty` | **Read-only.** Streams published listings from the 21-compound matrix via Firestore real-time listeners. Never writes. | Vercel (public) |
+| **2 — Admin & CRM** | `apps/sierra-estates-admin-portal` | **Write-control.** Manual unit creation, CRM lead tracking, WhatsApp intake, telemetry. | Vercel (private route, auth-gated) |
 | **Writer of record** | `bots/whatsapp-scraper-bot/engine_core.py` | The **only** process that writes `listings/` programmatically — via the Admin SDK service account, which bypasses client rules by design. | VPS / local |
 
 The boundary is enforced in **three places**: (1) the Vercel client app ships no write

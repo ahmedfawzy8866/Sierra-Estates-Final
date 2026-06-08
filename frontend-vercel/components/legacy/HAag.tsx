@@ -80,7 +80,7 @@ function LandingContent() {
             <Link href="#listings" className="nav-link">{isAr ? 'قوائم' : 'Listings'}</Link>
           </div>
           <div className="brand-logo-wrap animate-swing">
-            <img src="/sierra_blu_logo_dark.png" alt="Sierra AI" className="brand-logo centered" />
+            <img src="/sierra_estates_logo_dark.png" alt="Sierra AI" className="brand-logo centered" />
             <span className="logo-badge text-metallic">{isAr ? 'أبعد من مجرد وساطة' : 'Beyond Brokerage'}</span>
           </div>
           <div className="nav-right">
@@ -356,7 +356,7 @@ function LandingContent() {
       <footer className="master-footer">
         <div className="container footer-grid-wide">
            <div className="footer-col brand-col">
-             <img src="/sierra_blu_logo_dark.png" alt="Sierra AI" className="footer-logo-lg" />
+             <img src="/sierra_estates_logo_dark.png" alt="Sierra AI" className="footer-logo-lg" />
              <p className="tagline">{isAr ? 'سييرا إستيتس — أبعد من مجرد وساطة.' : 'Sierra AI — Beyond Brokerage.'}</p>
            </div>
            

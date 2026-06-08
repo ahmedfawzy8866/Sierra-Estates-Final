@@ -1,6 +1,6 @@
 // next.config.js
 /**
- * Sierra Blu – Next.js configuration
+ * Sierra Estates – Next.js configuration
  */
 module.exports = {
 

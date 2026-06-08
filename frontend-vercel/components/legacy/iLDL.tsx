@@ -50,7 +50,7 @@ const B = {
 // ─── Official Brand Logo ──────────────────────────────────────────
 const BrandLogo = ({ height = 64, dark = false }: { height?: number; dark?: boolean }) => (
   <Image
-    src={dark ? "/sierra_blu_logo_dark.png" : "/sierra_blu_logo_light.png"}
+    src={dark ? "/sierra_estates_logo_dark.png" : "/sierra_estates_logo_light.png"}
     alt="Sierra AI Realty"
     height={height}
     width={Math.round(height * 0.78)}

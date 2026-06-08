@@ -250,15 +250,15 @@
 <span class="cstat-no" title="statement not covered" >import fs from 'fs';</span>
 &nbsp;
 /**
- * SIERRA BLU BRANDING ENGINE
+ * sierra estates BRANDING ENGINE
  * Level: Institutional / Quiet Luxury
  * Purpose: Automates Stage 3 Branding for property assets.
  */
 <span class="cstat-no" title="statement not covered" >export class B</span>randingService {
-  private static <span class="cstat-no" title="statement not covered" >LOGO_PATH = path.join(process.cwd(), 'public', 'sierra_blu_logo_light.png');</span>
+  private static <span class="cstat-no" title="statement not covered" >LOGO_PATH = path.join(process.cwd(), 'public', 'sierra_estates_logo_light.png');</span>
 &nbsp;
   /**
-   * Processes a source image URL and adds the Sierra Blu gold watermark.
+   * Processes a source image URL and adds the Sierra Estates gold watermark.
    * Returns the uploaded public URL.
    */
 <span class="fstat-no" title="function not covered" >  static </span>async brandPropertyImage(
@@ -288,7 +288,7 @@
           }
         })
         .composite([{
-          input: Buffer.from(`&lt;svg&gt;&lt;text x="10" y="40" font-family="Arial" font-size="24" fill="white"&gt;SIERRA BLU&lt;/text&gt;&lt;/svg&gt;`),
+          input: Buffer.from(`&lt;svg&gt;&lt;text x="10" y="40" font-family="Arial" font-size="24" fill="white"&gt;sierra estates&lt;/text&gt;&lt;/svg&gt;`),
           top: 0,
           left: 0
         }])
@@ -307,7 +307,7 @@
             input: Buffer.from(
               `&lt;svg width="400" height="50"&gt;
                 &lt;text x="10" y="40" font-family="Inter, sans-serif" font-size="20" fill="white" fill-opacity="0.5"&gt;
-                  REF: ${propertyCode} | SIERRA BLU REALTY
+                  REF: ${propertyCode} | sierra estates REALTY
                 &lt;/text&gt;
               &lt;/svg&gt;`
             ),

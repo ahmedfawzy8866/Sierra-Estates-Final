@@ -1,5 +1,5 @@
 /**
- * SIERRA BLU — SERVER STARTUP ENV VALIDATION
+ * sierra estates — SERVER STARTUP ENV VALIDATION
  * Called once at server init via instrumentation.ts.
  * Logs errors for missing required vars, warns for missing optional ones.
  */
@@ -56,7 +56,7 @@ export function validateEnv(): void {
 
   if (missing.length > 0) {
     console.error(
-      '\n[sierra-blu] ❌ MISSING REQUIRED ENVIRONMENT VARIABLES:\n' +
+      '\n[sierra-estates] ❌ MISSING REQUIRED ENVIRONMENT VARIABLES:\n' +
       missing.map((v) => `  - ${v}`).join('\n') +
       '\n  → Some features will fail. Set these in .env.local or Vercel project settings.\n'
     );
@@ -64,12 +64,12 @@ export function validateEnv(): void {
 
   if (warned.length > 0) {
     console.warn(
-      '\n[sierra-blu] ⚠️  Optional env vars not set (some integrations will be disabled):\n' +
+      '\n[sierra-estates] ⚠️  Optional env vars not set (some integrations will be disabled):\n' +
       warned.map((v) => `  - ${v}`).join('\n') + '\n'
     );
   }
 
   if (missing.length === 0) {
-    console.log('[sierra-blu] ✅ Environment variables validated successfully.');
+    console.log('[sierra-estates] ✅ Environment variables validated successfully.');
   }
 }

@@ -375,7 +375,7 @@ export default function EasyListing() {
       ctx.fillStyle = "#FFFFFF";
       ctx.font = "bold 42px serif";
       ctx.textAlign = "center";
-      ctx.fillText("✦ SIERRA BLU ✦", 540, 1160);
+      ctx.fillText("✦ sierra estates ✦", 540, 1160);
 
       ctx.fillStyle = "#C9A24A";
       ctx.font = "italic 24px sans-serif";
@@ -422,7 +422,7 @@ export default function EasyListing() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `sierra_blu_inventory_${new Date().toISOString().slice(0,10)}.csv`);
+    link.setAttribute("download", `sierra_estates_inventory_${new Date().toISOString().slice(0,10)}.csv`);
     document.body.appendChild(link);
     link.click();
   };
@@ -457,7 +457,7 @@ export default function EasyListing() {
             {t('easyListing.title')}
           </h1>
           <p className="text-slate-400 font-medium tracking-tight max-w-xl">
-             Luxury portfolio management powered by Sierra Blu Artificial Intelligence. 
+             Luxury portfolio management powered by Sierra Estates Artificial Intelligence. 
              Forge specific listings or tap into the global broker nexus.
           </p>
         </div>
@@ -746,7 +746,7 @@ export default function EasyListing() {
                    <button 
                     onClick={() => {
                       const link = document.createElement('a');
-                      link.download = `sierra-blu-${generatedCode}.png`;
+                      link.download = `sierra-estates-${generatedCode}.png`;
                       link.href = canvasRef.current?.toDataURL() || '';
                       link.click();
                     }}
@@ -788,7 +788,7 @@ export default function EasyListing() {
         {activeTour && (
           <VirtualTourViewer 
             sceneUrl={activeTour} 
-            title="Sierra Blu Neural Tour" 
+            title="Sierra Estates Neural Tour" 
             onClose={() => setActiveTour(null)} 
           />
         )}

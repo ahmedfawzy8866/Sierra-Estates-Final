@@ -10,7 +10,7 @@ import fs from 'fs';
  * Purpose: Automates Stage 3 Branding for property assets.
  */
 export class BrandingService {
-  private static LOGO_PATH = path.join(process.cwd(), 'public', 'sierra_blu_logo_light.png');
+  private static LOGO_PATH = path.join(process.cwd(), 'public', 'sierra_estates_logo_light.png');
 
   /**
    * Processes a source image URL and adds the Sierra AI gold watermark.

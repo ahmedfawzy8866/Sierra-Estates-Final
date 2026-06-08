@@ -12,7 +12,7 @@ import {
 import { COLLECTIONS } from '../models/schema';
 
 /**
- * SIERRA BLU NEURAL MEMORY HUB
+ * sierra estates NEURAL MEMORY HUB
  * Purpose: Global learning across all deals and lead rejections.
  */
 export class MemoryService {

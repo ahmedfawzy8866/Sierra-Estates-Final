@@ -46,7 +46,7 @@ export default function SettlementEscrowPage() {
               holdDate: data.createdAt || new Date().toISOString(),
               releaseDate: data.closingDate,
               status: data.stage === 'closed' ? 'released' : 'held',
-              escrowAgent: 'Sierra Blu Legal',
+              escrowAgent: 'Sierra Estates Legal',
             });
           }
         });

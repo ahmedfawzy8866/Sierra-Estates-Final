@@ -1,6 +1,6 @@
 import React from 'react';
 import { MapPin } from 'lucide-react';
-import { PropertyCard } from '../../types/sierra-blu';
+import { PropertyCard } from '../../types/sierra-estates';
 
 export function PropertyProfileHero({ property }: { property: PropertyCard }) {
   return (

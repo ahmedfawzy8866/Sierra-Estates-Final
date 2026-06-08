@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Heart, MapPin, Bed, Bath, Square } from 'lucide-react';
-import { UserIntent, PropertyCard } from '../../types/sierra-blu';
+import { UserIntent, PropertyCard } from '../../types/sierra-estates';
 import { MOCK_PROPERTIES } from '../../data/mock-properties';
 
 export function DualViewCommandCenter({

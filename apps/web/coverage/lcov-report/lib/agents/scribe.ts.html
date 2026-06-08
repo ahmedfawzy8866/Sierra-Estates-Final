@@ -268,9 +268,9 @@ export const <span class="cstat-no" title="statement not covered" >runScribe = <
 &nbsp;
       const rawText = <span class="cstat-no" title="statement not covered" >doc?.rawMessage || doc?.description || JSON.stringify(doc || {});</span>
 &nbsp;
-      const systemPrompt = <span class="cstat-no" title="statement not covered" >`You are "The Scribe", the Architect of Truth for Sierra Blu Realty.</span>
+      const systemPrompt = <span class="cstat-no" title="statement not covered" >`You are "The Scribe", the Architect of Truth for Sierra Estates Realty.</span>
 Your job is to take raw, messy property data and normalize it into a precise institutional record.
-Enforce Sierra Blu standards:
+Enforce Sierra Estates standards:
 - Identify Compound Name precisely.
 - Extract Floor, Building Number, and Unit Number.
 - Determine Finishing Grade (e.g., Core &amp; Shell, Semi-finished, Ultra-lux).
@@ -289,7 +289,7 @@ Output ONLY a JSON object.`;
           { model: 'fast' }
         );
 &nbsp;
-        // --- SIERRA BLU UPGRADE: Automated Valuation (S2.5) ---
+        // --- sierra estates UPGRADE: Automated Valuation (S2.5) ---
         const unitData = <span class="cstat-no" title="statement not covered" >{ ...doc, intelligence: { ...doc?.intelligence, ...normalized } } as any;</span>
         const valuation = <span class="cstat-no" title="statement not covered" >FinancialService.calcAppraisedValue(unitData);</span>
 &nbsp;
