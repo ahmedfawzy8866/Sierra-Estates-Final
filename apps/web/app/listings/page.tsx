@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import InventoryShowcase from '@/components/UI/InventoryShowcase';
+import InventoryShowcase from '@/components/Listings/InventoryShowcase';
 import { Search } from 'lucide-react';
 
 export default function ListingsPage() {

@@ -7,7 +7,7 @@ import InteractiveCrmMap from '@/components/UI/InteractiveCrmMap';
 import LuxuryVirtualViewport from '@/components/UI/LuxuryVirtualViewport';
 import MobileBottomNav from '@/components/UI/MobileBottomNav';
 import PremiumHero from '@/components/UI/PremiumHero';
-import InventoryShowcase from '@/components/UI/InventoryShowcase';
+import InventoryShowcase from '@/components/Listings/InventoryShowcase';
 import TestimonialsCarousel from '@/components/UI/TestimonialsCarousel';
 import AIMatchingEngine from '@/components/UI/AIMatchingEngine';
 import VirtualTour3D from '@/components/UI/VirtualTour3D';

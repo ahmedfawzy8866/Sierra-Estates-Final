@@ -19,7 +19,8 @@
     "deploy:firebase": "firebase deploy --only firestore:rules,storage,functions",
     "deploy:rules": "firebase deploy --only firestore:rules,storage",
     "deploy:functions": "firebase deploy --only functions",
-    "validate": "pnpm lint && pnpm type-check && pnpm test:ci && pnpm build"
+    "validate": "pnpm lint && pnpm type-check && pnpm test:ci && pnpm build",
+    "setup:deploy": "node scripts/deploy-setup.js"
   },
   "devDependencies": {
     "turbo": "^2.9.16",

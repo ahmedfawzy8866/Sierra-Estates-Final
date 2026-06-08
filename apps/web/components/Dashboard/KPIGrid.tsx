@@ -115,15 +115,16 @@ export default function KPIGrid({ onNavigate }: KPIGridProps) {
       color: '#C8A96E'
     },
     {
-      id: 'partners',
-      label: locale === 'ar' ? 'الشركاء' : 'Strategic Partners',
-      value: stats.partners.toString(),
-      badge: locale === 'ar' ? 'مؤمن' : 'Secured Status',
+      id: 'acquisition',
+      label: locale === 'ar' ? 'حصة الملاك (Acquisition)' : 'Owner Quota',
+      value: `${Math.min(stats.stakeholders, 100)} / 100`,
+      badge: locale === 'ar' ? 'تارجت الموظف' : 'Rep Target',
       icon: <ShieldCheck size={22} />,
       screen: 'team' as const,
-      color: '#A0AEC0'
+      color: '#4ADE80'
     },
   ], [stats, locale]);
+
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
