@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "name": "sierra-estates-web",
-  "buildCommand": "pnpm --filter sierra-estates-platform build",
-  "outputDirectory": "apps/web/.next",
+  "name": "sierra-estates-production",
+  "buildCommand": "CI=false pnpm --filter sierra-blu-realty build",
+  "outputDirectory": "apps/sierra-blu-realty/.next",
   "installCommand": "pnpm install",
   "framework": "nextjs",
   "regions": ["iad1"],

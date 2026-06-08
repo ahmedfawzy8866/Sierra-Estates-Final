@@ -1,6 +1,6 @@
 packages:
-  - 'apps/web'
-  - 'apps/agents-dashboard'
+  - 'apps/sierra-blu-realty'
+  - 'apps/sierra-blu-admin-portal'
   - 'packages/*'
   - 'functions'
 

@@ -1,26 +1,18 @@
 {
   "name": "sierra-estates-platform",
   "version": "1.0.0",
-  "description": "Sierra Estates - Luxury Real Estate Platform",
+  "description": "Sierra Estates 1.0 - Master Monorepo",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@9.0.0",
   "scripts": {
-    "dev": "pnpm --filter sierra-estates-platform dev",
-    "dev:functions": "pnpm --filter sierra-estates-functions dev",
-    "build": "pnpm --filter sierra-estates-platform build",
-    "build:functions": "pnpm --filter sierra-estates-functions build",
-    "start": "pnpm --filter sierra-estates-platform start",
+    "dev:realty": "pnpm --filter sierra-blu-realty dev",
+    "dev:admin": "pnpm --filter sierra-blu-admin-portal dev",
+    "build:realty": "pnpm --filter sierra-blu-realty build",
+    "build:admin": "pnpm --filter sierra-blu-admin-portal build",
+    "bootstrap:memory": "node scripts/bootstrap-vector-memory.js",
     "lint": "turbo run lint",
-    "test": "turbo run test",
-    "test:ci": "turbo run test:ci",
-    "type-check": "turbo run type-check",
-    "clean": "turbo run clean && rm -rf node_modules",
-    "deploy:firebase": "firebase deploy --only firestore:rules,storage,functions",
-    "deploy:rules": "firebase deploy --only firestore:rules,storage",
-    "deploy:functions": "firebase deploy --only functions",
-    "validate": "pnpm lint && pnpm type-check && pnpm test:ci && pnpm build",
-    "setup:deploy": "node scripts/deploy-setup.js"
+    "test": "turbo run test"
   },
   "devDependencies": {
     "turbo": "^2.9.16",
@@ -29,11 +21,5 @@
   "engines": {
     "node": ">=20.0.0",
     "pnpm": ">=9.0.0"
-  },
-  "pnpm": {
-    "overrides": {
-      "postcss": ">=8.5.10",
-      "uuid": ">=11.1.1"
-    }
   }
 }
