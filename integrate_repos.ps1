@@ -7,10 +7,10 @@ $sourceRepos = @(
     "I:\sierrs 2030\Sierra 2027",
     "I:\sierrs 2030\Sierra Estatese",
     "I:\sierrs 2030\Sierra-Engine",
-    "I:\sierrs 2030\sierrablu-core-engine",
+    "I:\sierrs 2030\sierraestates-core-engine",
     "H:\sierra-final\Sierra Estatese SaaS Program Locally V2",
     "F:\allll\sierra-estates-unified",
-    "F:\allll\Sierra_Blu_Master",
+    "F:\allll\sierra_estates_Master",
     "F:\allll\project 555\my-sierra-project",
     "C:\Users\sierr\Sierra-Blu-Systm"
 )

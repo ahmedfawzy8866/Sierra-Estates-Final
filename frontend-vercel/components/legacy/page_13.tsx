@@ -35,7 +35,7 @@ type Screen =
   | 'ledger'    | 'sync'     | 'processing' | 'nexus'    | 'intelligence'
   | 'map'       | 'system';
 
-export default function SierraBluApp() {
+export default function SierraEstatesApp() {
   const { user, isGuest, loading, signOut } = useAuth();
   const { locale }                           = useI18n();
 

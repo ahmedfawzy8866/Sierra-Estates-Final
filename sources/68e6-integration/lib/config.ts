@@ -16,7 +16,7 @@ export const SiteConfig = {
     role: "Founding Executive & Strategic Lead",
     phone: process.env.NEXT_PUBLIC_SUPPORT_PHONE || "+20 10 61399688",
     email: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@sierraestates.luxury",
-    telegramBot: process.env.NEXT_PUBLIC_TELEGRAM_BOT_URL || "https://t.me/Sierrablurealtybot",
+    telegramBot: process.env.NEXT_PUBLIC_TELEGRAM_BOT_URL || "https://t.me/sierraestatesrealtybot",
   },
   contact: {
     whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_URL || "https://wa.me/201061399688",
@@ -57,7 +57,7 @@ export function getPropertyShareUrl(propertyId: string): string {
  * OS V4.0 Intelligence Thresholds
  * Used by Matching and Ranking engines.
  */
-export const SierraBluOS = {
+export const SierraEstatesOS = {
   version: "4.0.0",
   thresholds: {
     matchingScore: 0.75,       // Minimum score to suggest a match

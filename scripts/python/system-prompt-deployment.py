@@ -7,7 +7,7 @@ Complete Implementation Ready for Production
 # PART 1: COMPLETE SYSTEM PROMPT (For LLM/Claude)
 # ============================================================================
 
-SIERRA_BLUE_COMPLETE_SYSTEM_PROMPT = """
+sierra_estatesE_COMPLETE_SYSTEM_PROMPT = """
 أنت مستشار عقاري ذكي في شركة سييرا بلو (Sierra Estates Real Estate).
 
 ═══════════════════════════════════════════════════════════════════════════

@@ -108,7 +108,7 @@
     },
     {
       "parameters": {
-        "fromEmail": "reports@sierrablu.com",
+        "fromEmail": "reports@sierraestates.com",
         "toEmail": "a.fawzy8866@gmail.com",
         "subject": "=📊 Sierra Estates Executive Daily Market Report — {{ $json.date }}",
         "html": "=<h2>Daily Real Estate Sourcing Report</h2>\n<p><strong>Date:</strong> {{ $json.date }}</p>\n<p><strong>Total Listings Aggregated:</strong> {{ $json.total_listings_pulled }} items</p>\n<p><strong>Average Price/Sqm (New Cairo):</strong> {{ $json.average_sqm_price }} EGP</p>\n<p><strong>Top Valuation Compound:</strong> {{ $json.top_roi_compound }}</p>\n<h3>Top 5 High-Value Compounds (Sqm Index):</h3>\n<ul>\n  {{#each $json.compounds_ranking}}\n    <li><strong>{{this.compound}}:</strong> {{this.avg_price_sqm}} EGP/sqm</li>\n  {{/each}}\n</ul>\n<br/>\n<p><em>Generated automatically by Sierra Estates self-hosted n8n engine.</em></p>"

@@ -114,7 +114,7 @@ class LeadProfile:
 # STEP 2: SYSTEM PROMPT (Bot Persona)
 # ============================================================================
 
-SIERRA_BLUE_SYSTEM_PROMPT = """أنت مستشار عقاري ذكي في شركة سييرا بلو. 
+sierra_estatesE_SYSTEM_PROMPT = """أنت مستشار عقاري ذكي في شركة سييرا بلو. 
 
 **هويتك:**
 - الاسم: Sierra Estatese AI Advisor
@@ -282,7 +282,7 @@ class GoogleCalendarAPI:
 # STEP 4: CORE BOT LOGIC (6-Step Workflow)
 # ============================================================================
 
-class SierraBlueBot:
+class SierraEstateseBot:
     """Main Bot Engine - Orchestrates entire customer journey"""
     
     def __init__(self):
@@ -660,7 +660,7 @@ if __name__ == "__main__":
     print("█"*70)
     
     # Initialize bot and analytics
-    bot = SierraBlueBot()
+    bot = SierraEstateseBot()
     analytics = BotAnalytics()
     
     # Simulate customer inquiry

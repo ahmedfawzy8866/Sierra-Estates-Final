@@ -517,7 +517,7 @@
       "identifier": "Admin Identifier",
       "securityKey": "Security Key",
       "initialize": "Initialize Override",
-      "identifierPlaceholder": "admin.access@sierrablurealty.com",
+      "identifierPlaceholder": "admin.access@sierraestatesrealty.com",
       "keyPlaceholder": "••••••••••••",
       "encrypted": "Encrypted Tunnel Active",
       "mfa": "Hardware MFA Verified",

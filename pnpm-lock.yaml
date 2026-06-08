@@ -15,7 +15,7 @@ importers:
         specifier: ^5.3.3
         version: 5.9.3
 
-  apps/sierra-blu-admin-portal:
+  apps/sierra-estates-admin-portal:
     dependencies:
       next:
         specifier: 16.2.7
@@ -52,7 +52,7 @@ importers:
         specifier: ^5
         version: 5.9.3
 
-  apps/sierra-blu-realty:
+  apps/sierra-estates-realty:
     dependencies:
       '@arizeai/openinference-semantic-conventions':
         specifier: ^2.2.0

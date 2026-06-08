@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo } from 'react';
-import { useSierraBlu } from '@/hooks/useSierraBlu';
+import { useSierraEstates } from '@/hooks/useSierraEstates';
 import { useI18n } from '../../lib/I18nContext';
 import { formatCompactEGP, calcROI, calcGrossYield } from '../../lib/financial-engine';
 import { motion } from 'framer-motion';
@@ -13,7 +13,7 @@ interface KPIGridProps {
 
 export default function KPIGrid({ onNavigate }: KPIGridProps) {
   const { locale } = useI18n();
-  const { units, leads, partners, sales, loading } = useSierraBlu();
+  const { units, leads, partners, sales, loading } = useSierraEstates();
 
   const stats = useMemo(() => {
     let totalROI = 0, totalYield = 0, totalPricePerSqm = 0, roiCount = 0, yieldCount = 0, priceCount = 0;

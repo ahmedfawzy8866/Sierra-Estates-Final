@@ -1,6 +1,6 @@
-# Sierra Blue: Automated Technical Workflow (n8n / Claude Code Guide)
+# Sierra Estatese: Automated Technical Workflow (n8n / Claude Code Guide)
 
-This document outlines the technical architecture and automation flows for the Sierra Blue PropTech system. It is designed to be fed into automation engines (like n8n, Make, or Claude Code) to build the operational pipelines.
+This document outlines the technical architecture and automation flows for the Sierra Estatese PropTech system. It is designed to be fed into automation engines (like n8n, Make, or Claude Code) to build the operational pipelines.
 
 ## System Architecture Overview
 The system relies on a seamless handoff between AI automation and Human validation.
@@ -55,7 +55,7 @@ The system relies on a seamless handoff between AI automation and Human validati
 2. **Router Node (OpenClaw):**
    - Route message to the `Liela` Agent.
 3. **LLM Node (Liela - High Tier LLM):**
-   - **System Prompt:** "You are Liela, Sierra Blue's luxury virtual assistant. Keep responses under 40 words. Ask discovery questions: {Apartment/Villa?, Furnishing?, Location?, Move-in date?}. Offer the Elite Voucher for serious clients."
+   - **System Prompt:** "You are Liela, Sierra Estatese's luxury virtual assistant. Keep responses under 40 words. Ask discovery questions: {Apartment/Villa?, Furnishing?, Location?, Move-in date?}. Offer the Elite Voucher for serious clients."
 4. **Action (Firestore Node):**
    - Update/Upsert the `clients` collection.
    - Set status to `Hot_Lead`.

@@ -2,18 +2,18 @@
 
 /**
  * Sierra AI — INVENTORY SHOWCASE
- * Demonstrates how to use the useSierraBlu hook for data fetching
+ * Demonstrates how to use the useSierraEstates hook for data fetching
  * Component: High-fidelity grid of available properties with live data
  */
 
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { useSierraBlu } from '@/hooks/useSierraBlu';
+import { useSierraEstates } from '@/hooks/useSierraEstates';
 import { LuxuryCard, EditorialHeading, SectionBadge } from '@/components/UI/LuxurySkeleton';
 import { MapPin, TrendingUp, ArrowRight } from 'lucide-react';
 
 export default function InventoryShowcase() {
-  const { units, loading, error } = useSierraBlu();
+  const { units, loading, error } = useSierraEstates();
 
   // Sort and limit units for showcase (top 6)
   const featuredUnits = useMemo(() => {

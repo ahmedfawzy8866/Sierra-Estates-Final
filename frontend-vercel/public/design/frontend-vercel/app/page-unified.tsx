@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { fetchAllMapProperties } from '@/lib/database-protocol';
 import type { SierraProperty } from '@/lib/database-protocol';
 
-export default function SierraBluUnified() {
+export default function SierraEstatesUnified() {
   const [properties, setProperties] = useState<SierraProperty[]>([]);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isScrolled, setIsScrolled] = useState(false);

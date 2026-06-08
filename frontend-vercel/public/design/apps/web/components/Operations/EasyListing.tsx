@@ -218,9 +218,9 @@ export default function EasyListing() {
       const code = `${compoundCode}-${bedrooms}${furnished}-${pricePart}`;
       
       // Social Templates
-      const whatsapp = `✦ sierra estates REALTY ✦\n\nUnit Code: ${code}\nLocation: ${compound || 'Custom'}\nDetails: ${bedrooms} BR | ${furnished === 'F' ? 'Fully Furnished' : 'Luxury Finish'}\nPrice: ${price.toLocaleString()} ${currency}\n\nContact: ${phone || 'Available Upon Request'}\n#SierraBlu #BeyondBrokerage`;
+      const whatsapp = `✦ sierra estates REALTY ✦\n\nUnit Code: ${code}\nLocation: ${compound || 'Custom'}\nDetails: ${bedrooms} BR | ${furnished === 'F' ? 'Fully Furnished' : 'Luxury Finish'}\nPrice: ${price.toLocaleString()} ${currency}\n\nContact: ${phone || 'Available Upon Request'}\n#SierraEstates #BeyondBrokerage`;
       
-      const facebook = `✨ LUXURY PORTFOLIO UPDATE ✨\n\nWe are pleased to present this exclusive listing in ${compound || 'New Cairo'}.\n\n💎 Code: ${code}\n🛏️ Bedrooms: ${bedrooms}\n💰 Price: ${price.toLocaleString()} ${currency}\n\nOur AI-driven platform ensures this is the highest value available today. Experience the Sierra Estates standard.\n\n📞 Call us: ${phone}\n\n#RealEstateEgypt #SierraBlu #Investment`;
+      const facebook = `✨ LUXURY PORTFOLIO UPDATE ✨\n\nWe are pleased to present this exclusive listing in ${compound || 'New Cairo'}.\n\n💎 Code: ${code}\n🛏️ Bedrooms: ${bedrooms}\n💰 Price: ${price.toLocaleString()} ${currency}\n\nOur AI-driven platform ensures this is the highest value available today. Experience the Sierra Estates standard.\n\n📞 Call us: ${phone}\n\n#RealEstateEgypt #SierraEstates #Investment`;
 
       setExtractedData({
         compound,

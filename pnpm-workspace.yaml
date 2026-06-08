@@ -1,6 +1,6 @@
 packages:
-  - 'apps/sierra-blu-realty'
-  - 'apps/sierra-blu-admin-portal'
+  - 'apps/sierra-estates-realty'
+  - 'apps/sierra-estates-admin-portal'
   - 'packages/*'
   - 'functions'
 

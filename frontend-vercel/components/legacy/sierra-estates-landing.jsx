@@ -154,7 +154,7 @@ const PFBadge = () => (
   </div>
 );
 
-export default function SierraBluLanding() {
+export default function SierraEstatesLanding() {
   const [scrolled, setScrolled] = useState(false);
   const [activeTab, setActiveTab] = useState("listings");
 
@@ -560,7 +560,7 @@ export default function SierraBluLanding() {
           {[
             { h: "Discover", links: ["Listings", "Compounds", "Investment", "Insights"] },
             { h: "Company", links: ["About", "Approach", "Press", "Careers"] },
-            { h: "Connect", links: ["+20 100 123 4567", "hello@sierrablu.com", "5th Settlement, Cairo", "EN | AR"] },
+            { h: "Connect", links: ["+20 100 123 4567", "hello@sierraestates.com", "5th Settlement, Cairo", "EN | AR"] },
           ].map(c => (
             <div key={c.h}>
               <div style={{ fontSize: 10.5, letterSpacing: ".25em", color: C.gold, textTransform: "uppercase", marginBottom: 18 }}>{c.h}</div>

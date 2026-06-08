@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useSierraBlu } from '@/hooks/useSierraBlu';
+import { useSierraEstates } from '@/hooks/useSierraEstates';
 import { Building2, TrendingUp, Handshake, Activity as ActivityIcon } from 'lucide-react';
 
 interface KPI {
@@ -28,7 +28,7 @@ const ACTIVITY_COLORS: Record<string, string> = {
 };
 
 export default function AdminDashboardPage() {
-  const { getDashboardStats, loading: hookLoading } = useSierraBlu();
+  const { getDashboardStats, loading: hookLoading } = useSierraEstates();
   const [kpis, setKpis] = useState<KPI[]>([]);
   const [recentActivities, setRecentActivities] = useState<RecentActivity[]>([]);
   const [loading, setLoading] = useState(true);

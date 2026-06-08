@@ -7,7 +7,7 @@ import type { ConciergeSelection, ConciergeUnit } from '@/lib/services/portfolio
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { COLLECTIONS } from '@/lib/models/schema';
-import { useSierraBlu } from '@/hooks/useSierraBlu';
+import { useSierraEstates } from '@/hooks/useSierraEstates';
 import { LuxuryCard, EditorialHeading } from '@/components/UI/LuxurySkeleton';
 
 /** Inline version — avoids importing the server-only portfolio-engine on the client */
@@ -28,7 +28,7 @@ export default function ConciergePage({ params }: { params: Promise<{ leadId: st
   const searchParams = useSearchParams();
   const galleryMode = searchParams.get('gallery') === 'true';
 
-  const { getLeadData, loading: hookLoading, error: hookError } = useSierraBlu();
+  const { getLeadData, loading: hookLoading, error: hookError } = useSierraEstates();
   const [portfolio, setPortfolio] = useState<ConciergeSelection | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

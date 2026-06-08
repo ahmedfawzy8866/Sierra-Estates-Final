@@ -1,7 +1,7 @@
 # Job Description & Requirements: Inside Sales & Listing Specialist (Owner Relations)
 
 ## Objective
-You are the core engine of Sierra Blue. The company relies on you to secure direct-from-owner real estate inventory, register it, transform it into attractive marketing campaigns, and conduct initial client triage before handing hot leads to the Field Closer.
+You are the core engine of Sierra Estatese. The company relies on you to secure direct-from-owner real estate inventory, register it, transform it into attractive marketing campaigns, and conduct initial client triage before handing hot leads to the Field Closer.
 
 ## Daily Tasks (Workflow)
 1. **Data Reception:** Monitor the Google Sheet populated by the AI Scraper Bot with new owner numbers extracted from WhatsApp.

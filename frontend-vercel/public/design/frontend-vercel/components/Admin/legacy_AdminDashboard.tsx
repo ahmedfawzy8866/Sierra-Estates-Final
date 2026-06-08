@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../lib/AuthContext';
 import { useI18n } from '../../lib/I18nContext';
-import { useSierraBlu } from '@/hooks/useSierraBlu';
+import { useSierraEstates } from '@/hooks/useSierraEstates';
 import { Activity as ActivityType } from '../../lib/models/schema';
 
 interface AdminDashboardProps {
@@ -34,7 +34,7 @@ export default function AdminDashboard({ greeting, firstName, dateString }: Admi
     units, 
     triggerSync, 
     deployPatch 
-  } = useSierraBlu();
+  } = useSierraEstates();
   
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isDeploying, setIsDeploying] = useState(false);

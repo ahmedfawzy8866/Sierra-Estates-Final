@@ -55,7 +55,7 @@ This is a fully-featured, production-grade **PropTech internal platform** for Si
 | **Purpose** | Scrapes WhatsApp broker group messages and POSTs them to `/api/webhooks/whatsapp` |
 | **Relationship to Target** | Companion service — feeds data into the main platform |
 | **Action Taken** | ✅ **Imported** → `apps/whatsapp-scraper-bot/` |
-| **Improvement Made** | `API_URL` is now configurable via `SIERRA_BLU_API_URL` env var (was hardcoded to `localhost:3001`) |
+| **Improvement Made** | `API_URL` is now configurable via `sierra_estates_API_URL` env var (was hardcoded to `localhost:3001`) |
 
 #### Documentation Files
 
@@ -116,7 +116,7 @@ imports/
       NEXUS_REGISTRY.md     ← API/schema contracts
       implementation_plan.md ← Engineering phases blueprint
 
-.env.example            ← Added SIERRA_BLU_API_URL for the WhatsApp bot
+.env.example            ← Added sierra_estates_API_URL for the WhatsApp bot
 CONSOLIDATION_REPORT.md ← This document
 ```
 
@@ -147,7 +147,7 @@ The files added in this PR are:
 ```bash
 cd apps/whatsapp-scraper-bot
 npm install
-SIERRA_BLU_API_URL=http://localhost:3000/api/webhooks/whatsapp npm start
+sierra_estates_API_URL=http://localhost:3000/api/webhooks/whatsapp npm start
 # Scan the QR code shown in the terminal with WhatsApp mobile
 ```
 
@@ -220,7 +220,7 @@ The target repo already has a `vercel.json` with:
 
 ### Immediate (after this PR merges)
 - [ ] **Connect repo to Vercel** and populate environment variables
-- [ ] **Deploy the WhatsApp bot** on Railway/Render, pointing `SIERRA_BLU_API_URL` to the Vercel deployment URL
+- [ ] **Deploy the WhatsApp bot** on Railway/Render, pointing `sierra_estates_API_URL` to the Vercel deployment URL
 - [ ] **Verify** `/api/webhooks/whatsapp` is reachable from the deployed bot
 
 ### Short-term

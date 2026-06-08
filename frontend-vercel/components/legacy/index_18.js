@@ -2,7 +2,7 @@ const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const axios = require('axios');
 
-const API_URL = process.env.SIERRA_BLU_API_URL || 'http://localhost:3000/api/webhooks/whatsapp';
+const API_URL = process.env.sierra_estates_API_URL || 'http://localhost:3000/api/webhooks/whatsapp';
 
 console.log('Initializing WhatsApp Client...');
 console.log(`Will forward messages to: ${API_URL}`);

@@ -18,7 +18,7 @@ const SERVICES = [
   { title: "Intelligent Investment", desc: "Data-backed strategies for long-term growth.", icon: "📈" }
 ];
 
-export default function SierraBluSaaSMasterpiece() {
+export default function SierraEstatesSaaSMasterpiece() {
   const [filter, setFilter] = useState<'Rent' | 'Resale'>('Rent');
   const [paymentFilter, setPaymentFilter] = useState<string>('All');
   const [search, setSearch] = useState<string>('');

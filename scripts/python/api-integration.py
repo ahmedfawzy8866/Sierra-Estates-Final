@@ -353,7 +353,7 @@ class GoogleCalendarIntegration:
             },
             'attendees': [
                 {'email': customer_email},
-                {'email': 'agent@sierrablue.com'}  # Your agent email
+                {'email': 'agent@sierraestatese.com'}  # Your agent email
             ],
             'location': 'سييرا بلو - مكتب التجمع الخامس',
             'reminders': {
@@ -436,10 +436,10 @@ class GoogleCalendarIntegration:
 # Google Calendar Configuration
 GOOGLE_CALENDAR_CONFIG = {
     "credentials_json": "/path/to/service-account-key.json",
-    "calendar_id": "sierra-estatese-viewings@sierrablue.com",
+    "calendar_id": "sierra-estatese-viewings@sierraestatese.com",
     "agent_emails": [
-        "agent1@sierrablue.com",
-        "agent2@sierrablue.com"
+        "agent1@sierraestatese.com",
+        "agent2@sierraestatese.com"
     ],
     "timezone": "Africa/Cairo"
 }
@@ -508,7 +508,7 @@ class AnalyticsIntegration:
 # 6. COMPLETE INTEGRATION EXAMPLE
 # ============================================================================
 
-class IntegratedSierraBlueBot:
+class IntegratedSierraEstateseBot:
     """Bot with all real API integrations"""
     
     def __init__(self, config: Dict):

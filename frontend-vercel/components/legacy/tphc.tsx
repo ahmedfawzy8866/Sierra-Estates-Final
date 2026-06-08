@@ -30,7 +30,7 @@ const SystemDashboard = dynamic(() => import('../components/System/SystemDashboa
 
 type Screen = 'dashboard' | 'listings' | 'crm' | 'leads' | 'reports' | 'team' | 'clients' | 'protocols' | 'media' | 'experiences' | 'ledger' | 'sync' | 'processing' | 'nexus' | 'intelligence' | 'map' | 'system' | 'team-crm' | 'admin-dashboard' | 'database';
 
-export default function SierraBluApp() {
+export default function SierraEstatesApp() {
   const { user, isGuest, loading, signOut } = useAuth();
   const [activeScreen, setActiveScreen] = useState<Screen>('dashboard');
   const [mounted, setMounted] = useState(false);

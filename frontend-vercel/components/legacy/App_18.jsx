@@ -661,7 +661,7 @@ export default function App() {
             {[
               { title: t.footNav, items: t.footNavLinks },
               { title: t.footMarkets, items: t.footMarketLinks },
-              { title: t.footContact, items: ["📍 JBR, Dubai Marina","Dubai, UAE","📞 +971 4 234 5678","✉️ info@sierrablurealty.com"] },
+              { title: t.footContact, items: ["📍 JBR, Dubai Marina","Dubai, UAE","📞 +971 4 234 5678","✉️ info@sierraestatesrealty.com"] },
             ].map(col => (
               <div key={col.title} style={{ textAlign: isAr ? "right" : "left" }}>
                 <div style={{ fontFamily: isAr ? "'Noto Naskh Arabic',sans-serif" : "'Jost',sans-serif", fontSize: 9, letterSpacing: isAr ? 0 : ".28em", color: G, marginBottom: 18, fontWeight: 600 }}>{col.title}</div>

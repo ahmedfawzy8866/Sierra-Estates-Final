@@ -6,10 +6,10 @@
   "type": "module",
   "packageManager": "pnpm@9.0.0",
   "scripts": {
-    "dev:realty": "pnpm --filter sierra-blu-realty dev",
-    "dev:admin": "pnpm --filter sierra-blu-admin-portal dev",
-    "build:realty": "pnpm --filter sierra-blu-realty build",
-    "build:admin": "pnpm --filter sierra-blu-admin-portal build",
+    "dev:realty": "pnpm --filter sierra-estates-realty dev",
+    "dev:admin": "pnpm --filter sierra-estates-admin-portal dev",
+    "build:realty": "pnpm --filter sierra-estates-realty build",
+    "build:admin": "pnpm --filter sierra-estates-admin-portal build",
     "bootstrap:memory": "node scripts/bootstrap-vector-memory.js",
     "lint": "turbo run lint",
     "test": "turbo run test"

@@ -11,7 +11,7 @@ You are enhancing the **Sierra Estates Realty** frontend — a luxury property p
 
 1. **Maintain Quiet Luxury aesthetic** — Navy, Gold, Ivory only
 2. **Keep animations buttery smooth** — 0.6s easing: `[0.22, 1, 0.36, 1]`
-3. **Use `useSierraBlu()` hook** — Never direct Firebase calls
+3. **Use `useSierraEstates()` hook** — Never direct Firebase calls
 4. **Polish components** — UI Kit components are your building blocks
 5. **Test on mobile** — Responsive design is non-negotiable
 
@@ -43,9 +43,9 @@ my-app/
 │   ├── Proposals/
 │   │   └── ConciergeGallery.tsx   ← Portfolio display (polished)
 │   └── Listings/
-│       └── InventoryShowcase.tsx  ← Demo useSierraBlu (new)
+│       └── InventoryShowcase.tsx  ← Demo useSierraEstates (new)
 ├── hooks/
-│   └── useSierraBlu.ts            ← Master data hook 🌉
+│   └── useSierraEstates.ts            ← Master data hook 🌉
 ├── lib/
 │   ├── firebase/
 │   ├── services/
@@ -73,21 +73,21 @@ All in: [components/UI/LuxurySkeleton.tsx](components/UI/LuxurySkeleton.tsx)
 
 ---
 
-## 🔌 Master Hook: `useSierraBlu()`
+## 🔌 Master Hook: `useSierraEstates()`
 
 **ALWAYS use this for data.** Never direct Firebase calls.
 
 ```typescript
-const { units, loading, error, getLeadData } = useSierraBlu();
+const { units, loading, error, getLeadData } = useSierraEstates();
 ```
 
 **Example**:
 ```typescript
 'use client';
-import { useSierraBlu } from '@/hooks/useSierraBlu';
+import { useSierraEstates } from '@/hooks/useSierraEstates';
 
 export default function PropertyGrid() {
-  const { units, loading } = useSierraBlu();
+  const { units, loading } = useSierraEstates();
   
   if (loading) return <LoadingState />;
   
@@ -111,7 +111,7 @@ Hero + Showcase + Intelligence Map + Testimonials
 **Todo**:
 - ✅ Hero section with PremiumHero component
 - ⏳ Featured listings showcase (3-card grid)
-- ⏳ Integrate real data via useSierraBlu()
+- ⏳ Integrate real data via useSierraEstates()
 - ⏳ Ensure mobile parallax is smooth
 - ⏳ Add testimonials carousel
 
@@ -128,7 +128,7 @@ VIP portfolio display (S8 output)
 - "Request Viewing" button
 
 ### 3. **Inventory Showcase** — `components/Listings/InventoryShowcase.tsx`
-Demo of useSierraBlu() hook usage
+Demo of useSierraEstates() hook usage
 
 **Status**: ✅ Just created
 
@@ -163,7 +163,7 @@ smooth: 0.6s cubic-bezier(0.22, 1, 0.36, 1)
 ## ✅ Before You Commit
 
 - [ ] Component renders without errors
-- [ ] Data loads from `useSierraBlu()` hook
+- [ ] Data loads from `useSierraEstates()` hook
 - [ ] Mobile responsive (test at 375px, 768px, 1024px)
 - [ ] Animations smooth (60fps, no jank)
 - [ ] Follows Quiet Luxury palette
@@ -193,7 +193,7 @@ npm run build
 ## 📚 Key Files to Know
 
 1. **LuxurySkeleton.tsx** — All UI components in one place
-2. **useSierraBlu.ts** — Master hook for data
+2. **useSierraEstates.ts** — Master hook for data
 3. **FRONTEND_GUIDE.md** — Comprehensive documentation
 4. **portfolio-engine.ts** — S8 logic (don't modify)
 5. **ConciergeGallery.tsx** — Gallery component (mostly done)
@@ -228,7 +228,7 @@ npm run build
 1. **✅ UI Kit Expansion** — Done (LuxurySkeleton.tsx now has 8 components)
 2. **✅ Create PremiumHero** — Done (parallax hero component)
 3. **✅ Polished ConciergeGallery** — Done (updated for visual excellence)
-4. **✅ InventoryShowcase demo** — Done (shows useSierraBlu hook usage)
+4. **✅ InventoryShowcase demo** — Done (shows useSierraEstates hook usage)
 5. ⏳ **Polish landing page** — Use PremiumHero + InventoryShowcase
 6. ⏳ **Add testimonials carousel** — React Swiper or custom Framer Motion
 7. ⏳ **Create property detail modal** — Click card → full details

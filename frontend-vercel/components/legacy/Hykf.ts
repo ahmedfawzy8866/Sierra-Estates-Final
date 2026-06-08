@@ -5,11 +5,11 @@ import { db } from '@/lib/firebase';
 import { collection, query, where, onSnapshot, doc, getDoc } from 'firebase/firestore';
 
 /**
- * useSierraBlu
+ * useSierraEstates
  * The master hook for the Sierra AI Frontend.
  * abstracts away the direct Firebase calls for Claude Code.
  */
-export function useSierraBlu() {
+export function useSierraEstates() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

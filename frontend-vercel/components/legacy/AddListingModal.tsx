@@ -339,7 +339,7 @@ export default function AddListingModal({ onClose, onSuccess, listing }: AddList
             <input 
               type="url" 
               className="form-input" 
-              placeholder="https://sierrablu.com/tours/..."
+              placeholder="https://sierraestates.com/tours/..."
               value={formData.virtualTourUrl}
               onChange={e => setFormData({...formData, virtualTourUrl: e.target.value})}
             />

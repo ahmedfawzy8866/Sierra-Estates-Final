@@ -107,7 +107,7 @@
     },
     {
       "parameters": {
-        "fromEmail": " concierge@sierrablu.com",
+        "fromEmail": " concierge@sierraestates.com",
         "toEmail": "={{ $json.buyer_email }}",
         "subject": "=🔥 New Matching Listing: {{ $json.listing_title }}",
         "html": "=<h3>Hello {{ $json.buyer_name }},</h3>\n<p>We found a new property that perfectly matches your investment criteria:</p>\n<ul>\n  <li><strong>Listing:</strong> {{ $json.listing_title }}</li>\n  <li><strong>Price:</strong> {{ $json.listing_price }} EGP</li>\n  <li><strong>Match Score:</strong> {{ $json.match_score }}%</li>\n</ul>\n<p><a href=\"{{ $json.listing_url }}\" style=\"padding: 10px 20px; background: #c5a880; color: #fff; text-decoration: none; border-radius: 5px;\">View Property Details</a></p>"

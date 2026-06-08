@@ -71,7 +71,7 @@ const CONTENT = {
     footerTagline: "Curated luxury real estate intelligence for New Cairo.",
     footerLinks: ["Privacy", "Terms", "Cookies"],
     copyright: "© 2026 Sierra AI · Beyond Brokerage",
-    contactEmail: "hello@sierrablu.com",
+    contactEmail: "hello@sierraestates.com",
     contactPhone: "+20 100 SIERRA",
   },
   ar: {
@@ -120,7 +120,7 @@ const CONTENT = {
     footerTagline: "ذكاء عقاري فاخر منتقى للقاهرة الجديدة.",
     footerLinks: ["الخصوصية", "الشروط", "الكوكيز"],
     copyright: "© ٢٠٢٦ سيرا بلو · أكثر من مجرد وسيط",
-    contactEmail: "hello@sierrablu.com",
+    contactEmail: "hello@sierraestates.com",
     contactPhone: "100 SIERRA 20+",
   },
 };
@@ -987,7 +987,7 @@ function DesktopLayout({ lang }) {
 // MAIN — switcher between all 4 variants
 // ═══════════════════════════════════════════════════════════════════
 
-export default function SierraBluPublicSite() {
+export default function SierraEstatesPublicSite() {
   const [variant, setVariant] = useState("mobile-en");
 
   const variants = [

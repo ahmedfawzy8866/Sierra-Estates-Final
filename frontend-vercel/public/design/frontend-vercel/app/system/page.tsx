@@ -1,5 +1,5 @@
-import SierraBluSystem from '@/components/System/SierraBluSystem';
+import SierraEstatesSystem from '@/components/System/SierraEstatesSystem';
 
 export default function SystemPage() {
-  return <SierraBluSystem />;
+  return <SierraEstatesSystem />;
 }

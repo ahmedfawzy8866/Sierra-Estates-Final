@@ -4,7 +4,7 @@ import { useEffect, useState, use } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ConciergeGallery from '@/components/Proposals/ConciergeGallery';
 import type { ConciergeSelection, ConciergeUnit } from '@/lib/services/portfolio-engine';
-import { useSierraBlu } from '@/hooks/useSierraBlu';
+import { useSierraEstates } from '@/hooks/useSierraEstates';
 import { LuxuryCard, EditorialHeading } from '@/components/UI/LuxurySkeleton';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -15,7 +15,7 @@ export default function ConciergePage({ params }: { params: Promise<{ leadId: st
   const searchParams = useSearchParams();
   const _galleryMode = searchParams.get('gallery') === 'true';
 
-  const { getLeadData, loading: hookLoading, error: _hookError } = useSierraBlu();
+  const { getLeadData, loading: hookLoading, error: _hookError } = useSierraEstates();
   const [portfolio, setPortfolio] = useState<ConciergeSelection | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

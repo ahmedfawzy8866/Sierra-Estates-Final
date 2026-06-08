@@ -49,7 +49,7 @@ bot.start((ctx) => {
 // Interactive Handlers
 bot.action('portfolio', (ctx) => ctx.reply('Synchronizing with the Global Asset Database... One moment, please.'));
 bot.action('insights', (ctx) => ctx.reply('Analyzing Egypt Real Estate Market Trends (Q2 2026)... High growth detected in New Administrative Capital.'));
-bot.action('contact', (ctx) => ctx.reply('Your dedicated human advisor will be alerted to your presence. Alternatively, visit https://sierrablu.com'));
+bot.action('contact', (ctx) => ctx.reply('Your dedicated human advisor will be alerted to your presence. Alternatively, visit https://sierraestates.com'));
 
 // Neural Message Processor
 bot.on('text', async (ctx) => {

@@ -22,7 +22,7 @@ table maps each named item to what actually exists, so this manifest targets rea
 ### Hard deploy gates (must be green before any production push)
 
 - [ ] **GATE 1 — Build resolves.** `cd frontend && npx tsc --noEmit` currently fails on **3 missing modules** that only exist in your local copy:
-  `@/hooks/useSierraBlu`, `../../hooks/useProperties`, `@/agents/stage-9-closer/CloserAgent`.
+  `@/hooks/useSierraEstates`, `../../hooks/useProperties`, `@/agents/stage-9-closer/CloserAgent`.
   These are **module-resolution** failures — `next.config.ts` has `typescript.ignoreBuildErrors: true`,
   which suppresses *type* errors but **not** missing-import errors, so `next build` will fail.
   → Land your local push (which provides these files) before deploying.

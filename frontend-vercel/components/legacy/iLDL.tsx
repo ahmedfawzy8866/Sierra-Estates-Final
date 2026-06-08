@@ -652,7 +652,7 @@ function LandingContent() {
                 ? "سييرا مستشارتك الذكية على تيليجرام. تفهم احتياجاتك، تحلل السوق، وتجيبك بخيارات مخصصة لك في ثوان."
                 : "Sierra is your AI advisor on Telegram. She understands your needs, analyzes the market, and delivers personalized recommendations in seconds."}
             </p>
-            <a href="https://t.me/SierraBluBot" target="_blank" rel="noopener noreferrer" className="sb-ai-btn reveal">
+            <a href="https://t.me/SierraEstatesBot" target="_blank" rel="noopener noreferrer" className="sb-ai-btn reveal">
               📲 {ar ? "ابدأ مع سييرا على تيليجرام" : "Start with Sierra on Telegram"}
             </a>
           </div>
@@ -723,7 +723,7 @@ function LandingContent() {
           {[
             { title: ar ? "استكشاف" : "Discovery", links: [{ en: "All Listings", ar: "كل العقارات" }, { en: "Intelligence", ar: "ذكاء السوق" }, { en: "New Cairo Map", ar: "خريطة التجمع" }] },
             { title: ar ? "الشركة" : "Company", links: [{ en: "About Us", ar: "عن الشركة" }, { en: "Advisors", ar: "المستشارون" }, { en: "Careers", ar: "وظائف" }] },
-            { title: ar ? "تواصل" : "Contact", links: [{ en: "+20 100 123 4567", ar: "+20 100 123 4567" }, { en: "hello@sierrablurealty.com", ar: "hello@sierrablurealty.com" }, { en: "New Cairo, Egypt", ar: "التجمع الخامس، مصر" }] },
+            { title: ar ? "تواصل" : "Contact", links: [{ en: "+20 100 123 4567", ar: "+20 100 123 4567" }, { en: "hello@sierraestatesrealty.com", ar: "hello@sierraestatesrealty.com" }, { en: "New Cairo, Egypt", ar: "التجمع الخامس، مصر" }] },
           ].map((col) => (
             <div key={col.title}>
               <div className="sb-footer-col-title">{col.title}</div>

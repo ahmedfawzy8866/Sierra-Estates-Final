@@ -5,7 +5,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 import ConciergeGallery from '@/components/Proposals/ConciergeGallery';
 import type { ConciergeSelection, ConciergeUnit } from '@/lib/services/portfolio-engine';
 import { trackPortfolioEngagement } from '@/lib/services/portfolio-engine';
-import { useSierraBlu } from '@/hooks/useSierraBlu';
+import { useSierraEstates } from '@/hooks/useSierraEstates';
 import { LuxuryCard, EditorialHeading } from '@/components/UI/LuxurySkeleton';
 
 export default function ConciergePage({ params }: { params: Promise<{ leadId: string }> }) {
@@ -13,7 +13,7 @@ export default function ConciergePage({ params }: { params: Promise<{ leadId: st
   const searchParams = useSearchParams();
   const galleryMode = searchParams.get('gallery') === 'true';
 
-  const { getLeadData, loading: hookLoading, error: hookError } = useSierraBlu();
+  const { getLeadData, loading: hookLoading, error: hookError } = useSierraEstates();
   const [portfolio, setPortfolio] = useState<ConciergeSelection | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

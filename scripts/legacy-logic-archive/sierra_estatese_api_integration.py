@@ -247,7 +247,7 @@ class GoogleCalendarIntegration:
             },
             'attendees': [
                 {'email': customer_email},
-                {'email': 'agent@sierrablue.com'}
+                {'email': 'agent@sierraestatese.com'}
             ],
             'location': 'سييرا بلو - مكتب التجمع الخامس',
         }
