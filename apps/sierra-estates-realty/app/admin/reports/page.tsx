@@ -159,42 +159,46 @@ export default function AdminReportsPage() {
   }, [timeRange]);
 
   return (
-    <div style={{ fontFamily: 'var(--font-body)' }}>
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+    <div className="space-y-8" style={{ fontFamily: 'var(--font-body)' }}>
+      {/* ══ Header ══ */}
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#071422] tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>
+          <span className="text-[10px] tracking-[0.25em] font-semibold text-[#C9A84C] uppercase font-mono block mb-2">
+            Business Intelligence
+          </span>
+          <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-[#071422]" style={{ fontFamily: 'var(--font-display)' }}>
             Analytics & Reports
           </h1>
-          <p className="text-[#3a5570] text-sm mt-0.5">Real-time performance metrics</p>
+          <p className="text-[#3a5570] text-sm mt-1">Real-time performance metrics and insights</p>
         </div>
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex gap-2 flex-wrap w-fit">
           {['week', 'month', 'quarter', 'year'].map(range => (
             <button
               key={range}
               onClick={() => setTimeRange(range as any)}
-              className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all ${
-                timeRange === range ? 'bg-[#031632] text-white' : 'bg-white text-[#3a5570] hover:bg-[#f3f4f5]'
+              className={`px-3 sm:px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all ${
+                timeRange === range ? 'bg-[#031632] text-white' : 'bg-white text-[#3a5570] border border-[#e7e8e9] hover:border-[#C9A84C]'
               }`}
             >
-              {range.charAt(0).toUpperCase() + range.slice(1)}
+              {range === 'quarter' ? 'Q' : range.charAt(0).toUpperCase()}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Key Metrics */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+      {/* ══ Key Metrics ══ */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {loading
           ? Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="bg-white rounded-2xl p-6 h-40 animate-pulse" />
+              <div key={i} className="bg-white rounded-2xl p-6 h-40 sm:h-36 animate-pulse" />
             ))
           : metrics.map(metric => {
               const Icon = metric.icon;
               return (
                 <div
                   key={metric.label}
-                  className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] hover:shadow-[0_8px_32px_-4px_rgba(3,22,50,0.1)] transition-shadow"
+                  className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] hover:shadow-[0_8px_32px_-4px_rgba(3,22,50,0.1)] transition-all border-l-[3px]"
+                  style={{ borderLeftColor: metric.color }}
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div
@@ -204,31 +208,34 @@ export default function AdminReportsPage() {
                       <Icon size={18} style={{ color: metric.color }} />
                     </div>
                     {metric.change && (
-                      <span className="text-xs font-bold text-green-600">{metric.change}</span>
+                      <div className="flex items-center gap-0.5 text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg">
+                        <span>↑</span>
+                        {metric.change}
+                      </div>
                     )}
                   </div>
                   <div
-                    className="text-3xl font-bold tracking-tight mb-1"
-                    style={{ color: metric.color, fontFamily: 'var(--font-display)' }}
+                    className="text-3xl sm:text-2xl font-bold tracking-tight mb-2"
+                    style={{ color: metric.color, fontFamily: 'var(--font-mono)' }}
                   >
                     {metric.value}
                   </div>
-                  <div className="text-xs font-semibold text-[#071422]">{metric.label}</div>
+                  <div className="text-xs sm:text-xs font-semibold text-[#071422]">{metric.label}</div>
                 </div>
               );
             })}
       </div>
 
-      {/* Charts */}
+      {/* ══ Charts Grid ══ */}
       <div className="grid lg:grid-cols-3 gap-6">
-        {/* Revenue Trend */}
-        <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)]">
+        {/* Deal Trends */}
+        <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] overflow-hidden">
           <h2 className="text-lg font-bold text-[#071422] mb-6" style={{ fontFamily: 'var(--font-display)' }}>
             Deal Trends
           </h2>
-          {!loading && chartData.length > 0 && (
+          {!loading && chartData.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={chartData}>
+              <BarChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e7e8e9" />
                 <XAxis dataKey="period" stroke="#3a5570" style={{ fontSize: 12 }} />
                 <YAxis stroke="#3a5570" style={{ fontSize: 12 }} />
@@ -241,15 +248,19 @@ export default function AdminReportsPage() {
                 <Bar dataKey="revenue" fill="#10B981" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
+          ) : (
+            <div className="h-80 flex items-center justify-center text-[#3a5570]/50">
+              {loading ? 'Loading chart...' : 'No data available'}
+            </div>
           )}
         </div>
 
-        {/* Deal Stages */}
-        <div className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)]">
+        {/* Pipeline Distribution */}
+        <div className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] overflow-hidden">
           <h2 className="text-lg font-bold text-[#071422] mb-6" style={{ fontFamily: 'var(--font-display)' }}>
-            Pipeline Distribution
+            Pipeline Breakdown
           </h2>
-          {!loading && (
+          {!loading && pieData.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
@@ -269,13 +280,17 @@ export default function AdminReportsPage() {
                 <Tooltip />
               </PieChart>
             </ResponsiveContainer>
+          ) : (
+            <div className="h-80 flex items-center justify-center text-[#3a5570]/50">
+              {loading ? 'Loading chart...' : 'No data available'}
+            </div>
           )}
         </div>
       </div>
 
-      {/* Revenue by Agent */}
-      <div className="mt-6 bg-white rounded-2xl p-6 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)]">
-        <h2 className="text-lg font-bold text-[#071422] mb-6" style={{ fontFamily: 'var(--font-display)' }}>
+      {/* ══ Top Agents ══ */}
+      <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)]">
+        <h2 className="text-lg sm:text-xl font-bold text-[#071422] mb-6" style={{ fontFamily: 'var(--font-display)' }}>
           Top Agents
         </h2>
         <div className="space-y-3">
@@ -283,17 +298,20 @@ export default function AdminReportsPage() {
             ? Array.from({ length: 4 }).map((_, i) => (
                 <div key={i} className="h-16 bg-[#f8f9fa] rounded-lg animate-pulse" />
               ))
-            : topAgents.map((agent, i) => (
-                <div key={i} className="flex items-center justify-between p-4 hover:bg-[#f8f9fa] rounded-lg transition-colors">
-                  <div>
+            : topAgents.length > 0 ? topAgents.map((agent, i) => (
+                <div key={i} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 hover:bg-[#f8f9fa] rounded-lg transition-colors">
+                  <div className="flex-1">
                     <div className="font-semibold text-sm text-[#071422]">{agent.name}</div>
-                    <div className="text-xs text-[#3a5570]/60 mt-0.5">{agent.deals} deals closed</div>
+                    <div className="text-xs text-[#3a5570]/60 mt-1">{agent.deals} deals closed</div>
                   </div>
                   <div className="text-right">
-                    <div className="font-bold text-sm text-[#C9A84C]">EGP {(agent.revenue / 1000000).toFixed(1)}M</div>
+                    <div className="font-bold text-sm text-[#C9A84C] font-mono">EGP {(agent.revenue / 1000000).toFixed(1)}M</div>
                   </div>
                 </div>
-              ))}
+              ))
+            : (
+              <p className="text-center text-[#3a5570]/50 text-sm py-8">No agent data available</p>
+            )}
         </div>
       </div>
     </div>
