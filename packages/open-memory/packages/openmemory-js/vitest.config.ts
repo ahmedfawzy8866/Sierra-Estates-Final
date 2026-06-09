@@ -14,12 +14,7 @@ export default defineConfig({
         hookTimeout: 60_000,
         // Force sequential execution (no parallel files, no thread pool fanout).
         fileParallelism: false,
-        pool: "forks",
-        poolOptions: {
-            forks: {
-                singleFork: true,
-            },
-        },
+        // Removed deprecated pool and poolOptions (Vitest 4+).
         // Force synthetic embeddings + sqlite backend so no API keys or
         // external services are needed. NODE_ENV defaults to "test".
         env: {
