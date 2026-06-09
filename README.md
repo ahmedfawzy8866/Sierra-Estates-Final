@@ -11,46 +11,44 @@ A production-ready, unified monorepo consolidating all Sierra-related repositori
 ```
 i-sierra-2027/
 ├── apps/
-│   ├── web/                    # Main customer-facing app (Next.js 16 + Turbopack)
-│   │   ├── app/               # App Router pages (62 routes) & layouts
-│   │   ├── components/        # React components (13+ modules)
+│   ├── sierra-estates-realty/  # Main backend/API + admin dashboard (Next.js 16 + Turbopack)
+│   │   ├── app/               # App Router pages & API routes (/api/*)
+│   │   │   ├── admin/         # Admin dashboard (staff-gated)
+│   │   │   ├── api/           # REST API endpoints
+│   │   │   └── (marketing)/   # Public site (listings, about, contact)
+│   │   ├── components/        # React components (admin UI, shared)
 │   │   ├── hooks/             # Custom React hooks
 │   │   ├── lib/               # Utilities, services, models, agents
 │   │   └── public/            # Static assets
-│   ├── admin/                 # Admin portal (Vite + React SPA)
-│   │   └── src/               # React source (auth, CRM, listing modules)
-│   ├── api/                   # Python backend (FastAPI)
+│   ├── api/                   # Python service (Docker/Cloud Run) — PropertyFinder sync + bot integration
 │   │   ├── main.py            # FastAPI entry point
 │   │   ├── requirements.txt   # Python dependencies
 │   │   └── Dockerfile         # Container definition
-│   └── agents/                # AI agents & bots
-│       ├── stage-9-closer/    # Closer agent (TypeScript)
-│       └── whatsapp-scraper/  # WhatsApp bot (Node.js)
+│   └── sierra-estates-admin-portal/  # DEPRECATED — do not deploy
 ├── packages/
-│   ├── api/                   # Shared API types & clients
-│   ├── db/                    # Firestore models & utilities
-│   ├── auth/                  # Firebase Auth wrapper
-│   ├── agents/                # Multi-agent framework
-│   ├── batch/                 # Batch processing queue
+│   ├── agents-core/           # Multi-agent framework & AI services
+│   ├── db/                    # Firestore models & schema
 │   ├── config/                # Shared configuration
-│   └── ui/                    # Shared React component library
+│   └── obedian/               # Obsidian vault integration
 ├── functions/                 # Firebase Cloud Functions (Node.js 20)
 │   └── src/
-│       └── index.ts           # collectData, processDataForApp, api, healthCheck
-├── workflows/                 # Automation scripts (WhatsApp, owner search, etc.)
+│       └── index.ts           # collectData, processDataForApp
+├── workflows/                 # Node scripts for external data sync (triggered by GitHub Actions)
 ├── scripts/
-│   └── create-migrate-branches.sh  # Run by repo admin to push migrate/* branches
-├── .github/workflows/         # CI/CD pipelines (ci, build, test, deploy, codeql)
+│   └── sync-obsidian.ps1      # Sync workflow documentation to Obsidian vault
+├── .github/workflows/         # CI/CD pipelines (lint, type-check, test, build)
 ├── firestore.rules            # Production Firestore security rules
 ├── storage.rules              # Production Storage security rules
 ├── pnpm-workspace.yaml        # Monorepo workspace config
-├── turbo.json                 # Turborepo build cache config (v2)
+├── turbo.json                 # Turborepo build cache config
 ├── package.json               # Root workspace dependencies
-├── firebase.json              # Firebase hosting & functions config
-├── vercel.json                # Vercel deployment config
-├── MIGRATION.md               # Migration map & branch reference
-├── ARCHITECTURE.md            # Full architecture overview
-└── DEPLOYMENT_GUIDE.md        # End-to-end deployment steps
+├── firebase.json              # Firebase Functions + Firestore + Storage config
+├── vercel.json                # Vercel deployment config (root dir)
+├── CLAUDE.md                  # Codebase guidelines & architecture decisions
+├── docs/
+│   ├── API_CONTRACT.md        # API specification for separate frontend repo
+│   └── obsidian-vault/        # Architecture & operational documentation
+└── NEXT_STEPS.md              # Outstanding tasks & migration checklist
 ```
 
 ## 🚀 Quick Start
