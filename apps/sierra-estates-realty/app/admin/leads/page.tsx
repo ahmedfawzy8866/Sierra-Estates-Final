@@ -148,85 +148,124 @@ export default function AdminLeadsPage() {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-8" style={{ fontFamily: 'var(--font-body)' }}>
-      <div className="flex justify-between items-center">
+    <div className="space-y-8" style={{ fontFamily: 'var(--font-body)' }}>
+      {/* ══ Page Header ══ */}
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-[#071422]" style={{ fontFamily: 'var(--font-display)' }}>
+          <span className="text-[10px] tracking-[0.25em] font-semibold text-[#C9A84C] uppercase font-mono block mb-2">
+            Leila AI Engine
+          </span>
+          <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-[#071422]"
+            style={{ fontFamily: 'var(--font-display)' }}>
             Lead Handoff Queue
           </h1>
-          <p className="text-[#3a5570] mt-2 text-sm">
+          <p className="text-[#3a5570] text-sm mt-1">
             Review units matched by Leila AI and approve them for client viewing.
           </p>
         </div>
-        <button 
+        <button
           onClick={handleRefresh}
           disabled={refreshing}
-          className="flex items-center gap-2 px-4 py-2 bg-[#031632] text-white rounded-xl font-semibold text-sm hover:bg-[#031632]/90 transition shadow-sm disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 bg-[#031632] text-white rounded-xl font-semibold text-sm hover:bg-[#031632]/90 transition shadow-sm disabled:opacity-50 w-fit"
         >
           <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-          Refresh Queue
+          <span className="hidden sm:inline">Refresh</span>
         </button>
       </div>
 
       {loading ? (
-        <div className="flex justify-center items-center h-64 text-[#3a5570]">
-          <RefreshCw className="h-8 w-8 animate-spin mr-2" /> Loading queue...
+        <div className="flex justify-center items-center py-20 text-[#3a5570]">
+          <div className="flex flex-col items-center gap-3">
+            <RefreshCw className="h-8 w-8 animate-spin" />
+            <span className="text-sm font-medium">Loading queue...</span>
+          </div>
+        </div>
+      ) : leads.length === 0 ? (
+        <div className="bg-white rounded-2xl shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] p-12 text-center">
+          <p className="text-[#3a5570]/50 text-sm">No leads in approval queue</p>
+          <p className="text-[9px] text-[#3a5570]/30 mt-1 uppercase tracking-widest">Leads will appear here once matched by Leila.</p>
         </div>
       ) : (
         <div className="grid gap-6">
           {leads.map(lead => (
-            <div key={lead.id} className="bg-white rounded-2xl shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] border border-[#f3f4f5] overflow-hidden">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-4 border-b border-[#f3f4f5] px-6 py-5 gap-4">
-                <div>
-                  <div className="text-lg font-bold text-[#071422] flex items-center gap-2 font-display">
-                    {lead.name}
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-blue-50 text-blue-700">
-                      Stage {lead.stage}
-                    </span>
+            <div key={lead.id} className="bg-white rounded-2xl shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] overflow-hidden hover:shadow-[0_8px_32px_-4px_rgba(3,22,50,0.1)] transition-shadow">
+              {/* Header */}
+              <div className="px-6 sm:px-8 py-6 border-b border-[#f3f4f5] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="flex-1">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
+                    <h3 className="text-lg sm:text-xl font-bold text-[#071422]" style={{ fontFamily: 'var(--font-display)' }}>
+                      {lead.name}
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700">
+                        Stage {lead.stage}
+                      </span>
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
+                        lead.status.includes('Scheduled')
+                          ? 'bg-emerald-50 text-emerald-700'
+                          : 'bg-[#C9A84C]/10 text-[#C9A84C]'
+                      }`}>
+                        <Bot className="h-3.5 w-3.5" />
+                        {lead.status}
+                      </span>
+                    </div>
                   </div>
-                  <div className="text-xs font-semibold text-[#3a5570]/70 mt-1">
-                    Budget: EGP {lead.budget.toLocaleString()} • {lead.location} • {lead.propertyType} {lead.roiTarget ? `• ROI target: ${lead.roiTarget}%+` : ''}
+                  <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 text-xs font-semibold text-[#3a5570]/70">
+                    <div>Budget: <span className="text-[#031632] font-bold">EGP {lead.budget.toLocaleString()}</span></div>
+                    <div>Type: <span className="text-[#031632] font-bold">{lead.propertyType}</span></div>
+                    <div>Location: <span className="text-[#031632] font-bold">{lead.location}</span></div>
+                    {lead.roiTarget && <div>ROI Target: <span className="text-[#031632] font-bold">{lead.roiTarget}%+</span></div>}
+                    {lead.email && <div className="col-span-2 sm:col-span-1">Email: <a href={`mailto:${lead.email}`} className="text-blue-600 font-bold underline">{lead.email}</a></div>}
                   </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
-                    lead.status.includes('Scheduled')
-                      ? 'bg-green-50 text-green-700'
-                      : 'bg-[#C9A84C]/10 text-[#C9A84C]'
-                  }`}>
-                    <Bot className="h-3.5 w-3.5" />
-                    {lead.status}
-                  </span>
                 </div>
               </div>
-              
-              <div className="p-6">
-                <h3 className="font-bold text-xs text-[#3a5570]/60 uppercase tracking-widest mb-4">Leila's Curated Suggestions</h3>
-                
+
+              {/* Matched Units */}
+              <div className="px-6 sm:px-8 py-6">
+                <h4 className="font-bold text-xs text-[#3a5570]/60 uppercase tracking-widest mb-4">Leila's Matched Properties</h4>
+
                 {lead.matchedUnits.length === 0 ? (
-                  <div className="flex items-center gap-2 text-yellow-700 bg-yellow-50 p-4 rounded-xl text-sm font-semibold">
-                    <AlertCircle className="h-5 w-5" /> No property matches generated yet.
+                  <div className="flex items-center gap-2 text-amber-700 bg-amber-50 p-4 rounded-xl text-sm font-semibold">
+                    <AlertCircle className="h-5 w-5 flex-shrink-0" />
+                    <span>No property matches generated yet</span>
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="grid gap-3">
                     {lead.matchedUnits.map(unit => (
-                      <div key={unit.id} className="flex items-center justify-between p-4 border border-[#f3f4f5] rounded-xl hover:bg-[#f8f9fa] transition">
-                        <div>
-                          <div className="font-bold text-sm text-[#071422]">{unit.title}</div>
-                          <div className="text-xs font-semibold text-[#3a5570]/60 mt-0.5">
-                            EGP {unit.price.toLocaleString()} {unit.projectedRoi ? `• Expected ROI: ${unit.projectedRoi}%` : ''} • AI Match Match: {unit.matchScore}%
+                      <div key={unit.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 border border-[#f3f4f5] rounded-xl hover:bg-[#f8f9fa] transition">
+                        <div className="flex-1 min-w-0">
+                          <div className="font-bold text-sm text-[#071422] mb-2">{unit.title}</div>
+                          <div className="grid grid-cols-2 gap-3 text-xs text-[#3a5570]/70 font-semibold">
+                            <div>Price: <span className="text-[#031632] font-bold font-mono">EGP {unit.price.toLocaleString()}</span></div>
+                            {unit.projectedRoi && <div>Expected ROI: <span className="text-emerald-600 font-bold">{unit.projectedRoi}%</span></div>}
+                          </div>
+                          {/* Match Score Progress */}
+                          <div className="mt-3 flex items-center gap-3">
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between mb-1.5">
+                                <span className="text-[9px] font-bold uppercase tracking-widest text-[#3a5570]">AI Match</span>
+                                <span className="text-[11px] font-bold text-[#C9A84C]">{unit.matchScore}%</span>
+                              </div>
+                              <div className="h-2 rounded-full bg-[#f3f4f5] overflow-hidden">
+                                <div
+                                  className="h-full rounded-full bg-gradient-to-r from-[#C9A84C] to-[#E9C176]"
+                                  style={{ width: `${unit.matchScore}%` }}
+                                />
+                              </div>
+                            </div>
                           </div>
                         </div>
+
                         {lead.stage === 2 && (
-                          <button 
+                          <button
                             onClick={() => toggleApproval(lead.id, unit.id)}
-                            className={`p-2 rounded-full border transition flex items-center justify-center ${
-                              unit.approved 
-                                ? 'bg-green-50 border-green-500 text-green-600' 
-                                : 'bg-white border-gray-200 text-gray-400 hover:text-[#031632] hover:border-gray-300'
+                            className={`flex-shrink-0 p-3 rounded-full border transition flex items-center justify-center h-12 w-12 ${
+                              unit.approved
+                                ? 'bg-emerald-50 border-emerald-500 text-emerald-600'
+                                : 'bg-white border-[#f3f4f5] text-[#3a5570]/40 hover:text-[#031632] hover:border-[#C9A84C]'
                             }`}
                           >
-                            <Check className="h-4 w-4" />
+                            <Check className="h-5 w-5" />
                           </button>
                         )}
                       </div>
@@ -234,11 +273,11 @@ export default function AdminLeadsPage() {
                   </div>
                 )}
 
-                {lead.stage === 2 && (
+                {lead.stage === 2 && lead.matchedUnits.some(u => u.approved) && (
                   <div className="mt-6 flex justify-end">
-                    <button 
+                    <button
                       onClick={() => scheduleViewing(lead.id)}
-                      className="flex items-center gap-2 px-5 py-2.5 bg-[#031632] text-white rounded-xl font-semibold text-sm hover:bg-[#031632]/90 transition shadow-sm"
+                      className="flex items-center gap-2 px-6 py-3 bg-[#031632] text-white rounded-xl font-semibold text-sm hover:bg-[#031632]/90 transition shadow-sm"
                     >
                       <Calendar className="h-4 w-4" />
                       Approve & Schedule Viewing

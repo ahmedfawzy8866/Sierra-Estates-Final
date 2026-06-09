@@ -136,43 +136,49 @@ export default function AdminUnitsPage() {
     : units;
 
   return (
-    <div style={{ fontFamily: 'var(--font-body)' }}>
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+    <div className="space-y-8" style={{ fontFamily: 'var(--font-body)' }}>
+      {/* ══ Header ══ */}
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#071422] tracking-tight"
+          <span className="text-[10px] tracking-[0.25em] font-semibold text-[#C9A84C] uppercase font-mono block mb-2">
+            Inventory Management
+          </span>
+          <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-[#071422]"
             style={{ fontFamily: 'var(--font-display)' }}>
             Unit Inventory
           </h1>
-          <p className="text-[#3a5570] text-sm mt-0.5">{units.length} units loaded</p>
+          <p className="text-[#3a5570] text-sm mt-1">{units.length} properties in catalog</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-fit">
           <button
             onClick={() => setShowCreateModal(true)}
-            className="inline-flex items-center gap-2 bg-[#031632] text-white px-5 py-2.5 rounded-lg
+            className="inline-flex items-center gap-2 bg-[#031632] text-white px-4 sm:px-5 py-2.5 rounded-lg
                        text-xs font-bold tracking-widest uppercase hover:bg-[#1a2b48] transition-colors"
           >
             <Plus size={14} />
-            Add Unit
+            <span className="hidden sm:inline">Add Unit</span>
+            <span className="sm:hidden">Add</span>
           </button>
           <button
             onClick={() => setViewMode('table')}
-            className={`p-2 rounded-lg transition-colors ${viewMode === 'table' ? 'bg-[#031632] text-white' : 'bg-white text-[#3a5570] hover:bg-[#f3f4f5]'}`}
+            title="Table view"
+            className={`p-2.5 rounded-lg transition-colors ${viewMode === 'table' ? 'bg-[#031632] text-white' : 'bg-white text-[#3a5570] hover:bg-[#f3f4f5]'}`}
           >
             <List size={16} />
           </button>
           <button
             onClick={() => setViewMode('grid')}
-            className={`p-2 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-[#031632] text-white' : 'bg-white text-[#3a5570] hover:bg-[#f3f4f5]'}`}
+            title="Grid view"
+            className={`p-2.5 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-[#031632] text-white' : 'bg-white text-[#3a5570] hover:bg-[#f3f4f5]'}`}
           >
             <LayoutGrid size={16} />
           </button>
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
-        <div className="relative flex-1 max-w-sm">
+      {/* ══ Filters & Search ══ */}
+      <div className="flex flex-col gap-3">
+        <div className="relative">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3a5570]/40" />
           <input
             type="text"
@@ -183,7 +189,7 @@ export default function AdminUnitsPage() {
                        text-sm outline-none focus:border-[#C9A84C] transition-colors"
           />
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           {STATUS_OPTIONS.map(s => (
             <button
               key={s}
@@ -191,7 +197,7 @@ export default function AdminUnitsPage() {
               className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all ${
                 filter === s
                   ? 'bg-[#031632] text-white'
-                  : 'bg-white text-[#3a5570] hover:bg-[#f3f4f5]'
+                  : 'bg-white text-[#3a5570] border border-[#e7e8e9] hover:border-[#C9A84C]'
               }`}
             >
               {s}
