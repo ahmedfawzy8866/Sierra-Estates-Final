@@ -6,6 +6,9 @@
   "installCommand": "pnpm install",
   "framework": "nextjs",
   "outputDirectory": "apps/sierra-estates-realty/.next",
+  "git": {
+    "deploymentEnabled": false
+  },
   "regions": ["iad1"],
   "crons": [
     {

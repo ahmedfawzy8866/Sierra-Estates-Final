@@ -1,0 +1,78 @@
+name: Deploy · Vercel
+
+# Deploys the Sierra Estates web app to Vercel FROM GitHub (not Vercel's own
+# git integration). Vercel's automatic git deploys are disabled via
+# `git.deploymentEnabled: false` in vercel.json — this workflow is the single
+# source of deploys.
+#
+# Required repo secret:
+#   VERCEL_TOKEN  — a Vercel access token (Account Settings → Tokens)
+# Project/org IDs are non-secret and already committed in .vercel/project.json.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deploy target'
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - preview
+
+concurrency:
+  group: vercel-deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  VERCEL_ORG_ID: team_k2jaWfzeatcYG6Qpl0ooCxQh
+  VERCEL_PROJECT_ID: prj_4jwnJjtZtmjtNZTr5oKAmC9vOrv3
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: pnpm
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Resolve deploy target
+        id: target
+        run: |
+          TARGET="${{ github.event.inputs.environment || 'production' }}"
+          echo "name=$TARGET" >> "$GITHUB_OUTPUT"
+          if [ "$TARGET" = "production" ]; then
+            echo "flag=--prod" >> "$GITHUB_OUTPUT"
+          else
+            echo "flag=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Pin project Root Directory to the web app (monorepo)
+        run: |
+          curl -fsS -X PATCH \
+            "https://api.vercel.com/v9/projects/${VERCEL_PROJECT_ID}?teamId=${VERCEL_ORG_ID}" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"rootDirectory":"apps/sierra-estates-realty"}' > /dev/null
+          echo "Root Directory pinned to apps/sierra-estates-realty"
+
+      - name: Pull Vercel project settings
+        run: vercel pull --yes --environment=${{ steps.target.outputs.name }} --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build
+        run: vercel build ${{ steps.target.outputs.flag }} --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy (prebuilt)
+        run: vercel deploy --prebuilt ${{ steps.target.outputs.flag }} --token=${{ secrets.VERCEL_TOKEN }}
