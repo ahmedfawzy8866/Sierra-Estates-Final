@@ -7,7 +7,7 @@
  */
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Compass, ShieldCheck, Play, Award, RotateCcw, UploadCloud, Check, HelpCircle, ArrowRight } from 'lucide-react';
+import { Search, Compass, Award, UploadCloud, Check } from 'lucide-react';
 
 const COMPOUNDS = [
   'Mivida', 'Eastown', 'Villette (Sodic)', 'Taj City', 'Hyde Park', 'Mountain View iCity',

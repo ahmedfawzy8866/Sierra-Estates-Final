@@ -3,6 +3,8 @@ node_modules/
 npm-lock.json
 yarn.lock
 package-lock.json
+bun.lock
+bun.lockb
 
 # Build outputs
 dist/

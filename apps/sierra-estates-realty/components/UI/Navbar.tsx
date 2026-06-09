@@ -6,10 +6,10 @@ export function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 px-8 py-6 flex justify-between items-center bg-sierra-ivory/90 backdrop-blur-md border-b border-sierra-navy/10">
       <div className="flex items-center space-x-2">
         <div className="w-8 h-8 bg-sierra-navy rounded-full flex items-center justify-center">
-          <span className="text-sierra-ivory font-bold text-lg tracking-tighter">SB</span>
+          <span className="text-sierra-ivory font-bold text-lg tracking-tighter">SE</span>
         </div>
         <span className="text-sierra-navy font-bold text-2xl tracking-tight uppercase">
-          Sierra-Blu
+          Sierra Estates
         </span>
       </div>
       

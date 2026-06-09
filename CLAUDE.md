@@ -3,7 +3,7 @@
 Context for Claude Code / AI sessions. Keep this updated as the project evolves.
 
 ## What this is
-Sierra Estates / Sierra Estates — a luxury real-estate (PropTech) platform for the New Cairo market. pnpm + Turborepo monorepo.
+Sierra Estates — a luxury real-estate (PropTech) platform for the New Cairo market. pnpm + Turborepo monorepo.
 
 ## Stack
 Next.js 16 (App Router, Turbopack) · React 19 · TypeScript 5 (strict) · Tailwind 4 · Firebase (client SDK 12 + Admin SDK 13: Firestore, Storage, Auth) · Leaflet maps · next-intl (en/ar) · **Docker n8n Workflow Engine** (`localhost:5678`) · Python API (Docker/Cloud Run). Observability: OpenTelemetry + Arize.
@@ -11,7 +11,7 @@ Next.js 16 (App Router, Turbopack) · React 19 · TypeScript 5 (strict) · Tailw
 ## Deployment Architecture (authoritative)
 
 ```
-ONE Vercel deployment → apps/web (Next.js)
+ONE Vercel deployment → apps/sierra-estates-realty (Next.js)
   /                  Public site: listings, search, about, contact
   /listings          Property marketplace
   /concierge/[id]    Client portfolio views
@@ -34,20 +34,22 @@ Firebase — infrastructure ONLY (no hosting)
   Functions          Background jobs (functions/)
 ```
 
-**`apps/admin`** (Vite SPA) — DEPRECATED. All mock data, never connected to Firestore.
-Do not deploy it. See `apps/admin/DEPRECATED.md`. Real admin = `apps/web/app/admin/`.
+**`apps/sierra-estates-admin-portal`** — DEPRECATED placeholder. Never connected to Firestore.
+Do not deploy it. See its `DEPRECATED.md`. Real admin = `apps/sierra-estates-realty/app/admin/`.
 
 ## Config files
-- `vercel.json` (root) — Vercel config when root dir = repo root (buildCommand points to apps/web)
-- `apps/web/vercel.json` — Vercel config when root dir = `apps/web` in Vercel dashboard
+- `vercel.json` (root) — Vercel config when root dir = repo root (buildCommand points to the realty app)
+- `apps/sierra-estates-realty/vercel.json` — Vercel config when root dir = `apps/sierra-estates-realty` in Vercel dashboard
 - `firebase.json` — Functions + Firestore rules + Storage rules + emulators (no hosting)
 - `.firebaserc` — Firebase project: `sierra-estates-prod`
 
 ## Layout
-- `apps/web` — main Next.js app and the real codebase (~26 pages, 38 API routes, ~78 components, ~39 services).
-- `apps/admin` — DEPRECATED Vite SPA (prototype, all mock data). See DEPRECATED.md inside.
+- `apps/sierra-estates-realty` — main Next.js app and the real codebase (public site + admin suite + all API routes).
+- `apps/sierra-estates-admin-portal` — DEPRECATED placeholder. See DEPRECATED.md inside.
+- `apps/api` — standalone Python service (Docker/Cloud Run): PropertyFinder sync + bot integration.
 - `functions` — Firebase Cloud Functions (ingestion pipeline: collectData, processDataForApp, + pure transform module).
-- `packages/db` — shared Firestore data layer (substantial). `packages/agents` is small. `packages/{api,auth,batch,config,ui}` are empty stubs.
+- `packages/*` — shared workspace packages. The realty app consumes `@sierra-estates/agents-core` and `@sierra-estates/obedian`; `packages/db` holds the shared Firestore data layer.
+- `workflows` — Node scripts for the external data-sync pipeline, run on schedule by `.github/workflows/external-workflows.yml`.
 
 ## Commands (from repo root)
 - `pnpm install`
@@ -56,21 +58,28 @@ Do not deploy it. See `apps/admin/DEPRECATED.md`. Real admin = `apps/web/app/adm
 - `pnpm lint` / `pnpm type-check` / `pnpm test:ci`
 - `pnpm deploy:rules` — deploy Firestore + Storage rules
 - `pnpm deploy:functions` — deploy Cloud Functions
-- Tests: 47 passing (40 web + 7 functions). `type-check` is a real CI gate (`tsc --noEmit`). `apps/web/next.config.ts` has `ignoreBuildErrors: false`.
+- Tests: Jest (realty app) + functions. `type-check` is a real CI gate (`tsc --noEmit`). `apps/sierra-estates-realty/next.config.ts` has `ignoreBuildErrors: false`.
 
 ## Vercel Setup (one-time in dashboard)
-Option A (recommended): Root Directory = `apps/web` → uses `apps/web/vercel.json`
-Option B (fallback): Root Directory = repo root → uses root `vercel.json` with correct build cmd
+Current choice — **Root Directory = repo root**, driven by the root `vercel.json`:
+  - Framework Preset: `Next.js`
+  - Build Command: `pnpm run build` (builds the realty app via workspace filter)
+  - Install Command: `pnpm install`
+  - Output Directory: `apps/sierra-estates-realty/.next` (set in root `vercel.json`)
+
+Fallback if Vercel reports "No Next.js version detected" from the repo root: set
+Root Directory = `apps/sierra-estates-realty` (the app has its own `vercel.json`) — this is
+Vercel's natively-supported monorepo pattern and needs no repo changes.
 
 ## Conventions
-- ESLint flat config (`apps/web/eslint.config.mjs`) with `eslint-plugin-unused-imports`; unused vars/args/caught-errors must be `_`-prefixed.
-- `apps/web/tsconfig.json` excludes `agents/**` and `public/**` from type-check.
+- ESLint flat config (`apps/sierra-estates-realty/eslint.config.mjs`) with `eslint-plugin-unused-imports`; unused vars/args/caught-errors must be `_`-prefixed.
+- `apps/sierra-estates-realty/tsconfig.json` excludes `agents/**` and `public/**` from type-check.
 - Privileged server work uses the **Admin SDK** (`@/lib/server/firebase-admin`) which BYPASSES Firestore rules. Client uses `@/lib/firebase`.
 
 ## Auth model (important)
 - Client role: read from Firestore `users/{uid}.role` in {admin, manager, agent} (see `lib/AuthContext.tsx`).
 - Server admin check: `verifyAdminRequest` (`lib/server/auth-guard.ts`) — Firebase Bearer token with `role==='admin'`. `verifyRequest` also accepts the `X-SBR-SECRET-KEY` header for service/cron calls.
-- Edge middleware (`apps/web/middleware.ts`) matches ONLY `/api/orchestrate` — it is NOT broad protection.
+- Edge middleware (`apps/sierra-estates-realty/middleware.ts`) matches ONLY `/api/orchestrate` — it is NOT broad protection.
 - Admin page protection: client-side auth guard in `app/admin/layout.tsx` — redirects to `/admin/login` if not authenticated.
 - Firestore/Storage security rules are staff-gated via `users/{uid}.role` (see `firestore.rules`) — pending deploy (see NEXT_STEPS.md).
 

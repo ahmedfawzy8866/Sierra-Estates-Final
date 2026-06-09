@@ -5,9 +5,7 @@ import {
   collection, 
   query, 
   onSnapshot, 
-  orderBy,
-  where,
-  Timestamp 
+  orderBy 
 } from 'firebase/firestore';
 import { useI18n } from '@/lib/I18nContext';
 

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { storage, db } from '@/lib/firebase';
+import { storage } from '@/lib/firebase';
 import { 
   ref, 
   uploadBytesResumable, 

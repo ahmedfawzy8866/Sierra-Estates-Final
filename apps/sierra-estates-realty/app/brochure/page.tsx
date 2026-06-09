@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { BookOpen, Download, ArrowRight } from 'lucide-react';
+import { BookOpen, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 export default function BrochureDirectoryPage() {

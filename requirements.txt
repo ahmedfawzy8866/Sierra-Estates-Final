@@ -1,6 +1,0 @@
-# Python package requirements for the i-sierra-2027 project
-# Core testing and utility libraries
-pytest>=8.0.0
-requests>=2.31.0
-# Add other runtime dependencies as needed
-# Example: fastapi>=0.110.0

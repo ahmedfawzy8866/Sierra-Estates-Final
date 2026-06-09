@@ -3,11 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useI18n } from '../../lib/I18nContext';
 import { motion } from 'framer-motion';
 import { 
-  TrendingUp, 
   Activity, 
-  Map as MapIcon, 
-  LineChart, 
-  BarChart3, 
   Compass,
   ArrowUpRight,
   ArrowDownRight,

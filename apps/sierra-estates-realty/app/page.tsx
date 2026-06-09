@@ -1,10 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { motion, useMotionValue, useTransform } from 'framer-motion';
-import { Compass, ShieldCheck, Languages, ArrowRight, Percent, Award, Users, TrendingUp, Phone, Calendar } from 'lucide-react';
+import React, { useState } from 'react';
+import { Languages, Percent } from 'lucide-react';
 import InteractiveCrmMap from '@/components/UI/InteractiveCrmMap';
-import LuxuryVirtualViewport from '@/components/UI/LuxuryVirtualViewport';
 import MobileBottomNav from '@/components/UI/MobileBottomNav';
 import PremiumHero from '@/components/UI/PremiumHero';
 import InventoryShowcase from '@/components/Listings/InventoryShowcase';

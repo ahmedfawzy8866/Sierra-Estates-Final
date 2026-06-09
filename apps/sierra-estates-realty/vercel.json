@@ -2,6 +2,9 @@
   "version": 2,
   "name": "sierra-estates-web",
   "framework": "nextjs",
+  "git": {
+    "deploymentEnabled": false
+  },
   "regions": ["iad1"],
   "crons": [
     {

@@ -11,23 +11,15 @@ import {
 } from '../../lib/firebase/inventory';
 import { 
   Plus, 
-  MapPin, 
-  DollarSign,
+  MapPin,
   Search, 
-  Filter, 
-  Download, 
   Import, 
   MoreHorizontal, 
   Star, 
-  Globe, 
   Clock, 
   LayoutGrid, 
   List,
-  ChevronLeft,
-  ChevronRight,
-  TrendingUp,
   Package,
-  AlertTriangle,
   CheckCircle2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';

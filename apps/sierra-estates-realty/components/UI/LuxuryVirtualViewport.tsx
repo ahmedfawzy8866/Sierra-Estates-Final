@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useTransition } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, ShieldCheck, Compass } from 'lucide-react';
 

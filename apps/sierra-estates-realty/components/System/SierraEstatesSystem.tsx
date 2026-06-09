@@ -62,7 +62,7 @@ export default function SierraEstatesSystem() {
         <div className="flex flex-col">
           <div className="flex items-center space-x-2">
             <span className="text-xl font-black text-blue-900 tracking-tight uppercase">
-              Sierra-Blu<span className="text-blue-600 font-medium">Realty</span>
+              Sierra<span className="text-blue-600 font-medium">Estates</span>
             </span>
             <span className="hidden sm:inline-block bg-blue-50 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-blue-100">
               SaaS Intelligence

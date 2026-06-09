@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Box, Maximize, Play, RotateCcw } from 'lucide-react';
+import { Box, Play, RotateCcw } from 'lucide-react';
 
 export default function VirtualTour3D({ isAr }: { isAr?: boolean }) {
   const [isInitialized, setIsInitialized] = useState(false);

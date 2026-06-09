@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, X, Sparkles, Send, User } from 'lucide-react';
+import { X, Sparkles, Send, User } from 'lucide-react';
 import { useSierra } from '@/lib/hooks/useSierra';
 import BrandLogo from '@/components/UI/BrandLogo';
 

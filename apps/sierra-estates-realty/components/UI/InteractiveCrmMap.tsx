@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, TrendingUp, Info } from 'lucide-react';
+import { MapPin, TrendingUp } from 'lucide-react';
 
 interface MapNode {
   id: string;

@@ -4,10 +4,10 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Property } from '../../lib/models/schema';
-import { collection, query, onSnapshot, where } from 'firebase/firestore';
+import { collection, query, onSnapshot } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Home, Bath, Bed, Maximize, Map as MapIcon, Filter, Layers, Rotate3d as Rotate3D } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Home, Bed, Rotate3d as Rotate3D } from 'lucide-react';
 import { useI18n } from '../../lib/I18nContext';
 
 // Fix for default Leaflet markers in Next.js

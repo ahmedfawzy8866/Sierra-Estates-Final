@@ -33,6 +33,15 @@ const STAGE_COLORS: Record<string, string> = {
   closed:          'bg-green-50 text-green-700',
 };
 
+// Structural overview of the sourcing funnel (the documented S1→S10 pipeline).
+const PIPELINE_STAGES: { s: string; label: string; pct: number; color: string }[] = [
+  { s: 'S1–S2', label: 'Ingestion & Parsing',   pct: 100, color: '#1E88D9' },
+  { s: 'S3–S5', label: 'Inventory & Pricing',   pct: 64,  color: '#C9A84C' },
+  { s: 'S6–S8', label: 'Matching & Outreach',   pct: 38,  color: '#34D399' },
+  { s: 'S9',    label: 'Negotiation',           pct: 18,  color: '#7C3AED' },
+  { s: 'S10',   label: 'Closed Deals',          pct: 8,   color: '#E63946' },
+];
+
 export default function AdminDashboardPage() {
   const [kpis, setKpis] = useState<KPI[]>([]);
   const [recentDeals, setRecentDeals] = useState<RecentDeal[]>([]);
@@ -105,18 +114,27 @@ export default function AdminDashboardPage() {
 
   return (
     <div style={{ fontFamily: 'var(--font-body)' }}>
-      <div className="mb-10">
-        <h1 className="text-2xl font-bold text-[#071422] tracking-tight mb-1"
-          style={{ fontFamily: 'var(--font-display)' }}>
-          Intelligence Dashboard
-        </h1>
-        <p className="text-[#3a5570] text-sm">
-          Real-time overview of the Sierra Estates operating system.
-        </p>
+      <div className="mb-10 flex items-end justify-between gap-4 flex-wrap">
+        <div>
+          <span className="text-[10px] tracking-[0.25em] font-semibold text-[#C9A84C] uppercase font-mono block mb-2">
+            AI-Driven Engine
+          </span>
+          <h1 className="text-3xl font-bold text-[#071422] tracking-tight mb-1"
+            style={{ fontFamily: 'var(--font-display)' }}>
+            Intelligence OS
+          </h1>
+          <p className="text-[#3a5570] text-sm">
+            Real-time overview of the Sierra Estates operating system.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#C9A84C]/25 bg-[#C9A84C]/5">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="text-[9px] text-[#3a5570] tracking-widest uppercase font-mono">All systems nominal</span>
+        </div>
       </div>
 
-      {/* ══ KPI Cards ══ */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+      {/* ══ KPI Cards (luxury) ══ */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
         {loading
           ? Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="bg-white rounded-2xl p-6 h-36 animate-pulse" />
@@ -125,7 +143,8 @@ export default function AdminDashboardPage() {
               const Icon = kpi.icon;
               return (
                 <div key={kpi.label}
-                  className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] hover:shadow-[0_8px_32px_-4px_rgba(3,22,50,0.1)] transition-shadow">
+                  className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] hover:shadow-[0_8px_32px_-4px_rgba(3,22,50,0.1)] transition-shadow border-l-[3px]"
+                  style={{ borderLeftColor: kpi.color }}>
                   <div className="flex items-start justify-between mb-4">
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center"
                       style={{ backgroundColor: `${kpi.color}14` }}>
@@ -133,7 +152,7 @@ export default function AdminDashboardPage() {
                     </div>
                   </div>
                   <div className="text-3xl font-bold tracking-tight mb-1"
-                    style={{ color: kpi.color, fontFamily: 'var(--font-display)' }}>
+                    style={{ color: kpi.color, fontFamily: 'var(--font-mono)' }}>
                     {kpi.value}
                   </div>
                   <div className="text-xs font-semibold text-[#071422] mb-0.5">{kpi.label}</div>
@@ -143,51 +162,79 @@ export default function AdminDashboardPage() {
             })}
       </div>
 
-      {/* ══ Recent Deals Feed ══ */}
-      <div className="bg-white rounded-2xl shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] overflow-hidden">
-        <div className="px-8 py-6 border-b border-[#f3f4f5] flex items-center justify-between">
-          <h2 className="font-bold text-[#071422]" style={{ fontFamily: 'var(--font-display)' }}>
-            Recent Deal Activity
-          </h2>
-          <span className="text-[9px] text-[#3a5570]/50 uppercase tracking-widest font-mono">
-            Live Feed
-          </span>
-        </div>
-
-        {loading ? (
-          <div className="p-8 text-center text-[#3a5570]/40 text-sm">Loading feed...</div>
-        ) : recentDeals.length === 0 ? (
-          <div className="p-12 text-center">
-            <p className="text-[#3a5570]/40 text-sm">No deals yet.</p>
-            <p className="text-[9px] text-[#3a5570]/30 mt-2 uppercase tracking-widest">
-              Deals will appear here once created.
-            </p>
+      {/* ══ Pipeline + Recent Deals ══ */}
+      <div className="grid lg:grid-cols-[1fr_1.2fr] gap-6">
+        {/* Sourcing pipeline funnel (S1 → S10 architecture) */}
+        <div className="bg-white rounded-2xl shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] overflow-hidden">
+          <div className="px-8 py-6 border-b border-[#f3f4f5] flex items-center justify-between">
+            <h2 className="font-bold text-[#071422]" style={{ fontFamily: 'var(--font-display)' }}>
+              Sourcing Pipeline
+            </h2>
+            <span className="text-[9px] text-[#3a5570]/50 uppercase tracking-widest font-mono">S1 → S10</span>
           </div>
-        ) : (
-          <div className="divide-y divide-[#f3f4f5]">
-            {recentDeals.map((deal) => (
-              <div key={deal.id}
-                className="flex items-center justify-between px-8 py-5 hover:bg-[#f8f9fa] transition-colors">
-                <div>
-                  <div className="font-semibold text-sm text-[#071422]">{deal.clientName}</div>
-                  <div className="text-[10px] text-[#3a5570]/50 uppercase tracking-wide mt-0.5">
-                    {deal.propertyTitle}
-                  </div>
+          <div className="px-8 py-6 space-y-4">
+            {PIPELINE_STAGES.map((row) => (
+              <div key={row.s}>
+                <div className="flex justify-between items-center mb-1.5">
+                  <span className="text-[11px] text-[#071422]">
+                    <strong className="font-mono" style={{ color: row.color }}>{row.s}</strong> · {row.label}
+                  </span>
                 </div>
-                <div className="flex items-center gap-4">
-                  <span className={`text-[9px] font-bold px-3 py-1.5 rounded uppercase tracking-widest ${
-                    STAGE_COLORS[deal.stage] ?? 'bg-gray-50 text-gray-500'
-                  }`}>
-                    {deal.stage}
-                  </span>
-                  <span className="font-mono font-semibold text-sm text-[#031632]">
-                    {deal.terms?.currency || 'EGP'} {deal.terms?.offerPrice?.toLocaleString() ?? '—'}
-                  </span>
+                <div className="h-1.5 rounded-full bg-[#f3f4f5] overflow-hidden">
+                  <div className="h-full rounded-full" style={{ width: `${row.pct}%`, background: `linear-gradient(90deg, ${row.color}, ${row.color}88)` }} />
                 </div>
               </div>
             ))}
+            <p className="text-[10px] text-[#3a5570]/50 pt-2 leading-relaxed">
+              Stage architecture of the lead → deal funnel. Live per-stage counts surface in the Leads and Deals tabs.
+            </p>
           </div>
-        )}
+        </div>
+
+        {/* Recent Deals Feed (live data) */}
+        <div className="bg-white rounded-2xl shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] overflow-hidden">
+          <div className="px-8 py-6 border-b border-[#f3f4f5] flex items-center justify-between">
+            <h2 className="font-bold text-[#071422]" style={{ fontFamily: 'var(--font-display)' }}>
+              Recent Deal Activity
+            </h2>
+            <span className="text-[9px] text-[#3a5570]/50 uppercase tracking-widest font-mono">Live Feed</span>
+          </div>
+
+          {loading ? (
+            <div className="p-8 text-center text-[#3a5570]/40 text-sm">Loading feed...</div>
+          ) : recentDeals.length === 0 ? (
+            <div className="p-12 text-center">
+              <p className="text-[#3a5570]/40 text-sm">No deals yet.</p>
+              <p className="text-[9px] text-[#3a5570]/30 mt-2 uppercase tracking-widest">
+                Deals will appear here once created.
+              </p>
+            </div>
+          ) : (
+            <div className="divide-y divide-[#f3f4f5]">
+              {recentDeals.map((deal) => (
+                <div key={deal.id}
+                  className="flex items-center justify-between px-8 py-5 hover:bg-[#f8f9fa] transition-colors">
+                  <div>
+                    <div className="font-semibold text-sm text-[#071422]">{deal.clientName}</div>
+                    <div className="text-[10px] text-[#3a5570]/50 uppercase tracking-wide mt-0.5">
+                      {deal.propertyTitle}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className={`text-[9px] font-bold px-3 py-1.5 rounded uppercase tracking-widest ${
+                      STAGE_COLORS[deal.stage] ?? 'bg-gray-50 text-gray-500'
+                    }`}>
+                      {deal.stage}
+                    </span>
+                    <span className="font-mono font-semibold text-sm text-[#031632]">
+                      {deal.terms?.currency || 'EGP'} {deal.terms?.offerPrice?.toLocaleString() ?? '—'}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

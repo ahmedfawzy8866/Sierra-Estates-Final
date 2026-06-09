@@ -4,7 +4,7 @@
 
 A production-ready, unified monorepo consolidating all Sierra-related repositories into one cohesive, high-performance platform.
 
-> **Migration complete**: Code and history from `Sierra-Blu-Systm`, `68e6464b...` (hash-repo), `frontend`, and `New-folder` have been consolidated here. See [MIGRATION.md](./MIGRATION.md) for details.
+> **Migration complete**: Code and history from several legacy repositories have been consolidated here under the Sierra Estates brand. See [MIGRATION.md](./MIGRATION.md) for details.
 
 ## 📦 Repository Structure
 

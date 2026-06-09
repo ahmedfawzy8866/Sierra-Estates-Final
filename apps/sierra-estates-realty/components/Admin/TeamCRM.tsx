@@ -1,15 +1,12 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence, type Variants } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import { 
   Search, 
   Filter, 
   MoreVertical, 
   Mail, 
-  Phone, 
-  TrendingUp, 
-  Award,
-  CircleDot,
+  Phone,
   ArrowUpRight,
   ShieldCheck
 } from 'lucide-react';

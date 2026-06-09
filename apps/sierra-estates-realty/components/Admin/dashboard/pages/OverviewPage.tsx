@@ -1,8 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { db } from '@/lib/firebase';
-import { collection, query, where, getDocs, orderBy, limit, getCountFromServer } from 'firebase/firestore';
 import KPICard from '../ui/KPICard';
 import PipelineChart from '../ui/PipelineChart';
 import LeadsList from '../ui/LeadsList';
