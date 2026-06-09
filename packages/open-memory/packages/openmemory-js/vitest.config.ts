@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig } from "vitest/config";
 
 // Tests run sequentially because the SQLite metadata backend is a shared
