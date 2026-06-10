@@ -26,7 +26,7 @@ export const POST = async (req: NextRequest) => {
     }
 
     // Fetch lead to get phone number if not provided
-    const leadSnap = await adminDb.collection('stakeholders').doc(leadId).get();
+    const leadSnap = await adminDb.collection(COLLECTIONS.stakeholders).doc(leadId).get();
     if (!leadSnap.exists) {
       return NextResponse.json(
         { error: 'Lead not found' },
@@ -45,7 +45,7 @@ export const POST = async (req: NextRequest) => {
     }
 
     // Fetch the concierge portfolio
-    const portfolioSnap = await adminDb.collection('stakeholders').doc(leadId).get();
+    const portfolioSnap = await adminDb.collection(COLLECTIONS.stakeholders).doc(leadId).get();
     const portfolioId = portfolioSnap.data()?.conciergePortfolioId;
 
     if (!portfolioId) {
@@ -69,7 +69,7 @@ export const POST = async (req: NextRequest) => {
     await sendPortfolioViaWhatsApp(leadId, portfolio, phone);
 
     // Update lead record
-    await adminDb.collection('stakeholders').doc(leadId).update({
+    await adminDb.collection(COLLECTIONS.stakeholders).doc(leadId).update({
       'conciergePortfolioSentAt': Timestamp.now(),
       'conciergePortfolioSentVia': 'whatsapp',
     });
