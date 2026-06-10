@@ -6,7 +6,7 @@ Updated: 2026-06-07. Trim items as completed.
 
 ## Deployment Architecture (RESOLVED ✅)
 
-**ONE Vercel deployment** (`apps/web`) serves everything:
+**ONE Vercel deployment** (`apps/sierra-estates-realty`) serves everything:
 - `/` → Public site: listings, search, contact
 - `/admin/*` → Staff admin panel (Firebase Auth gated by `app/admin/layout.tsx`)
 - `/api/*` → All backend APIs (auth-guarded per route)
@@ -14,7 +14,7 @@ Updated: 2026-06-07. Trim items as completed.
 **Firebase** = infrastructure only: Firestore + Storage + Auth + Cloud Functions.
 No Firebase Hosting needed for the web app.
 
-`apps/admin` (Vite SPA) = **DEPRECATED** (all mock data). Real admin = `apps/web/app/admin/`.
+`apps/admin` (Vite SPA) = **DEPRECATED** (all mock data). Real admin = `apps/sierra-estates-realty/app/admin/`.
 
 ---
 
@@ -31,16 +31,16 @@ The hardened rules are ready in the repo — just need deploying.
 
 ## Vercel Setup (one-time in dashboard)
 
-**Option A — recommended (Root Directory = `apps/web`):**
-- Set Root Directory = `apps/web`
+**Option A — recommended (Root Directory = `apps/sierra-estates-realty`):**
+- Set Root Directory = `apps/sierra-estates-realty`
 - Framework = Next.js (auto-detected)
 - Build command = `pnpm build`
 - Output directory = `.next` (auto-detected)
-- Env vars: copy from `apps/web/.env.local.example`
+- Env vars: copy from `apps/sierra-estates-realty/.env.local.example`
 
 **Option B — fallback (Root Directory = repo root):**
 - Build command = `pnpm --filter sierra-estates-platform build`
-- Output directory = `apps/web/.next`
+- Output directory = `apps/sierra-estates-realty/.next`
 - Install command = `pnpm install --frozen-lockfile`
 
 ---
