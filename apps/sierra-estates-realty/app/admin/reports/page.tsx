@@ -175,7 +175,7 @@ export default function AdminReportsPage() {
           {['week', 'month', 'quarter', 'year'].map(range => (
             <button
               key={range}
-              onClick={() => setTimeRange(range as any)}
+              onClick={() => setTimeRange(range as 'week' | 'month' | 'quarter' | 'year')}
               className={`px-3 sm:px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all ${
                 timeRange === range ? 'bg-[#031632] text-white' : 'bg-white text-[#3a5570] border border-[#e7e8e9] hover:border-[#C9A84C]'
               }`}

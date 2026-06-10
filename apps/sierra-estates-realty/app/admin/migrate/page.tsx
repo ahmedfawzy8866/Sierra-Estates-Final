@@ -11,7 +11,7 @@ import {
 
 interface MigrationStatus {
   migrationInProgress: boolean;
-  lastMigration: any;
+  lastMigration: Record<string, unknown> | null;
   timestamp: string;
 }
 
@@ -167,7 +167,7 @@ export default function AdminMigrationPage() {
                   <div className="text-sm text-[#3a5570]">Records Migrated</div>
                   <div className="text-sm font-semibold text-[#071422]">
                     {status.lastMigration.results.reduce(
-                      (sum: number, r: any) => sum + r.recordsMigrated,
+                      (sum: number, r: Record<string,unknown>) => sum + Number(r.recordsMigrated),
                       0
                     )}
                   </div>
@@ -311,7 +311,7 @@ export default function AdminMigrationPage() {
             Migration Results
           </h2>
 
-          {status.lastMigration.results.map((result: any, i: number) => (
+          {status.lastMigration.results.map((result: Record<string,unknown>, i: number) => (
             <div key={i} className="mb-4 p-4 border border-[#e7e8e9] rounded-lg">
               <div className="flex items-center justify-between mb-2">
                 <div className="font-semibold text-sm text-[#071422]">{result.migratedCollections[0]}</div>

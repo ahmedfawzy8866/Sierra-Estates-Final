@@ -20,7 +20,7 @@ export default function AdminLoginPage() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       router.replace('/admin/dashboard');
-    } catch (err: any) {
+    } catch (err) {
       console.error('Login error:', err);
       setError(err?.code ? `${err.code}: ${err.message}` : err?.message || 'Unknown login error');
     } finally {

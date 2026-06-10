@@ -21,8 +21,8 @@ interface Lead {
   budgetRange?: string;
   timeline?: string;
   notes?: string;
-  updatedAt?: any;
-  createdAt?: any;
+  updatedAt?: { toDate(): Date } | Date | string;
+  createdAt?: { toDate(): Date } | Date | string;
 }
 
 export default function AdminLeadDetailPage() {

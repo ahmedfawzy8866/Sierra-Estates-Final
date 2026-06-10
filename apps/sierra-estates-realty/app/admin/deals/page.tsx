@@ -17,8 +17,8 @@ interface Lead {
   originChannel: string;
   pfLeadId?: string;
   pfListingReferenceNumber?: string;
-  updatedAt?: any;
-  createdAt?: any;
+  updatedAt?: { toDate(): Date } | Date | string;
+  createdAt?: { toDate(): Date } | Date | string;
 }
 
 const PIPELINE_COLUMNS = [
@@ -37,7 +37,7 @@ const SOURCE_STYLES: Record<string, string> = {
   telegram: 'bg-cyan-50 text-cyan-600',
 };
 
-function timeAgo(ts: any): string {
+function timeAgo(ts: { toDate(): Date } | Date | string | null | undefined): string {
   if (!ts) return '';
   const date = ts?.toDate ? ts.toDate() : new Date(ts);
   const diff = Date.now() - date.getTime();

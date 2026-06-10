@@ -64,7 +64,7 @@ export default function AdminUnitsPage() {
         const err = await res.json();
         alert(`Publish failed: ${err.error}`);
       }
-    } catch (err: any) {
+    } catch (err) {
       alert(`Publish failed: ${err.message}`);
     } finally {
       setPublishing(null);

@@ -11,8 +11,8 @@ interface MediaItem {
   url: string;
   size: number;
   type: string;
-  uploadedAt?: any;
-  createdAt?: any;
+  uploadedAt?: { toDate(): Date } | Date | string;
+  createdAt?: { toDate(): Date } | Date | string;
 }
 
 interface UploadProgress {

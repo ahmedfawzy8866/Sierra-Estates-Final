@@ -8,7 +8,7 @@ import { Database, ChevronDown, Search, Copy, Check } from 'lucide-react';
 interface CollectionData {
   name: string;
   docCount: number;
-  sample?: Record<string, any>;
+  sample?: Record<string, unknown>;
 }
 
 const COLLECTIONS = ['users', 'listings', 'leads', 'deals', 'activities', 'media', 'sync_jobs'];
@@ -58,7 +58,7 @@ export default function AdminDatabasePage() {
     search ? c.name.toLowerCase().includes(search.toLowerCase()) : true
   );
 
-  const copyJson = (obj: any, id: string) => {
+  const copyJson = (obj: unknown, id: string) => {
     navigator.clipboard.writeText(JSON.stringify(obj, null, 2));
     setCopied(id);
     setTimeout(() => setCopied(null), 2000);
@@ -252,7 +252,7 @@ export default function AdminDatabasePage() {
                 { name: 'createdAt', type: 'timestamp', desc: 'Activity timestamp' },
               ],
             },
-          ].map((schema: any) => (
+          .map((schema: Record<string,unknown>) => (
             <div key={schema.name} className="border border-[#e7e8e9] rounded-lg overflow-hidden">
               <div className="bg-[#f8f9fa] p-4 border-b border-[#e7e8e9]">
                 <h3 className="font-semibold text-sm text-[#071422]">{schema.name}</h3>
@@ -268,7 +268,7 @@ export default function AdminDatabasePage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {schema.fields.map((field: any, i: number) => (
+                    {schema.fields.map((field: Record<string,unknown>, i: number) => (
                       <tr key={i} className="border-b border-[#f3f4f5] hover:bg-[#f8f9fa]">
                         <td className="px-4 py-2 font-mono text-[#031632]">{field.name}</td>
                         <td className="px-4 py-2">

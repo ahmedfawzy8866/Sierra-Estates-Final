@@ -27,25 +27,30 @@ interface PortalUnit {
   live: boolean;
 }
 
-function normalize(u: Record<string, any>, i: number): PortalUnit {
+type RawUnit = Record<string, unknown>;
+
+function normalize(u: RawUnit, i: number): PortalUnit {
+  const imgs = Array.isArray(u.images) ? u.images : [];
+  const firstImg = imgs[0];
   const image =
-    u.imageUrl ||
-    (Array.isArray(u.images) ? (typeof u.images[0] === 'string' ? u.images[0] : u.images[0]?.url) : null) ||
+    (typeof u.imageUrl === 'string' ? u.imageUrl : null) ??
+    (typeof firstImg === 'string' ? firstImg : typeof firstImg === 'object' && firstImg !== null ? String((firstImg as Record<string,unknown>).url ?? '') : null) ??
     null;
   const status = String(u.status ?? 'available');
+  const intel  = typeof u.intelligence === 'object' && u.intelligence !== null ? u.intelligence as Record<string,unknown> : {};
   return {
-    id: String(u.id ?? i),
-    title: u.title || u.name || 'Untitled Residence',
-    price: Number(u.price) || 0,
-    beds: Number(u.bedrooms ?? u.rooms ?? u.beds ?? 0),
-    baths: Number(u.bathrooms ?? u.baths ?? 0),
-    area: String(u.area ?? u.size ?? '—'),
-    type: String(u.propertyType || u.type || 'property').toLowerCase(),
-    compound: u.compound || u.location || 'New Cairo',
+    id:       String(u.id ?? i),
+    title:    String(u.title ?? u.name ?? 'Untitled Residence'),
+    price:    Number(u.price) || 0,
+    beds:     Number(u.bedrooms ?? u.rooms ?? u.beds ?? 0),
+    baths:    Number(u.bathrooms ?? u.baths ?? 0),
+    area:     String(u.area ?? u.size ?? '—'),
+    type:     String(u.propertyType ?? u.type ?? 'property').toLowerCase(),
+    compound: String(u.compound ?? u.location ?? 'New Cairo'),
     image,
     status,
-    roi: Number(u.intelligence?.roi ?? u.roi ?? 0),
-    live: status.toLowerCase() === 'available' && !!(u.ownerDirect ?? u.fromOwner),
+    roi:      Number(intel.roi ?? u.roi ?? 0),
+    live:     status.toLowerCase() === 'available' && Boolean(u.ownerDirect ?? u.fromOwner),
   };
 }
 
