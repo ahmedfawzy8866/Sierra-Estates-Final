@@ -14,3 +14,4 @@ services/hermes-agent/.venv/
 # Build artifacts from packages
 packages/*/dist/
 
+.tsbuildinfo
