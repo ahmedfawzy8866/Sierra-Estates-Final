@@ -1,74 +1,81 @@
 /**
  * sierra estates — SERVER-SIDE AUTH GUARD
  * Validates Firebase Auth tokens on API routes.
- * Use: wrap any API handler with `withAuth(handler)` or call `verifyRequest(req)`.
+ *
+ * Supports three auth methods:
+ *   1. Firebase ID Token  →  Authorization: Bearer <token>
+ *   2. SBR Secret Key     →  X-SBR-SECRET-KEY header
+ *   3. Cron/Service key   →  Authorization: Bearer <CRON_SECRET>  (Vercel cron jobs)
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth } from './firebase-admin';
 
-const SECRET_KEY = process.env.SBR_SECRET_KEY || '';
+const SBR_SECRET = process.env.SBR_SECRET_KEY || process.env.CRON_SECRET || '';
 
 export interface AuthResult {
   authenticated: boolean;
   uid?: string;
   email?: string;
-  method: 'firebase' | 'secret-key' | 'none';
+  method: 'firebase' | 'secret-key' | 'cron-secret' | 'none';
 }
 
 /**
  * Verifies an incoming API request.
- * Supports two auth methods:
- *   1. Firebase ID Token via `Authorization: Bearer <token>`
- *   2. Internal secret key via `X-SBR-SECRET-KEY` header (for cron/webhooks)
  */
 export async function verifyRequest(req: NextRequest): Promise<AuthResult> {
-  // Method 1: Firebase ID Token
   const authHeader = req.headers.get('authorization');
   if (authHeader?.startsWith('Bearer ')) {
     const token = authHeader.slice(7);
+
+    // Vercel cron / internal service token (sent as Bearer)
+    if (SBR_SECRET && token === SBR_SECRET) {
+      return { authenticated: true, method: 'cron-secret' };
+    }
+
+    // Firebase JWT
     try {
       const decoded = await adminAuth.verifyIdToken(token);
-      return {
-        authenticated: true,
-        uid: decoded.uid,
-        email: decoded.email,
-        method: 'firebase',
-      };
+      return { authenticated: true, uid: decoded.uid, email: decoded.email, method: 'firebase' };
     } catch {
-      // Token invalid or expired — fall through to secret key check
+      // fall through
     }
   }
 
-  // Method 2: Internal Secret Key (for server-to-server, cron, webhooks)
+  // X-SBR-SECRET-KEY header (server-to-server / webhook calls)
   const secretHeader = req.headers.get('x-sbr-secret-key');
-  if (SECRET_KEY && secretHeader === SECRET_KEY) {
-    return {
-      authenticated: true,
-      method: 'secret-key',
-    };
+  if (SBR_SECRET && secretHeader === SBR_SECRET) {
+    return { authenticated: true, method: 'secret-key' };
+  }
+
+  // x-cron-secret header variant
+  const cronHeader = req.headers.get('x-cron-secret');
+  if (SBR_SECRET && cronHeader === SBR_SECRET) {
+    return { authenticated: true, method: 'cron-secret' };
   }
 
   return { authenticated: false, method: 'none' };
 }
 
-/**
- * Returns a 401 JSON response for unauthorized requests.
- */
 export function unauthorizedResponse(message = 'Authentication required') {
-  return NextResponse.json(
-    { error: message, code: 'UNAUTHORIZED' },
-    { status: 401 }
-  );
+  return NextResponse.json({ error: message, code: 'UNAUTHORIZED' }, { status: 401 });
 }
 
 /**
- * Verifies that the request comes from an authenticated admin user.
- * Checks Firebase token AND verifies `role: 'admin'` in Firestore.
+ * Verifies request is from an authenticated admin user.
+ * Checks Firebase token AND verifies `role` in Firestore.
+ * Service/cron tokens are also accepted as admin-level.
  */
 export async function verifyAdminRequest(req: NextRequest): Promise<AuthResult> {
   const result = await verifyRequest(req);
-  if (!result.authenticated || !result.uid) return result;
+  if (!result.authenticated) return result;
+
+  // Service/cron callers are trusted as admin-level
+  if (result.method === 'secret-key' || result.method === 'cron-secret') {
+    return result;
+  }
+
+  if (!result.uid) return { authenticated: false, method: 'none' };
 
   try {
     const { adminDb } = await import('./firebase-admin');
