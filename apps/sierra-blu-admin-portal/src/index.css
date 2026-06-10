@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 /* ================================================================
    SIERRA BLU — Base 44 V12.0 Design System
@@ -379,7 +379,6 @@ body {
 /* ================================================================
    INTELLIGENCE OS — Design system (from Sierra Estates Admin.html)
    ================================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 :root {
   --os-gold:    #C8961A;
