@@ -1,0 +1,35 @@
+{
+  "name": "@sierra-estates/memory-engine",
+  "version": "1.0.0",
+  "description": "Central intelligence system connecting all agents, bots, and skills",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "memory",
+    "agents",
+    "intelligence",
+    "context",
+    "skills",
+    "sierra-estates"
+  ],
+  "author": "Sierra Estates Team",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./types": {
+      "types": "./dist/src/types.d.ts"
+    }
+  }
+}
