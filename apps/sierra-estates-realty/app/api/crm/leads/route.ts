@@ -1,14 +1,25 @@
-import { NextResponse } from 'next/server';
-import { db } from '@/lib/firebase';
-import { collection, doc, setDoc } from 'firebase/firestore';
+import { NextRequest, NextResponse } from 'next/server';
+import { adminDb } from '@/lib/server/firebase-admin';
+import { verifyRequest, unauthorizedResponse } from '@/lib/server/auth-guard';
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const auth = await verifyRequest(request);
+  if (!auth.authenticated) return unauthorizedResponse();
+
   try {
     const body = await request.json();
-    const { client_name, client_mobile, extracted_metrics, conversation_summary } = body;
+    const { client_name, client_mobile, conversation_summary } = body;
+    const extracted_metrics = body.extracted_metrics ?? {};
+
+    if (!client_name || !client_mobile) {
+      return NextResponse.json(
+        { success: false, error: 'client_name and client_mobile are required' },
+        { status: 400 }
+      );
+    }
 
     let leadScoreValue = 0;
-    if (extracted_metrics.intent !== 'UNKNOWN') leadScoreValue += 3;
+    if (extracted_metrics.intent && extracted_metrics.intent !== 'UNKNOWN') leadScoreValue += 3;
     if (extracted_metrics.capital_budget > 0) leadScoreValue += 4;
     if (extracted_metrics.timeline_weeks > 0 && extracted_metrics.timeline_weeks <= 4) leadScoreValue += 3;
     else leadScoreValue += 1;
@@ -36,7 +47,7 @@ export async function POST(request: Request) {
       timestamp: new Date().toISOString()
     };
 
-    await setDoc(doc(collection(db, 'Leads'), leadDocumentId), structuredLeadRecord);
+    await adminDb.collection('Leads').doc(leadDocumentId).set(structuredLeadRecord);
 
     if (leadScoreValue >= 8 && process.env.ZAPIER_CALENDAR_WEBHOOK_URL) {
       await fetch(process.env.ZAPIER_CALENDAR_WEBHOOK_URL, {

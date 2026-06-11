@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
 
-const API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'AIzaSyBZLN2jTTKV34SneGPoWRz1zoRpX5uODjs';
+const API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? '';
 const PROJECT_ID = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'sierra-estates';
 
 interface FirestoreValue {
@@ -105,6 +105,12 @@ function transformToListing(doc: FirestoreDocument): any {
 }
 
 export async function GET(request: Request) {
+  if (!API_KEY) {
+    return NextResponse.json(
+      { error: 'Server misconfigured: NEXT_PUBLIC_FIREBASE_API_KEY is not set', listings: [] },
+      { status: 503 }
+    );
+  }
   const rateLimitResponse = applyRateLimit(request, publicEndpointLimiter);
   if (rateLimitResponse) return rateLimitResponse;
 

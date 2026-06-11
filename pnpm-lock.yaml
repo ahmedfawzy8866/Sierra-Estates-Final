@@ -147,6 +147,9 @@ importers:
       '@sierra-estates/agents-core':
         specifier: workspace:*
         version: link:../../packages/agents-core
+      '@sierra-estates/memory-engine':
+        specifier: workspace:*
+        version: link:../../packages/memory-engine
       '@sierra-estates/obedian':
         specifier: workspace:*
         version: link:../../packages/obedian
@@ -305,9 +308,15 @@ importers:
         specifier: ^6.0.0
         version: 6.6.0(firebase-admin@13.10.0(encoding@0.1.13))
     devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.41
       jest:
         specifier: ^29
         version: 29.7.0(@types/node@20.19.41)
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
 
   packages/agents:
     dependencies:
@@ -434,6 +443,12 @@ importers:
         version: 20.19.41
       typescript:
         specifier: ^5.3
+        version: 5.9.3
+
+  packages/memory-engine:
+    devDependencies:
+      typescript:
+        specifier: ^5.0.0
         version: 5.9.3
 
   packages/obedian:
