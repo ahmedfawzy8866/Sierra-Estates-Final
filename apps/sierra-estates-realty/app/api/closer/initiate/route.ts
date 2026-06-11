@@ -28,8 +28,8 @@ export async function POST(request: Request) {
 
     // 2. Draft Sourcing Co-Broke / Direct Script
     const cobrokeScript = isDirectOwner 
-      ? `السلام عليكم يا فندم، معاك ليلى من شركة سييرا بلو العقارية بالتجمع. عميلنا مهتم جداً بمعاينة شقة حضرتك كود ${propertyCode} وجاهز للشراء كاش. هل الموعد مناسب للمعاينة؟`
-      : `السلام عليكم يا كوتش، معاك سييرا من سييرا بلو للتسويق. عندي عميل مباشر ومشتري كاش مهتم بـ كود ${propertyCode} المعروض من طرفك. حابين ننسق معاينة ومشاركة عمولة co-broke 50/50.`;
+      ? `السلام عليكم يا فندم، معاك ليلى من شركة سييرا إستيتس العقارية بالتجمع. عميلنا مهتم جداً بمعاينة شقة حضرتك كود ${propertyCode} وجاهز للشراء كاش. هل الموعد مناسب للمعاينة؟`
+      : `السلام عليكم يا كوتش، معاك سييرا من سييرا إستيتس للتسويق. عندي عميل مباشر ومشتري كاش مهتم بـ كود ${propertyCode} المعروض من طرفك. حابين ننسق معاينة ومشاركة عمولة co-broke 50/50.`;
 
     // 3. Simulate Failover Close Timeout (Simulating 6 hours timeout -> AI Autopilot takes over)
     const viewingDate = new Date();

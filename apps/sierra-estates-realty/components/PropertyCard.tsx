@@ -67,18 +67,17 @@ export default function PropertyCard({ property: p, index = 0, onClick, href }: 
     >
       <div
         onClick={onClick}
-        className="group bg-[var(--bg-card)] border border-[var(--navy-08)] rounded-[var(--radius-xl)] overflow-hidden cursor-pointer"
-        style={{
-          transition: `all var(--transition-slow) var(--ease-silk)`,
+        role="link"
+        tabIndex={0}
+        aria-label={`${p.title} — ${p.priceLabel}`}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            if (onClick) onClick();
+            else window.location.assign(cardHref);
+          }
         }}
-        onMouseEnter={(e) => {
-          (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)';
-          (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-lg)';
-        }}
-        onMouseLeave={(e) => {
-          (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
-          (e.currentTarget as HTMLElement).style.boxShadow = '';
-        }}
+        className="group card-lift bg-[var(--bg-card)] border border-[var(--navy-08)] rounded-[var(--radius-xl)] overflow-hidden cursor-pointer"
       >
         {/* ── Image Area ─────────────────────────────────────── */}
         <div className="relative h-56 overflow-hidden bg-[var(--ivory-mid)]">
@@ -136,7 +135,7 @@ export default function PropertyCard({ property: p, index = 0, onClick, href }: 
 
         {/* ── Content ─────────────────────────────────────────── */}
         <div className="p-5">
-          <p className="text-[11px] font-medium mb-1" style={{ color: 'var(--navy-40)' }} itemProp="name">
+          <p className="text-[11px] font-medium mb-1 uppercase tracking-[0.18em]" style={{ color: 'var(--navy-40)' }}>
             {p.compound}
           </p>
           <h3

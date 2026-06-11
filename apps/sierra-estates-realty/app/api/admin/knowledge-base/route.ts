@@ -1,6 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/server/firebase-admin';
-export async function GET() {
+import { verifyAdminRequest, unauthorizedResponse } from '@/lib/server/auth-guard';
+export async function GET(req: NextRequest) {
+  const auth = await verifyAdminRequest(req);
+  if (!auth.authenticated) return unauthorizedResponse();
+
   try {
     // 1. Try to fetch from Firestore first (Production mode)
     const kbCollection = adminDb.collection('knowledge_base');

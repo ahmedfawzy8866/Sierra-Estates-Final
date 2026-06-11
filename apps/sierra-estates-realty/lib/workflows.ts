@@ -124,7 +124,7 @@ async function searchPropertyFinder() {
  *         وبيغير status لـ CONTACTED
  *
  * رسالة نموذجية للمالك:
- *   "مرحباً، أنا [اسم المستشار] من سييرا بلو العقارية.
+ *   "مرحباً، أنا [اسم المستشار] من سييرا إستيتس العقارية.
  *    شايف إن عندك وحدة في [الكمباوند] معروضة للبيع.
  *    هل ممكن نتكلم عن إمكانية التسويق المشترك؟"
  */
@@ -148,7 +148,7 @@ async function contactNewOwners() {
         to: row.phone,
         type: 'text',
         text: {
-          body: `مرحباً، أنا من سييرا بلو. شايفين وحدتك في ${row.compound}. هل ممكن نتكلم؟`,
+          body: `مرحباً، أنا من سييرا إستيتس. شايفين وحدتك في ${row.compound}. هل ممكن نتكلم؟`,
         },
       }),
     });
@@ -173,7 +173,7 @@ async function contactNewOwners() {
  *   GMAIL_USER=  أو SMTP credentials
  *
  * نموذج الإيميل:
- *   Subject: "سييرا بلو — متابعة طلب التسويق"
+ *   Subject: "سييرا إستيتس — متابعة طلب التسويق"
  *   Body:    رسالة احترافية عربي/إنجليزي
  */
 
@@ -194,9 +194,9 @@ async function sendFollowUpEmails() {
   for (const row of rows) {
     if (!row.email) continue;
     await transporter.sendMail({
-      from: `سييرا بلو <${process.env.GMAIL_USER}>`,
+      from: `سييرا إستيتس <${process.env.GMAIL_USER}>`,
       to: row.email,
-      subject: 'سييرا بلو — متابعة طلب التسويق',
+      subject: 'سييرا إستيتس — متابعة طلب التسويق',
       html: buildEmailTemplate(row),
     });
     await updateSheetRow('owner_leads', row.id, { status: 'EMAIL_SENT' });
@@ -232,7 +232,7 @@ async function addUnit() {
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
   const ask = (q) => new Promise((r) => rl.question(q, r));
 
-  console.log('\n🏢 سييرا بلو — إضافة وحدة جديدة\n');
+  console.log('\n🏢 سييرا إستيتس — إضافة وحدة جديدة\n');
 
   const unit = {
     timestamp:  new Date().toISOString(),

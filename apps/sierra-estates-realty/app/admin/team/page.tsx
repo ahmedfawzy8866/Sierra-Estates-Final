@@ -15,8 +15,8 @@ interface TeamMember {
   commissionRate?: number;
   totalCommission?: number;
   dealsCount?: number;
-  joinedAt?: any;
-  createdAt?: any;
+  joinedAt?: { toDate(): Date } | Date | string;
+  createdAt?: { toDate(): Date } | Date | string;
 }
 
 export default function AdminTeamPage() {
@@ -176,7 +176,7 @@ export default function AdminTeamPage() {
           {['all', 'admin', 'agent', 'broker'].map(r => (
             <button
               key={r}
-              onClick={() => setRoleFilter(r as any)}
+              onClick={() => setRoleFilter(r as typeof roleFilter)}
               className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all ${
                 roleFilter === r ? 'bg-[#031632] text-white' : 'bg-white text-[#3a5570] hover:bg-[#f3f4f5]'
               }`}
@@ -279,7 +279,7 @@ export default function AdminTeamPage() {
               />
               <select
                 value={formData.role}
-                onChange={e => setFormData({ ...formData, role: e.target.value as any })}
+                onChange={e => setFormData({ ...formData, role: e.target.value as 'admin' | 'agent' | 'broker' | 'viewer' })}
                 className="w-full px-4 py-2.5 border border-[#e7e8e9] rounded-lg text-sm outline-none focus:border-[#C9A84C]"
               >
                 <option value="agent">Agent</option>

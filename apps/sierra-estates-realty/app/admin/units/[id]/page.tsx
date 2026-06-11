@@ -24,8 +24,8 @@ interface Unit {
   city?: string;
   coordinates?: { lat: number; lng: number };
   finishingType?: string;
-  updatedAt?: any;
-  createdAt?: any;
+  updatedAt?: { toDate(): Date } | Date | string;
+  createdAt?: { toDate(): Date } | Date | string;
 }
 
 export default function AdminUnitDetailPage() {

@@ -17,8 +17,8 @@ interface Lead {
   originChannel: string;
   pfLeadId?: string;
   pfListingReferenceNumber?: string;
-  updatedAt?: any;
-  createdAt?: any;
+  updatedAt?: { toDate(): Date } | Date | string;
+  createdAt?: { toDate(): Date } | Date | string;
 }
 
 const PIPELINE_COLUMNS = [
@@ -37,9 +37,9 @@ const SOURCE_STYLES: Record<string, string> = {
   telegram: 'bg-cyan-50 text-cyan-600',
 };
 
-function timeAgo(ts: any): string {
+function timeAgo(ts: { toDate(): Date } | Date | string | null | undefined): string {
   if (!ts) return '';
-  const date = ts?.toDate ? ts.toDate() : new Date(ts);
+  const date = typeof ts === 'object' && 'toDate' in ts ? ts.toDate() : new Date(ts);
   const diff = Date.now() - date.getTime();
   const mins = Math.floor(diff / 60000);
   if (mins < 60) return `${mins}m ago`;
@@ -117,45 +117,64 @@ export default function AdminDealsPage() {
   };
 
   return (
-    <div style={{ fontFamily: 'var(--font-body)' }}>
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+    <div className="space-y-8" style={{ fontFamily: 'var(--font-body)' }}>
+      {/* ══ Header ══ */}
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#071422] tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>
+          <span className="text-[10px] tracking-[0.25em] font-semibold text-[#C9A84C] uppercase font-mono block mb-2">
+            Deal Management
+          </span>
+          <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-[#071422]" style={{ fontFamily: 'var(--font-display)' }}>
             Deal Pipeline
           </h1>
-          <p className="text-[#3a5570] text-sm mt-0.5">{filtered.length} leads in pipeline</p>
+          <p className="text-[#3a5570] text-sm mt-1">{filtered.length} leads in pipeline</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-fit">
           <button
             onClick={() => setShowNewDealModal(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-[#031632] text-white rounded-lg text-sm font-semibold hover:bg-[#041f3d] transition-colors"
+            className="flex items-center gap-2 px-4 sm:px-5 py-2.5 bg-[#031632] text-white rounded-lg text-xs sm:text-sm font-semibold hover:bg-[#041f3d] transition-colors"
           >
-            <Plus size={16} /> Add Deal
+            <Plus size={16} />
+            <span className="hidden sm:inline">Add Deal</span>
+            <span className="sm:hidden">Add</span>
           </button>
-          <button onClick={() => setView('board')} className={`p-2 rounded-lg transition-colors ${view === 'board' ? 'bg-[#031632] text-white' : 'bg-white text-[#3a5570] hover:bg-[#f3f4f5]'}`}>
+          <button
+            onClick={() => setView('board')}
+            title="Board view"
+            className={`p-2.5 rounded-lg transition-colors ${view === 'board' ? 'bg-[#031632] text-white' : 'bg-white text-[#3a5570] hover:bg-[#f3f4f5]'}`}>
             <LayoutGrid size={16} />
           </button>
-          <button onClick={() => setView('list')} className={`p-2 rounded-lg transition-colors ${view === 'list' ? 'bg-[#031632] text-white' : 'bg-white text-[#3a5570] hover:bg-[#f3f4f5]'}`}>
+          <button
+            onClick={() => setView('list')}
+            title="List view"
+            className={`p-2.5 rounded-lg transition-colors ${view === 'list' ? 'bg-[#031632] text-white' : 'bg-white text-[#3a5570] hover:bg-[#f3f4f5]'}`}>
             <List size={16} />
           </button>
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
-        <div className="relative flex-1 max-w-sm">
+      {/* ══ Filters & Search ══ */}
+      <div className="flex flex-col gap-3">
+        <div className="relative">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3a5570]/40" />
           <input
-            type="text" placeholder="Search by name or phone..."
-            value={search} onChange={e => setSearch(e.target.value)}
+            type="text"
+            placeholder="Search by name or phone..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
             className="w-full pl-9 pr-4 py-2.5 bg-white border border-[#e7e8e9] rounded-lg text-sm outline-none focus:border-[#C9A84C] transition-colors"
           />
         </div>
         <div className="flex gap-2 flex-wrap">
           {['all', 'property-finder', 'whatsapp', 'website', 'referral'].map(s => (
-            <button key={s} onClick={() => setSourceFilter(s)}
-              className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all ${sourceFilter === s ? 'bg-[#031632] text-white' : 'bg-white text-[#3a5570] hover:bg-[#f3f4f5]'}`}>
+            <button
+              key={s}
+              onClick={() => setSourceFilter(s)}
+              className={`px-3 sm:px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all ${
+                sourceFilter === s
+                  ? 'bg-[#031632] text-white'
+                  : 'bg-white text-[#3a5570] border border-[#e7e8e9] hover:border-[#C9A84C]'
+              }`}>
               {s === 'all' ? 'All' : s === 'property-finder' ? 'PF' : s.charAt(0).toUpperCase() + s.slice(1)}
             </button>
           ))}
@@ -163,15 +182,15 @@ export default function AdminDealsPage() {
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="bg-[#f3f4f5] rounded-xl p-4 h-96 animate-pulse" />
+            <div key={i} className="bg-white rounded-xl p-4 h-96 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] animate-pulse" />
           ))}
         </div>
       ) : view === 'board' ? (
         /* ══ KANBAN BOARD VIEW ══ */
         <DragDropContext onDragEnd={handleDragEnd}>
-          <div className="flex gap-4 overflow-x-auto pb-4" style={{ minHeight: 500 }}>
+          <div className="flex gap-4 overflow-x-auto pb-4 -mx-6 px-6 sm:-mx-10 sm:px-10" style={{ minHeight: 600 }}>
             {PIPELINE_COLUMNS.map(col => {
               const colLeads = filtered.filter(l =>
                 col.stages.includes(l.stage) || col.stages.includes(l.phase)
@@ -182,18 +201,19 @@ export default function AdminDealsPage() {
                     <div
                       ref={provided.innerRef}
                       {...provided.droppableProps}
-                      className="min-w-[320px] flex-1 bg-[#f3f4f5] rounded-xl p-3"
+                      className="min-w-[300px] sm:min-w-[340px] bg-white rounded-xl p-4 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] border border-[#f3f4f5]"
                       style={{
-                        background: snapshot.isDraggingOver ? '#E2E8F0' : '#f3f4f5',
-                        transition: 'background 0.2s',
+                        background: snapshot.isDraggingOver ? '#f8f9fa' : '#ffffff',
+                        borderColor: snapshot.isDraggingOver ? col.color + '40' : '#f3f4f5',
+                        transition: 'all 0.2s',
                       }}
                     >
-                      <div className="flex items-center justify-between mb-4 px-1">
+                      <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#f3f4f5]">
                         <div className="flex items-center gap-2">
                           <div className="w-3 h-3 rounded-full" style={{ background: col.color }} />
                           <span className="text-xs font-bold text-[#071422] uppercase tracking-wide">{col.label}</span>
                         </div>
-                        <span className="text-[10px] font-mono font-bold text-[#3a5570]/50 bg-white px-2 py-0.5 rounded">
+                        <span className="text-[10px] font-mono font-bold text-white bg-[#3a5570] px-2.5 py-1 rounded-full">
                           {colLeads.length}
                         </span>
                       </div>

@@ -37,7 +37,7 @@ export default function Header() {
       id="site-header"
       className={`fixed top-0 left-0 right-0 z-[var(--z-sticky)] transition-all duration-500 ease-silk ${
         scrolled
-          ? 'bg-white/95 backdrop-blur-xl shadow-md border-b border-[var(--navy-08)]'
+          ? 'bg-[var(--glass-bg)] backdrop-blur-xl shadow-[var(--shadow-ambient)] border-b border-[var(--navy-08)]'
           : 'bg-transparent'
       }`}
       style={{ transition: 'background 0.4s var(--ease-silk), box-shadow 0.4s var(--ease-silk)' }}
@@ -55,17 +55,17 @@ export default function Header() {
                   <div
                     className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                     style={{
-                      background: 'radial-gradient(circle, rgba(230,57,70,0.25) 0%, rgba(200,150,26,0.12) 50%, transparent 70%)',
+                      background: 'radial-gradient(circle, rgba(201,168,76,0.30) 0%, rgba(233,193,118,0.12) 50%, transparent 70%)',
                       inset: '-12px',
                     }}
                   />
                   {/* Fallback SVG logo if image missing */}
                   <div className="w-10 h-10 relative flex items-center justify-center">
                     <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10">
-                      <circle cx="20" cy="20" r="19" stroke="#E63946" strokeWidth="1.5" fill="none" opacity="0.3"/>
-                      <path d="M20 6L32 14V26L20 34L8 26V14L20 6Z" fill="#E63946" opacity="0.9"/>
-                      <path d="M20 10L28 15V25L20 30L12 25V15L20 10Z" fill="#FAF8F3" opacity="0.15"/>
-                      <text x="20" y="24" textAnchor="middle" fill="#FAF8F3" fontSize="10" fontWeight="700" fontFamily="Inter">SB</text>
+                      <circle cx="20" cy="20" r="19" stroke="#C9A84C" strokeWidth="1.5" fill="none" opacity="0.4"/>
+                      <path d="M20 6L32 14V26L20 34L8 26V14L20 6Z" fill="#031632" opacity="0.95"/>
+                      <path d="M20 10L28 15V25L20 30L12 25V15L20 10Z" fill="#C9A84C" opacity="0.25"/>
+                      <text x="20" y="24" textAnchor="middle" fill="#E9C176" fontSize="10" fontWeight="700" fontFamily="Manrope">SE</text>
                     </svg>
                   </div>
                 </div>
@@ -77,7 +77,7 @@ export default function Header() {
                     sierra estates
                   </p>
                   <p
-                    className="text-[8px] uppercase tracking-[0.42em] text-[var(--red)] font-bold leading-none mt-0.5"
+                    className="text-[8px] uppercase tracking-[0.42em] text-[var(--gold)] font-bold leading-none mt-0.5"
                     style={{ fontFamily: 'var(--font-mono)' }}
                   >
                     REALTY
@@ -119,7 +119,9 @@ export default function Header() {
             <button
               id="mobile-menu-btn"
               className="md:hidden flex flex-col gap-1.5 p-2"
-              aria-label="Open menu"
+              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={menuOpen}
+              aria-controls="mobile-menu"
               onClick={() => setMenuOpen((o) => !o)}
             >
               <span className={`block w-5 h-0.5 bg-[var(--navy)] transition-all duration-300 ${menuOpen ? 'rotate-45 translate-y-2' : ''}`} />
@@ -143,14 +145,16 @@ export default function Header() {
       {menuOpen && (
         <div
           id="mobile-menu"
-          className="md:hidden bg-white border-t border-[var(--navy-08)] shadow-lg animate-[slide-down_200ms_ease-silk_forwards]"
+          className="md:hidden bg-[var(--bg-card)] border-t border-[var(--navy-08)] shadow-lg"
+          style={{ animation: 'slide-down 300ms var(--ease-silk) both' }}
         >
           <nav className="px-6 py-4 flex flex-col gap-4" aria-label="Mobile navigation">
-            {NAV_ITEMS.map((item) => (
+            {NAV_ITEMS.map((item, i) => (
               <Link
                 key={item.label}
                 href={item.href}
                 className="text-sm uppercase tracking-[0.15em] font-semibold text-[var(--navy-80)] hover:text-[var(--gold)] transition-colors py-2 border-b border-[var(--navy-08)]"
+                style={{ animation: `fadeUp 400ms var(--ease-silk) ${80 + i * 60}ms both` }}
                 onClick={() => setMenuOpen(false)}
               >
                 {item.label}

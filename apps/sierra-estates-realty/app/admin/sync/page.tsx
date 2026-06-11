@@ -7,7 +7,7 @@ import { RefreshCw, Users, Zap, Loader2, CheckCircle2, XCircle, CreditCard, Webh
 
 interface SyncResult {
   success: boolean;
-  data?: any;
+  data?: Record<string, unknown>;
   error?: string;
 }
 
@@ -16,7 +16,7 @@ interface ActivityLog {
   type: string;
   description: string;
   actorName: string;
-  createdAt: any;
+  createdAt: { toDate(): Date } | Date | string;
 }
 
 export default function AdminSyncPage() {
@@ -31,7 +31,7 @@ export default function AdminSyncPage() {
   const [airtableResult, setAirtableResult] = useState<SyncResult | null>(null);
   const [obsidianResult, setObsidianResult] = useState<SyncResult | null>(null);
   const [activities, setActivities] = useState<ActivityLog[]>([]);
-  const [credits, setCredits] = useState<any>(null);
+  const [credits, setCredits] = useState<Record<string, unknown> | null>(null);
   const [loadingCredits, setLoadingCredits] = useState(false);
 
   useEffect(() => {
@@ -73,8 +73,8 @@ export default function AdminSyncPage() {
       const data = await res.json();
       setResult({ success: res.ok, data, error: data.error });
       if (res.ok) loadActivities();
-    } catch (err: any) {
-      setResult({ success: false, error: err.message });
+    } catch (err) {
+      setResult({ success: false, error: err instanceof Error ? err.message : String(err) });
     } finally {
       setLoading(false);
     }
@@ -210,7 +210,7 @@ export default function AdminSyncPage() {
           {credits && (
             <div className="font-mono text-sm text-[#031632]">
               {credits.error ? (
-                <span className="text-red-500">{credits.error}</span>
+                <span className="text-red-500">{String(credits.error)}</span>
               ) : (
                 <pre className="text-xs bg-[#f3f4f5] p-3 rounded-lg overflow-auto">{JSON.stringify(credits, null, 2)}</pre>
               )}
@@ -261,7 +261,7 @@ export default function AdminSyncPage() {
                   <div className="text-[10px] text-[#3a5570]/50 mt-0.5 font-mono">{act.actorName}</div>
                 </div>
                 <div className="text-[10px] text-[#3a5570]/40 font-mono">
-                  {act.createdAt?.toDate ? act.createdAt.toDate().toLocaleString() : ''}
+                  {act.createdAt && typeof act.createdAt === 'object' && 'toDate' in act.createdAt ? act.createdAt.toDate().toLocaleString() : ''}
                 </div>
               </div>
             ))}

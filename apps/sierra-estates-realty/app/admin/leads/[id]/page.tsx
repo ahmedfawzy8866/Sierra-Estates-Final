@@ -21,8 +21,14 @@ interface Lead {
   budgetRange?: string;
   timeline?: string;
   notes?: string;
-  updatedAt?: any;
-  createdAt?: any;
+  updatedAt?: { toDate(): Date } | Date | string;
+  createdAt?: { toDate(): Date } | Date | string;
+}
+
+function formatLeadDate(v: string | Date | { toDate(): Date } | null | undefined): string {
+  if (!v) return 'N/A';
+  const d = typeof v === 'object' && 'toDate' in v ? v.toDate() : new Date(v);
+  return d.toLocaleDateString();
 }
 
 export default function AdminLeadDetailPage() {
@@ -263,7 +269,7 @@ export default function AdminLeadDetailPage() {
                       Created
                     </p>
                     <p className="text-xs text-[#071422] font-mono">
-                      {lead.createdAt?.toDate?.()?.toLocaleDateString?.() || 'N/A'}
+                      {formatLeadDate(lead.createdAt)}
                     </p>
                   </div>
                 </div>
@@ -276,7 +282,7 @@ export default function AdminLeadDetailPage() {
                       Updated
                     </p>
                     <p className="text-xs text-[#071422] font-mono">
-                      {lead.updatedAt?.toDate?.()?.toLocaleDateString?.() || 'N/A'}
+                      {formatLeadDate(lead.updatedAt)}
                     </p>
                   </div>
                 </div>

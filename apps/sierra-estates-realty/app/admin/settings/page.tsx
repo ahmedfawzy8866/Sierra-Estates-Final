@@ -6,8 +6,8 @@ import { Settings, Key, Shield, Bell, Globe, Save, Check } from 'lucide-react';
 export default function AdminSettingsPage() {
   const [settings, setSettings] = useState({
     companyName: 'Sierra Estates',
-    supportEmail: 'support@sierraestatesteg.com',
-    webhookUrl: 'https://api.sierraestatesteg.com/webhooks',
+    supportEmail: 'support@sierraestates.luxury',
+    webhookUrl: 'https://api.sierraestates.luxury/webhooks',
     pfApiKey: '••••••••••••••••',
     notificationsEnabled: true,
     maintenanceMode: false,
@@ -24,26 +24,31 @@ export default function AdminSettingsPage() {
   };
 
   return (
-    <div style={{ fontFamily: 'var(--font-body)' }}>
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#071422] tracking-tight mb-1" style={{ fontFamily: 'var(--font-display)' }}>
+    <div className="space-y-8" style={{ fontFamily: 'var(--font-body)' }}>
+      {/* ══ Header ══ */}
+      <div>
+        <span className="text-[10px] tracking-[0.25em] font-semibold text-[#C9A84C] uppercase font-mono block mb-2">
+          System Administration
+        </span>
+        <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-[#071422] mb-1" style={{ fontFamily: 'var(--font-display)' }}>
           Settings
         </h1>
         <p className="text-[#3a5570] text-sm">Manage system configuration and integrations</p>
       </div>
 
-      {/* Settings Tabs */}
+      {/* ══ Settings Sections ══ */}
       <div className="space-y-6">
         {/* General Settings */}
-        <div className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)]">
-          <div className="flex items-center gap-3 mb-6">
-            <Globe className="text-[#031632]" size={20} />
+        <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] overflow-hidden">
+          <div className="flex items-center gap-3 mb-6 pb-4 border-b border-[#f3f4f5]">
+            <div className="p-2.5 rounded-lg" style={{ backgroundColor: '#031632' + '14' }}>
+              <Globe className="text-[#031632]" size={20} />
+            </div>
             <h2 className="text-lg font-bold text-[#071422]" style={{ fontFamily: 'var(--font-display)' }}>
               General Settings
             </h2>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-4 sm:space-y-5">
             <div>
               <label className="block text-xs font-bold uppercase tracking-wide text-[#3a5570] mb-2">
                 Company Name
@@ -74,9 +79,11 @@ export default function AdminSettingsPage() {
         </div>
 
         {/* Integration Settings */}
-        <div className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)]">
-          <div className="flex items-center gap-3 mb-6">
-            <Shield className="text-[#031632]" size={20} />
+        <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] overflow-hidden">
+          <div className="flex items-center gap-3 mb-6 pb-4 border-b border-[#f3f4f5]">
+            <div className="p-2.5 rounded-lg" style={{ backgroundColor: '#031632' + '14' }}>
+              <Shield className="text-[#031632]" size={20} />
+            </div>
             <h2 className="text-lg font-bold text-[#071422]" style={{ fontFamily: 'var(--font-display)' }}>
               Integrations
             </h2>
@@ -123,9 +130,11 @@ export default function AdminSettingsPage() {
         </div>
 
         {/* Notification Settings */}
-        <div className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)]">
-          <div className="flex items-center gap-3 mb-6">
-            <Bell className="text-[#031632]" size={20} />
+        <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] overflow-hidden">
+          <div className="flex items-center gap-3 mb-6 pb-4 border-b border-[#f3f4f5]">
+            <div className="p-2.5 rounded-lg" style={{ backgroundColor: '#031632' + '14' }}>
+              <Bell className="text-[#031632]" size={20} />
+            </div>
             <h2 className="text-lg font-bold text-[#071422]" style={{ fontFamily: 'var(--font-display)' }}>
               Notifications
             </h2>
@@ -156,9 +165,11 @@ export default function AdminSettingsPage() {
         </div>
 
         {/* System Settings */}
-        <div className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)]">
-          <div className="flex items-center gap-3 mb-6">
-            <Settings className="text-[#031632]" size={20} />
+        <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] overflow-hidden">
+          <div className="flex items-center gap-3 mb-6 pb-4 border-b border-[#f3f4f5]">
+            <div className="p-2.5 rounded-lg" style={{ backgroundColor: '#031632' + '14' }}>
+              <Settings className="text-[#031632]" size={20} />
+            </div>
             <h2 className="text-lg font-bold text-[#071422]" style={{ fontFamily: 'var(--font-display)' }}>
               System
             </h2>
@@ -206,11 +217,11 @@ export default function AdminSettingsPage() {
           </div>
         </div>
 
-        {/* Save Button */}
-        <div className="flex items-center gap-3">
+        {/* ══ Save Button ══ */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 pt-4">
           <button
             onClick={handleSave}
-            className="flex items-center gap-2 px-6 py-3 bg-[#031632] text-white rounded-lg font-semibold hover:bg-[#041f3d] transition-colors"
+            className="flex items-center justify-center sm:justify-start gap-2 px-6 py-3 bg-[#031632] text-white rounded-lg font-semibold hover:bg-[#041f3d] transition-all shadow-sm hover:shadow-md"
           >
             {saved ? (
               <>
@@ -222,8 +233,8 @@ export default function AdminSettingsPage() {
               </>
             )}
           </button>
-          <p className="text-xs text-[#3a5570]/60">
-            All changes are automatically synced
+          <p className="text-xs text-[#3a5570]/60 text-center sm:text-left">
+            All changes are automatically synced to the system
           </p>
         </div>
       </div>

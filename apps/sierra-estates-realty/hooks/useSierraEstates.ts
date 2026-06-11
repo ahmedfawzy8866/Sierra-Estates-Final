@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { db } from '@/lib/firebase';
+import { db, isFirebaseClientConfigured } from '@/lib/firebase';
 import { collection, query, onSnapshot, doc, getDoc } from 'firebase/firestore';
 
 /**
@@ -17,6 +17,12 @@ export function useSierraEstates() {
   const [units, setUnits] = useState<any[]>([]);
   
   useEffect(() => {
+    if (!isFirebaseClientConfigured) {
+      // Local preview without Firebase credentials - render with empty data.
+      setUnits([]);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     const q = query(collection(db, "units"));
     const unsubscribe = onSnapshot(
