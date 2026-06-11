@@ -74,7 +74,7 @@ export default function AdminSyncPage() {
       setResult({ success: res.ok, data, error: data.error });
       if (res.ok) loadActivities();
     } catch (err) {
-      setResult({ success: false, error: err.message });
+      setResult({ success: false, error: err instanceof Error ? err.message : String(err) });
     } finally {
       setLoading(false);
     }
@@ -210,7 +210,7 @@ export default function AdminSyncPage() {
           {credits && (
             <div className="font-mono text-sm text-[#031632]">
               {credits.error ? (
-                <span className="text-red-500">{credits.error}</span>
+                <span className="text-red-500">{String(credits.error)}</span>
               ) : (
                 <pre className="text-xs bg-[#f3f4f5] p-3 rounded-lg overflow-auto">{JSON.stringify(credits, null, 2)}</pre>
               )}
@@ -261,7 +261,7 @@ export default function AdminSyncPage() {
                   <div className="text-[10px] text-[#3a5570]/50 mt-0.5 font-mono">{act.actorName}</div>
                 </div>
                 <div className="text-[10px] text-[#3a5570]/40 font-mono">
-                  {act.createdAt?.toDate ? act.createdAt.toDate().toLocaleString() : ''}
+                  {act.createdAt && typeof act.createdAt === 'object' && 'toDate' in act.createdAt ? act.createdAt.toDate().toLocaleString() : ''}
                 </div>
               </div>
             ))}

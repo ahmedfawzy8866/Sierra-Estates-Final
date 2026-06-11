@@ -65,7 +65,7 @@ export default function AdminUnitsPage() {
         alert(`Publish failed: ${err.error}`);
       }
     } catch (err) {
-      alert(`Publish failed: ${err.message}`);
+      alert(`Publish failed: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setPublishing(null);
     }

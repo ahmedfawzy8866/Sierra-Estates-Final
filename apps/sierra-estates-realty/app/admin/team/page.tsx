@@ -279,7 +279,7 @@ export default function AdminTeamPage() {
               />
               <select
                 value={formData.role}
-                onChange={e => setFormData({ ...formData, role: e.target.value })}
+                onChange={e => setFormData({ ...formData, role: e.target.value as 'admin' | 'agent' | 'broker' | 'viewer' })}
                 className="w-full px-4 py-2.5 border border-[#e7e8e9] rounded-lg text-sm outline-none focus:border-[#C9A84C]"
               >
                 <option value="agent">Agent</option>

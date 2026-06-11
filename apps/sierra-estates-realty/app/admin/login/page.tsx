@@ -22,7 +22,8 @@ export default function AdminLoginPage() {
       router.replace('/admin/dashboard');
     } catch (err) {
       console.error('Login error:', err);
-      setError(err?.code ? `${err.code}: ${err.message}` : err?.message || 'Unknown login error');
+      const e = err as { code?: string; message?: string };
+      setError(e.code ? `${e.code}: ${e.message}` : e.message || 'Unknown login error');
     } finally {
       setLoading(false);
     }

@@ -39,7 +39,7 @@ const SOURCE_STYLES: Record<string, string> = {
 
 function timeAgo(ts: { toDate(): Date } | Date | string | null | undefined): string {
   if (!ts) return '';
-  const date = ts?.toDate ? ts.toDate() : new Date(ts);
+  const date = typeof ts === 'object' && 'toDate' in ts ? ts.toDate() : new Date(ts);
   const diff = Date.now() - date.getTime();
   const mins = Math.floor(diff / 60000);
   if (mins < 60) return `${mins}m ago`;
