@@ -40,14 +40,18 @@ ALLOWED_ORIGINS=http://localhost:3000,https://sierraestates.luxury
 Four schemes are in use. A frontend only ever uses (a) and (b).
 
 | Scheme | How | Used by |
-|--------|-----|---------|
+|--------|-----|----------|
 | **(a) Public** | No auth. Rate-limited. | Public site reads/writes |
 | **(b) Admin (Firebase Bearer)** | `Authorization: Bearer <Firebase ID token>` where the user's `users/{uid}.role === 'admin'` (`verifyAdminRequest`) | Admin dashboard |
 | **(c) Service + token** | Firebase Bearer **or** `X-SBR-SECRET-KEY: <SBR_SECRET_KEY>` (`verifyRequest`) | Trusted services / cron |
 | **(d) Webhook / internal** | Per-integration secret or HMAC; `/api/orchestrate` requires `X-SBR-SECRET-KEY` | Third parties, automation |
 
-All error responses use `{ success: false, error: string }` (or `{ error }`)
-with an appropriate HTTP status (`400`, `401`, `404`, `429`, `500`).
+Error responses use an HTTP status code (`400`, `401`, `404`, `429`, `500`) and typically include either:
+- `{ success: false, error: string }`
+- `{ error: string }`
+- `{ success: false, message: string }` (less common, being standardized)
+
+When integrating, rely on HTTP status codes as the primary error indicator; error field shapes may vary across endpoints and are being consolidated.
 
 ---
 

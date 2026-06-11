@@ -111,9 +111,10 @@ export default function AdminDashboardPage() {
                     className="h-full rounded-full"
                     style={{
                       width: `${row.pct}%`,
-                      background: `linear-gradient(90deg, ${row.color}, ${row.color}99)`,
-                      animation: `kpiSlide 0.7s ease-out ${idx * 0.08}s both`,
-                    }}
+                      background: `linear-gradient(90deg, ${row.color}, ${row.color}88)`,
+                      animation: `slideIn 0.8s ease-out ${idx * 0.1}s both`,
+                      '--w': `${row.pct}%`
+                    } as React.CSSProperties}
                   />
                 </div>
               </div>
@@ -169,8 +170,13 @@ export default function AdminDashboardPage() {
       </div>
 
       <style>{`
-        @keyframes kpiSlide {
-          from { width: 0 }
+        @keyframes slideIn {
+          from {
+            width: 0;
+          }
+          to {
+            width: var(--w);
+          }
         }
       `}</style>
     </div>
