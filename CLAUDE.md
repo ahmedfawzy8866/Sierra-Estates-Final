@@ -34,8 +34,7 @@ Firebase — infrastructure ONLY (no hosting)
   Functions          Background jobs (functions/)
 ```
 
-**`apps/sierra-estates-admin-portal`** — DEPRECATED placeholder. Never connected to Firestore.
-Do not deploy it. See its `DEPRECATED.md`. Real admin = `apps/sierra-estates-realty/app/admin/`.
+**Admin lives in ONE place**: `apps/sierra-estates-realty/app/admin/` (the old `sierra-estates-admin-portal` placeholder app was removed June 2026).
 
 ## Config files
 - `vercel.json` (root) — Vercel config when root dir = repo root (buildCommand points to the realty app)
@@ -45,10 +44,9 @@ Do not deploy it. See its `DEPRECATED.md`. Real admin = `apps/sierra-estates-rea
 
 ## Layout
 - `apps/sierra-estates-realty` — main Next.js app and the real codebase (public site + admin suite + all API routes).
-- `apps/sierra-estates-admin-portal` — DEPRECATED placeholder. See DEPRECATED.md inside.
 - `apps/api` — standalone Python service (Docker/Cloud Run): PropertyFinder sync + bot integration.
 - `functions` — Firebase Cloud Functions (ingestion pipeline: collectData, processDataForApp, + pure transform module).
-- `packages/*` — shared workspace packages. The realty app consumes `@sierra-estates/agents-core` and `@sierra-estates/obedian`; `packages/db` holds the shared Firestore data layer.
+- `packages/*` — shared workspace packages. The realty app consumes `@sierra-estates/memory-engine`; `packages/db` holds the shared Firestore data layer.
 - `workflows` — Node scripts for the external data-sync pipeline, run on schedule by `.github/workflows/external-workflows.yml`.
 
 ## Commands (from repo root)
