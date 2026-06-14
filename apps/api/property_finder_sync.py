@@ -1,74 +1,45 @@
-#!/usr/bin/env python3
-"""
-Sierra Estates Realty - Property Finder Integration Hub
----------------------------------------------
-Manages real-time data sync, formatting, and translation of
-Portfolio Assets for optimal exposure and alignment.
-
-Terminological Standards:
-- Portfolio Assets (never listings)
-- Strategic Pipeline (never CRM)
-- Investment Stakeholders (never leads)
-"""
+"""Property Finder Sync Hub"""
 
 import os
-import json
-import logging
-from typing import Dict, Any, List
+import requests
+from typing import Optional
 
-# Logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 class PropertyFinderSyncHub:
-    """
-    Core integration hub linking remote Property Finder endpoints
-    with local portfolio stores.
-    """
     def __init__(self):
-        self.api_endpoint = "https://api.propertyfinder.ae/v1/sync"
-        self.auth_token = os.getenv("PROPERTY_FINDER_AUTH_TOKEN")
-        logger.info("Property Finder Sync Hub initialized.")
+        self.base_url = os.getenv("PROPERTY_FINDER_API_BASE", "https://api.propertyfinder.com.eg/v3")
+        self.token    = os.getenv("PROPERTY_FINDER_JWT_TOKEN", "")
 
-    def format_portfolio_asset(self, asset: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Formulate local portfolio asset data into standard XML/JSON 
-        structures expected by Property Finder syndication feeds.
-        """
-        logger.info(f"Formatting Portfolio Asset ID: {asset.get('id', 'unknown')}")
-        # Clean data structures for export
+    def _headers(self) -> dict:
         return {
-            "reference": asset.get("id"),
-            "title_en": asset.get("title_en"),
-            "title_ar": asset.get("title_ar"),
-            "offering_type": "investment",
-            "price": asset.get("price"),
-            "location": asset.get("location")
+            "Authorization": f"Bearer {self.token}",
+            "Content-Type":  "application/json",
         }
 
-    def trigger_batch_sync(self, assets: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """
-        Trigger batch syndication of active Portfolio Assets to Property Finder.
-        """
-        logger.info(f"Syndicating {len(assets)} Portfolio Assets to Property Finder...")
-        formatted_assets = [self.format_portfolio_asset(a) for a in assets]
-        
-        # Sync Logic
-        return {
-            "sync_status": "success",
-            "synced_count": len(formatted_assets),
-            "errors": []
-        }
+    def fetch_listings(self, location_id: str = "cairo-new-cairo", limit: int = 100) -> list:
+        try:
+            res = requests.get(
+                f"{self.base_url}/properties",
+                headers=self._headers(),
+                params={"location_id": location_id, "limit": limit, "sort_by": "date"},
+                timeout=30,
+            )
+            res.raise_for_status()
+            return res.json().get("data", [])
+        except Exception as e:
+            print(f"[PropertyFinderSyncHub] fetch_listings failed: {e}")
+            return []
 
-if __name__ == "__main__":
-    hub = PropertyFinderSyncHub()
-    # Initial verification run
-    test_asset = {
-        "id": "SB-UIPT-001",
-        "title_en": "Golf Uptown Cairo Penthouse",
-        "title_ar": "بنتهاوس أبتاون كايرو المطل على الجولف",
-        "price": 45000000,
-        "location": "Uptown Cairo"
-    }
-    result = hub.trigger_batch_sync([test_asset])
-    print(f"Sync Results: {result}")
+    def push_listing(self, listing: dict) -> Optional[str]:
+        try:
+            res = requests.post(
+                f"{self.base_url}/properties",
+                headers=self._headers(),
+                json=listing,
+                timeout=30,
+            )
+            res.raise_for_status()
+            return res.json().get("id")
+        except Exception as e:
+            print(f"[PropertyFinderSyncHub] push_listing failed: {e}")
+            return None

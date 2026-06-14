@@ -1,53 +1,71 @@
 /**
- * Pure transforms for the data-processing pipeline.
- *
- * Kept free of side effects (no Firestore handles, no server timestamps) so the
- * normalization rules can be unit-tested in isolation from firebase-admin.
+ * transform.js — Pure data transformation functions.
+ * No Firebase dependencies; importable for unit testing.
  */
 
+const crypto = require('crypto');
+
 /**
- * Parse a price that may arrive as a number, a plain numeric string, or a
- * formatted string carrying a currency symbol and/or thousands separators
- * (e.g. `"EGP 2,500,000"`).
+ * parsePrice — Extracts a numeric price from various string formats.
+ * Handles Arabic numerals, comma-separated values, and currency suffixes.
  *
- * The previous implementation used a bare `parseFloat`, which truncated any
- * formatted value at the first separator — `"2,000,000"` became `2`. We strip
- * everything except digits and the decimal point before parsing so formatted
- * scraper payloads are preserved. Anything unparseable falls back to `0`.
- *
- * @param {unknown} value Raw price from a scraper payload.
- * @returns {number} A finite, non-negative-friendly number (0 when unparseable).
+ * @param {string|number} value
+ * @returns {number}
  */
 function parsePrice(value) {
-  if (typeof value === 'number') {
-    return Number.isFinite(value) ? value : 0;
-  }
-  if (typeof value !== 'string') {
-    return 0;
-  }
-  // Drop currency symbols, thousands separators, and whitespace; keep digits
-  // and the decimal point only.
-  const cleaned = value.replace(/[^0-9.]/g, '');
-  const parsed = parseFloat(cleaned);
-  return Number.isFinite(parsed) ? parsed : 0;
+  if (typeof value === 'number') return value;
+  if (!value) return 0;
+
+  const s = String(value)
+    .replace(/[٠-٩]/g, d => d.charCodeAt(0) - 0x0660) // Arabic-Indic digits
+    .replace(/[ٱ-ٿ]/g, '')   // Arabic letters
+    .replace(/[,،]/g, '')       // commas
+    .replace(/جنيه|ج.*$|egp|le|m|k/gi, '') // currency + scale words
+    .trim();
+
+  const m = String(value).match(/(\d+(?:\.\d+)?)\s*m(?:illion)?/i);
+  if (m) return parseFloat(m[1]) * 1_000_000;
+
+  const k = String(value).match(/(\d+(?:\.\d+)?)\s*k/i);
+  if (k) return parseFloat(k[1]) * 1_000;
+
+  const n = parseFloat(s.replace(/[^0-9.]/g, ''));
+  return isNaN(n) ? 0 : n;
 }
 
 /**
- * Normalize a raw scraped document into the canonical shape the frontend reads.
- * Missing fields fall back to safe defaults so downstream consumers never see
- * `undefined`.
+ * normalizeProperty — Maps raw scraped data to the canonical PortfolioAsset schema.
  *
- * @param {Record<string, unknown>} [rawData] Raw document from `rawScrapeData`.
- * @returns {{title: string, price: number, location: string, source: string, isAvailable: boolean}}
+ * @param {object} raw
+ * @returns {object}
  */
-function normalizeProperty(rawData = {}) {
+function normalizeProperty(raw) {
+  const compound = String(raw.compound || raw.Compound || '').trim();
+  const area     = parseFloat(raw.area     || raw.Area     || 0);
+  const price    = parsePrice(raw.price    || raw.Price    || 0);
+  const bedrooms = parseInt(raw.bedrooms   || raw.Bedrooms || 0);
+
+  // Stable deduplication hash
+  const hashInput = `${compound}|${area}|${raw.floor || ''}|${raw.unitNumber || ''}`;
+  const syncHash  = crypto.createHash('sha256').update(hashInput).digest('hex');
+
   return {
-    title: rawData.title || 'Untitled Property',
-    price: parsePrice(rawData.price),
-    location: rawData.location || 'Unknown',
-    source: rawData.source || 'Scraper Bot',
-    isAvailable: true,
+    compound,
+    area,
+    price,
+    bedrooms,
+    bathrooms:       parseInt(raw.bathrooms  || raw.Bathrooms  || 0),
+    finishingType:   String(raw.finishingType || raw.Finishing  || '').trim(),
+    furnishingStatus:String(raw.furnishingStatus || raw.Furnishing || '').trim(),
+    floor:           raw.floor      || null,
+    unitNumber:      raw.unitNumber || null,
+    ownerContact:    raw.ownerContact || raw.Owner_Contact || null,
+    notes:           raw.notes || null,
+    pricePerSqm:     area > 0 ? Math.round(price / area) : 0,
+    syncHash,
+    status:          'active',
+    source:          raw.source || 'whatsapp',
   };
 }
 
-module.exports = { normalizeProperty, parsePrice };
+module.exports = { parsePrice, normalizeProperty };

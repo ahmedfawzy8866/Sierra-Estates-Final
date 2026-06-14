@@ -1,7 +1,5 @@
 /**
  * packages/db — Property Finder integration types and helpers
- * These are the pure types and API helpers used by @sierra-estates/agents hooks.
- * Server-side sync logic lives in apps/web/lib/services/PFIntegrationService.ts.
  */
 
 export interface PFListing {
@@ -32,45 +30,26 @@ export interface PFListing {
 
 export type SBRListing = PFListing;
 
-export interface PFSyncResult {
-  success: boolean;
-  id?: string;
-  error?: string;
-}
-
-export interface PFListingAnalytics {
-  views: number;
-  leads: number;
-  phoneReveals: number;
-  impressions: number;
-  ctr: number;
-}
+export interface PFSyncResult     { success: boolean; id?: string; error?: string; }
+export interface PFListingAnalytics { views: number; leads: number; phoneReveals: number; impressions: number; ctr: number; }
 
 export async function pushListingToPF(listing: SBRListing): Promise<PFSyncResult> {
-  if (!listing.id) return { success: false, error: 'Cannot publish listing: listing.id is required for Property Finder sync' };
+  if (!listing.id) return { success: false, error: 'listing.id is required' };
 
-  // Try to attach a Firebase ID token when running in the browser.
   let token: string | undefined;
   if (typeof window !== 'undefined') {
     try {
       const { getAuth } = await import('firebase/auth');
       token = await getAuth().currentUser?.getIdToken();
-    } catch {
-      // ignore (auth may not be initialized in this runtime)
-    }
+    } catch { /* ignore */ }
   }
 
-  if (!token) {
-    return { success: false, error: 'Authentication required to publish listings' };
-  }
+  if (!token) return { success: false, error: 'Authentication required' };
 
   try {
-    const res = await fetch('/api/sync/publish', {
+    const res  = await fetch('/api/sync/publish', {
       method: 'POST',
-      headers: {
-        Authorization: 'Bearer ' + token,
-        'Content-Type': 'application/json',
-      },
+      headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
       body: JSON.stringify({ unitId: listing.id }),
     });
     const data = await res.json();

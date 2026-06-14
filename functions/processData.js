@@ -1,47 +1,45 @@
 const functions = require('firebase-functions');
-const admin = require('firebase-admin');
+const admin     = require('firebase-admin');
 const { normalizeProperty } = require('./transform');
 
-if (!admin.apps.length) {
-    admin.initializeApp();
-}
+if (!admin.apps.length) admin.initializeApp();
 
 const db = admin.firestore();
 
 /**
- * 2️⃣ DATA PROCESSING WORKFLOW (Sierra/Liela integration)
- * Listens for new documents in the `rawScrapeData` collection.
- * Cleans/formats the data and moves it to `processedData` (which the app CAN read).
+ * processDataForApp — Firestore trigger on rawScrapeData.
+ * Normalizes and deduplicates records, writing to processedData.
  */
 exports.processDataForApp = functions.firestore
-    .document('rawScrapeData/{docId}')
-    .onCreate(async (snap, context) => {
-        const rawData = snap.data();
-        const docId = context.params.docId;
+  .document('rawScrapeData/{docId}')
+  .onCreate(async (snap, _context) => {
+    const raw = snap.data();
 
-        console.log(`Processing raw document ${docId}...`);
+    // Skip if not extraction-ready
+    if (raw.status !== 'extracted') return null;
 
-        try {
-            // --- CLEANING & NORMALIZATION LOGIC ---
-            // Standardize names, coerce values, and map to the Liela/Sierra
-            // shape. The pure rules live in ./transform so they can be tested.
-            const processedData = {
-                ...normalizeProperty(rawData),
-                processedAt: admin.firestore.FieldValue.serverTimestamp(),
-                // Add specific fields required by your frontend
-            };
+    const normalized = normalizeProperty(raw.parsedData || raw);
 
-            // Write to the collection that the frontend app actually uses
-            await db.collection('processedData').doc(docId).set(processedData);
+    // Deduplication: check by syncHash
+    if (normalized.syncHash) {
+      const existing = await db
+        .collection('processedData')
+        .where('syncHash', '==', normalized.syncHash)
+        .limit(1)
+        .get();
 
-            // Update the raw document to mark it as processed
-            await snap.ref.update({ status: 'processed_success' });
+      if (!existing.empty) {
+        await snap.ref.update({ status: 'duplicate_detected' });
+        return null;
+      }
+    }
 
-            console.log(`Successfully processed and moved ${docId} to processedData.`);
-
-        } catch (error) {
-            console.error(`Error processing document ${docId}:`, error);
-            // Mark as failed in the raw collection so we know it didn't reach the app
-            await snap.ref.update({ status: 'processed_error', error: error.message });
-        }
+    await db.collection('processedData').add({
+      ...normalized,
+      rawId:       snap.id,
+      processedAt: new Date().toISOString(),
     });
+
+    await snap.ref.update({ status: 'processed' });
+    return null;
+  });
