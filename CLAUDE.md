@@ -1,46 +1,66 @@
-# CLAUDE.md — Sierra Estates (i-sierra-2027)
+# CLAUDE.md — Sierra Estates Final (Backend)
 
-Context for Claude Code / AI sessions. Keep this updated as the project evolves.
+Context for Claude Code / AI sessions.
 
 ## What this is
-Sierra Estates / Sierra Estates — a luxury real-estate (PropTech) platform for the New Cairo market. pnpm + Turborepo monorepo.
+**Sierra Estates Final** — the clean backend-only monorepo for the Sierra Estates luxury PropTech platform (New Cairo market). No frontend code is included here; the frontend will be built separately using Claude Design.
+
+## Brand Identity
+- **Name:** Sierra Estates (never "Sierra Blu", "Sierra Blue", or any variant)
+- **Terminology:** "Investment Stakeholders" (not leads), "Strategic Pipeline" (not CRM), "Portfolio Assets" (not listings)
 
 ## Stack
-Next.js 16 (App Router, Turbopack) · React 19 · TypeScript 5 (strict) · Tailwind 4 · Firebase (client SDK 12 + Admin SDK 13: Firestore, Storage, Auth) · Leaflet maps · next-intl (en/ar) · **Docker n8n Workflow Engine** (`localhost:5678`). Deploy: Vercel (web) + Firebase (Hosting + Cloud Functions). Observability: OpenTelemetry + Arize.
+Node.js 20 · TypeScript 5 (strict) · Next.js 15 (API routes only, no pages) · Firebase Admin SDK 13 · Firebase Client SDK 11 · Python FastAPI · n8n (Docker) · Google Gemini AI · Firestore · Firebase Storage · Firebase Auth
 
 ## Layout
-- `apps/sierra-estates-realty` — PAGE 1: public **customer hub** (read-only luxury showcase). Main Next.js app and the real codebase (~26 pages, 38 API routes, ~78 components, ~39 services). Deploys to Vercel. (Renamed from `apps/web`.)
-- `apps/sierra-estates-admin-portal` — PAGE 2: private **master admin control panel** (full CRUD + CRM + AI workflow monitor + agents + analytics). Vite + React SPA. (Renamed from `apps/admin`.)
-- `apps/api` (Python FastAPI), `apps/agents` (whatsapp-scraper + stage-9-closer), `apps/hermes-webui` — backend/automation services.
-- `functions` — Firebase Cloud Functions (ingestion pipeline: collectData, processDataForApp, + pure transform module).
-- `packages/db` — shared Firestore data layer (substantial). `packages/agents` is small. `packages/{api,auth,batch,config,ui}` are empty stubs.
+```
+sierra-estates-final/
+├── backend/                    ← Next.js API-only app (no pages, no components)
+│   └── src/
+│       ├── app/api/            ← 20 API route handlers
+│       └── lib/
+│           ├── agents/         ← Agent definitions (closer, curator, matchmaker, scribe)
+│           ├── firebase/       ← Firebase client init + inventory
+│           ├── models/         ← Firestore data models
+│           ├── server/         ← Firebase Admin, auth-guard, Google AI, env validator
+│           ├── services/       ← 15 business logic services
+│           └── types/          ← TypeScript types (Stage 9, etc.)
+├── apps/
+│   ├── api/                    ← Python FastAPI (Property Finder sync + AI)
+│   └── agents/
+│       ├── stage-9-closer/     ← Deal orchestration agent (Stages 9-10)
+│       └── whatsapp-scraper/   ← WhatsApp group message ingestion bot
+├── functions/                  ← Firebase Cloud Functions (collectData, processDataForApp)
+├── packages/
+│   ├── db/                     ← Shared Firestore DSL + Property Finder integration
+│   └── agents-core/            ← 15-agent orchestration framework
+└── workflows/                  ← n8n automation (5 workflows + 4 templates)
+```
 
-## Commands (from repo root)
-- `pnpm install`
-- `pnpm dev` / `pnpm build` / `pnpm lint` / `pnpm type-check` / `pnpm test:ci`
-- Tests: 47 passing (40 web + 7 functions). `type-check` is a real CI gate (`tsc --noEmit`). `apps/web/next.config.ts` has `ignoreBuildErrors: false`.
+## Commands
+```bash
+pnpm install
+pnpm dev            # backend API on :3000
+pnpm type-check
+pnpm lint
+pnpm test:ci
+docker-compose -f docker-compose.n8n.yml up -d  # n8n on :5678
+```
 
-## Conventions
-- ESLint flat config (`apps/web/eslint.config.mjs`) with `eslint-plugin-unused-imports`; unused vars/args/caught-errors must be `_`-prefixed.
-- `apps/web/tsconfig.json` excludes `agents/**` and `public/**` from type-check.
-- Privileged server work uses the **Admin SDK** (`@/lib/server/firebase-admin`) which BYPASSES Firestore rules. Client uses `@/lib/firebase`.
+## Auth Model
+- Server: `verifyRequest()` accepts Firebase Bearer token OR `X-SE-SECRET-KEY` header (cron/webhooks)
+- Admin check: `verifyAdminRequest()` — `admin===true || role==='admin'` custom claim
+- Firebase Admin SDK (`lib/server/firebase-admin`) BYPASSES Firestore rules — server only
+- Firestore rules: staff-gated via `users/{uid}.role` ∈ {admin, manager, agent}
 
-## Auth model (important)
-- Client role: read from Firestore `users/{uid}.role` in {admin, manager, agent} (see `lib/AuthContext.tsx`).
-- Server admin check: `verifyAdminRequest` (`lib/server/auth-guard.ts`) — Firebase Bearer token with `admin===true || role==='admin'` custom claim. `verifyRequest` also accepts the `X-SBR-SECRET-KEY` header for service/cron calls.
-- Edge middleware (`apps/web/middleware.ts`) matches ONLY `/api/orchestrate` — it is NOT broad protection.
-- Firestore/Storage security rules are staff-gated via `users/{uid}.role` (see `firestore.rules`) — pending deploy (see NEXT_STEPS.md).
+## Intelligence Pipeline
+1. **WhatsApp Scraper** → forwards group messages to `/api/webhooks/whatsapp`
+2. **collectData** Cloud Function → stores raw data in `rawScrapeData` collection
+3. **processDataForApp** → cleans, deduplicates, writes to `processedData`
+4. **Matching Engine** (`backend/src/lib/services/matching-engine.ts`)
+5. **Stage 9 Closer Agent** (`apps/agents/stage-9-closer/`) → deal orchestration
 
-## Reality check
-Pre-production. Some services are mock/scaffolded (`MockAIService`, unwired i18n). Test coverage is thin. Older `STATUS.md`/`TODO.md` are aspirational/stale.
-
-## Obsidian Memory Engine & AI Sourcing
-- **Vault Location:** `docs/obsidian-vault/` contains the core cognitive and database architecture notes.
-- **Rules of Engagement:** For every new task, feature, or bugfix, the AI agent MUST search and read the relevant node in the Obsidian vault (e.g. `Sourcing Pipeline & Lead Aggregator.md`, `WhatsApp CRM & Hand-off Pipeline.md`).
-- **Graph Alignment:** Maintain double-bracket `[[Links]]` when editing vault files to preserve the Obsidian graph view.
-
-## Constraints & Pull Request Policy
-- **Repo Scope:** GitHub access is scoped to `ahmedfawzy8866/i-sierra-2027` only — do not touch other repos.
-- **Branch Protection Active:** The `main` branch is protected on GitHub. Direct commits are blocked. Never force-push or delete `main`.
-- **Workflow:** For all changes, checkout a new branch (e.g. `feature/name`), push it to remote, and open a Pull Request using `gh pr create`.
-- **Do Not Deploy** without explicit approval. Never place API keys or credentials in raw code or in chat.
+## Security
+- Never commit API keys or credentials
+- Never force-push or delete main
+- PR required for all changes to main
