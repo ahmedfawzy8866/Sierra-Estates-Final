@@ -1,137 +1,47 @@
-# Sierra Estates — Backend Monorepo
+# Sierra Estates — Final Platform
 
-> 🏠 **Sierra Estates** — Luxury PropTech Platform for New Cairo  
-> Full-stack AI-powered real estate backend: agents, workflows, CRM, and admin hub.
-
----
-
-## Repositories
-
-| Repo | Purpose | URL |
-|------|---------|-----|
-| **Sierra-Estates-Final** (this) | Backend — API, Agents, Workflows, Firebase | https://github.com/ahmedfawzy8866/Sierra-Estates-Final |
-| **sf1** | Frontend — 13 UI design branches | https://github.com/ahmedfawzy8866/sf1 |
-
----
-
-## Architecture
-
-```
-Sierra-Estates-Final/
-├── apps/
-│   ├── api/              ← Python FastAPI + TS API server
-│   ├── agents/           ← Agent runner service
-│   └── agents-dashboard/ ← Admin Exchange Hub (Next.js)
-│
-├── packages/
-│   ├── agents/           ← Scribe · Curator · Matchmaker · Closer
-│   ├── agents-core/      ← Orchestrator · Registry · Workflows engine
-│   ├── exchange/         ← Firestore Exchange Sheet client
-│   ├── memory-engine/    ← Agent memory store (vector + KV)
-│   ├── db/               ← Firestore + Firebase Admin
-│   ├── auth/             ← Firebase Auth + JWT
-│   ├── config/           ← Environment config
-│   ├── property-finder-api/ ← Property Finder integration
-│   ├── api/              ← Shared HTTP utilities
-│   └── batch/            ← Cron + batch jobs
-│
-├── workflows/            ← n8n automation workflows
-│   ├── 01-whatsapp-scraper/
-│   ├── 02-owner-search/
-│   ├── 03-owner-contact/
-│   ├── 04-email-sender/
-│   └── 05-unit-adder/
-│
-├── functions/            ← Firebase Cloud Functions
-└── .github/              ← CI/CD pipelines
-```
-
----
-
-## The 4 Agents
-
-| Agent | Role |
-|-------|------|
-| **Scribe** | Ingests raw WhatsApp/Telegram leads, NLU parsing, SBR code generation |
-| **Curator** | Listing enrichment, luxury copywriting (EN+AR), Property Finder syndication |
-| **Matchmaker** | AI lead profiling, neural property-to-lead matching, concierge proposals |
-| **Closer** | Digital contract (DocuSign), Stripe payment, commission tracking |
-
----
-
-## The Exchange Sheet
-
-All agents, workflows, and the Admin Hub communicate through one shared channel:
-
-- **Firestore collection:** `/exchange`  
-- Agents **write** task status and results  
-- Workflows **write** run progress and completion  
-- Admin Hub **reads live** via `onSnapshot()`  
-- Admin can **write signals** to trigger agents or workflows
-
----
+> Luxury PropTech for New Cairo. The consolidated, production-ready monorepo.
 
 ## Quick Start
 
 ```bash
-# Install dependencies
 pnpm install
-
-# Copy environment variables
-cp .env.example .env.local
-# Fill in: Firebase, Gemini, WhatsApp, Telegram, Property Finder, Stripe keys
-
-# Run all services in dev mode
+cp .env.example .env.local  # fill in values
+docker-compose -f docker-compose.n8n.yml up -d
 pnpm dev
-
-# Run only the API
-pnpm --filter api dev
-
-# Run agents dashboard
-pnpm --filter agents-dashboard dev
-
-# Run n8n workflows (Docker)
-docker-compose -f workflows/docker-compose.n8n.yml up -d
 ```
 
----
+| App | URL |
+|-----|-----|
+| Web (customer hub) | http://localhost:3000 |
+| Admin portal | http://localhost:3001 |
+| Python API | http://localhost:8000 |
+| n8n workflows | http://localhost:5678 |
 
-## Environment Variables
+## Architecture
 
-See [`.env.example`](.env.example) for all required variables:
+```
+WhatsApp Scraper
+    ↓
+collectData (Firebase Function) → rawScrapeData
+    ↓
+processDataForApp → processedData
+    ↓
+Matching Engine → Investment Stakeholders
+    ↓
+Stage-9 Closer Agent → Deals → Proposals → E-Sign
+```
 
-- `NEXT_PUBLIC_FIREBASE_*` — Firebase client config
-- `FIREBASE_*` — Firebase Admin SDK  
-- `GEMINI_API_KEY` — Google Gemini AI  
-- `WHATSAPP_TOKEN` — Meta WhatsApp API  
-- `TELEGRAM_BOT_TOKEN` — Telegram Bot  
-- `PROPERTY_FINDER_API_KEY` — Property Finder Egypt  
-- `STRIPE_SECRET_KEY` — Stripe payments  
-
----
-
-## Tech Stack
+## Stack
 
 | Layer | Technology |
-|-------|-----------|
-| Runtime | Node.js 20 + Python 3.11 |
-| Package manager | pnpm 9 (workspaces) |
-| Build system | Turborepo |
-| Database | Firebase Firestore |
-| Auth | Firebase Authentication |
-| Storage | Firebase Storage |
-| AI | Google Gemini 1.5 |
-| Workflows | n8n (self-hosted Docker) |
-| Payments | Stripe |
-| Messaging | WhatsApp Cloud API + Telegram Bot API |
-| Contracts | DocuSign |
-| Hosting | Vercel (admin) + Firebase (functions) |
+|-------|------------|
+| Frontend | Next.js 15, React 19, Tailwind 4, next-intl |
+| Backend | Firebase Admin SDK, Python FastAPI |
+| Database | Firestore |
+| Auth | Firebase Auth |
+| Automation | n8n (Docker), Cloud Functions |
+| AI | Google Gemini |
+| Agents | Custom framework (packages/agents-core) |
 
----
-
-## Frontend
-
-Frontend designs live in the **sf1** repo with 13 separate branches:  
-→ `https://github.com/ahmedfawzy8866/sf1`
-
-To use a design, check out its branch and deploy to Vercel.
+© 2026 Sierra Estates

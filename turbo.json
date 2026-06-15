@@ -1,41 +1,16 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalEnv": [
-    "NODE_ENV",
-    "NEXT_PUBLIC_FIREBASE_*",
-    "FIREBASE_*",
-    "GEMINI_API_KEY",
-    "OPENAI_API_KEY",
-    "WHATSAPP_TOKEN",
-    "TELEGRAM_BOT_TOKEN",
-    "PROPERTY_FINDER_API_KEY",
-    "STRIPE_SECRET_KEY"
-  ],
+  "ui": "tui",
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "dist/**", "build/**"]
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
-    "dev": {
-      "cache": false,
-      "persistent": true
-    },
-    "lint": {
-      "dependsOn": ["^build"]
-    },
-    "type-check": {
-      "dependsOn": ["^build"]
-    },
-    "test": {
-      "dependsOn": ["^build"],
-      "outputs": ["coverage/**"]
-    },
-    "test:ci": {
-      "dependsOn": ["^build"],
-      "outputs": ["coverage/**"]
-    },
-    "clean": {
-      "cache": false
-    }
+    "dev": { "cache": false, "persistent": true },
+    "lint": { "dependsOn": ["^lint"] },
+    "type-check": { "dependsOn": ["^type-check"] },
+    "test:ci": { "dependsOn": ["^build"], "outputs": ["coverage/**"] },
+    "clean": { "cache": false }
   }
 }
