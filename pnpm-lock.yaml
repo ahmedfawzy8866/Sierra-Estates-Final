@@ -261,6 +261,19 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
+  packages/obedian:
+    dependencies:
+      zod:
+        specifier: ^3.22
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^20
+        version: 20.19.43
+      typescript:
+        specifier: ^5.3
+        version: 5.9.3
+
   packages/property-finder-api:
     dependencies:
       axios:
@@ -269,6 +282,31 @@ importers:
     devDependencies:
       typescript:
         specifier: ^5.0.0
+        version: 5.9.3
+
+  packages/ui:
+    dependencies:
+      lucide-react:
+        specifier: ^1.7
+        version: 1.18.0(react@19.2.4)
+      react:
+        specifier: ^19
+        version: 19.2.4
+      react-dom:
+        specifier: ^19
+        version: 19.0.0(react@19.2.4)
+    devDependencies:
+      '@types/node':
+        specifier: ^20
+        version: 20.19.43
+      '@types/react':
+        specifier: ^19
+        version: 19.2.17
+      '@types/react-dom':
+        specifier: ^19
+        version: 19.2.3(@types/react@19.2.17)
+      typescript:
+        specifier: ^5.3
         version: 5.9.3
 
 packages:
@@ -4058,6 +4096,11 @@ packages:
 
   lucide-react@0.474.0:
     resolution: {integrity: sha512-CmghgHkh0OJNmxGKWc0qfPJCYHASPMVSyGY8fj3xgk4v84ItqDg64JNKFZn5hC6E0vHi6gxnbCgwhyVB09wQtA==}
+    peerDependencies:
+      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  lucide-react@1.18.0:
+    resolution: {integrity: sha512-LZDb7H/0YfM+RJncD0hDQRCAu+vSGODqpe35TuVI8EuXaRjkczbsx7p8dY4J87F/MUSj6bpYqeI8nw8qXaAdmA==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
@@ -9796,6 +9839,10 @@ snapshots:
     dependencies:
       react: 19.0.0
 
+  lucide-react@1.18.0(react@19.2.4):
+    dependencies:
+      react: 19.2.4
+
   lz-string@1.5.0: {}
 
   magic-string@0.30.21:
@@ -10180,6 +10227,11 @@ snapshots:
   react-dom@19.0.0(react@19.0.0):
     dependencies:
       react: 19.0.0
+      scheduler: 0.25.0
+
+  react-dom@19.0.0(react@19.2.4):
+    dependencies:
+      react: 19.2.4
       scheduler: 0.25.0
 
   react-hook-form@7.79.0(react@19.0.0):
