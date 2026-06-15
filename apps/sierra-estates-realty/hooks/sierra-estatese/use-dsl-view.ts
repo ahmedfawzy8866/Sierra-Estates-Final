@@ -136,7 +136,7 @@ export function useDSLView(
       );
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      logger.error("[useDSLView] Query build error:", msg);
+      console.error("[useDSLView] Query build error:", msg);
       setError(msg);
       setLoading(false);
     }
