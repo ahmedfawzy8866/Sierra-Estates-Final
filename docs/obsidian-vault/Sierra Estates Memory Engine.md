@@ -15,15 +15,15 @@ Explore the nodes below to understand how the system aggregates listings, calcul
     *   Central registry for WhatsApp outreach scripts to owners and brokers, email senders, and active co-broke coordination scripts.
 3.  **[[WhatsApp CRM & Hand-off Pipeline]] [NEW]**  
     *   Conversational needs matching, dynamic styled PDF brochure & Photo Offer delivery, Google Calendar scheduling, and failover bot closing sending emails to `a.fawzy8866@gmail.com`.
-4.  **[📊 Forecasting Engine & Predictive Models](file:///C:/Users/sierr/.gemini/antigravity/worktrees/Final/refine-full-stack-ecosystem/docs/obsidian-vault/Forecasting%20Engine.md)**  
+4.  **[[Forecasting Engine]]**
     *   Big Data algorithms to forecast capital appreciation, rent yields in EGP, and investment viability in Egypt.
-5.  **[📐 Market Valuation & Pricing per Square Meter](file:///C:/Users/sierr/.gemini/antigravity/worktrees/Final/refine-full-stack-ecosystem/docs/obsidian-vault/Market%20Valuation%20Models.md)**  
+5.  **[[Market Valuation Models]]**
     *   Base matrices for evaluating whether a listing (Rent/Resale/Primary) in New Cairo is a "good deal" or overpriced.
-6.  **[👩‍💼 Sierra Agent: OpenClaw Cognitive Center](file:///C:/Users/sierr/.gemini/antigravity/worktrees/Final/refine-full-stack-ecosystem/docs/obsidian-vault/Sierra%20Agent%20Intelligence.md)**  
+6.  **[[Sierra Agent Intelligence]]**
     *   How Sierra uses the OpenClaw Gateway to access advanced real estate skills and search historical sales data.
-7.  **[🐪 Leila Agent: Conversational Arabic Broker](file:///C:/Users/sierr/.gemini/antigravity/worktrees/Final/refine-full-stack-ecosystem/docs/obsidian-vault/Leila%20Agent%20Intelligence.md)**  
+7.  **[[Leila Agent Intelligence]]**
     *   Leila's specialized Egyptian negotiation mechanics and local Cairo market adaptation guidelines.
-8.  **[📅 Daily Activity Ledger](file:///C:/Users/sierr/.gemini/antigravity/worktrees/Final/refine-full-stack-ecosystem/docs/obsidian-vault/Daily%20Activity%20Ledger.md)**  
+8.  **[[Daily Activity Ledger]]**
     *   The unified report structure tracking daily aggregator volumes, deals closed, and outreach conversion rates.
 
 ---
