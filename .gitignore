@@ -24,3 +24,5 @@ __pycache__/
 .venv/
 .wwebjs_auth/
 .wwebjs_cache/
+*.log
+package-lock.json
