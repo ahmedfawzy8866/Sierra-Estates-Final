@@ -15,7 +15,7 @@ importers:
         specifier: ^5.7.2
         version: 5.9.3
 
-  apps/web:
+  apps/admin-dashboard:
     dependencies:
       '@hookform/resolvers':
         specifier: ^3.9.1
@@ -147,7 +147,24 @@ importers:
         specifier: ^5.3
         version: 5.9.3
 
-  packages/agents-core: {}
+  packages/agents-core:
+    dependencies:
+      '@sierra-estates/exchange':
+        specifier: workspace:*
+        version: link:../exchange
+      '@sierra-estates/memory-engine':
+        specifier: workspace:*
+        version: link:../memory-engine
+      zod:
+        specifier: ^3.22.0
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^20
+        version: 20.19.43
+      typescript:
+        specifier: ^5.3
+        version: 5.9.3
 
   packages/api:
     dependencies:
@@ -221,6 +238,22 @@ importers:
       firebase-admin:
         specifier: ^13.0.0
         version: 13.10.0
+
+  packages/exchange:
+    dependencies:
+      firebase:
+        specifier: ^12.11.0
+        version: 12.14.0
+      firebase-admin:
+        specifier: ^13.0.0
+        version: 13.10.0
+    devDependencies:
+      '@types/node':
+        specifier: ^20
+        version: 20.19.43
+      typescript:
+        specifier: ^5.3
+        version: 5.9.3
 
   packages/memory-engine:
     devDependencies:
@@ -6594,7 +6627,7 @@ snapshots:
   '@types/jsonwebtoken@9.0.10':
     dependencies:
       '@types/ms': 2.1.0
-      '@types/node': 20.19.43
+      '@types/node': 22.19.21
 
   '@types/leaflet@1.9.21':
     dependencies:
