@@ -3,5 +3,18 @@
   "version": "1.0.0",
   "description": "Sierra Estates agent orchestration framework (15+ agent personas)",
   "main": "./src/index.ts",
-  "private": true
+  "private": true,
+  "scripts": {
+    "dev": "tsx src/dev-runner.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@sierra-estates/exchange": "workspace:*",
+    "firebase": "^10.8.0",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.1",
+    "typescript": "^5.3.3"
+  }
 }
