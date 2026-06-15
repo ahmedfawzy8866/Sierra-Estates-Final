@@ -11,7 +11,7 @@ $workspacePath = "F:\Final"
 $vaultPath = "I:\Work Sierra Estates\Sierra Engine Brain\obsidian-vault"
 $logPath = "F:\Final\scripts\obsidian-sync.log"
 
-function Write-LogMessage($msg) {
+function Write-Log($msg) {
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     $logLine = "[$timestamp] $msg"
     Write-Host $logLine
@@ -20,22 +20,22 @@ function Write-LogMessage($msg) {
     } catch {}
 }
 
-Write-LogMessage "Starting Obsidian Memory Vault synchronization..."
+Write-Log "Starting Obsidian Memory Vault synchronization..."
 
 # Verify paths
 if (-not (Test-Path $workspacePath)) {
-    Write-LogMessage "Error: Workspace path $workspacePath does not exist."
+    Write-Log "Error: Workspace path $workspacePath does not exist."
     exit 1
 }
 
 if (-not (Test-Path $vaultPath)) {
-    Write-LogMessage "Error: Obsidian vault path $vaultPath does not exist."
+    Write-Log "Error: Obsidian vault path $vaultPath does not exist."
     exit 1
 }
 
 try {
     # 1. Fetch Git Repository Information
-    Write-LogMessage "Querying Git status for F:\Final..."
+    Write-Log "Querying Git status for F:\Final..."
     $gitBranch = git -C $workspacePath rev-parse --abbrev-ref HEAD 2>$null
     if ($null -eq $gitBranch) { $gitBranch = "main" }
     
@@ -49,10 +49,10 @@ try {
         $modifiedCount = $lines.Count
     }
 
-    Write-LogMessage "Git Info: Branch=[$gitBranch], LastCommit=[$gitLastCommit], ModifiedFiles=[$modifiedCount]"
+    Write-Log "Git Info: Branch=[$gitBranch], LastCommit=[$gitLastCommit], ModifiedFiles=[$modifiedCount]"
 
     # 2. Retrieve Workspace Structure Statistics (Optimized - Skip Ignored Folders)
-    Write-LogMessage "Calculating workspace stats (skipping node_modules, .git, etc.)..."
+    Write-Log "Calculating workspace stats (skipping node_modules, .git, etc.)..."
     $ignoredDirs = @("node_modules", ".git", ".next", ".venv", ".turbo", ".pnpm", "node_modules_temp", "ارشيف")
     $totalFiles = 0
     
@@ -62,14 +62,14 @@ try {
     # Add files in root
     $totalFiles += (Get-ChildItem -Path $workspacePath -File -ErrorAction SilentlyContinue).Count
 
-    Write-LogMessage "Workspace stats: TotalFiles=[$totalFiles]"
+    Write-Log "Workspace stats: TotalFiles=[$totalFiles]"
 
     # 3. Create or Update the Daily/Hourly Log in Obsidian Vault
     $todayStr = Get-Date -Format "yyyy-MM-dd"
     $nowStr = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     $dailyNotePath = Join-Path $vaultPath "$todayStr.md"
 
-    Write-LogMessage "Writing daily note to $dailyNotePath..."
+    Write-Log "Writing daily note to $dailyNotePath..."
     
     # We construct the string line-by-line to avoid here-string escaping issues
     $lines = @(
@@ -102,7 +102,7 @@ try {
     # 4. Append to Obsidian Daily Activity Ledger.md
     $ledgerPath = Join-Path $vaultPath "Daily Activity Ledger.md"
     if (Test-Path $ledgerPath) {
-        Write-LogMessage "Appending sync log to Daily Activity Ledger.md..."
+        Write-Log "Appending sync log to Daily Activity Ledger.md..."
         $ledgerContent = [System.IO.File]::ReadAllText($ledgerPath, [System.Text.Encoding]::UTF8)
         
         $syncLine = "- **$nowStr**: Codebase synced. Active Branch: `$gitBranch` | Commit: `$gitLastCommit` | Files: $totalFiles"
@@ -118,7 +118,7 @@ try {
     # 5. Update absolute link paths in Sierra Estates Memory Engine.md to use current local paths
     $enginePath = Join-Path $vaultPath "Sierra Estates Memory Engine.md"
     if (Test-Path $enginePath) {
-        Write-LogMessage "Updating local workspace references in Sierra Estates Memory Engine.md..."
+        Write-Log "Updating local workspace references in Sierra Estates Memory Engine.md..."
         $engineContent = [System.IO.File]::ReadAllText($enginePath, [System.Text.Encoding]::UTF8)
         
         $oldPathPattern = "file:///C:/Users/sierr/.gemini/antigravity/worktrees/Final/refine-full-stack-ecosystem/docs/obsidian-vault"
@@ -127,15 +127,15 @@ try {
         if ($engineContent.Contains($oldPathPattern)) {
             $engineContent = $engineContent.Replace($oldPathPattern, $newPathPattern)
             [System.IO.File]::WriteAllText($enginePath, $engineContent, [System.Text.Encoding]::UTF8)
-            Write-LogMessage "Successfully updated absolute file links in Sierra Estates Memory Engine.md."
+            Write-Log "Successfully updated absolute file links in Sierra Estates Memory Engine.md."
         }
     }
 
-    Write-LogMessage "Obsidian Memory Vault synchronization completed successfully."
+    Write-Log "Obsidian Memory Vault synchronization completed successfully."
 
 } catch {
     $err = $_.Exception.Message
-    Write-LogMessage "Critical Error during Obsidian sync: $err"
+    Write-Log "Critical Error during Obsidian sync: $err"
     exit 1
 }
 
