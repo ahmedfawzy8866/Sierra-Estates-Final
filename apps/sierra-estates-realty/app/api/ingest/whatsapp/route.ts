@@ -9,6 +9,7 @@ import { OrchestratorService } from '@/lib/services/orchestrator';
 import { GoogleSheetsSync } from '@/lib/services/sheets-sync';
 import { GoogleAIService } from '@/lib/server/google-ai';
 import { LEILA_PROMPT } from '@/lib/prompts';
+import { logger } from '@/lib/logger';
 
 const SECRET_KEY = process.env.SBR_SECRET_KEY || '';
 
@@ -146,7 +147,7 @@ export async function POST(req: NextRequest) {
           isVIP: responseText.includes('[VIP_ALERT_TRIGGER]')
         };
       } catch (err) {
-        console.warn('[WhatsApp Ingest] Leila response generation failed:', err);
+        logger.warn('[WhatsApp Ingest] Leila response generation failed:', err);
       }
     }
 
@@ -164,13 +165,13 @@ export async function POST(req: NextRequest) {
         date: new Date().toISOString()
       });
     } catch (e) {
-      console.warn('[WhatsApp Ingest] Google Sheets Dual-Ingest fell back to retry queue', e);
+      logger.warn('[WhatsApp Ingest] Google Sheets Dual-Ingest fell back to retry queue', e);
     }
 
     // Trigger the orchestration pipeline relay in the background
     OrchestratorService.runPipeline(docRef.id, 'brokerListings')
-      .then(() => console.log(`[WhatsApp Ingest] Triggered pipeline for ${docRef.id}`))
-      .catch((err: any) => console.error(`[WhatsApp Ingest] Pipeline error for ${docRef.id}`, err));
+      .then(() => logger.info(`[WhatsApp Ingest] Triggered pipeline for ${docRef.id}`))
+      .catch((err: any) => logger.error(`[WhatsApp Ingest] Pipeline error for ${docRef.id}`, err));
 
     return NextResponse.json({
       success: true,
@@ -181,7 +182,7 @@ export async function POST(req: NextRequest) {
       leilaReply
     });
   } catch (error: any) {
-    console.error('[WhatsApp Ingest Error]:', error);
+    logger.error('[WhatsApp Ingest Error]:', error);
     return NextResponse.json(
       {
         success: false,

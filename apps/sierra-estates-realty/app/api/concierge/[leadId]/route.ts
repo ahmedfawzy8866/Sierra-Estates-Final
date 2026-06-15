@@ -2,6 +2,7 @@ import { adminDb } from '@/lib/server/firebase-admin';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { NextResponse } from 'next/server';
 import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
+import { logger } from '@/lib/logger';
 
 export const GET = async (
   req: Request,
@@ -37,7 +38,7 @@ export const GET = async (
 
     return NextResponse.json(portfolio);
   } catch (error) {
-    console.error('Error fetching portfolio:', error);
+    logger.error('Error fetching portfolio:', error);
     return NextResponse.json(
       { error: 'Failed to fetch portfolio' },
       { status: 500 }

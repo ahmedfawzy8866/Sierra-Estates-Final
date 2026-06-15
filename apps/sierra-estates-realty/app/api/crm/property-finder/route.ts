@@ -4,6 +4,7 @@ import { Timestamp } from 'firebase-admin/firestore';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { verifyRequest, unauthorizedResponse } from '@/lib/server/auth-guard';
 import crypto from 'crypto';
+import { logger } from '@/lib/logger';
 
 export async function POST(request: NextRequest) {
   const auth = await verifyRequest(request);
@@ -110,7 +111,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, tracking_summary: migrationSummaryLogs });
   } catch (error: any) {
-    console.error('[CRM/PF] Import failed:', error);
+    logger.error('[CRM/PF] Import failed:', error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

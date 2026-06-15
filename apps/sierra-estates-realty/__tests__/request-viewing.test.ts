@@ -59,7 +59,7 @@ describe('POST /api/leads/request-viewing', () => {
 
   test('returns 400 when body is empty', async () => {
     const res = await POST(makeReq({}));
-    const body = await res.json();
+    const _body = await res.json();
 
     expect(res.status).toBe(400);
     expect(addMock).not.toHaveBeenCalled();

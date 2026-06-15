@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { Database, ChevronDown, Search, Copy, Check } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 interface CollectionData {
   name: string;
@@ -46,7 +47,7 @@ export default function AdminDatabasePage() {
 
         setCollections(data);
       } catch (err) {
-        console.error('Failed to load database info:', err);
+        logger.error('Failed to load database info:', err);
       } finally {
         setLoading(false);
       }

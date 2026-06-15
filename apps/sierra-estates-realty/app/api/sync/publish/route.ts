@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PFIntegrationService } from '@/lib/services/PFIntegrationService';
 import { verifyRequest, unauthorizedResponse } from '@/lib/server/auth-guard';
 import { adminDb } from '@/lib/server/firebase-admin';
+import { logger } from '@/lib/logger';
 
 export async function POST(request: NextRequest) {
   const auth = await verifyRequest(request);
@@ -32,7 +33,7 @@ export async function POST(request: NextRequest) {
       pfReference: result.reference || String(result.id),
     });
   } catch (error: any) {
-    console.error('[PUBLISH_TO_PF]', error.message);
+    logger.error('[PUBLISH_TO_PF]', error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

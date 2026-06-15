@@ -4,6 +4,7 @@ import { Timestamp } from 'firebase-admin/firestore';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminRequest, unauthorizedResponse } from '@/lib/server/auth-guard';
+import { logger } from '@/lib/logger';
 
 interface SendPortfolioRequest {
   leadId: string;
@@ -79,7 +80,7 @@ export const POST = async (req: NextRequest) => {
       message: `Portfolio sent to ${phone}`,
     });
   } catch (error) {
-    console.error('Error sending portfolio:', error);
+    logger.error('Error sending portfolio:', error);
     return NextResponse.json(
       { error: 'Failed to send portfolio' },
       { status: 500 }

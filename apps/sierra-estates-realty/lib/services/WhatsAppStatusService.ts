@@ -1,5 +1,6 @@
 import { doc, updateDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { logger } from '@/lib/logger';
 
 export class WhatsAppStatusService {
   private static STATUS_DOC = 'system_status/whatsapp_node';
@@ -17,7 +18,7 @@ export class WhatsAppStatusService {
         heartbeatInterval: 60000 // Expected pulse every 60s
       }, { merge: true });
     } catch (error) {
-      console.error("❌ Failed to record WhatsApp pulse:", error);
+      logger.error("❌ Failed to record WhatsApp pulse:", error);
     }
   }
 
@@ -33,7 +34,7 @@ export class WhatsAppStatusService {
         errorTimestamp: serverTimestamp()
       });
     } catch (error) {
-      console.error("❌ Failed to record node error:", error);
+      logger.error("❌ Failed to record node error:", error);
     }
   }
 }

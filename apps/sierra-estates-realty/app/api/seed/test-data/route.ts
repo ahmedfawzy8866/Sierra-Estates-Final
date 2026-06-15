@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 import { COLLECTIONS } from '@/lib/models/schema';
+import { logger } from '@/lib/logger';
 
 const SAMPLE_LISTINGS = [
   {
@@ -205,7 +206,7 @@ export async function POST(req: Request) {
       ids: addedListings,
     });
   } catch (error) {
-    console.error('Error seeding test data:', error);
+    logger.error('Error seeding test data:', error);
     return NextResponse.json(
       { error: 'Failed to seed test data', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }

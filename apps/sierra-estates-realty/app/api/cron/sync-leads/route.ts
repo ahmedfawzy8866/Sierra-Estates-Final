@@ -3,6 +3,7 @@ import { PFIntegrationService } from '@/lib/services/PFIntegrationService';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 import { COLLECTIONS } from '@/lib/models/schema';
+import { logger } from '@/lib/logger';
 
 /**
  * sierra estates — CRON: PROPERTY FINDER LEAD SYNC
@@ -21,7 +22,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    console.log("🔄 [CRON] Starting Property Finder lead sync...");
+    logger.info("🔄 [CRON] Starting Property Finder lead sync...");
 
     const summary = await PFIntegrationService.syncIncomingLeads();
 
@@ -38,7 +39,7 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    console.log(`✅ [CRON] Sync complete: ${summary.created} created, ${summary.updated} updated, ${summary.skipped} skipped`);
+    logger.info(`✅ [CRON] Sync complete: ${summary.created} created, ${summary.updated} updated, ${summary.skipped} skipped`);
 
     return NextResponse.json({
       success: true,
@@ -46,7 +47,7 @@ export async function GET(req: NextRequest) {
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
-    console.error("🚨 [CRON] Sync failed:", error);
+    logger.error("🚨 [CRON] Sync failed:", error);
 
     return NextResponse.json({
       success: false,

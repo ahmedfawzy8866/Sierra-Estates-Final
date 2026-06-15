@@ -3,6 +3,7 @@ import { MaintenanceMonitor } from '@/lib/services/MaintenanceMonitor';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { Timestamp } from 'firebase-admin/firestore';
+import { logger } from '@/lib/logger';
 
 /**
  * sierra estates — CRON: MAINTENANCE HYGIENE AUDIT
@@ -18,7 +19,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    console.log("🔄 [CRON] Starting Portfolio Maintenance Audit...");
+    logger.info("🔄 [CRON] Starting Portfolio Maintenance Audit...");
 
     const flaggedCount = await MaintenanceMonitor.flagStaleListings();
 
@@ -35,7 +36,7 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    console.log(`✅ [CRON] Maintenance complete: ${flaggedCount} assets flagged.`);
+    logger.info(`✅ [CRON] Maintenance complete: ${flaggedCount} assets flagged.`);
 
     return NextResponse.json({
       success: true,
@@ -43,7 +44,7 @@ export async function GET(req: NextRequest) {
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
-    console.error("🚨 [CRON] Maintenance failed:", error);
+    logger.error("🚨 [CRON] Maintenance failed:", error);
 
     return NextResponse.json({
       success: false,

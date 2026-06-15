@@ -9,7 +9,7 @@ dotenv.config({ path: resolve(process.cwd(), '.env') });
 let serviceAccount;
 try {
   serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY || '{}');
-} catch (e) {
+} catch (_e) {
   console.error("Missing or invalid FIREBASE_SERVICE_ACCOUNT_KEY in .env");
   process.exit(1);
 }

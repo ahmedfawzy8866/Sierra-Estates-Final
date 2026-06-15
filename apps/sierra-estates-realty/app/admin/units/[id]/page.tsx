@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { db } from '@/lib/firebase';
 import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { ArrowLeft, MapPin, Home, Edit2, Save, X, DollarSign, Ruler } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 interface Unit {
   id: string;
@@ -50,7 +51,7 @@ export default function AdminUnitDetailPage() {
           setFormData(data);
         }
       } catch (err) {
-        console.error('Failed to load unit:', err);
+        logger.error('Failed to load unit:', err);
       } finally {
         setLoading(false);
       }
@@ -68,7 +69,7 @@ export default function AdminUnitDetailPage() {
       setUnit({ ...unit, ...formData });
       setEditing(false);
     } catch (err) {
-      console.error('Failed to update unit:', err);
+      logger.error('Failed to update unit:', err);
     }
   };
 

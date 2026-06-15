@@ -4,6 +4,7 @@ import { Timestamp } from "firebase-admin/firestore";
 import { COLLECTIONS, type InboundAssetSignal } from "../models/schema";
 import { buildSierraCodeMetadata, type PropertyCodeInput } from "./coding-algorithm";
 import { StorageService } from "./StorageService";
+import { logger } from '@/lib/logger';
 
 /**
  * sierra estates WHATSAPP INTELLIGENCE SERVICE
@@ -31,7 +32,7 @@ export class WhatsAppParserService {
    */
   static async parseMessage(content: string, media?: { data: string, mimeType: string }) {
     if (!API_KEY) {
-      console.error("❌ [WhatsAppParserService] No API key found for Gemini. Please set GOOGLE_AI_API_KEY.");
+      logger.error("❌ [WhatsAppParserService] No API key found for Gemini. Please set GOOGLE_AI_API_KEY.");
       throw new Error("Gemini API key is missing. Neural parsing disabled.");
     }
 
@@ -94,7 +95,7 @@ export class WhatsAppParserService {
    * Processes a raw message (text or image) and persists it.
    */
   static async processIncomingMessage(content: string, sender: string, groupName: string, media?: { data: string, mimeType: string }) {
-    console.log(`📡 Ingesting strategic intel from ${groupName}... (Multimodal: ${!!media})`);
+    logger.info(`📡 Ingesting strategic intel from ${groupName}... (Multimodal: ${!!media})`);
     
     try {
       const extractedData = await this.parseMessage(content, media);
@@ -132,7 +133,7 @@ export class WhatsAppParserService {
       
       // --- MEDIA PERSISTENCE ---
       if (media && docRef.id) {
-          console.log(`📸 Persisting media for signal ${docRef.id}...`);
+          logger.info(`📸 Persisting media for signal ${docRef.id}...`);
           try {
               const mediaUrl = await StorageService.uploadPropertyMedia(
                   docRef.id, 
@@ -143,17 +144,17 @@ export class WhatsAppParserService {
                   mediaUrls: [mediaUrl],
                   'intelligence.hasVisualReference': true
               });
-              console.log(`✅ Media linked: ${mediaUrl}`);
+              logger.info(`✅ Media linked: ${mediaUrl}`);
           } catch (storageError) {
-              console.error("❌ Storage Persistence Failure:", storageError);
+              logger.error("❌ Storage Persistence Failure:", storageError);
           }
       }
 
-      console.log(`✅ AI Orchestration Complete: Signal ${docRef.id} persisted. [Code: ${extractedData.sierraCode}]`);
+      logger.info(`✅ AI Orchestration Complete: Signal ${docRef.id} persisted. [Code: ${extractedData.sierraCode}]`);
       
       return { id: docRef.id, data: extractedData, isDuplicate: !!duplicateId };
     } catch (error) {
-      console.error("❌ Neural Parsing Engine Failure:", error);
+      logger.error("❌ Neural Parsing Engine Failure:", error);
       
       // Fallback: Save as 'raw' for human review
       await adminDb.collection(COLLECTIONS.brokerListings).add({
@@ -269,7 +270,7 @@ export class WhatsAppParserService {
    * Total daily capacity: 480 messages.
    */
   static async dispatchBulkOwnerOutreach(ownerList: any[]) {
-    console.log(`🚀 Initiating Bulk Owner Outreach for ${ownerList.length} owners...`);
+    logger.info(`🚀 Initiating Bulk Owner Outreach for ${ownerList.length} owners...`);
     const WABA_NUMBERS = [
       process.env.WABA_NUMBER_1,
       process.env.WABA_NUMBER_2,
@@ -278,7 +279,7 @@ export class WhatsAppParserService {
     ].filter(Boolean);
 
     if (WABA_NUMBERS.length === 0) {
-      console.warn("⚠️ No WABA numbers configured. Using fallback simulation for bulk sender.");
+      logger.warn("⚠️ No WABA numbers configured. Using fallback simulation for bulk sender.");
       WABA_NUMBERS.push("SIMULATOR_1", "SIMULATOR_2", "SIMULATOR_3", "SIMULATOR_4");
     }
 
@@ -296,7 +297,7 @@ export class WhatsAppParserService {
       const chunk = queueToProcess.slice(processedCount, processedCount + BATCH_SIZE_PER_NUMBER);
       processedCount += chunk.length;
       
-      console.log(`📤 Dispatching ${chunk.length} templates via Sender: ${senderPhone}`);
+      logger.info(`📤 Dispatching ${chunk.length} templates via Sender: ${senderPhone}`);
       
       // Emit to internal webhook / n8n for staggered sending
       // Example: await n8nWebhookClient.triggerBulkBatch(senderPhone, chunk);

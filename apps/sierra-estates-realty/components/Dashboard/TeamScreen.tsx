@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore';
 import AdvisorProfile from './AdvisorProfile';
 import { useI18n } from '@/lib/I18nContext';
+import { logger } from '@/lib/logger';
 
 interface Partner {
   id: string;
@@ -26,7 +27,7 @@ interface Partner {
 }
 
 export default function TeamScreen({ onNavigate }: { onNavigate?: (screen: any) => void }) {
-  const { locale, t } = useI18n();
+  const { _locale, t } = useI18n();
   const [partners, setPartners] = useState<Partner[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -50,7 +51,7 @@ export default function TeamScreen({ onNavigate }: { onNavigate?: (screen: any) 
       setPartners(data);
       setLoading(false);
     }, (err) => {
-      console.error("Partners sync failed:", err);
+      logger.error("Partners sync failed:", err);
       setLoading(false);
     });
 
@@ -75,7 +76,7 @@ export default function TeamScreen({ onNavigate }: { onNavigate?: (screen: any) 
       setShowModal(false);
       setPartnerDraft({ name: '', role: '', deals: 0, revenue: '', initials: '', color: 'var(--blue)' });
     } catch (err) {
-      console.error("Enlistment failed:", err);
+      logger.error("Enlistment failed:", err);
     }
   };
 
@@ -84,7 +85,7 @@ export default function TeamScreen({ onNavigate }: { onNavigate?: (screen: any) 
     try {
       await deleteDoc(doc(db, 'partners', id));
     } catch (err) {
-      console.error("Termination failed:", err);
+      logger.error("Termination failed:", err);
     }
   };
 

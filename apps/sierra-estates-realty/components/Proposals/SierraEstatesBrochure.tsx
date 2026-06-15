@@ -2,6 +2,7 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import { InventoryService, Property } from "@/lib/services/InventoryService";
+import { logger } from '@/lib/logger';
 
 export default function SierraEstatesBrochure({ propertyId }: { propertyId?: string }) {
   const brochureRef = useRef<HTMLDivElement>(null);
@@ -40,7 +41,7 @@ export default function SierraEstatesBrochure({ propertyId }: { propertyId?: str
     ],
   });
 
-  const [isLoading, setIsLoading] = useState(!!propertyId);
+  const [_isLoading, setIsLoading] = useState(!!propertyId);
 
   useEffect(() => {
     if (propertyId) {
@@ -58,7 +59,7 @@ export default function SierraEstatesBrochure({ propertyId }: { propertyId?: str
         }
         setIsLoading(false);
       }).catch(err => {
-        console.error("Failed to load property:", err);
+        logger.error("Failed to load property:", err);
         setIsLoading(false);
       });
     }
@@ -82,7 +83,7 @@ export default function SierraEstatesBrochure({ propertyId }: { propertyId?: str
       const html2pdfModule = (await import("html2pdf.js")).default;
       await html2pdfModule().set(opt).from(element).save();
     } catch (error) {
-      console.error("Failed to generate PDF:", error);
+      logger.error("Failed to generate PDF:", error);
     } finally {
       setIsGenerating(false);
     }

@@ -16,6 +16,7 @@ import {
 } from "firebase/firestore";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
 import { COLLECTIONS } from "../models/schema";
+import { logger } from '@/lib/logger';
 
 // ════════════════════════════════════════════════════════════════
 // STRATEGIC CONFIGURATION
@@ -166,7 +167,7 @@ export async function pushAssetToRegistry(asset: SBRAsset): Promise<RegistrySync
 
   } catch (err) {
     const error = err instanceof Error ? err.message : String(err);
-    console.error("[Registry] pushAssetToRegistry failed:", error);
+    logger.error("[Registry] pushAssetToRegistry failed:", error);
     return { success: false, error, timestamp: new Date() };
   }
 }
@@ -274,7 +275,7 @@ export async function handleStakeholderWebhook(
 
   } catch (err) {
     const error = err instanceof Error ? err.message : String(err);
-    console.error("[Registry Webhook] Error:", error);
+    logger.error("[Registry Webhook] Error:", error);
     return { success: false, error };
   }
 }
@@ -387,7 +388,7 @@ function verifyRegistrySignature(payload: string, signature: string): boolean {
     const digest = hmac.update(payload).digest("hex");
     return digest === signature;
   } catch (err) {
-    console.error("[Registry] Signature verification error:", err);
+    logger.error("[Registry] Signature verification error:", err);
     return false;
   }
 }

@@ -6,6 +6,7 @@ import { collection, query, where, orderBy, onSnapshot, Timestamp, updateDoc, do
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, RefreshCw, CheckCircle, Clock, Filter, Trash2 } from 'lucide-react';
 import { COLLECTIONS, Unit } from '../../lib/models/schema';
+import { logger } from '@/lib/logger';
 
 export default function StaleDataMonitor() {
   const [items, setItems] = useState<Unit[]>([]);
@@ -30,7 +31,7 @@ export default function StaleDataMonitor() {
       setItems(staleItems);
       setLoading(false);
     }, (error) => {
-      console.error("Stale data sync error:", error);
+      logger.error("Stale data sync error:", error);
       setLoading(false);
     });
 
@@ -45,7 +46,7 @@ export default function StaleDataMonitor() {
         status: 'available' // Reset status to active/available
       });
     } catch (error) {
-      console.error("Failed to refresh unit:", error);
+      logger.error("Failed to refresh unit:", error);
     } finally {
       setRefreshingId(null);
     }
@@ -58,7 +59,7 @@ export default function StaleDataMonitor() {
         updatedAt: serverTimestamp()
       });
     } catch (error) {
-      console.error("Failed to mark sold:", error);
+      logger.error("Failed to mark sold:", error);
     }
   };
 

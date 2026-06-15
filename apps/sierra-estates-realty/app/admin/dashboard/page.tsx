@@ -5,6 +5,7 @@ import { db } from '@/lib/firebase';
 import { collection, query, where, getDocs, orderBy, limit, getCountFromServer } from 'firebase/firestore';
 import { Building2, TrendingUp, Handshake, Activity } from 'lucide-react';
 import { KPICard, SectionHeader, StatusBadge, EmptyState } from '@/components/Admin';
+import { logger } from '@/lib/logger';
 
 interface RecentDeal {
   id: string;
@@ -50,7 +51,7 @@ export default function AdminDashboardPage() {
         setRecentCount(recent.length);
         setSyncStatus(syncSnap.empty ? null : (syncSnap.docs[0].data().status as string));
       } catch (err) {
-        console.error('Dashboard load error:', err);
+        logger.error('Dashboard load error:', err);
       } finally {
         setLoading(false);
       }

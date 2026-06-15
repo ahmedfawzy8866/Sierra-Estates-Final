@@ -11,6 +11,7 @@ import { generateOptionsPackage } from './sales-engine';
 import { runMatchingForLead } from './matching-engine';
 import { assessLegalRisk, generateLegalSummary } from './legal-brain';
 import { extractProfileFromChat } from './profiling-service';
+import { logger } from '@/lib/logger';
 
 export interface AgentResponse {
   message: string;
@@ -44,7 +45,7 @@ export async function processAgentCommand(chatId: number, text: string): Promise
           return { message: "Intent recognized but not yet implemented.", success: false };
       }
     } catch (err: any) {
-      console.error("Agent execution failed:", err);
+      logger.error("Agent execution failed:", err);
       return { message: `Operational Failure: ${err.message}`, success: false };
     }
   }
@@ -82,7 +83,7 @@ Format: JSON only: {"type": "intent_name", "params": {}}`;
     const jsonMatch = content.match(/\{[\s\S]*\}/);
     return jsonMatch ? JSON.parse(jsonMatch[0]) : { type: 'unknown' };
   } catch (err) {
-    console.error("[Antigravity] Intent detection failed:", err);
+    logger.error("[Antigravity] Intent detection failed:", err);
     return { type: 'unknown' };
   }
 }
@@ -207,7 +208,7 @@ Answer every query with authority, blending professional warmth with the precisi
 
     return { message: data.choices[0].message.content, success: true };
   } catch (err: any) {
-    console.error("[Antigravity] General query failed:", err);
+    logger.error("[Antigravity] General query failed:", err);
     return { message: "Intelligence temporarily offline. Strategic reconnection in progress.", success: false };
   }
 }

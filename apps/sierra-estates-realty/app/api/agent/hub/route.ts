@@ -3,6 +3,7 @@ import { verifyAdminRequest, unauthorizedResponse } from '@/lib/server/auth-guar
 import { GoogleAIService } from '@/lib/server/google-ai';
 import { LEILA_PROMPT } from '@/lib/prompts';
 import { GravityRecall } from '@/lib/server/gravity';
+import { logger } from '@/lib/logger';
 
 /**
  * Agent Hub — multi-agent orchestration entry point.
@@ -76,7 +77,7 @@ async function handleScribe(message: string) {
       vipAlert: isVIP,
     });
   } catch (error) {
-    console.error('Scribe Error:', error);
+    logger.error('Scribe Error:', error);
     return NextResponse.json({
       success: true,
       response: 'أهلاً بك. ليلى غير متوفرة حالياً بسبب تحديثات تقنية. يرجى الانتظار قليلاً.',

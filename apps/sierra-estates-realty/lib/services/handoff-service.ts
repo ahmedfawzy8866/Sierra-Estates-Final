@@ -7,6 +7,7 @@ import { db } from '../firebase';
 import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { COLLECTIONS, Lead, Unit } from '../models/schema';
 import { GoogleAIService } from '../server/google-ai';
+import { logger } from '@/lib/logger';
 
 export interface HandoffSummary {
   leadName: string;
@@ -101,7 +102,7 @@ PERSONA ALIGNMENT: Align the intelligence with "Sierra's" Editorial Luxury stand
 
     return data.choices[0].message.content || "Stakeholder ready for closer engagement based on curated portfolio interaction.";
   } catch (err) {
-    console.error("[HandoffService] AI Summary failed:", err);
+    logger.error("[HandoffService] AI Summary failed:", err);
     return "Stakeholder ready for closer engagement.";
   }
 }

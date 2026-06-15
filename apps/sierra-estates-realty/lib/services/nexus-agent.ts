@@ -7,6 +7,7 @@ import { GoogleAIService } from '../server/google-ai';
 import { SkillLoader } from './skill-loader';
 import { adminDb } from '../server/firebase-admin';
 import { COLLECTIONS, type Lead } from '../models/schema';
+import { logger } from '@/lib/logger';
 
 export interface NexusResponse {
   message: string;
@@ -87,7 +88,7 @@ export class NexusAgent {
         success: true
       };
     } catch (err: any) {
-      console.error("Nexus Execution Failure:", err);
+      logger.error("Nexus Execution Failure:", err);
       return { message: "Nexus Core Disruption: Tool synchronization failed.", toolsUsed: [], success: false };
     }
   }

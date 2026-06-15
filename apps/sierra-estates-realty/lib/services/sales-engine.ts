@@ -16,6 +16,7 @@ import {
 import { COLLECTIONS, type Lead, type Proposal, type Unit, type Voucher } from '../models/schema';
 import { GoogleAIService } from '../server/google-ai';
 import { analyzeAssetFinancials } from './roi-service';
+import { logger } from '@/lib/logger';
 
 /**
  * Generate a Strategic Options Package (Proposal) for a lead.
@@ -155,7 +156,7 @@ Output the response as a single cohesive paragraph.`;
 
     return data.choices[0].message.content || "Strategic portfolio recommendation based on structural market alignment.";
   } catch (err) {
-    console.error("[SalesEngine] AI Summary generation failed:", err);
+    logger.error("[SalesEngine] AI Summary generation failed:", err);
     return "Strategic portfolio recommendation based on structural market alignment.";
   }
 }

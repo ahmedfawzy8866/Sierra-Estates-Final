@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { logger } from '@/lib/logger';
 
 /**
  * GRAVITY RECALL SERVICE
@@ -26,7 +27,7 @@ export const GravityRecall = {
       const data = fs.readFileSync(VAULT_PATH, 'utf-8');
       return JSON.parse(data);
     } catch (error) {
-      console.error('❌ Gravity Recall Error:', error);
+      logger.error('❌ Gravity Recall Error:', error);
       return null;
     }
   },

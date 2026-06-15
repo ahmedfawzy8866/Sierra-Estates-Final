@@ -2,6 +2,7 @@ import { db } from '../firebase';
 import { doc, getDoc, serverTimestamp, addDoc, collection } from 'firebase/firestore';
 import { assessLegalRisk } from './legal-brain';
 import { Unit } from '../models/schema';
+import { logger } from '@/lib/logger';
 
 /**
  * sierra estates — STAGE 10: CLOSING SIMULATOR
@@ -15,7 +16,7 @@ export class ClosingSimulator {
    * Integrates Legal Intelligence and Financial Projections.
    */
   static async runClosingSimulation(leadId: string, unitId: string) {
-    console.log(`--- 🎰 Running Strategic Closing Simulation: ${leadId} -> ${unitId} ---`);
+    logger.info(`--- 🎰 Running Strategic Closing Simulation: ${leadId} -> ${unitId} ---`);
     
     try {
       // 1. Fetch Stakeholder & Asset Data in Parallel
@@ -81,7 +82,7 @@ export class ClosingSimulator {
       };
 
     } catch (error: any) {
-      console.error("❌ Strategic Simulation Framework Failure:", error);
+      logger.error("❌ Strategic Simulation Framework Failure:", error);
       throw error;
     }
   }

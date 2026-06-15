@@ -3,19 +3,31 @@ import { adminDb } from '@/lib/server/firebase-admin';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
 
+import { z } from 'zod';
+import { logger } from '@/lib/logger';
+
+const viewingSchema = z.object({
+  leadId: z.string().min(1, "Lead ID is required"),
+  unitId: z.string().min(1, "Unit ID is required"),
+  portfolioId: z.string().optional().nullable()
+});
+
 export async function POST(req: Request) {
   const rateLimitResponse = applyRateLimit(req, publicEndpointLimiter);
   if (rateLimitResponse) return rateLimitResponse;
 
   try {
-    const { leadId, unitId, portfolioId } = await req.json();
+    const data = await req.json();
+    const parseResult = viewingSchema.safeParse(data);
 
-    if (!leadId || !unitId) {
+    if (!parseResult.success) {
       return NextResponse.json(
-        { error: 'Lead ID and Unit ID are required' },
+        { error: 'Validation failed', details: parseResult.error.errors },
         { status: 400 }
       );
     }
+
+    const { leadId, unitId, portfolioId } = parseResult.data;
 
     // Create a viewing request record
     const viewingDoc = await adminDb.collection(COLLECTIONS.viewings).add({
@@ -55,7 +67,7 @@ export async function POST(req: Request) {
       message: 'Viewing request received. Laila is preparing matches for agent confirmation.'
     });
   } catch (error: any) {
-    console.error('Error requesting viewing:', error);
+    logger.error('Error requesting viewing:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

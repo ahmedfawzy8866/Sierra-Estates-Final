@@ -1,5 +1,6 @@
 import { collection, addDoc, serverTimestamp, Timestamp, FieldValue } from 'firebase/firestore';
 import { db } from './firebase';
+import { logger } from '@/lib/logger';
 
 export type AuditAction = 
   | 'STAKEHOLDER_ONBOARD' 
@@ -29,6 +30,6 @@ export const logAuditAction = async (log: Omit<AuditLog, 'createdAt'>) => {
       createdAt: serverTimestamp()
     });
   } catch (err) {
-    console.error("Critical: Audit logging failed:", err);
+    logger.error("Critical: Audit logging failed:", err);
   }
 };

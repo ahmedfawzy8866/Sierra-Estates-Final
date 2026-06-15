@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { OmnichannelChatService } from '@/lib/services/OmnichannelChatService';
+import { logger } from '@/lib/logger';
 
 /**
  * sierra estates WEB CONCIERGE CHAT API
@@ -27,7 +28,7 @@ export async function POST(req: NextRequest) {
       action: result.actionTaken
     });
   } catch (error: any) {
-    console.error("🚨 Web Concierge API Failure:", error);
+    logger.error("🚨 Web Concierge API Failure:", error);
     return NextResponse.json({ error: "Failed to process luxury concierge signal", details: error.message }, { status: 500 });
   }
 }

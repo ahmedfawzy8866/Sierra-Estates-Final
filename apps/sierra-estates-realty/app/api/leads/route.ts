@@ -5,13 +5,33 @@ import { COLLECTIONS } from '@/lib/models/schema';
 import { sendTelegramMessage } from '@/lib/telegram';
 import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
 
+import { z } from 'zod';
+import { logger } from '@/lib/logger';
+
+const leadSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email address"),
+  phone: z.string().optional(),
+  message: z.string().optional(),
+  locale: z.string().optional()
+});
+
 export async function POST(req: Request) {
   const rateLimitResponse = applyRateLimit(req, publicEndpointLimiter);
   if (rateLimitResponse) return rateLimitResponse;
 
   try {
     const data = await req.json();
-    const { name, email, phone, message, locale } = data;
+    const parseResult = leadSchema.safeParse(data);
+    
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { success: false, error: 'Validation failed', details: parseResult.error.errors },
+        { status: 400 }
+      );
+    }
+    
+    const { name, email, phone, message, locale } = parseResult.data;
 
     // 1. Add to Firestore
     const leadRef = await adminDb.collection(COLLECTIONS.stakeholders).add({
@@ -53,7 +73,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, id: leadRef.id });
   } catch (error) {
-    console.error("Lead submission error:", error);
+    logger.error("Lead submission error:", error);
     return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
   }
 }

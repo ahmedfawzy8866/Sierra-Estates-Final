@@ -8,6 +8,7 @@ import BrandLogo from './BrandLogo';
 import LanguageToggle from './LanguageToggle';
 import { Search, Bell, Moon, Sun } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { logger } from '@/lib/logger';
 
 interface TopbarProps {
   onHomeClick: () => void;
@@ -38,7 +39,7 @@ export default function Topbar({
       }
       onSignOut();
     } catch (error) {
-      console.error(error);
+      logger.error(error);
     }
   };
 

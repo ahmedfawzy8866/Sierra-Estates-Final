@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { verifyAdminRequest, unauthorizedResponse } from '@/lib/server/auth-guard';
+import { logger } from '@/lib/logger';
 export async function GET(req: NextRequest) {
   const auth = await verifyAdminRequest(req);
   if (!auth.authenticated) return unauthorizedResponse();
@@ -42,7 +43,7 @@ export async function GET(req: NextRequest) {
     
     return NextResponse.json({ notes: metadataList });
   } catch (error: any) {
-    console.error('Error fetching knowledge base:', error);
+    logger.error('Error fetching knowledge base:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

@@ -5,6 +5,7 @@ import { db } from '@/lib/firebase';
 import { collection, query, orderBy, limit, getDocs, addDoc, updateDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { Search, LayoutGrid, List, Phone, Mail, Clock, Plus } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
+import { logger } from '@/lib/logger';
 
 interface Lead {
   id: string;
@@ -65,7 +66,7 @@ export default function AdminDealsPage() {
         const snap = await getDocs(q);
         setLeads(snap.docs.map(d => ({ id: d.id, ...d.data() } as Lead)));
       } catch (err) {
-        console.error('Failed to load leads:', err);
+        logger.error('Failed to load leads:', err);
       } finally {
         setLoading(false);
       }
@@ -90,7 +91,7 @@ export default function AdminDealsPage() {
       await updateDoc(doc(db, 'leads', draggableId), { stage: newStage, updatedAt: serverTimestamp() });
       setLeads(leads.map(l => (l.id === draggableId ? { ...l, stage: newStage } : l)));
     } catch (err) {
-      console.error('Failed to update lead:', err);
+      logger.error('Failed to update lead:', err);
     }
   };
 
@@ -112,7 +113,7 @@ export default function AdminDealsPage() {
       const snap = await getDocs(q);
       setLeads(snap.docs.map(d => ({ id: d.id, ...d.data() } as Lead)));
     } catch (err) {
-      console.error('Failed to add deal:', err);
+      logger.error('Failed to add deal:', err);
     }
   };
 

@@ -5,6 +5,7 @@ import { Bot, Calendar, Check, AlertCircle, RefreshCw, Handshake } from 'lucide-
 import { db } from '@/lib/firebase';
 import { collection, query, where, getDocs, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { SectionHeader, StatusBadge, EmptyState } from '@/components/Admin';
+import { logger } from '@/lib/logger';
 
 interface MatchedUnit {
   id: string;
@@ -78,7 +79,7 @@ export default function AdminLeadsPage() {
 
       setLeads(fetched.length > 0 ? fetched : [DEMO_LEAD]);
     } catch (err) {
-      console.error('Failed to load leads:', err);
+      logger.error('Failed to load leads:', err);
     } finally {
       setLoading(false);
       setRefreshing(false);

@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 
 export interface ClientNeeds {
   budget: number;
@@ -25,7 +26,7 @@ export class LeilaAgent {
     intent: string;
     matchedUnits: MatchedUnit[];
   }> {
-    console.log(`Leila is analyzing client needs for budget: ${clientNeeds.budget}`);
+    logger.info(`Leila is analyzing client needs for budget: ${clientNeeds.budget}`);
 
     // Simulation of AI reading the Knowledge Base for rules
     const rules: any[] = [];
@@ -65,7 +66,7 @@ export class LeilaAgent {
    */
   async handoffToAgent(clientId: string, matchedUnits: MatchedUnit[]) {
     // In a real DB, this would write to a `leads` collection
-    console.log(`[Leila Stage 2] Pushed Lead ${clientId} to Admin Dashboard with ${matchedUnits.length} matched units.`);
+    logger.info(`[Leila Stage 2] Pushed Lead ${clientId} to Admin Dashboard with ${matchedUnits.length} matched units.`);
     
     return {
       success: true,

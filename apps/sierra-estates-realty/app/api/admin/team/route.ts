@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminRequest } from '@/lib/server/auth-guard';
 import { adminDb } from '@/lib/server/firebase-admin';
+import { logger } from '@/lib/logger';
 
 export async function GET(req: NextRequest) {
   // Verify admin authentication
@@ -18,7 +19,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ success: true, team });
   } catch (err) {
-    console.error('Error fetching team:', err);
+    logger.error('Error fetching team:', err);
     return NextResponse.json(
       { error: 'Failed to fetch team', details: err instanceof Error ? err.message : 'Unknown error' },
       { status: 500 }
@@ -55,7 +56,7 @@ export async function POST(req: NextRequest) {
       userId: userRef.id,
     });
   } catch (err) {
-    console.error('Error creating team member:', err);
+    logger.error('Error creating team member:', err);
     return NextResponse.json(
       { error: 'Failed to create team member', details: err instanceof Error ? err.message : 'Unknown error' },
       { status: 500 }
@@ -84,7 +85,7 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error('Error updating team member:', err);
+    logger.error('Error updating team member:', err);
     return NextResponse.json(
       { error: 'Failed to update team member', details: err instanceof Error ? err.message : 'Unknown error' },
       { status: 500 }
@@ -111,7 +112,7 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error('Error deleting team member:', err);
+    logger.error('Error deleting team member:', err);
     return NextResponse.json(
       { error: 'Failed to delete team member', details: err instanceof Error ? err.message : 'Unknown error' },
       { status: 500 }

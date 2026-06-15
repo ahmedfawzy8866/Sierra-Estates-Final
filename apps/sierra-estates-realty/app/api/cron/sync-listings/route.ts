@@ -3,6 +3,7 @@ import { PFIntegrationService } from '@/lib/services/PFIntegrationService';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 import { COLLECTIONS } from '@/lib/models/schema';
+import { logger } from '@/lib/logger';
 
 /**
  * sierra estates — CRON: PROPERTY FINDER LISTING SYNC
@@ -18,7 +19,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    console.log('🔄 [CRON] Starting Property Finder listing sync...');
+    logger.info('🔄 [CRON] Starting Property Finder listing sync...');
 
     const summary = await PFIntegrationService.syncIncomingListings();
 
@@ -34,7 +35,7 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    console.log(`✅ [CRON] Listing sync complete: ${summary.imported} imported, ${summary.updated} updated`);
+    logger.info(`✅ [CRON] Listing sync complete: ${summary.imported} imported, ${summary.updated} updated`);
 
     return NextResponse.json({
       success: true,
@@ -42,7 +43,7 @@ export async function GET(req: NextRequest) {
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
-    console.error('🚨 [CRON] Listing sync failed:', error);
+    logger.error('🚨 [CRON] Listing sync failed:', error);
     return NextResponse.json({
       success: false,
       error: error.message || 'Listing sync failed',

@@ -12,12 +12,13 @@ import { analyzeAssetFinancials } from '@/lib/services/roi-service';
 import { db } from '@/lib/firebase';
 import { collection, getDocs, query, limit, where } from 'firebase/firestore';
 import type { Unit } from '@/lib/models/schema';
+import { logger } from '@/lib/logger';
 
 /**
  * ROI Test Validator
  */
 export async function validateROIProjections() {
-  console.log('💰 sierra estates ROI VALIDATION SUITE\n');
+  logger.info('💰 sierra estates ROI VALIDATION SUITE\n');
 
   try {
     // Fetch up to 50 available units
@@ -31,11 +32,11 @@ export async function validateROIProjections() {
     const units = unitsSnap.docs.map(d => ({ id: d.id, ...d.data() } as Unit));
 
     if (units.length === 0) {
-      console.log('⚠️  No units found in database. Please seed test data first.\n');
+      logger.info('⚠️  No units found in database. Please seed test data first.\n');
       return;
     }
 
-    console.log(`📊 Testing ROI on ${units.length} units\n`);
+    logger.info(`📊 Testing ROI on ${units.length} units\n`);
 
     const results = {
       totalUnits: units.length,
@@ -73,7 +74,7 @@ export async function validateROIProjections() {
 
         // Progress indicator
         if ((i + 1) % 10 === 0) {
-          console.log(`⏳ Processed ${i + 1}/${units.length} units...`);
+          logger.info(`⏳ Processed ${i + 1}/${units.length} units...`);
         }
       } catch (err) {
         results.failures++;
@@ -94,40 +95,40 @@ export async function validateROIProjections() {
     }
 
     // Print Report
-    console.log('\n📈 ROI VALIDATION REPORT\n');
-    console.log(`Units Tested: ${results.totalUnits}`);
-    console.log(`Successful: ${successCount} ✅`);
-    console.log(`Failed: ${results.failures} ❌\n`);
+    logger.info('\n📈 ROI VALIDATION REPORT\n');
+    logger.info(`Units Tested: ${results.totalUnits}`);
+    logger.info(`Successful: ${successCount} ✅`);
+    logger.info(`Failed: ${results.failures} ❌\n`);
 
-    console.log('ROI Statistics:');
-    console.log(`  Average 36-month ROI: ${results.avgROI.toFixed(2)}%`);
-    console.log(`  ROI Range: ${results.roiRange.min.toFixed(2)}% - ${results.roiRange.max.toFixed(2)}%\n`);
+    logger.info('ROI Statistics:');
+    logger.info(`  Average 36-month ROI: ${results.avgROI.toFixed(2)}%`);
+    logger.info(`  ROI Range: ${results.roiRange.min.toFixed(2)}% - ${results.roiRange.max.toFixed(2)}%\n`);
 
-    console.log('Yield Statistics:');
-    console.log(`  Average Annual Yield: ${results.avgYield.toFixed(2)}%`);
-    console.log(`  Yield Range: ${results.yieldRange.min.toFixed(2)}% - ${results.yieldRange.max.toFixed(2)}%\n`);
+    logger.info('Yield Statistics:');
+    logger.info(`  Average Annual Yield: ${results.avgYield.toFixed(2)}%`);
+    logger.info(`  Yield Range: ${results.yieldRange.min.toFixed(2)}% - ${results.yieldRange.max.toFixed(2)}%\n`);
 
     // Sanity checks
-    console.log('Sanity Checks:');
+    logger.info('Sanity Checks:');
     const roiCheckPass = results.avgROI >= 8 && results.avgROI <= 15;
     const yieldCheckPass = results.avgYield >= 4 && results.avgYield <= 10;
     
-    console.log(`  ROI in expected range (8-15%): ${roiCheckPass ? '✅ PASS' : '❌ FAIL'}`);
-    console.log(`  Yield in expected range (4-10%): ${yieldCheckPass ? '✅ PASS' : '❌ FAIL'}\n`);
+    logger.info(`  ROI in expected range (8-15%): ${roiCheckPass ? '✅ PASS' : '❌ FAIL'}`);
+    logger.info(`  Yield in expected range (4-10%): ${yieldCheckPass ? '✅ PASS' : '❌ FAIL'}\n`);
 
     // Sample details
-    console.log('Sample Results (First 10):');
+    logger.info('Sample Results (First 10):');
     results.details.slice(0, 10).forEach(detail => {
       if (detail.status === '✅') {
-        console.log(`  ${detail.title}: ROI=${detail.roi.toFixed(1)}% | Yield=${detail.yield.toFixed(1)}%`);
+        logger.info(`  ${detail.title}: ROI=${detail.roi.toFixed(1)}% | Yield=${detail.yield.toFixed(1)}%`);
       } else {
-        console.log(`  ${detail.title}: ${detail.error}`);
+        logger.info(`  ${detail.title}: ${detail.error}`);
       }
     });
 
-    console.log('\n✅ ROI VALIDATION COMPLETE\n');
+    logger.info('\n✅ ROI VALIDATION COMPLETE\n');
   } catch (error) {
-    console.error('❌ Validation failed:', error);
+    logger.error('❌ Validation failed:', error);
   }
 }
 

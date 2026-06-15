@@ -7,6 +7,7 @@ import { buildSierraCodeMetadata } from '@/lib/services/coding-algorithm';
 import { WhatsAppParserService } from '@/lib/services/WhatsAppParserService';
 import { OrchestratorService } from '@/lib/services/orchestrator';
 import { GoogleSheetsSync } from '@/lib/services/sheets-sync';
+import { logger } from '@/lib/logger';
 
 /**
  * sierra estates — CRON: INGEST FROM GOOGLE SHEETS BUFFER
@@ -126,7 +127,7 @@ export async function GET(req: NextRequest) {
   const results = { processed: 0, skipped: 0, failed: 0 };
 
   try {
-    console.log('[CRON:ingest-from-sheets] Starting — reading Sheets buffer...');
+    logger.info('[CRON:ingest-from-sheets] Starting — reading Sheets buffer...');
     const sheets = getSheetsClient();
 
     // Read all rows from the raw_messages tab
@@ -146,7 +147,7 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    console.log(`[CRON:ingest-from-sheets] Found ${pendingRows.length} PENDING rows`);
+    logger.info(`[CRON:ingest-from-sheets] Found ${pendingRows.length} PENDING rows`);
 
     for (const { rowIndex, row } of pendingRows) {
       const [, from, groupName, body] = row;
@@ -177,12 +178,12 @@ export async function GET(req: NextRequest) {
           isListing: parsed?.isListing ? 'YES' : 'NO',
           content: rawMessage,
           date: new Date().toISOString(),
-        }).catch((e: any) => console.warn('[CRON:ingest-from-sheets] Sheets dual-ingest failed', e));
+        }).catch((e: any) => logger.warn('[CRON:ingest-from-sheets] Sheets dual-ingest failed', e));
 
         // Trigger orchestration pipeline (non-blocking)
         OrchestratorService.runPipeline(docRef.id, 'brokerListings')
-          .then(() => console.log(`[CRON:ingest-from-sheets] Pipeline triggered for ${docRef.id}`))
-          .catch((err: any) => console.error(`[CRON:ingest-from-sheets] Pipeline error for ${docRef.id}`, err));
+          .then(() => logger.info(`[CRON:ingest-from-sheets] Pipeline triggered for ${docRef.id}`))
+          .catch((err: any) => logger.error(`[CRON:ingest-from-sheets] Pipeline error for ${docRef.id}`, err));
 
         // Mark row as PROCESSED
         await sheets.spreadsheets.values.update({
@@ -193,9 +194,9 @@ export async function GET(req: NextRequest) {
         });
 
         results.processed++;
-        console.log(`[CRON:ingest-from-sheets] ✅ Row ${rowIndex} → ${docRef.id}`);
+        logger.info(`[CRON:ingest-from-sheets] ✅ Row ${rowIndex} → ${docRef.id}`);
       } catch (rowErr: any) {
-        console.error(`[CRON:ingest-from-sheets] ❌ Row ${rowIndex} failed:`, rowErr.message);
+        logger.error(`[CRON:ingest-from-sheets] ❌ Row ${rowIndex} failed:`, rowErr.message);
 
         // Mark row as FAILED so it's not retried indefinitely
         await sheets.spreadsheets.values.update({
@@ -222,7 +223,7 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    console.log(`[CRON:ingest-from-sheets] Done — processed: ${results.processed}, skipped: ${results.skipped}, failed: ${results.failed}`);
+    logger.info(`[CRON:ingest-from-sheets] Done — processed: ${results.processed}, skipped: ${results.skipped}, failed: ${results.failed}`);
 
     return NextResponse.json({
       success: true,
@@ -230,7 +231,7 @@ export async function GET(req: NextRequest) {
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
-    console.error('[CRON:ingest-from-sheets] Fatal error:', error);
+    logger.error('[CRON:ingest-from-sheets] Fatal error:', error);
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 }

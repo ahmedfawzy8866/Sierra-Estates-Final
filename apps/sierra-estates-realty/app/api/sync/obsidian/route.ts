@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { COLLECTIONS } from '@/lib/models/schema';
+import { logger } from '@/lib/logger';
 export async function POST() {
   try {
     // const sync = new ObsidianVaultSync();
@@ -46,7 +47,7 @@ export async function POST() {
       message: `Successfully synchronized ${notes.length} Obsidian Vault nodes to Firestore.`
     });
   } catch (error: any) {
-    console.error('Error in Obsidian sync API:', error);
+    logger.error('Error in Obsidian sync API:', error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

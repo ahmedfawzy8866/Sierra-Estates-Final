@@ -1,9 +1,10 @@
+import { logger } from '@/lib/logger';
 export async function sendTelegramMessage(message: string) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
 
   if (!token || !chatId) {
-    console.warn("Telegram: Missing token or chatId. Skipping notification.");
+    logger.warn("Telegram: Missing token or chatId. Skipping notification.");
     return;
   }
 
@@ -20,9 +21,9 @@ export async function sendTelegramMessage(message: string) {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error("Telegram send error:", errorData);
+      logger.error("Telegram send error:", errorData);
     }
   } catch (error) {
-    console.error("Telegram error:", error);
+    logger.error("Telegram error:", error);
   }
 }

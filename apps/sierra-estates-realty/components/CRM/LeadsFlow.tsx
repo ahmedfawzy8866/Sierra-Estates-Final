@@ -28,10 +28,11 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import KPIProgressBar from '../UI/KPIProgressBar';
+import { logger } from '@/lib/logger';
 
 export default function LeadsFlow() {
   const { user } = useAuth();
-  const { t, locale, dir } = useI18n();
+  const { t, _locale, dir } = useI18n();
   const [leads, setLeads] = useState<any[]>([]);
   const [activeLead, setActiveLead] = useState<any>(null);
   const [isAddingLead, setIsAddingLead] = useState(false);
@@ -57,7 +58,7 @@ export default function LeadsFlow() {
       setLeads(leadsData);
       setLoading(false);
     }, (error) => {
-      console.error("Leads sync error:", error);
+      logger.error("Leads sync error:", error);
       setLoading(false);
     });
     
@@ -76,7 +77,7 @@ export default function LeadsFlow() {
       if (activeLead && activeLead.id === leadId) {
         setActiveLead({ ...activeLead, status: newStatus });
       }
-    } catch (err) { console.error(err); }
+    } catch (err) { logger.error(err); }
   };
 
   const handleAddLead = async (e: React.FormEvent) => {
@@ -96,7 +97,7 @@ export default function LeadsFlow() {
       });
       setNewLead({ name: '', phone: '' });
       setIsAddingLead(false);
-    } catch (err) { console.error(err); }
+    } catch (err) { logger.error(err); }
   };
 
   const getStatusStyle = (status: string) => {

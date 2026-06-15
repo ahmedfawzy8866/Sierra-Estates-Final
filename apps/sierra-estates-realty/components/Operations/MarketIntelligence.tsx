@@ -18,9 +18,9 @@ import { collection, query, limit, getDocs, orderBy } from 'firebase/firestore';
  */
 
 export default function MarketIntelligence() {
-  const { t } = useI18n();
+  const { _t } = useI18n();
   const [marketData, setMarketData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchInsights() {

@@ -3,6 +3,7 @@ import { adminDb } from '@/lib/server/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 import { WhatsAppParserService } from '@/lib/services/WhatsAppParserService';
 import { COLLECTIONS, BrokerListing } from '@/lib/models/schema';
+import { logger } from '@/lib/logger';
 
 const SECRET_KEY = process.env.SBR_SECRET_KEY || '';
 
@@ -29,7 +30,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No valid message content found' }, { status: 400 });
     }
 
-    console.log(`[WhatsApp Webhook] Processing message from ${sender} in ${group}`);
+    logger.info(`[WhatsApp Webhook] Processing message from ${sender} in ${group}`);
 
     // AI Parsing - Stage 1
     const parsedData = await WhatsAppParserService.parseMessage(rawMessage);
@@ -66,7 +67,7 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('[WhatsApp Webhook Error]:', error);
+    logger.error('[WhatsApp Webhook Error]:', error);
     return NextResponse.json({
         success: false,
         error: 'Internal Server Error',

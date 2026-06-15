@@ -1,5 +1,6 @@
 import { db } from './firebase';
 import {
+import { logger } from '@/lib/logger';
   collection,
   getDocs,
   query,
@@ -61,7 +62,7 @@ export async function fetchPropertiesFromDB(
       updatedAt: doc.data().updatedAt?.toDate?.() || new Date(),
     } as SierraProperty));
   } catch (error) {
-    console.error(`[DB] Error fetching ${type} properties:`, error);
+    logger.error(`[DB] Error fetching ${type} properties:`, error);
     return [];
   }
 }
@@ -90,7 +91,7 @@ export async function fetchAllMapProperties(): Promise<SierraProperty[]> {
       } as SierraProperty))
       .filter((prop) => prop.location.lat && prop.location.lng);
   } catch (error) {
-    console.error('[DB] Error fetching map properties:', error);
+    logger.error('[DB] Error fetching map properties:', error);
     return [];
   }
 }
@@ -116,7 +117,7 @@ export async function fetchPropertiesByCompound(
       updatedAt: doc.data().updatedAt?.toDate?.() || new Date(),
     } as SierraProperty));
   } catch (error) {
-    console.error(`[DB] Error fetching ${compound} properties:`, error);
+    logger.error(`[DB] Error fetching ${compound} properties:`, error);
     return [];
   }
 }

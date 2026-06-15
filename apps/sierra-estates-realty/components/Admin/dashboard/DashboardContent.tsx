@@ -45,7 +45,7 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 export default function DashboardContent() {
-  const { role, loading } = useAuth();
+  const { _role, loading } = useAuth();
   const [tab, setTab] = useState<PageId>('overview');
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);

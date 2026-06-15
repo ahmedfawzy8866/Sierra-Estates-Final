@@ -1,5 +1,6 @@
 import { db } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { logger } from '@/lib/logger';
 
 /**
  * sierra estates — VOICE SERVICE (V1.0)
@@ -15,12 +16,12 @@ export class VoiceService {
    */
   static async generateSierraVoiceNote(leadId: string, text: string): Promise<string | null> {
     if (!this.ELEVENLABS_API_KEY) {
-      console.warn("⚠️ [VoiceService] Missing ELEVENLABS_API_KEY. Skipping voice generation.");
+      logger.warn("⚠️ [VoiceService] Missing ELEVENLABS_API_KEY. Skipping voice generation.");
       return null;
     }
 
     try {
-      console.log(`🎙️ [VoiceService] Generating Sierra voice note for lead ${leadId}...`);
+      logger.info(`🎙️ [VoiceService] Generating Sierra voice note for lead ${leadId}...`);
 
       const response = await fetch(
         `https://api.elevenlabs.io/v1/text-to-speech/${this.VOICE_ID}`,
@@ -61,7 +62,7 @@ export class VoiceService {
       return `https://sierra-estates-assets.s3.amazonaws.com/voice/sierra_${Date.now()}.mp3`;
 
     } catch (error) {
-      console.error("❌ [VoiceService] Generation failed:", error);
+      logger.error("❌ [VoiceService] Generation failed:", error);
       return null;
     }
   }

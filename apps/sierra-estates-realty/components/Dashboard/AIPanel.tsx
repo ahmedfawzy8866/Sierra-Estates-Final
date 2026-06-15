@@ -4,6 +4,7 @@ import { db } from '@/lib/firebase';
 import { collection, getDocs, limit, orderBy, query, where } from 'firebase/firestore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Brain, Zap, AlertCircle, TrendingUp, RefreshCw, ChevronRight, Activity } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 interface Insight {
   type: 'opportunity' | 'warning' | 'tip';
@@ -95,7 +96,7 @@ export default function AIPanel() {
         setInsights(FALLBACK_INSIGHTS);
       }
     } catch (error) {
-      console.warn("Analysis data fetch failed:", error);
+      logger.warn("Analysis data fetch failed:", error);
       setInsights(FALLBACK_INSIGHTS);
     }
 

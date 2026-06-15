@@ -5,6 +5,7 @@ import { OrchestrationStage } from '../services/orchestrator';
 import { FinancialService } from '../services/financial-service';
 import { StateManager } from '../orchestration/StateManager';
 import { aiService } from '../ai/GoogleAIServiceImpl';
+import { logger } from '@/lib/logger';
 
 /**
  * THE SCRIBE: "The Architect of Truth"
@@ -23,13 +24,13 @@ export const runScribe = async (
     if (!doc) throw new Error(`Document ${docId} not found`);
 
     if (stage === 'S1') {
-      console.log(`[SCRIBE] S1: Raw Data Intake for ${docId}`);
+      logger.info(`[SCRIBE] S1: Raw Data Intake for ${docId}`);
       // In production, S1 handles deduplication and initial validation
       await StateManager.completeStage(docId, collection, 'S2');
     }
 
     if (stage === 'S2') {
-      console.log(`[SCRIBE] S2: Logical Normalization for ${docId}`);
+      logger.info(`[SCRIBE] S2: Logical Normalization for ${docId}`);
 
       const rawText = doc?.rawMessage || doc?.description || JSON.stringify(doc || {});
 
@@ -70,7 +71,7 @@ Output ONLY a JSON object.`;
           'baths': normalized.bathrooms || doc?.baths || 0,
         });
       } catch (error) {
-        console.error(`[SCRIBE] S2 Error for ${docId}:`, error);
+        logger.error(`[SCRIBE] S2 Error for ${docId}:`, error);
         await StateManager.failStage(
           docId,
           collection,

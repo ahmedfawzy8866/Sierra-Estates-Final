@@ -19,6 +19,7 @@ import {
 import { COLLECTIONS, type Lead, type Unit } from '../models/schema';
 import { GoogleAIService } from '../server/google-ai';
 import { analyzeAssetFinancials } from './roi-service';
+import { logger } from '@/lib/logger';
 
 export interface ConciergeSelection {
   id: string;
@@ -137,7 +138,7 @@ export async function curateConciergePortfolio(leadId: string): Promise<Concierg
     'lastCuratedAt': serverTimestamp(),
   });
 
-  console.log(`✅ Concierge Portfolio curated for ${lead.name}: ${conciergeUnits.length} units selected`);
+  logger.info(`✅ Concierge Portfolio curated for ${lead.name}: ${conciergeUnits.length} units selected`);
 
   return portfolio;
 }
@@ -223,7 +224,7 @@ Ready to explore? Reply "VIEWING" or click the gallery link above! ✨
 
   // Send via WhatsApp API (integration with WhatsApp service)
   // This is a placeholder for actual WhatsApp integration
-  console.log(`📱 Sending WhatsApp to ${phoneNumber}:\n${message}`);
+  logger.info(`📱 Sending WhatsApp to ${phoneNumber}:\n${message}`);
   
   // Update lead status
   await updateDoc(doc(db, COLLECTIONS.stakeholders, leadId), {
@@ -244,5 +245,5 @@ export async function trackPortfolioEngagement(
     [`engagement.${action}`]: serverTimestamp(),
   });
 
-  console.log(`📊 Engagement tracked: ${action} for portfolio ${portfolioId}`);
+  logger.info(`📊 Engagement tracked: ${action} for portfolio ${portfolioId}`);
 }

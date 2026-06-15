@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { db } from '@/lib/firebase';
 import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { ArrowLeft, Mail, Phone, Calendar, Edit2, Save, X } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 interface Lead {
   id: string;
@@ -53,7 +54,7 @@ export default function AdminLeadDetailPage() {
           setFormData(data);
         }
       } catch (err) {
-        console.error('Failed to load lead:', err);
+        logger.error('Failed to load lead:', err);
       } finally {
         setLoading(false);
       }
@@ -71,7 +72,7 @@ export default function AdminLeadDetailPage() {
       setLead({ ...lead, ...formData });
       setEditing(false);
     } catch (err) {
-      console.error('Failed to update lead:', err);
+      logger.error('Failed to update lead:', err);
     }
   };
 

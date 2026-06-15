@@ -4,6 +4,7 @@ import { PFIntegrationService } from '@/lib/services/PFIntegrationService';
 import { pfClient } from '@/lib/property-finder-client';
 import { verifyRequest, unauthorizedResponse } from '@/lib/server/auth-guard';
 import { adminDb } from '@/lib/server/firebase-admin';
+import { logger } from '@/lib/logger';
 
 /**
  * SYNC MANAGEMENT API
@@ -15,7 +16,7 @@ async function isAdmin(uid: string): Promise<boolean> {
     const userDoc = await adminDb.collection('users').doc(uid).get();
     return userDoc.exists && userDoc.data()?.role === 'admin';
   } catch (error) {
-    console.error('[SYNC_AUTH_ERROR] Role check failed:', error);
+    logger.error('[SYNC_AUTH_ERROR] Role check failed:', error);
     return false;
   }
 }
@@ -44,7 +45,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: 'Unsupported action' }, { status: 400 });
     }
   } catch (error) {
-    console.error('[SYNC_ERROR] Sync API GET:', error);
+    logger.error('[SYNC_ERROR] Sync API GET:', error);
     return NextResponse.json({ error: 'Sync query failed' }, { status: 500 });
   }
 }
@@ -105,7 +106,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Unsupported sync action' }, { status: 400 });
     }
   } catch (error) {
-    console.error('[SYNC_ERROR] Sync API POST:', error);
+    logger.error('[SYNC_ERROR] Sync API POST:', error);
     return NextResponse.json({ error: 'Sync operation failed' }, { status: 500 });
   }
 }

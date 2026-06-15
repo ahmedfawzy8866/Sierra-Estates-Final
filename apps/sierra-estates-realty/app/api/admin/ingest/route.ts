@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import { db } from '@/lib/firebase';
 import { collection, getDocs, query, where, writeBatch, doc } from 'firebase/firestore';
 import { verifyRequest, unauthorizedResponse } from '@/lib/server/auth-guard';
+import { logger } from '@/lib/logger';
 
 interface IngestProperty {
   compound: string;
@@ -116,7 +117,7 @@ export async function POST(request: NextRequest) {
       totalProcessed: ingested + deduplicated,
     });
   } catch (error) {
-    console.error('[Ingest] Error:', error);
+    logger.error('[Ingest] Error:', error);
     return NextResponse.json(
       { error: 'Ingestion failed', details: String(error) },
       { status: 500 }

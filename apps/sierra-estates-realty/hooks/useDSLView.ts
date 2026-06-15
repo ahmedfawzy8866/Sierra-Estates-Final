@@ -129,14 +129,14 @@ export function useDSLView(
           setLoading(false);
         },
         err => {
-          console.error("[useDSLView] Firestore error:", err);
+          logger.error("[useDSLView] Firestore error:", err);
           setError(err.message);
           setLoading(false);
         },
       );
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      console.error("[useDSLView] Query build error:", msg);
+      logger.error("[useDSLView] Query build error:", msg);
       setError(msg);
       setLoading(false);
     }
@@ -256,6 +256,7 @@ export default function CRMPage() {
 import { VIEW_CONFIGS }   from "@/config/views";
 import { useDSLView }     from "@/hooks/useDSLView";
 import CompoundROICard    from "@/components/CompoundROICard";
+import { logger } from '@/lib/logger';
 
 export default function InvestorPage() {
   const benchmarks = {

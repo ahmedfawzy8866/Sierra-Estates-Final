@@ -5,6 +5,7 @@ import KPICard from '../ui/KPICard';
 import PipelineChart from '../ui/PipelineChart';
 import LeadsList from '../ui/LeadsList';
 import AgentStatusList from '../ui/AgentStatusList';
+import { logger } from '@/lib/logger';
 
 interface KPI {
   label: string;
@@ -119,8 +120,8 @@ const LEADS_DATA: Lead[] = [
 ];
 
 export default function OverviewPage() {
-  const [kpis, setKpis] = useState<KPI[]>(KPI_DATA);
-  const [leads, setLeads] = useState<Lead[]>(LEADS_DATA);
+  const [kpis, _setKpis] = useState<KPI[]>(KPI_DATA);
+  const [leads, _setLeads] = useState<Lead[]>(LEADS_DATA);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -130,7 +131,7 @@ export default function OverviewPage() {
         // For now, using mock data
         setLoading(false);
       } catch (err) {
-        console.error('Failed to load overview data:', err);
+        logger.error('Failed to load overview data:', err);
         setLoading(false);
       }
     }

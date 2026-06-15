@@ -1,6 +1,7 @@
 import 'server-only';
 import { AIService, AIPrompt, AIOptions, AIModel } from './AIServiceInterface';
 import { GoogleAIService } from '../server/google-ai';
+import { logger } from '@/lib/logger';
 
 /**
  * Production implementation of AIService using Google Gemini.
@@ -39,7 +40,7 @@ export class GoogleAIServiceImpl implements AIService {
     try {
       return JSON.parse(result);
     } catch (error) {
-      console.error(`[AIService] JSON parse failed for ${agent}/${task}:`, error);
+      logger.error(`[AIService] JSON parse failed for ${agent}/${task}:`, error);
       throw new Error(`Invalid JSON response from ${agent}/${task}`);
     }
   }

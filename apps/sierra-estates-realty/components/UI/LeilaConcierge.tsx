@@ -13,7 +13,7 @@ import BrandLogo from '@/components/UI/BrandLogo';
 export default function SierraConcierge() {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
-  const { messages, isTyping, handleResponse, stage } = useSierra();
+  const { messages, isTyping, handleResponse, _stage } = useSierra();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

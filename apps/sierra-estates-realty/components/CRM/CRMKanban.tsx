@@ -20,6 +20,7 @@ import { getDoc } from 'firebase/firestore';
 import { UserProfile, COLLECTIONS } from '@/lib/models/schema';
 import { motion } from 'framer-motion';
 import { cinematicEntrance, cinematicHover } from '@/lib/animations';
+import { logger } from '@/lib/logger';
 
 interface InvestmentStakeholder {
   id: string;
@@ -160,7 +161,7 @@ function StakeholderCard({ stakeholder, phase, onProgress, onDragStart }: {
       });
       if (res.ok) alert('Strategic Options Package generated and secured.');
     } catch (err) {
-      console.error('Proposal generation failed:', err);
+      logger.error('Proposal generation failed:', err);
     } finally {
       setIsGenerating(false);
     }
@@ -320,7 +321,7 @@ export default function CRMKanban() {
           setUserProfile({ id: pDoc.id, ...pDoc.data() } as UserProfile);
         }
       } catch (err) {
-        console.error("Profile recovery failure:", err);
+        logger.error("Profile recovery failure:", err);
       }
     };
     fetchProfile();
@@ -343,7 +344,7 @@ export default function CRMKanban() {
        // Note: In Production we'd use where('assignedPartnerId', '==', user.uid)
        // but for now we'll do client-side filtering or handle it carefully.
        // The user requested: "each one should see his clients only"
-       console.log('Restricting view to agent:', user?.uid);
+       logger.info('Restricting view to agent:', user?.uid);
     }
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -389,7 +390,7 @@ export default function CRMKanban() {
       setActiveInventorySize(filteredLeads.length);
       setLoading(false);
     }, (error) => {
-      console.error('Pipeline synchronization failure:', error);
+      logger.error('Pipeline synchronization failure:', error);
       setLoading(false);
     });
 
@@ -471,7 +472,7 @@ export default function CRMKanban() {
       setShowModal(false);
       setStakeholderDraft(INITIAL_STAKEHOLDER_STATE);
     } catch (err) {
-      console.error('Stakeholder onboarding failure:', err);
+      logger.error('Stakeholder onboarding failure:', err);
     }
   };
 
@@ -515,7 +516,7 @@ export default function CRMKanban() {
         details: `Migrated stakeholder ${id} to ${targetPhase}`
       });
     } catch (err) {
-      console.error('Phase transition failure:', err);
+      logger.error('Phase transition failure:', err);
     }
   };
 
@@ -559,7 +560,7 @@ export default function CRMKanban() {
       setDragging(null);
       setPhaseTarget(null);
     } catch (err) {
-      console.error('Strategic relocation failure:', err);
+      logger.error('Strategic relocation failure:', err);
     }
   };
 
@@ -573,7 +574,7 @@ export default function CRMKanban() {
       const summary = result.summary || { created: 0, updated: 0, skipped: 0 };
       alert(`Property Finder sync completed. Added ${summary.created}, refreshed ${summary.updated}, skipped ${summary.skipped}.`);
     } catch (err) {
-      console.error("PF Sync Error:", err);
+      logger.error("PF Sync Error:", err);
       alert("Synchronization protocol failed to establish secure link with Property Finder. Check gateway configuration.");
     } finally {
       setSyncingPF(false);
