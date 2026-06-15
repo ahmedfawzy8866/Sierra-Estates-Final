@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Timestamp } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { verifyRequest, unauthorizedResponse } from '@/lib/server/auth-guard';
+import { logger } from '@/lib/logger';
 import {
   propertyFinderService,
   type PropertyFinderListing,
@@ -142,7 +143,7 @@ export async function POST(request: NextRequest) {
         }
       } catch (_error) {
         failedCount += 1;
-        console.error(`Error mapping property ${property.id ?? index}:`, _error);
+        logger.error(`Error mapping property ${property.id ?? index}:`, _error);
       }
     }
 
@@ -160,7 +161,7 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error('Property sync error:', error);
+    logger.error('Property sync error:', error);
     return NextResponse.json(
       {
         error: 'Failed to sync Portfolio Assets',

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { auth, db } from '@/lib/firebase';
 import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
 import { RefreshCw, Users, Zap, Loader2, CheckCircle2, XCircle, CreditCard, Webhook, Database } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 interface SyncResult {
   success: boolean;
@@ -48,7 +49,7 @@ export default function AdminSyncPage() {
       const snap = await getDocs(q);
       setActivities(snap.docs.map(d => ({ id: d.id, ...d.data() } as ActivityLog)));
     } catch (err) {
-      console.error('Failed to load activities:', err);
+      logger.error('Failed to load activities:', err);
     }
   }
 

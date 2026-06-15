@@ -5,6 +5,7 @@ import { MessageSquare, Trash, ShieldCheck, Zap, Smile, Meh, Angry, Flame } from
 import { db } from '../../lib/firebase';
 import { collection, query, orderBy, limit, onSnapshot, deleteDoc, doc, Timestamp, addDoc, serverTimestamp } from 'firebase/firestore';
 import { BrokerListing, COLLECTIONS } from '../../lib/models/schema';
+import { logger } from '@/lib/logger';
 
 export default function BrokerFeed() {
   const [listings, setListings] = useState<BrokerListing[]>([]);
@@ -72,7 +73,7 @@ export default function BrokerFeed() {
     try {
       await deleteDoc(doc(db, COLLECTIONS.brokerListings, id));
     } catch (err) {
-      console.error("Delete error:", err);
+      logger.error("Delete error:", err);
     }
   };
 

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import { logger } from '@/lib/logger';
 
 /**
  * Global Error Boundary for Sierra Estates Realty
@@ -15,7 +16,7 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error('Systemic Anomaly Detected:', error);
+    logger.error('Systemic Anomaly Detected:', error);
   }, [error]);
 
   return (

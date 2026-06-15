@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyRequest, unauthorizedResponse } from '@/lib/server/auth-guard';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { AirtableIntegrationService } from '@/lib/services/AirtableIntegrationService';
+import { logger } from '@/lib/logger';
 
 /**
  * AIRTABLE SYNC API
@@ -19,7 +20,7 @@ async function isAdmin(uid: string): Promise<boolean> {
     const userDoc = await adminDb.collection('users').doc(uid).get();
     return userDoc.exists && userDoc.data()?.role === 'admin';
   } catch (error) {
-    console.error('[AIRTABLE_SYNC_AUTH_ERROR] Role check failed:', error);
+    logger.error('[AIRTABLE_SYNC_AUTH_ERROR] Role check failed:', error);
     return false;
   }
 }

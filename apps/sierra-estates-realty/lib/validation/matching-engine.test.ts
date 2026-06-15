@@ -9,6 +9,7 @@ import { runMatchingForLead } from '@/lib/services/matching-engine';
 import { db } from '@/lib/firebase';
 import { collection, addDoc, deleteDoc, doc } from 'firebase/firestore';
 import type { Lead, Unit } from '@/lib/models/schema';
+import { logger } from '@/lib/logger';
 
 /**
  * Test Data: 10 synthetic leads with different profiles
@@ -161,14 +162,14 @@ const TEST_UNITS: Partial<Unit>[] = [
  * Validation Suite Runner
  */
 export async function runMatchingValidationSuite() {
-  console.log('🧪 sierra estates MATCHING ENGINE VALIDATION\n');
+  logger.info('🧪 sierra estates MATCHING ENGINE VALIDATION\n');
 
   const testLeadIds: string[] = [];
   const testUnitIds: string[] = [];
 
   try {
     // 1. Seed test units
-    console.log('📊 Seeding 10 test units...');
+    logger.info('📊 Seeding 10 test units...');
     for (const unit of TEST_UNITS.slice(0, 10)) {
       const docRef = await addDoc(collection(db, 'units'), {
         ...unit,
@@ -178,10 +179,10 @@ export async function runMatchingValidationSuite() {
       });
       testUnitIds.push(docRef.id);
     }
-    console.log(`✅ Created ${testUnitIds.length} units\n`);
+    logger.info(`✅ Created ${testUnitIds.length} units\n`);
 
     // 2. Seed test leads and run matching
-    console.log('👥 Running matching for 5 test leads...\n');
+    logger.info('👥 Running matching for 5 test leads...\n');
     for (const lead of TEST_LEADS) {
       const docRef = await addDoc(collection(db, 'stakeholders'), {
         ...lead,
@@ -196,29 +197,29 @@ export async function runMatchingValidationSuite() {
           ? (matches.reduce((sum, m) => sum + m.matchScore, 0) / matches.length).toFixed(1)
           : 0;
 
-        console.log(`✅ ${lead.name}`);
-        console.log(`   Matches found: ${matches.length}`);
-        console.log(`   Avg match score: ${matchScore}%`);
-        console.log(`   Budget: ${(lead.budget! / 1_000_000).toFixed(1)}M EGP\n`);
+        logger.info(`✅ ${lead.name}`);
+        logger.info(`   Matches found: ${matches.length}`);
+        logger.info(`   Avg match score: ${matchScore}%`);
+        logger.info(`   Budget: ${(lead.budget! / 1_000_000).toFixed(1)}M EGP\n`);
       } catch (err) {
-        console.log(`⚠️  ${lead.name} - Matching failed: ${err}\n`);
+        logger.info(`⚠️  ${lead.name} - Matching failed: ${err}\n`);
       }
     }
 
     // 3. Accuracy Report
-    console.log('\n📈 VALIDATION REPORT\n');
-    console.log('Summary:');
-    console.log(`- Test leads created: ${testLeadIds.length}`);
-    console.log(`- Test units created: ${testUnitIds.length}`);
-    console.log(`- Matching algorithm: Gemini NLP with budget/location filters`);
-    console.log(`- Expected accuracy: >85% match relevance\n`);
+    logger.info('\n📈 VALIDATION REPORT\n');
+    logger.info('Summary:');
+    logger.info(`- Test leads created: ${testLeadIds.length}`);
+    logger.info(`- Test units created: ${testUnitIds.length}`);
+    logger.info(`- Matching algorithm: Gemini NLP with budget/location filters`);
+    logger.info(`- Expected accuracy: >85% match relevance\n`);
 
-    console.log('✅ VALIDATION COMPLETE');
+    logger.info('✅ VALIDATION COMPLETE');
   } catch (error) {
-    console.error('❌ Validation failed:', error);
+    logger.error('❌ Validation failed:', error);
   } finally {
     // Cleanup
-    console.log('\n🧹 Cleaning up test data...');
+    logger.info('\n🧹 Cleaning up test data...');
     
     for (const leadId of testLeadIds) {
       await deleteDoc(doc(db, 'stakeholders', leadId));
@@ -227,7 +228,7 @@ export async function runMatchingValidationSuite() {
       await deleteDoc(doc(db, 'units', unitId));
     }
     
-    console.log('✅ Test data cleaned up\n');
+    logger.info('✅ Test data cleaned up\n');
   }
 }
 

@@ -5,6 +5,7 @@ import { db } from '@/lib/firebase';
 import { collection, query, where, getCountFromServer } from 'firebase/firestore';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Users, Home, Handshake, DollarSign } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 interface ReportMetric {
   label: string;
@@ -149,7 +150,7 @@ export default function AdminReportsPage() {
           ]);
         }
       } catch (err) {
-        console.error('Failed to load reports:', err);
+        logger.error('Failed to load reports:', err);
         // Keep default empty states on error
       } finally {
         setLoading(false);

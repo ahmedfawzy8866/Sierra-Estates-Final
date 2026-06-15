@@ -3,9 +3,11 @@
 Context for Claude Code / AI sessions. Keep this updated as the project evolves.
 
 ## What this is
+
 Sierra Estates — a luxury real-estate (PropTech) platform for the New Cairo market. pnpm + Turborepo monorepo.
 
 ## Stack
+
 Next.js 16 (App Router, Turbopack) · React 19 · TypeScript 5 (strict) · Tailwind 4 · Firebase (client SDK 12 + Admin SDK 13: Firestore, Storage, Auth) · Leaflet maps · next-intl (en/ar) · **Docker n8n Workflow Engine** (`localhost:5678`) · Python API (Docker/Cloud Run). Observability: OpenTelemetry + Arize.
 
 ## Deployment Architecture (authoritative)
@@ -37,12 +39,14 @@ Firebase — infrastructure ONLY (no hosting)
 **Admin lives in ONE place**: `apps/sierra-estates-realty/app/admin/` (the old `sierra-estates-admin-portal` placeholder app was removed June 2026).
 
 ## Config files
+
 - `vercel.json` (root) — Vercel config when root dir = repo root (buildCommand points to the realty app)
 - `apps/sierra-estates-realty/vercel.json` — Vercel config when root dir = `apps/sierra-estates-realty` in Vercel dashboard
 - `firebase.json` — Functions + Firestore rules + Storage rules + emulators (no hosting)
 - `.firebaserc` — Firebase project: `sierra-estates-prod`
 
 ## Layout
+
 - `apps/sierra-estates-realty` — main Next.js app and the real codebase (public site + admin suite + all API routes).
 - `apps/api` — standalone Python service (Docker/Cloud Run): PropertyFinder sync + bot integration.
 - `functions` — Firebase Cloud Functions (ingestion pipeline: collectData, processDataForApp, + pure transform module).
@@ -50,6 +54,7 @@ Firebase — infrastructure ONLY (no hosting)
 - `workflows` — Node scripts for the external data-sync pipeline, run on schedule by `.github/workflows/external-workflows.yml`.
 
 ## Commands (from repo root)
+
 - `pnpm install`
 - `pnpm dev` — start Next.js web app (the main app)
 - `pnpm build` — build the web app
@@ -59,22 +64,26 @@ Firebase — infrastructure ONLY (no hosting)
 - Tests: Jest (realty app) + functions. `type-check` is a real CI gate (`tsc --noEmit`). `apps/sierra-estates-realty/next.config.ts` has `ignoreBuildErrors: false`.
 
 ## Vercel Setup (one-time in dashboard)
+
 Current choice — **Root Directory = repo root**, driven by the root `vercel.json`:
-  - Framework Preset: `Next.js`
-  - Build Command: `pnpm run build` (builds the realty app via workspace filter)
-  - Install Command: `pnpm install`
-  - Output Directory: `apps/sierra-estates-realty/.next` (set in root `vercel.json`)
+
+- Framework Preset: `Next.js`
+- Build Command: `pnpm run build` (builds the realty app via workspace filter)
+- Install Command: `pnpm install`
+- Output Directory: `apps/sierra-estates-realty/.next` (set in root `vercel.json`)
 
 Fallback if Vercel reports "No Next.js version detected" from the repo root: set
 Root Directory = `apps/sierra-estates-realty` (the app has its own `vercel.json`) — this is
 Vercel's natively-supported monorepo pattern and needs no repo changes.
 
 ## Conventions
+
 - ESLint flat config (`apps/sierra-estates-realty/eslint.config.mjs`) with `eslint-plugin-unused-imports`; unused vars/args/caught-errors must be `_`-prefixed.
 - `apps/sierra-estates-realty/tsconfig.json` excludes `agents/**` and `public/**` from type-check.
 - Privileged server work uses the **Admin SDK** (`@/lib/server/firebase-admin`) which BYPASSES Firestore rules. Client uses `@/lib/firebase`.
 
 ## Auth model (important)
+
 - Client role: read from Firestore `users/{uid}.role` in {admin, manager, agent} (see `lib/AuthContext.tsx`).
 - Server admin check: `verifyAdminRequest` (`lib/server/auth-guard.ts`) — Firebase Bearer token with `role==='admin'`. `verifyRequest` also accepts the `X-SBR-SECRET-KEY` header for service/cron calls.
 - Edge middleware (`apps/sierra-estates-realty/middleware.ts`) matches ONLY `/api/orchestrate` — it is NOT broad protection.
@@ -82,20 +91,24 @@ Vercel's natively-supported monorepo pattern and needs no repo changes.
 - Firestore/Storage security rules are staff-gated via `users/{uid}.role` (see `firestore.rules`) — pending deploy (see NEXT_STEPS.md).
 
 ## API Auth (hardened)
+
 - Admin-only: `viewing-requests`, `concierge/send-whatsapp`, `telegram/setup`, `wealth/roi` → `verifyAdminRequest`
 - Service+token: `admin/ingest` → `verifyRequest` (Firebase token OR X-SBR-SECRET-KEY)
 - Webhook secret: `telegram/webhook`, `whatsapp/webhook`, `ingest/whatsapp` → conditional SBR_SECRET_KEY check
 - Public: `listings`, `leads`, `leads/request-viewing`, `closer/initiate`, `concierge/[leadId]`, `wealth/portfolio`, `whatsapp/heartbeat`
 
 ## Reality check
+
 Pre-production. Some services are mock/scaffolded (`MockAIService`, unwired i18n). Test coverage is thin. Older `STATUS.md`/`TODO.md` are aspirational/stale.
 
 ## Obsidian Memory Engine & AI Sourcing
+
 - **Vault Location:** `docs/obsidian-vault/` contains the core cognitive and database architecture notes.
 - **Rules of Engagement:** For every new task, feature, or bugfix, the AI agent MUST search and read the relevant node in the Obsidian vault (e.g. `Sourcing Pipeline & Lead Aggregator.md`, `WhatsApp CRM & Hand-off Pipeline.md`).
 - **Graph Alignment:** Maintain double-bracket `[[Links]]` when editing vault files to preserve the Obsidian graph view.
 
 ## Constraints for AI sessions
+
 - GitHub access is scoped to `ahmedfawzy8866/i-sierra-2027` only — do not touch other repos.
 - The `main` branch is protected on GitHub. Direct commits are blocked. Never force-push or delete `main`.
 - For all changes, checkout a new branch, push it to remote, and open a Pull Request.

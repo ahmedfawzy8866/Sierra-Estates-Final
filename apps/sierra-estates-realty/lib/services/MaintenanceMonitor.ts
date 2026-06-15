@@ -1,5 +1,6 @@
 import { adminDb } from '../server/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
+import { logger } from '@/lib/logger';
 
 /**
  * MaintenanceMonitor: Intelligence module to handle data freshness and hygiene.
@@ -11,7 +12,7 @@ export class MaintenanceMonitor {
    * Stagnant units are flagged for manual review or auto-archived.
    */
   static async flagStaleListings() {
-    console.log('--- 🛠️ Starting Maintenance Hygiene Audit ---');
+    logger.info('--- 🛠️ Starting Maintenance Hygiene Audit ---');
     
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -27,7 +28,7 @@ export class MaintenanceMonitor {
           .where('status', 'not-in', ['archived', 'sold'])
           .get();
 
-        console.log(`Checking ${colName}: Found ${snapshot.size} potentially stale documents.`);
+        logger.info(`Checking ${colName}: Found ${snapshot.size} potentially stale documents.`);
 
         for (const docSnap of snapshot.docs) {
           const docData = docSnap.data();
@@ -42,11 +43,11 @@ export class MaintenanceMonitor {
           totalFlagged++;
         }
       } catch (error) {
-        console.error(`❌ Error auditing ${colName}:`, error);
+        logger.error(`❌ Error auditing ${colName}:`, error);
       }
     }
 
-    console.log(`✅ Audit Complete. Flagged ${totalFlagged} assets.`);
+    logger.info(`✅ Audit Complete. Flagged ${totalFlagged} assets.`);
     return totalFlagged;
   }
 
@@ -55,7 +56,7 @@ export class MaintenanceMonitor {
    * Part of the Stage 9 -> Stage 2 feedback loop.
    */
   static async reviveListing(listingId: string) {
-    console.log(`♻️ [MaintenanceMonitor] Reviving listing ${listingId} due to re-detection.`);
+    logger.info(`♻️ [MaintenanceMonitor] Reviving listing ${listingId} due to re-detection.`);
     
     try {
       await adminDb.collection('broker_listings').doc(listingId).update({
@@ -66,7 +67,7 @@ export class MaintenanceMonitor {
       });
       return true;
     } catch (error) {
-      console.error(`❌ [MaintenanceMonitor] Failed to revive ${listingId}:`, error);
+      logger.error(`❌ [MaintenanceMonitor] Failed to revive ${listingId}:`, error);
       return false;
     }
   }

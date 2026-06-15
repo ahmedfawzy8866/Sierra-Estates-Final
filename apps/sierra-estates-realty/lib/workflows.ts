@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 /**
  * sierra estatesE — الورك فلوز الخارجية
  * ─────────────────────────────────────────────────────────────────────
@@ -232,7 +233,7 @@ async function addUnit() {
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
   const ask = (q) => new Promise((r) => rl.question(q, r));
 
-  console.log('\n🏢 سييرا إستيتس — إضافة وحدة جديدة\n');
+  logger.info('\n🏢 سييرا إستيتس — إضافة وحدة جديدة\n');
 
   const unit = {
     timestamp:  new Date().toISOString(),
@@ -248,7 +249,7 @@ async function addUnit() {
   };
 
   await appendToSheet('units_pending', Object.values(unit));
-  console.log('\n✅ تمت الإضافة في قائمة الانتظار. السيستم سيضيفها تلقائياً خلال 24 ساعة.');
+  logger.info('\n✅ تمت الإضافة في قائمة الانتظار. السيستم سيضيفها تلقائياً خلال 24 ساعة.');
   rl.close();
 }
 */

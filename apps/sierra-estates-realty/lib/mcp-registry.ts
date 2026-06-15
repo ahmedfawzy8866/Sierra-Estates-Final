@@ -8,6 +8,7 @@ import { mcp_whatsapp_messaging } from '../mcp-servers/whatsapp-messaging.mcp';
 import { mcp_sierra_deals } from '../mcp-servers/sierra-deals.mcp';
 import { mcp_stripe_payments } from '../mcp-servers/stripe-payments.mcp';
 import { mcp_docusign_signing } from '../mcp-servers/docusign-signing.mcp';
+import { logger } from '@/lib/logger';
 
 export interface Tool {
   name: string;
@@ -127,15 +128,15 @@ export function initializeMCPServers(): void {
           toolHandlers
         );
 
-        console.log(`✅ Registered MCP server: ${server.name}`);
+        logger.info(`✅ Registered MCP server: ${server.name}`);
       } catch (error) {
-        console.warn(`⚠️ Failed to register ${name}:`, error);
+        logger.warn(`⚠️ Failed to register ${name}:`, error);
       }
     });
 
-    console.log('✅ All MCP servers initialized');
+    logger.info('✅ All MCP servers initialized');
   } catch (error) {
-    console.error('❌ Failed to initialize MCP servers:', error);
+    logger.error('❌ Failed to initialize MCP servers:', error);
   }
 }
 

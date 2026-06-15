@@ -17,7 +17,7 @@ interface Voucher {
 
 export default function VoucherSystem() {
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
 
   useEffect(() => {
     const q = query(collection(db, 'vouchers'));

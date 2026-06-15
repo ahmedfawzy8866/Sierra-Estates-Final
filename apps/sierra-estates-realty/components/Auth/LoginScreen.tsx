@@ -6,6 +6,7 @@ import { useAuth } from '../../lib/AuthContext';
 import BrandLogo from '../UI/BrandLogo';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, ChevronRight, ShieldCheck, Globe, BarChart3, Diamond } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 export default function LoginScreen({ onBack }: { onBack?: () => void }) {
   const { setGuest } = useAuth();
@@ -24,7 +25,7 @@ export default function LoginScreen({ onBack }: { onBack?: () => void }) {
     try {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (err: unknown) {
-      console.error(err);
+      logger.error(err);
       setError('Sign-in failed. Check your credentials or continue in guest mode.');
     } finally {
       setLoading(false);
@@ -38,7 +39,7 @@ export default function LoginScreen({ onBack }: { onBack?: () => void }) {
     try {
       await signInWithPopup(auth, provider);
     } catch (err: unknown) {
-      console.error(err);
+      logger.error(err);
       setError('Google sign-in was not completed. You can try again or continue in guest mode.');
     } finally {
       setLoading(false);

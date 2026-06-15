@@ -3,6 +3,7 @@ import axios from 'axios';
 import { StorageService } from './StorageService';
 import path from 'path';
 import fs from 'fs';
+import { logger } from '@/lib/logger';
 
 /**
  * sierra estates BRANDING ENGINE
@@ -83,7 +84,7 @@ export class BrandingService {
 
       return brandedUrl;
     } catch (error) {
-      console.error('Branding Engine Failure:', error);
+      logger.error('Branding Engine Failure:', error);
       return sourceUrl; // Fallback to original if branding fails
     }
   }

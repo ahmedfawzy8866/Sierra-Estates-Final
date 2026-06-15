@@ -6,6 +6,7 @@
 import { adminDb } from '../lib/server/firebase-admin';
 import { COLLECTIONS } from '../lib/models/schema';
 import { Timestamp } from 'firebase-admin/firestore';
+import { logger } from '@/lib/logger';
 
 export const mcp_sierra_deals = {
   name: 'sierra-strategic-pipeline',
@@ -13,7 +14,7 @@ export const mcp_sierra_deals = {
     {
       name: 'create_pipeline_entry',
       async handler(args: { stakeholderId: string; portfolioAssetCode: string; terms: any }) {
-        console.log(`[StrategicPipelineMCP] Creating pipeline record for stakeholder: ${args.stakeholderId}`);
+        logger.info(`[StrategicPipelineMCP] Creating pipeline record for stakeholder: ${args.stakeholderId}`);
         const dealRef = await adminDb.collection(COLLECTIONS.strategicPipeline).add({
           stakeholderId: args.stakeholderId,
           portfolioAssetCode: args.portfolioAssetCode,
@@ -29,7 +30,7 @@ export const mcp_sierra_deals = {
     {
       name: 'update_pipeline_status',
       async handler(args: { pipelineId: string; status: string; stage?: string }) {
-        console.log(`[StrategicPipelineMCP] Transitioning Pipeline Entry ${args.pipelineId} to ${args.status}`);
+        logger.info(`[StrategicPipelineMCP] Transitioning Pipeline Entry ${args.pipelineId} to ${args.status}`);
         const updateData: any = {
           status: args.status,
           updatedAt: Timestamp.now()

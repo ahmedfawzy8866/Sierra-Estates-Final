@@ -5,10 +5,11 @@ import { useSearchParams } from 'next/navigation';
 import ConciergeGallery from '@/components/Proposals/ConciergeGallery';
 import type { ConciergeSelection, ConciergeUnit } from '@/lib/services/portfolio-engine';
 import { useSierraEstates } from '@/hooks/useSierraEstates';
-import { LuxuryCard, EditorialHeading } from '@/components/UI/LuxurySkeleton';
+import { LuxuryCard, EditorialHeading } from '@sierra-estates/ui';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { COLLECTIONS } from '@/lib/models/schema';
+import { logger } from '@/lib/logger';
 
 export default function ConciergePage({ params }: { params: Promise<{ leadId: string }> }) {
   const { leadId } = use(params);
@@ -26,7 +27,7 @@ export default function ConciergePage({ params }: { params: Promise<{ leadId: st
         [`engagement.${action}`]: serverTimestamp(),
       });
     } catch (err) {
-      console.warn('Failed to track engagement:', err);
+      logger.warn('Failed to track engagement:', err);
     }
   };
 
@@ -106,7 +107,7 @@ export default function ConciergePage({ params }: { params: Promise<{ leadId: st
           url: shareUrl,
         });
       } catch (_err) {
-        console.log('Share cancelled');
+        logger.info('Share cancelled');
       }
     } else {
       await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);

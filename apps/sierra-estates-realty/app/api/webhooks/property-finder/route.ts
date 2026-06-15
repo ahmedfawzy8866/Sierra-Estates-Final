@@ -3,12 +3,13 @@ import { adminDb } from '@/lib/server/firebase-admin';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { Timestamp } from 'firebase-admin/firestore';
 import crypto from 'crypto';
+import { logger } from '@/lib/logger';
 
 const WEBHOOK_SECRET = process.env.PF_WEBHOOK_SECRET || '';
 
 function verifySignature(payload: string, signature: string): boolean {
   if (!WEBHOOK_SECRET) {
-    console.error('[PF Webhook] PF_WEBHOOK_SECRET is not configured — rejecting all requests');
+    logger.error('[PF Webhook] PF_WEBHOOK_SECRET is not configured — rejecting all requests');
     return false;
   }
   if (!signature) return false;
@@ -83,12 +84,12 @@ export async function POST(request: NextRequest) {
       }
 
       default:
-        console.log(`[PF Webhook] Unhandled event: ${eventType}`);
+        logger.info(`[PF Webhook] Unhandled event: ${eventType}`);
     }
 
     return NextResponse.json({ received: true });
   } catch (error: any) {
-    console.error('[PF Webhook]', error.message);
+    logger.error('[PF Webhook]', error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

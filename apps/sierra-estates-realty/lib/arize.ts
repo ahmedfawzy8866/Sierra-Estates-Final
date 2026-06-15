@@ -1,4 +1,5 @@
 import 'server-only';
+import { logger } from '@/lib/logger';
 
 // TODO: Integrate Arize observability when @opentelemetry packages installed
 // For now, provide stub implementations to unblock development
@@ -39,6 +40,6 @@ export async function initializeArize() {
 
 export const initArize = () => {
   if (typeof window === "undefined") {
-    console.log("📡 Arize instrumentation stubbed (awaiting OpenTelemetry setup)");
+    logger.info("📡 Arize instrumentation stubbed (awaiting OpenTelemetry setup)");
   }
 };

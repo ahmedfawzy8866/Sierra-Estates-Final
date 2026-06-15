@@ -13,7 +13,7 @@ import BrandLogo from '@/components/UI/BrandLogo';
 export default function SierraConcierge() {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
-  const { messages, isTyping, handleResponse, stage } = useSierra();
+  const { messages, isTyping, handleResponse } = useSierra();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -53,6 +53,8 @@ export default function SierraConcierge() {
               <button 
                 onClick={() => setIsOpen(false)}
                 className="text-[#F4F0E8]/40 hover:text-[#F4F0E8] transition-colors p-2 hover:bg-white/5 rounded-full"
+                title="Close"
+                aria-label="Close concierge"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -130,6 +132,8 @@ export default function SierraConcierge() {
                   onClick={onSend}
                   className="absolute right-2 top-2 bottom-2 px-4 bg-[#C9A24D] text-[#030712] rounded-xl flex items-center justify-center hover:bg-[#F4F0E8] transition-all disabled:opacity-50"
                   disabled={!inputValue.trim()}
+                  title="Send message"
+                  aria-label="Send message"
                 >
                   <Send className="w-4 h-4" />
                 </button>
@@ -148,6 +152,8 @@ export default function SierraConcierge() {
         whileTap={{ scale: 0.9 }}
         onClick={() => setIsOpen(!isOpen)}
         className="w-16 h-16 rounded-full bg-[#C9A24D] text-[#030712] shadow-2xl flex items-center justify-center relative group overflow-hidden"
+        title="Toggle concierge"
+        aria-label="Toggle concierge"
       >
         <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity" />
         <motion.div

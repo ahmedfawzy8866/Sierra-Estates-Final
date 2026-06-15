@@ -7,6 +7,7 @@ import Topbar from '../UI/Topbar';
 import Sidebar from '../UI/Sidebar';
 import { useRouter } from 'next/navigation';
 import { useI18n } from '../../lib/I18nContext';
+import { logger } from '@/lib/logger';
 
 // Admin specific screens
 const AdminDashboard = dynamic(() => import('./AdminDashboard'), { ssr: false });
@@ -23,7 +24,7 @@ export default function AdminPortal() {
   const { locale, t } = useI18n();
   const router = useRouter();
   const [activeScreen, setActiveScreen] = useState<AdminScreen>('dashboard');
-  const [direction, setDirection] = useState(1); // 1 for forward, -1 for backward
+  const [_direction, _setDirection] = useState(1); // 1 for forward, -1 for backward
 
   const [mounted, setMounted] = useState(false);
   const [greeting, setGreeting] = useState('Welcome');
@@ -57,7 +58,7 @@ export default function AdminPortal() {
       await signOut();
       router.push('/admin/login');
     } catch (error) {
-      console.error('Sign out error:', error);
+      logger.error('Sign out error:', error);
     }
   };
 

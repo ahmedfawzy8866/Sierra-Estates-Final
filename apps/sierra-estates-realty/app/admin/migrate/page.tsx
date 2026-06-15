@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { logger } from '@/lib/logger';
 import {
   Database,
   AlertCircle,
@@ -62,7 +63,7 @@ export default function AdminMigrationPage() {
         setStatus(data);
       }
     } catch (err) {
-      console.error('Failed to fetch migration status:', err);
+      logger.error('Failed to fetch migration status:', err);
     } finally {
       setLoading(false);
     }
@@ -76,7 +77,7 @@ export default function AdminMigrationPage() {
         setValidation(data);
       }
     } catch (err) {
-      console.error('Failed to fetch validation:', err);
+      logger.error('Failed to fetch validation:', err);
     }
   };
 

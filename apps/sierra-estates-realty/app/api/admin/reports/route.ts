@@ -3,6 +3,7 @@ import { verifyAdminRequest } from '@/lib/server/auth-guard';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { Timestamp, type QueryDocumentSnapshot, type DocumentData } from 'firebase-admin/firestore';
+import { logger } from '@/lib/logger';
 
 export async function GET(req: NextRequest) {
   const authResult = await verifyAdminRequest(req);
@@ -109,7 +110,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ success: true, timeRange, data });
   } catch (err) {
-    console.error('Error generating report:', err);
+    logger.error('Error generating report:', err);
     return NextResponse.json(
       { error: 'Failed to generate report', details: err instanceof Error ? err.message : 'Unknown error' },
       { status: 500 },

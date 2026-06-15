@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 /**
  * sierra estates — CLIENT INVENTORY SERVICE (SAFE)
  * This file is a safe wrapper that calls the API instead of the DB directly.
@@ -31,7 +32,7 @@ export const InventoryService = {
       }
       return null;
     } catch (err) {
-      console.error('Client Inventory Error:', err);
+      logger.error('Client Inventory Error:', err);
       return null;
     }
   },
@@ -45,7 +46,7 @@ export const InventoryService = {
       }
       return [];
     } catch (err) {
-      console.error('Client Inventory Error:', err);
+      logger.error('Client Inventory Error:', err);
       return [];
     }
   }

@@ -13,7 +13,7 @@ const WORKFLOWS = [
 ];
 
 export default function WorkflowsPage() {
-  const [wfs, setWfs] = useState(WORKFLOWS.map(w => ({ ...w })));
+  const [wfs, _setWfs] = useState(WORKFLOWS.map(w => ({ ...w })));
 
   return (
     <div className="space-y-4">

@@ -7,6 +7,7 @@ import { generateConciergeSelection, generateOptionsPackage } from '../services/
 import { generateAgentBriefing } from '../services/handoff-service';
 import { runMatchingForLead } from '../services/matching-engine';
 import { StateManager } from '../orchestration/StateManager';
+import { logger } from '@/lib/logger';
 
 /**
  * THE MATCHMAKER: "The Architect of Wealth"
@@ -21,7 +22,7 @@ export const runMatchmaker = async (
 ) => {
   return instrumentAgent('matchmaker', stage, docId, async () => {
     if (stage === 'S6') {
-      console.log(`[MATCHMAKER] S6: Stakeholder Profiling for ${docId}`);
+      logger.info(`[MATCHMAKER] S6: Stakeholder Profiling for ${docId}`);
 
       const leadData = await StateManager.getDocument(docId, collection);
       const transcript = leadData?.notes || leadData?.lastFeedbackComment || '';
@@ -29,7 +30,7 @@ export const runMatchmaker = async (
       if (transcript) {
         await conductPrecisionInterview(docId, transcript);
       } else {
-        console.warn(`[MATCHMAKER] S6: No transcript found for ${docId}. Skipping profile extraction.`);
+        logger.warn(`[MATCHMAKER] S6: No transcript found for ${docId}. Skipping profile extraction.`);
         await StateManager.completeStage(docId, collection, 'S7', {
           'aiProfiling.scoringCompleted': true,
         });
@@ -37,11 +38,11 @@ export const runMatchmaker = async (
     }
 
     if (stage === 'S7') {
-      console.log(`[MATCHMAKER] S7: Neural Synthesis for ${docId}`);
+      logger.info(`[MATCHMAKER] S7: Neural Synthesis for ${docId}`);
 
       await runMatchingForLead(docId);
 
-      console.log(`[MATCHMAKER] S7.5: Initiating Agent Briefing for ${docId}`);
+      logger.info(`[MATCHMAKER] S7.5: Initiating Agent Briefing for ${docId}`);
       await generateAgentBriefing(docId);
 
       // Pause for human confidence review before S8
@@ -54,13 +55,13 @@ export const runMatchmaker = async (
     }
 
     if (stage === 'S8') {
-      console.log(`[MATCHMAKER] S8: Portfolio Proposal (Selection Page) for ${docId}`);
+      logger.info(`[MATCHMAKER] S8: Portfolio Proposal (Selection Page) for ${docId}`);
 
       const proposalId = await generateOptionsPackage(docId);
-      console.log(`[MATCHMAKER] S8: Formal Proposal generated: ${proposalId}`);
+      logger.info(`[MATCHMAKER] S8: Formal Proposal generated: ${proposalId}`);
 
       const selectionUrl = await generateConciergeSelection(docId);
-      console.log(`[MATCHMAKER] S8: Selection URL generated: ${selectionUrl}`);
+      logger.info(`[MATCHMAKER] S8: Selection URL generated: ${selectionUrl}`);
 
       await StateManager.completeStage(docId, collection, 'S9');
     }

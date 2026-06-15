@@ -10,6 +10,7 @@ import { COLLECTIONS, type InvestmentStakeholder } from '../models/schema';
 import { processAgentCommand } from './antigravity-agent';
 import { WhatsAppParserService } from './WhatsAppParserService';
 import { WhatsAppStatusService } from './WhatsAppStatusService';
+import { logger } from '@/lib/logger';
 
 export interface IncomingMessagePayload {
   platform: 'whatsapp' | 'telegram' | 'web';
@@ -33,13 +34,13 @@ export class OmnichannelChatService {
    */
   static async handleIncomingMessage(payload: IncomingMessagePayload): Promise<ChatResponse> {
     const { platform, senderId, senderName, text, groupName, media } = payload;
-    console.log(`📥 [Omnichannel] Received message from ${senderName} via ${platform}: "${text.substring(0, 60)}"`);
+    logger.info(`📥 [Omnichannel] Received message from ${senderName} via ${platform}: "${text.substring(0, 60)}"`);
 
     // 1. If WhatsApp message contains property markers and is from a group, route to parsing engine immediately
     if (platform === 'whatsapp' && groupName && groupName !== 'Direct Message') {
       const isBrokerListing = this.isMessagePropertyListing(text);
       if (isBrokerListing) {
-        console.log(`🏢 [Omnichannel] WhatsApp message identified as Portfolio Asset signal. Routing to Parser Service.`);
+        logger.info(`🏢 [Omnichannel] WhatsApp message identified as Portfolio Asset signal. Routing to Parser Service.`);
         await WhatsAppStatusService.recordHeartbeat('syncing');
         const parseResult = await WhatsAppParserService.processIncomingMessage(text, senderId, groupName, media);
         return {
@@ -106,7 +107,7 @@ export class OmnichannelChatService {
     }
 
     // Instantiate new Investment Stakeholder in the Strategic Pipeline
-    console.log(`👤 [Omnichannel] Creating new Investment Stakeholder for ${senderName} on ${platform}`);
+    logger.info(`👤 [Omnichannel] Creating new Investment Stakeholder for ${senderName} on ${platform}`);
     const newStakeholder: any = {
       name: senderName || `Stakeholder-${senderId.substring(0, 6)}`,
       phone: platform === 'whatsapp' ? senderId : `GATEWAY:${senderId}`,
@@ -167,7 +168,7 @@ export class OmnichannelChatService {
         interactionCount: FieldValue.increment(1) as any
       });
     } catch (err) {
-      console.error("❌ Failed to log chat message:", err);
+      logger.error("❌ Failed to log chat message:", err);
     }
   }
 }

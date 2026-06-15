@@ -45,8 +45,8 @@ export default function MapExplorer({ onViewTour }: { onViewTour?: (url: string)
   const { t } = useI18n();
   const [properties, setProperties] = useState<Property[]>([]);
   const [filteredType, setFilteredType] = useState<'all' | 'resale' | 'rent'>('all');
-  const [loading, setLoading] = useState(true);
-  const [center, setCenter] = useState<[number, number]>([30.0131, 31.5020]); // New Cairo Center
+  const [_loading, setLoading] = useState(true);
+  const [center, _setCenter] = useState<[number, number]>([30.0131, 31.5020]); // New Cairo Center
 
   useEffect(() => {
     const q = query(collection(db, 'properties'));

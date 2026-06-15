@@ -2,6 +2,7 @@ import Papa from 'papaparse';
 import { adminDb } from '../server/firebase-admin';
 import { COLLECTIONS, Unit } from '../models/schema';
 import { normalizePropertyType, normalizeStatus } from './listing-normalize';
+import { logger } from '@/lib/logger';
 
 export class SheetsIntegrationService {
   /**
@@ -9,7 +10,7 @@ export class SheetsIntegrationService {
    * parses it, and syncs to Firestore.
    */
   static async syncPublishedCSV(csvUrl: string) {
-    console.log(`[SheetsIntegrationService] Fetching CSV from: ${csvUrl}`);
+    logger.info(`[SheetsIntegrationService] Fetching CSV from: ${csvUrl}`);
     
     try {
       const response = await fetch(csvUrl);
@@ -27,11 +28,11 @@ export class SheetsIntegrationService {
       });
 
       if (parsed.errors.length > 0) {
-        console.warn('[SheetsIntegrationService] CSV parsing warnings:', parsed.errors);
+        logger.warn('[SheetsIntegrationService] CSV parsing warnings:', parsed.errors);
       }
 
       const rows = parsed.data as Record<string, any>[];
-      console.log(`[SheetsIntegrationService] Parsed ${rows.length} rows.`);
+      logger.info(`[SheetsIntegrationService] Parsed ${rows.length} rows.`);
 
       let syncedCount = 0;
       let errorCount = 0;
@@ -43,7 +44,7 @@ export class SheetsIntegrationService {
         try {
           const unitData = this.mapRowToUnit(row);
           if (!unitData) {
-            console.log(`[SheetsIntegrationService] Skipping invalid row:`, row);
+            logger.info(`[SheetsIntegrationService] Skipping invalid row:`, row);
             continue;
           }
 
@@ -63,14 +64,14 @@ export class SheetsIntegrationService {
           batch.set(docRef, unitData, { merge: true });
           syncedCount++;
         } catch (err) {
-          console.error('[SheetsIntegrationService] Error mapping row:', err);
+          logger.error('[SheetsIntegrationService] Error mapping row:', err);
           errorCount++;
         }
       }
 
       await batch.commit();
       
-      console.log(`[SheetsIntegrationService] Sync complete. Synced: ${syncedCount}, Errors: ${errorCount}`);
+      logger.info(`[SheetsIntegrationService] Sync complete. Synced: ${syncedCount}, Errors: ${errorCount}`);
       
       return {
         success: true,
@@ -79,7 +80,7 @@ export class SheetsIntegrationService {
         timestamp: new Date().toISOString(),
       };
     } catch (error: any) {
-      console.error(`[SheetsIntegrationService] Sync failed:`, error.message);
+      logger.error(`[SheetsIntegrationService] Sync failed:`, error.message);
       return { success: false, error: error.message };
     }
   }

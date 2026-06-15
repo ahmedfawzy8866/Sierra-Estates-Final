@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { Timestamp, Query } from 'firebase-admin/firestore';
 import { verifyAdminRequest, unauthorizedResponse } from '@/lib/server/auth-guard';
+import { logger } from '@/lib/logger';
 
 export async function POST(request: NextRequest) {
   const auth = await verifyAdminRequest(request);
@@ -73,7 +74,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error('Viewing request creation error:', error);
+    logger.error('Viewing request creation error:', error);
     return NextResponse.json(
       { error: 'Failed to create viewing request', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
@@ -111,7 +112,7 @@ export async function GET(request: NextRequest) {
       requests
     }, { status: 200 });
   } catch (error) {
-    console.error('Get viewing requests error:', error);
+    logger.error('Get viewing requests error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch viewing requests' },
       { status: 500 }

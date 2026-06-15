@@ -18,6 +18,7 @@ import { useI18n } from '../../lib/I18nContext';
 import { db } from '../../lib/firebase';
 import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 import { COLLECTIONS, Activity as ActivityType } from '../../lib/models/schema';
+import { logger } from '@/lib/logger';
 
 interface AdminDashboardProps {
   greeting: string;
@@ -215,7 +216,7 @@ export default function AdminDashboard({ greeting, firstName, dateString }: Admi
                 }, 2000);
 
               } catch (err: any) {
-                console.error(err);
+                logger.error(err);
                 setDeployError(err.message);
                 setIsDeploying(false);
               }

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { Shield, Loader2 } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -21,7 +22,7 @@ export default function AdminLoginPage() {
       await signInWithEmailAndPassword(auth, email, password);
       router.replace('/admin/dashboard');
     } catch (err) {
-      console.error('Login error:', err);
+      logger.error('Login error:', err);
       const e = err as { code?: string; message?: string };
       setError(e.code ? `${e.code}: ${e.message}` : e.message || 'Unknown login error');
     } finally {

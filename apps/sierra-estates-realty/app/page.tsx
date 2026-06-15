@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Languages, Percent } from 'lucide-react';
 import InteractiveCrmMap from '@/components/UI/InteractiveCrmMap';
 import MobileBottomNav from '@/components/UI/MobileBottomNav';
-import PremiumHero from '@/components/UI/PremiumHero';
+import { PremiumHero } from '@sierra-estates/ui';
 import InventoryShowcase from '@/components/Listings/InventoryShowcase';
 import TestimonialsCarousel from '@/components/UI/TestimonialsCarousel';
 import AIMatchingEngine from '@/components/UI/AIMatchingEngine';
@@ -130,13 +130,9 @@ export default function UnifiedHomepage() {
             {/* Interactive AR Virtual Tour & Refined Filter Hero Section */}
             <PremiumHero
               isArabic={isAr}
-              onSearch={(searchFilters) => {
-                setFilters(searchFilters);
-                const element = document.getElementById('inventory');
-                if (element) {
-                  element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-              }}
+              title={t.title}
+              subtitle={t.desc}
+              ctaLabel={t.ctaExplore}
             />
 
             {/* AI Matching Engine Section */}

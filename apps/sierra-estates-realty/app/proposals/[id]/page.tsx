@@ -6,6 +6,7 @@ import { db } from '@/lib/firebase';
 import { COLLECTIONS, Proposal } from '@/lib/models/schema';
 import ProposalView from '@/components/Proposals/ProposalView';
 import { motion, AnimatePresence } from 'framer-motion';
+import { logger } from '@/lib/logger';
 
 export default function PublicProposalPage() {
   const params = useParams();
@@ -35,7 +36,7 @@ export default function PublicProposalPage() {
           setError("This strategic package is no longer available or has been moved.");
         }
       } catch (err) {
-        console.error("Proposal access failure:", err);
+        logger.error("Proposal access failure:", err);
         setError("Unable to secure a connection to the Sierra Estates intelligence vault.");
       } finally {
         setLoading(false);

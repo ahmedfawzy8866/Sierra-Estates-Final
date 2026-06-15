@@ -8,6 +8,7 @@ import { adminDb } from '../server/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 import { Unit, Lead, COLLECTIONS } from '../models/schema';
 import { PFPropertyType } from '../property-finder/types';
+import { logger } from '@/lib/logger';
 
 export interface PFLeadSyncSummary {
   created: number;
@@ -68,7 +69,7 @@ export class PFIntegrationService {
     let updated = 0;
 
     const pfResult = await pfClient.searchListings({ perPage: '100' });
-    console.log('[PF API] Found listings count:', pfResult.data?.length || 0);
+    logger.info('[PF API] Found listings count:', pfResult.data?.length || 0);
 
     const listings = pfResult.data || [];
 

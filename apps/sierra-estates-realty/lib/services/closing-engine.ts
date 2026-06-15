@@ -9,6 +9,7 @@ import { COLLECTIONS, type Sale, type Lead, type Unit } from '../models/schema';
 import { sendTelegramMessage } from './telegram-controller';
 import { initiateFeedbackLoop } from './feedback-engine';
 import { GoogleAIService } from '../server/google-ai';
+import { logger } from '@/lib/logger';
 
 /**
  * Initiates the formal Closing Protocol for a Strategic Acquisition.
@@ -120,7 +121,7 @@ Output as 2-3 powerful sentences in the 'Sierra' persona.`;
 
     return data.choices[0].message.content || "Strategic alignment affirmed. Acquisition protocol finalized.";
   } catch (err) {
-    console.error("[ClosingEngine] AI Affirmation failed:", err);
+    logger.error("[ClosingEngine] AI Affirmation failed:", err);
     return "Strategic alignment affirmed. Acquisition protocol finalized.";
   }
 }

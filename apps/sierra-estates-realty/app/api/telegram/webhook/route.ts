@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb, isAdminInitialized } from '@/lib/server/firebase-admin';
+import { logger } from '@/lib/logger';
 
 export async function POST(req: NextRequest) {
   // Telegram sends X-Telegram-Bot-Api-Secret-Token when the webhook was registered
@@ -33,7 +34,7 @@ export async function POST(req: NextRequest) {
           }),
         });
       } catch (err) {
-        console.error("Failed to send Telegram message:", err);
+        logger.error("Failed to send Telegram message:", err);
       }
     };
 
@@ -197,7 +198,7 @@ Commands:
 
     return NextResponse.json({ ok: true });
   } catch (error: any) {
-    console.error("Telegram webhook error:", error);
+    logger.error("Telegram webhook error:", error);
     return NextResponse.json({ ok: true, error: error.message }); // Always return 200 to Telegram
   }
 }

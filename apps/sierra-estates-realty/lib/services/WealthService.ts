@@ -7,6 +7,7 @@ import { IntelligentAsset } from '../models/intelligence';
 import { InventoryService } from './InventoryService';
 import { analyzeAssetFinancials } from './roi-service';
 import { Unit } from '../models/schema';
+import { logger } from '@/lib/logger';
 
 export const WealthService = {
   /**
@@ -49,7 +50,7 @@ export const WealthService = {
             reasoning: financials.valuationAnalysis,
           };
         } catch (e) {
-          console.error(`Wealth Intelligence failed for asset ${asset.id}`, e);
+          logger.error(`Wealth Intelligence failed for asset ${asset.id}`, e);
           return {
             id: asset.id,
             title: asset.title,

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, query, where, getDocs, addDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { Plus, Search, Mail, Phone, Trash2, Users, TrendingUp, DollarSign } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 interface TeamMember {
   id: string;
@@ -62,7 +63,7 @@ export default function AdminTeamPage() {
           totalCommission,
         });
       } catch (err) {
-        console.error('Failed to load team members:', err);
+        logger.error('Failed to load team members:', err);
       } finally {
         setLoading(false);
       }
@@ -103,7 +104,7 @@ export default function AdminTeamPage() {
       }
       setMembers(teamMembers);
     } catch (err) {
-      console.error('Failed to add member:', err);
+      logger.error('Failed to add member:', err);
     }
   };
 
@@ -113,7 +114,7 @@ export default function AdminTeamPage() {
       await deleteDoc(doc(db, 'users', id));
       setMembers(members.filter(m => m.id !== id));
     } catch (err) {
-      console.error('Failed to delete member:', err);
+      logger.error('Failed to delete member:', err);
     }
   };
 

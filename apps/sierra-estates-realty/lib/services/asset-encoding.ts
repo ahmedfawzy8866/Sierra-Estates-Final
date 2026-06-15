@@ -5,6 +5,7 @@
 
 import { GoogleAIService } from '../server/google-ai';
 import { Unit } from '../models/schema';
+import { logger } from '@/lib/logger';
 
 export interface EncodedAsset extends Partial<Unit> {
   rawText: string;
@@ -50,7 +51,7 @@ FORMAT: Return ONLY a JSON object.`;
 
     return JSON.parse(jsonMatch[0]) as Partial<Unit>;
   } catch (err) {
-    console.error('[AssetEncoding] Extraction error:', err);
+    logger.error('[AssetEncoding] Extraction error:', err);
     throw err;
   }
 }

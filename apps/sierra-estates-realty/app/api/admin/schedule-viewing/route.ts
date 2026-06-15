@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 
 export async function POST(req: Request) {
   try {
@@ -8,10 +9,10 @@ export async function POST(req: Request) {
     // const scheduler = new GoogleCalendarScheduler();
 
     // Mocking DB lookup
-    const clientEmail = `client_${leadId}@example.com`;
-    const clientName = `Client ${leadId}`;
-    const agentEmail = `agent@sierraestates.com`;
-    const agentName = `Sierra Agent`;
+    const _clientEmail = `client_${leadId}@example.com`;
+    const _clientName = `Client ${leadId}`;
+    const _agentEmail = `agent@sierraestates.com`;
+    const _agentName = `Sierra Agent`;
     
     // We schedule it for tomorrow at 10 AM by default
     const tomorrow = new Date();
@@ -32,7 +33,7 @@ export async function POST(req: Request) {
       message: 'Viewing scheduled and team notified successfully.'
     });
   } catch (error: any) {
-    console.error('Error scheduling viewing:', error);
+    logger.error('Error scheduling viewing:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

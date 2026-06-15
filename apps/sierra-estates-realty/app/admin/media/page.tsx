@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, query, getDocs, deleteDoc, doc, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Upload, Image as ImageIcon, Trash2, Copy, Check, Search } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 interface MediaItem {
   id: string;
@@ -37,7 +38,7 @@ export default function AdminMediaPage() {
         const snap = await getDocs(q);
         setMedia(snap.docs.map(d => ({ id: d.id, ...d.data() } as MediaItem)));
       } catch (err) {
-        console.error('Failed to load media:', err);
+        logger.error('Failed to load media:', err);
       } finally {
         setLoading(false);
       }
@@ -59,13 +60,13 @@ export default function AdminMediaPage() {
       for (const file of Array.from(files)) {
         // Validate file type
         if (!file.type.startsWith('image/')) {
-          console.warn(`Skipping non-image file: ${file.name}`);
+          logger.warn(`Skipping non-image file: ${file.name}`);
           continue;
         }
 
         // Max 10MB per file
         if (file.size > 10 * 1024 * 1024) {
-          console.warn(`Skipping oversized file: ${file.name}`);
+          logger.warn(`Skipping oversized file: ${file.name}`);
           continue;
         }
 
@@ -102,7 +103,7 @@ export default function AdminMediaPage() {
       // Clear progress after delay
       setTimeout(() => setUploadProgress({}), 2000);
     } catch (err) {
-      console.error('Failed to upload media:', err);
+      logger.error('Failed to upload media:', err);
     } finally {
       setUploading(false);
     }
@@ -137,7 +138,7 @@ export default function AdminMediaPage() {
       await deleteDoc(doc(db, 'media', id));
       setMedia(media.filter(m => m.id !== id));
     } catch (err) {
-      console.error('Failed to delete media:', err);
+      logger.error('Failed to delete media:', err);
     }
   };
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminRequest } from '@/lib/server/auth-guard';
 import { adminStorage } from '@/lib/server/firebase-admin';
+import { logger } from '@/lib/logger';
 
 export async function POST(req: NextRequest) {
   // Verify admin authentication
@@ -43,7 +44,7 @@ export async function POST(req: NextRequest) {
       name: file.name,
     });
   } catch (err) {
-    console.error('Error uploading media:', err);
+    logger.error('Error uploading media:', err);
     return NextResponse.json(
       { error: 'Failed to upload media', details: err instanceof Error ? err.message : 'Unknown error' },
       { status: 500 }

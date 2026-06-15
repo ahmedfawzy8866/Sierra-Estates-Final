@@ -7,12 +7,13 @@ import { db } from '../firebase';
 import { doc, updateDoc, serverTimestamp, getDoc } from 'firebase/firestore';
 import { COLLECTIONS, type Lead } from '../models/schema';
 import { sendTelegramMessage } from './telegram-controller';
+import { logger } from '@/lib/logger';
 
 /**
  * Triggers the post-sale feedback process.
  */
 export async function initiateFeedbackLoop(leadId: string, saleId: string) {
-  console.log(`[FeedbackLoop] Initiating for Lead: ${leadId}`);
+  logger.info(`[FeedbackLoop] Initiating for Lead: ${leadId}`);
   
   // 1. Send Survey (Simulated via automated log)
   await updateDoc(doc(db, COLLECTIONS.stakeholders, leadId), {

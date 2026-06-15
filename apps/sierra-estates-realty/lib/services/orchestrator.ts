@@ -8,6 +8,7 @@ import { runCurator } from '../agents/curator';
 import { runMatchmaker } from '../agents/matchmaker';
 import { runCloser } from '../agents/closer';
 import { Timestamp } from 'firebase-admin/firestore';
+import { logger } from '@/lib/logger';
 
 /** Inline Telegram alert — avoids loading the client-SDK telegram-controller in server context */
 async function notifyTelegram(text: string) {
@@ -41,7 +42,7 @@ export class OrchestratorService {
       if (!doc.exists) throw new Error(`Document ${docId} not found in ${collection}`);
 
       let currentStage = forceStage || (doc.data()?.orchestrationState?.stage || 'S1') as OrchestrationStage;
-      console.log(`🚀 Starting Sierra Estates Orchestration for ${docId} at stage ${currentStage}`);
+      logger.info(`🚀 Starting Sierra Estates Orchestration for ${docId} at stage ${currentStage}`);
 
       try {
         // --- STAGE EXECUTION LOOP WITH RETRY ---
@@ -73,7 +74,7 @@ export class OrchestratorService {
               // Check for Human Review Pause at S7.5
               const d = await docRef.get();
               if (currentStage === 'S8' && d.data()?.orchestrationState?.status === 'waiting_agent_review') {
-                console.log(`🛑 Orchestration paused for ${docId}: Human Review Required.`);
+                logger.info(`🛑 Orchestration paused for ${docId}: Human Review Required.`);
                 return;
               }
 
@@ -100,16 +101,16 @@ export class OrchestratorService {
             break; // Exit loop if successful
           } catch (innerError: any) {
             attempts++;
-            console.warn(`[ORCHESTRATOR] Attempt ${attempts} failed for ${docId}: ${innerError.message}`);
+            logger.warn(`[ORCHESTRATOR] Attempt ${attempts} failed for ${docId}: ${innerError.message}`);
             if (attempts >= maxAttempts) throw innerError;
             await new Promise(resolve => setTimeout(resolve, 2000 * attempts)); // Exponential backoff
           }
         }
 
-        console.log(`✅ Orchestration complete for ${docId}`);
+        logger.info(`✅ Orchestration complete for ${docId}`);
 
       } catch (error: any) {
-        console.error(`❌ Orchestration failed for ${docId}:`, error);
+        logger.error(`❌ Orchestration failed for ${docId}:`, error);
         await this.updateState(docId, collection, currentStage, 'failed', error.message);
 
         // DLQ: write to failed_orchestrations for manual intervention
@@ -122,7 +123,7 @@ export class OrchestratorService {
             timestamp: Timestamp.now(),
           });
         } catch (dlqErr) {
-          console.error('[ORCHESTRATOR] DLQ write failed:', dlqErr);
+          logger.error('[ORCHESTRATOR] DLQ write failed:', dlqErr);
         }
 
         // Alert admin via Telegram
@@ -174,7 +175,7 @@ export class OrchestratorService {
       error: errorMessage || null
     };
 
-    console.log(`[ORCHESTRATOR] Updating ${docId} to ${stage} [${status}]`);
+    logger.info(`[ORCHESTRATOR] Updating ${docId} to ${stage} [${status}]`);
 
     await docRef.set({
       orchestrationState: {

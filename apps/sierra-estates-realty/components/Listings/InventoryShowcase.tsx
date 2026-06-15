@@ -9,7 +9,7 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useSierraEstates } from '@/hooks/useSierraEstates';
-import { LuxuryCard, EditorialHeading, SectionBadge } from '@/components/UI/LuxurySkeleton';
+import { LuxuryCard, EditorialHeading, SectionBadge } from '@sierra-estates/ui';
 import { MapPin, ArrowRight } from 'lucide-react';
 
 interface InventoryShowcaseProps {

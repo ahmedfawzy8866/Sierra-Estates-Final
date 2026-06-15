@@ -14,6 +14,7 @@ import {
 import { db } from '../../lib/firebase';
 import { collection, getDocs, query, limit, orderBy } from 'firebase/firestore';
 import { COLLECTIONS } from '../../lib/models/schema';
+import { logger } from '@/lib/logger';
 
 export default function DatabaseExplorer() {
   const [selectedCollection, setSelectedCollection] = useState<string>(Object.keys(COLLECTIONS)[0]);
@@ -44,7 +45,7 @@ export default function DatabaseExplorer() {
       }));
       setDocuments(docs);
     } catch (err) {
-      console.error("Error fetching documents:", err);
+      logger.error("Error fetching documents:", err);
     } finally {
       setLoading(false);
     }

@@ -3,6 +3,7 @@ import { runMatchingForLead } from '@/lib/services/matching-engine';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { verifyAdminRequest, unauthorizedResponse } from '@/lib/server/auth-guard';
+import { logger } from '@/lib/logger';
 
 export async function POST(req: NextRequest) {
   const auth = await verifyAdminRequest(req);
@@ -41,7 +42,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, matches });
 
   } catch (error: any) {
-    console.error('[MATCHING_API_ERROR]', error);
+    logger.error('[MATCHING_API_ERROR]', error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

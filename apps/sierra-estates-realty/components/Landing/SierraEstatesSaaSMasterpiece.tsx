@@ -14,7 +14,7 @@ export interface Property {
   specs?: string;
 }
 
-const fetchPropertiesFromDB = async (filter: string): Promise<Property[]> => {
+const fetchPropertiesFromDB = async (_filter: string): Promise<Property[]> => {
   return [];
 };
 

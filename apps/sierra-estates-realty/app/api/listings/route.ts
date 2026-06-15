@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
+import { logger } from '@/lib/logger';
 
 const API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? '';
 const PROJECT_ID = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'sierra-estates';
@@ -59,7 +60,7 @@ async function queryFirestoreRest(
     const response = await fetch(url.toString(), { method: 'GET' });
 
     if (!response.ok) {
-      console.error(`[FIRESTORE_REST] ${response.status}: ${await response.text()}`);
+      logger.error(`[FIRESTORE_REST] ${response.status}: ${await response.text()}`);
       return null;
     }
 
@@ -73,7 +74,7 @@ async function queryFirestoreRest(
       return { docs: data.documents || [] };
     }
   } catch (error: any) {
-    console.error('[FIRESTORE_REST_ERROR]', error?.message || error);
+    logger.error('[FIRESTORE_REST_ERROR]', error?.message || error);
     return null;
   }
 }
@@ -141,7 +142,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ success: true, listings, count: listings.length });
   } catch (error: any) {
-    console.error('[LISTINGS_ERROR] Failed to fetch listings:', error?.message || error);
+    logger.error('[LISTINGS_ERROR] Failed to fetch listings:', error?.message || error);
     return NextResponse.json(
       { success: false, error: error?.message || 'Internal Server Error' },
       { status: 500 }

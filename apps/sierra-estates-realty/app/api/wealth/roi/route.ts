@@ -8,6 +8,7 @@ import { adminDb } from '@/lib/server/firebase-admin';
 import { COLLECTIONS, Proposal, Unit } from '@/lib/models/schema';
 import { analyzeAssetFinancials } from '@/lib/services/roi-service';
 import { verifyAdminRequest, unauthorizedResponse } from '@/lib/server/auth-guard';
+import { logger } from '@/lib/logger';
 
 export async function POST(req: NextRequest) {
   const auth = await verifyAdminRequest(req);
@@ -72,7 +73,7 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('[Wealth Intelligence] Re-analysis failed:', error);
+    logger.error('[Wealth Intelligence] Re-analysis failed:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
