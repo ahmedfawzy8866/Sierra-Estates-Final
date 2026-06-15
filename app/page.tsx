@@ -7,6 +7,8 @@
 import { useEffect, useState } from 'react';
 import { collection, onSnapshot, query, where, orderBy, DocumentData } from 'firebase/firestore';
 import { clientDb } from '@/lib/firebase/client';
+import PremiumHeroCinematic from '@/components/UI/PremiumHeroCinematic';
+import PremiumHeroSearch from '@/components/UI/PremiumHeroSearch';
 
 const COMPOUNDS_21 = [
   'Mountain View iCity','Hyde Park','Mivida','Uptown Cairo','Madinaty',
@@ -35,6 +37,7 @@ export default function ClientHub() {
   const [activeCompound, setActiveCompound] = useState<string>('all');
   const [showAllCompounds, setShowAllCompounds] = useState(false);
   const [showTour, setShowTour] = useState<Property | null>(null);
+  const [heroType, setHeroType] = useState<'cinematic' | 'search'>('cinematic');
 
   useEffect(() => {
     const q = query(
@@ -59,23 +62,41 @@ export default function ClientHub() {
   return (
     <main className="min-h-screen bg-[var(--surface)] text-[var(--on-surface)] font-sans pb-24 transition-colors duration-500">
       {/* Hero Section */}
-      <section className="pt-32 pb-16 px-6 text-center">
-        <h4 className="text-xs font-mono text-[var(--secondary)] tracking-[0.2em] mb-4">
-          EGYPT'S PREMIER PROPERTY INTELLIGENCE
-        </h4>
-        <h1 className="text-5xl md:text-7xl font-serif text-[var(--primary)] mb-6">
-          Find Your Place in <br/>
-          <span className="gold-text">
-            New Cairo.
-          </span>
-        </h1>
-        <p className="max-w-2xl mx-auto text-[var(--on-surface-variant)] text-lg">
-          Live inventory. AI-driven matching. Zero-latency updates.
-        </p>
-      </section>
+      <div className="relative">
+        <div className="absolute top-4 right-4 z-50 flex gap-2 p-1 bg-black/50 backdrop-blur-md rounded-lg border border-white/20">
+          <button 
+            onClick={() => setHeroType('cinematic')}
+            className={`px-3 py-1.5 text-xs font-mono tracking-widest uppercase transition-colors rounded ${heroType === 'cinematic' ? 'bg-[#C9A84C] text-[#0A1628]' : 'text-white hover:text-[#C9A84C]'}`}
+          >
+            Cinematic Parallax
+          </button>
+          <button 
+            onClick={() => setHeroType('search')}
+            className={`px-3 py-1.5 text-xs font-mono tracking-widest uppercase transition-colors rounded ${heroType === 'search' ? 'bg-[#C9A84C] text-[#0A1628]' : 'text-white hover:text-[#C9A84C]'}`}
+          >
+            Smart Search Card
+          </button>
+        </div>
+
+        {heroType === 'cinematic' ? (
+          <PremiumHeroCinematic 
+            title="Quiet Luxury in New Cairo."
+            subtitle="Live inventory. AI-driven matching. Zero-latency updates."
+            ctaLabel="Explore Portfolio"
+            onCtaClick={() => {
+              const el = document.getElementById('inventory');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }}
+          />
+        ) : (
+          <PremiumHeroSearch 
+            onSearch={(filters) => console.log('Searching', filters)}
+          />
+        )}
+      </div>
 
       {/* Filter Matrix */}
-      <section className="max-w-7xl mx-auto px-6 mb-12">
+      <section id="inventory" className="max-w-7xl mx-auto px-6 mb-12 pt-12">
         <div className="flex flex-wrap items-center justify-center gap-3">
           <button
             onClick={() => setActiveCompound('all')}
