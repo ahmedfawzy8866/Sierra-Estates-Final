@@ -13,7 +13,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Share2, MapPin, TrendingUp, Info } from 'lucide-react';
 import type { ConciergeSelection, ConciergeUnit } from '@/lib/services/portfolio-engine';
-import { LuxuryCard, GoldButton, EditorialHeading } from '@sierra-estates/ui';
+import { GlassCard as LuxuryCard, LuxuryButton as GoldButton, Typography as EditorialHeading } from '@sierra-estates/ui';
 
 interface ConciergeGalleryProps {
   portfolio: ConciergeSelection;
