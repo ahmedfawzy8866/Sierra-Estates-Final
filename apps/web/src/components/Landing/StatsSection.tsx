@@ -16,7 +16,7 @@ export function StatsSection() {
           {STATS.map(({ key, value }, i) => (
             <motion.div key={key} initial={{ opacity:0,y:20 }} animate={inView?{opacity:1,y:0}:{}} transition={{ duration:0.5,delay:i*0.1 }} className="text-center">
               <p className="font-display text-4xl text-se-gold mb-2">{value}</p>
-              <p className="text-white/50 text-sm tracking-wide">{t(key as any)}</p>
+              <p className="text-white/50 text-sm tracking-wide">{t(key as 'properties' | 'clients' | 'years' | 'portfolio')}</p>
             </motion.div>
           ))}
         </div>

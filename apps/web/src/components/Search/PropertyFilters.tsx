@@ -12,7 +12,6 @@ interface PropertyFiltersProps {
 export function PropertyFilters({ initialParams }: PropertyFiltersProps) {
   const router   = useRouter();
   const pathname = usePathname();
-  const locale   = useLocale();
   const [expanded, setExpanded] = useState<Record<string,boolean>>({ type:true, price:true, beds:true });
   const [type, setType]         = useState(initialParams.type ?? '');
   const [minPrice, setMinPrice] = useState(initialParams.minPrice ?? '');

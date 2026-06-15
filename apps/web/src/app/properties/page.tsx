@@ -39,7 +39,7 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
   );
 }
 
-async function PropertiesGrid({ params }: { params: Awaited<PropertiesPageProps['searchParams']> }) {
+async function PropertiesGrid({ params: _params }: { params: Awaited<PropertiesPageProps['searchParams']> }) {
   // TODO: Replace with real Firestore query via getProperties(params)
   const mockProperties = Array.from({ length: 9 }, (_, i) => ({
     id: `prop-${String(i + 1).padStart(3, '0')}`,
