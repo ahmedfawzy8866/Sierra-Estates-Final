@@ -129,7 +129,7 @@ export function useDSLView(
           setLoading(false);
         },
         err => {
-          logger.error("[useDSLView] Firestore error:", err);
+          console.error("[useDSLView] Firestore error:", err);
           setError(err.message);
           setLoading(false);
         },

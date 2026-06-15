@@ -23,7 +23,7 @@ interface Stakeholder {
 }
 
 export default function ClientsScreen() {
-  const { _t, locale } = useI18n();
+  const { locale } = useI18n();
   const [stakeholders, setStakeholders] = useState<Stakeholder[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');

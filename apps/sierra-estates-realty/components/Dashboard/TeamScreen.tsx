@@ -27,7 +27,7 @@ interface Partner {
 }
 
 export default function TeamScreen({ onNavigate }: { onNavigate?: (screen: any) => void }) {
-  const { _locale, t } = useI18n();
+  const { t } = useI18n();
   const [partners, setPartners] = useState<Partner[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);

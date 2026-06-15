@@ -32,7 +32,7 @@ import { logger } from '@/lib/logger';
 
 export default function LeadsFlow() {
   const { user } = useAuth();
-  const { t, _locale, dir } = useI18n();
+  const { t, dir } = useI18n();
   const [leads, setLeads] = useState<any[]>([]);
   const [activeLead, setActiveLead] = useState<any>(null);
   const [isAddingLead, setIsAddingLead] = useState(false);

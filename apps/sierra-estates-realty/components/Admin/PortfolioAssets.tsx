@@ -40,7 +40,7 @@ export default function PortfolioAssets() {
     offer_type: filters.offer_type || undefined
   });
 
-  const { stats, loading: _statsLoading } = usePropertyStats();
+  const { stats } = usePropertyStats();
 
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);

@@ -35,7 +35,7 @@ export default function DashboardSidebar({
   activeTab,
   collapsed,
   onTabChange,
-  _onCollapsedChange,
+  onCollapsedChange,
   isMobile = false,
   className = '',
 }: DashboardSidebarProps) {

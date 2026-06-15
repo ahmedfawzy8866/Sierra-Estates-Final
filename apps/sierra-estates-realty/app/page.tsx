@@ -130,6 +130,9 @@ export default function UnifiedHomepage() {
             {/* Interactive AR Virtual Tour & Refined Filter Hero Section */}
             <PremiumHero
               isArabic={isAr}
+              title={t.title}
+              subtitle={t.desc}
+              ctaLabel={t.ctaExplore}
             />
 
             {/* AI Matching Engine Section */}
