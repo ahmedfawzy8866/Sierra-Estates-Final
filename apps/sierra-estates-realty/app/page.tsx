@@ -130,13 +130,6 @@ export default function UnifiedHomepage() {
             {/* Interactive AR Virtual Tour & Refined Filter Hero Section */}
             <PremiumHero
               isArabic={isAr}
-              onSearch={(searchFilters) => {
-                setFilters(searchFilters);
-                const element = document.getElementById('inventory');
-                if (element) {
-                  element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-              }}
             />
 
             {/* AI Matching Engine Section */}
