@@ -27,6 +27,7 @@ import {
   ParsedView,
   CompareClause,
 } from "@/lib/dsl/parser";
+import { logger } from "@/lib/logger";
 
 // ════════════════════════════════════════════════════════════════
 // TYPES
