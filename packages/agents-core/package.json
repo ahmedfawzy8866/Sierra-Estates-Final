@@ -1,0 +1,7 @@
+{
+  "name": "@sierra-estates/agents-core",
+  "version": "1.0.0",
+  "description": "Sierra Estates agent orchestration framework (15+ agent personas)",
+  "main": "./src/index.ts",
+  "private": true
+}
