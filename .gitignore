@@ -1,12 +1,75 @@
+# Dependencies
 node_modules/
+.pnpm-store/
+
+# Build outputs
 .next/
+dist/
+build/
+out/
+
+# Environment files
+.env
 .env.local
-.turbo/
-coverage/
-apps/*/.turbo/
-apps/*/coverage/
-functions/.turbo/
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python
 __pycache__/
-*.pyc
-services/hermes-agent/__pycache__/
-services/hermes-agent/.venv/
+*.py[cod]
+*$py.class
+*.so
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# WhatsApp session
+.wwebjs_auth/
+.wwebjs_cache/
+
+# Turbo
+.turbo/

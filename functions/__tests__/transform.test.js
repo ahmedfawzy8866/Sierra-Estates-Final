@@ -1,62 +1,69 @@
-const { normalizeProperty, parsePrice } = require('../transform');
+const { parsePrice, normalizeProperty } = require('../transform');
 
 describe('parsePrice', () => {
-  it('passes finite numbers through unchanged', () => {
-    expect(parsePrice(4500000)).toBe(4500000);
-    expect(parsePrice(1500.5)).toBe(1500.5);
-    expect(parsePrice(0)).toBe(0);
+  test('handles plain number', () => {
+    expect(parsePrice(1500000)).toBe(1500000);
   });
 
-  it('parses plain numeric strings', () => {
-    expect(parsePrice('250000')).toBe(250000);
-    expect(parsePrice('1500.50')).toBe(1500.5);
+  test('handles string with commas', () => {
+    expect(parsePrice('1,500,000')).toBe(1500000);
   });
 
-  it('parses formatted strings with separators and currency symbols', () => {
-    // Regression: a bare parseFloat truncated these to the first segment.
-    expect(parsePrice('2,000,000')).toBe(2000000);
-    expect(parsePrice('EGP 2,500,000')).toBe(2500000);
-    expect(parsePrice('$ 750,000')).toBe(750000);
+  test('handles million suffix', () => {
+    expect(parsePrice('1.5m')).toBe(1500000);
+    expect(parsePrice('2 Million')).toBe(2000000);
   });
 
-  it('falls back to 0 for unparseable or non-primitive input', () => {
-    expect(parsePrice('N/A')).toBe(0);
-    expect(parsePrice(undefined)).toBe(0);
+  test('handles k suffix', () => {
+    expect(parsePrice('750k')).toBe(750000);
+  });
+
+  test('handles EGP suffix', () => {
+    expect(parsePrice('2,000,000 EGP')).toBe(2000000);
+  });
+
+  test('returns 0 for empty/null', () => {
+    expect(parsePrice('')).toBe(0);
     expect(parsePrice(null)).toBe(0);
-    expect(parsePrice({})).toBe(0);
-    expect(parsePrice(NaN)).toBe(0);
+    expect(parsePrice(undefined)).toBe(0);
   });
 });
 
 describe('normalizeProperty', () => {
-  it('maps a complete raw payload to the canonical shape', () => {
-    expect(
-      normalizeProperty({
-        title: 'Sea View Villa',
-        price: '4,500,000',
-        location: 'New Cairo',
-        source: 'PropertyFinder',
-      })
-    ).toEqual({
-      title: 'Sea View Villa',
-      price: 4500000,
-      location: 'New Cairo',
-      source: 'PropertyFinder',
-      isAvailable: true,
-    });
+  const sample = {
+    compound:        'Mivida',
+    bedrooms:        3,
+    bathrooms:       2,
+    area:            180,
+    price:           '3,500,000',
+    finishingType:   'semi-finished',
+    furnishingStatus:'unfurnished',
+    floor:           2,
+    unitNumber:      '4B',
+  };
+
+  test('normalizes basic fields', () => {
+    const result = normalizeProperty(sample);
+    expect(result.compound).toBe('Mivida');
+    expect(result.bedrooms).toBe(3);
+    expect(result.area).toBe(180);
+    expect(result.price).toBe(3500000);
+    expect(result.pricePerSqm).toBe(Math.round(3500000 / 180));
   });
 
-  it('applies safe defaults when fields are missing', () => {
-    expect(normalizeProperty({})).toEqual({
-      title: 'Untitled Property',
-      price: 0,
-      location: 'Unknown',
-      source: 'Scraper Bot',
-      isAvailable: true,
-    });
+  test('generates syncHash', () => {
+    const result = normalizeProperty(sample);
+    expect(result.syncHash).toHaveLength(64);
   });
 
-  it('tolerates being called with no argument', () => {
-    expect(normalizeProperty().title).toBe('Untitled Property');
+  test('sets status to active', () => {
+    const result = normalizeProperty(sample);
+    expect(result.status).toBe('active');
+  });
+
+  test('handles missing price gracefully', () => {
+    const result = normalizeProperty({ ...sample, price: undefined });
+    expect(result.price).toBe(0);
+    expect(result.pricePerSqm).toBe(0);
   });
 });

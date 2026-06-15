@@ -1,85 +1,24 @@
 {
-  "hosting": [
-    {
-      "target": "web",
-      "public": "apps/sierra-estates-realty/.next/standalone/public",
-      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-      "rewrites": [
-        {
-          "source": "/api/**",
-          "function": "api"
-        },
-        {
-          "source": "**",
-          "destination": "/index.html"
-        }
-      ],
-      "redirects": [],
-      "cleanUrls": true,
-      "trailingSlashBehavior": "remove",
-      "headers": [
-        {
-          "source": "/**",
-          "headers": [
-            {
-              "key": "Cache-Control",
-              "value": "public, max-age=3600, must-revalidate"
-            },
-            {
-              "key": "X-Content-Type-Options",
-              "value": "nosniff"
-            },
-            {
-              "key": "X-Frame-Options",
-              "value": "SAMEORIGIN"
-            },
-            {
-              "key": "X-XSS-Protection",
-              "value": "1; mode=block"
-            }
-          ]
-        },
-        {
-          "source": "/api/**",
-          "headers": [
-            {
-              "key": "Cache-Control",
-              "value": "no-cache, no-store, must-revalidate"
-            }
-          ]
-        },
-        {
-          "source": "**/*.@(jpg|jpeg|gif|png|svg|webp|eot|otf|ttf|woff|woff2)",
-          "headers": [
-            {
-              "key": "Cache-Control",
-              "value": "public, max-age=31536000"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "target": "admin",
-      "public": "apps/sierra-estates-admin-portal/dist",
-      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-      "cleanUrls": true,
-      "rewrites": [
-        {
-          "source": "**",
-          "destination": "/index.html"
-        }
-      ]
-    }
-  ],
+  "hosting": {
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  },
   "functions": [
     {
       "source": "functions",
       "codebase": "default",
-      "runtime": "nodejs20",
-      "timeoutSeconds": 540,
-      "memory": 512,
-      "region": ["us-central1", "us-east1", "asia-east1"]
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "runtime": "nodejs20"
     }
   ],
   "firestore": {
@@ -90,30 +29,17 @@
     "rules": "storage.rules"
   },
   "emulators": {
-    "auth": {
-      "host": "localhost",
-      "port": 9099
-    },
     "functions": {
-      "host": "localhost",
       "port": 5001
     },
     "firestore": {
-      "host": "localhost",
       "port": 8080
     },
-    "pubsub": {
-      "host": "localhost",
-      "port": 8085
-    },
     "storage": {
-      "host": "localhost",
-      "port": 4000
+      "port": 9199
     },
     "ui": {
-      "enabled": true,
-      "host": "localhost",
-      "port": 4000
+      "enabled": true
     },
     "singleProjectMode": true
   }

@@ -1,43 +1,40 @@
 const functions = require('firebase-functions');
-const admin = require('firebase-admin');
+const admin     = require('firebase-admin');
 
-if (!admin.apps.length) {
-    admin.initializeApp();
-}
+if (!admin.apps.length) admin.initializeApp();
 
 const db = admin.firestore();
 
 /**
- * 1️⃣ DATA COLLECTION WORKFLOW (Isolated)
- * HTTP endpoint used exclusively by scrapers.
- * The data is dumped into `rawScrapeData` collection.
- * The frontend (Sierra/Liela) has NO access to this collection.
+ * collectData — HTTP endpoint to store raw scrape data.
+ * Called by the WhatsApp scraper or external agents.
  */
 exports.collectData = functions.https.onRequest(async (req, res) => {
-    if (req.method !== 'POST') {
-        return res.status(405).send('Method Not Allowed');
-    }
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method Not Allowed' });
+  }
 
-    try {
-        const payload = req.body;
-        
-        // Basic validation
-        if (!payload || typeof payload !== 'object') {
-            return res.status(400).send('Invalid payload');
-        }
+  const secretKey = req.headers['x-se-secret-key'];
+  if (secretKey !== process.env.X_SE_SECRET_KEY && process.env.X_SE_SECRET_KEY) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
 
-        // Store raw data with a timestamp and a "processed" flag
-        const docRef = await db.collection('rawScrapeData').add({
-            ...payload,
-            collectedAt: admin.firestore.FieldValue.serverTimestamp(),
-            status: 'raw_unprocessed'
-        });
+  const data = req.body;
+  if (!data || Object.keys(data).length === 0) {
+    return res.status(400).json({ error: 'Empty payload' });
+  }
 
-        console.log(`Raw data ingested from scraper: ${docRef.id}`);
-        return res.status(200).json({ success: true, id: docRef.id });
+  try {
+    const docRef = await db.collection('rawScrapeData').add({
+      ...data,
+      source:    data.source    || 'unknown',
+      status:    data.status    || 'pending_review',
+      createdAt: data.createdAt || new Date().toISOString(),
+    });
 
-    } catch (error) {
-        console.error('Data collection error:', error);
-        return res.status(500).send('Internal Server Error');
-    }
+    res.status(200).json({ success: true, id: docRef.id });
+  } catch (err) {
+    console.error('[collectData] Firestore write failed:', err);
+    res.status(500).json({ error: 'Failed to store data' });
+  }
 });

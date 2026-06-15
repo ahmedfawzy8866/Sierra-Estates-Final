@@ -1,161 +1,95 @@
-import { Deal, DealStatus } from '../../lib/models/deals';
-import { adminDb } from '../../lib/server/firebase-admin';
-import { COLLECTIONS, InvestmentStakeholder } from '../../lib/models/schema';
-import { getTemplate } from './messaging/templates';
+/**
+ * Stage 9 Closer Agent
+ * Handles the final stages of a deal: viewing follow-up, proposal finalization,
+ * signing initiation, and deal completion.
+ */
+
 import * as admin from 'firebase-admin';
 
-/**
- * SIERRA ESTATES — THE CLOSER (AGENT 04)
- * Manages Stage 9 & 10 of the Intelligence Pipeline.
- * Responsible for Deal Orchestration, E-Signatures, and Closing.
- */
+if (!admin.apps.length) {
+  admin.initializeApp();
+}
+
+const db = admin.firestore();
+
 export class CloserAgent {
   private static instance: CloserAgent;
 
-  private constructor() {}
-
-  public static getInstance(): CloserAgent {
+  static getInstance(): CloserAgent {
     if (!CloserAgent.instance) {
       CloserAgent.instance = new CloserAgent();
     }
     return CloserAgent.instance;
   }
 
-  /**
-   * S9 INITIATION: Triggered by a viewing request from S8.
-   * Initializes a new Deal object in 'draft' status.
-   */
-  async handleViewingRequest(leadId: string, propertyCode: string) {
-    try {
-      console.info(`[CloserAgent] Initiating S9 for Lead: ${leadId} | Property: ${propertyCode}`);
-      
-      // 1. Fetch Lead Details for personalization
-      const leadSnap = await adminDb.collection(COLLECTIONS.stakeholders).doc(leadId).get();
-      const leadData = leadSnap.data() as InvestmentStakeholder;
-      const leadName = leadData?.name || 'Valued Investor';
+  async handleViewingRequest(viewingId: string): Promise<void> {
+    const doc = await db.collection('viewingRequests').doc(viewingId).get();
+    if (!doc.exists) throw new Error(`Viewing not found: ${viewingId}`);
 
-      // 1.5 Fetch Property Details
-      const propertySnap = await adminDb.collection(COLLECTIONS.units).doc(propertyCode).get();
-      const propertyTitle = propertySnap.exists ? (propertySnap.data()?.title || propertyCode) : propertyCode;
-
-      // 2. Initialize Deal Document
-      const dealData: Partial<Deal> = {
-        leadId,
-        propertyCode,
-        clientName: leadName,
-        propertyTitle: propertyTitle,
-        status: 'draft',
-        orchestration: {
-          currentStage: 9.0,
-          nextAction: 'generate_proposal',
-          leilaPersonaInformed: true
-        },
-        createdAt: admin.firestore.FieldValue.serverTimestamp() as any,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp() as any
-      };
-
-      const dealRef = await adminDb.collection('deals').add(dealData);
-
-      // 3. Prepare Follow-up Template (Leila's Persona)
-      const introMessage = getTemplate('viewingFollowUp', 'en')
-        .replace('{propertyName}', propertyTitle)
-        .replace('{leadName}', leadName);
-
-      return { 
-        success: true, 
-        dealId: dealRef.id, 
-        introMessage,
-        meta: { leadName, propertyTitle }
-      };
-    } catch (error) {
-      console.error(`[CloserAgent] S9 Initiation Failed:`, error);
-      throw new Error(`Failed to initiate closing pipeline for lead ${leadId}`);
-    }
+    await db.collection('viewingRequests').doc(viewingId).update({
+      stage: 'S9_viewing_initiated',
+      updatedAt: new Date().toISOString(),
+    });
   }
 
-  /**
-   * S9.1: Finalizes the proposal document and prepares it for the client.
-   */
-  async finalizeProposal(dealId: string, terms: Deal['terms']) {
-    try {
-      const dealSnap = await adminDb.collection('deals').doc(dealId).get();
-      if (!dealSnap.exists) throw new Error('Deal not found');
-      
-      const deal = dealSnap.data() as Deal;
-      const { proposalGenerator } = await import('./proposal-generator');
+  async finalizeProposal(dealId: string, proposalData: Record<string, unknown>): Promise<string> {
+    const proposalRef = await db.collection('proposals').add({
+      dealId,
+      ...proposalData,
+      status: 'finalized',
+      stage: 'S9_proposal_finalized',
+      createdAt: new Date().toISOString(),
+    });
 
-      // Generate Document via Proposal Engine
-      const proposalUrl = await proposalGenerator.generate(
-        deal, 
-        { name: 'Investor' }, // TODO: Fetch full profile
-        { title: deal.propertyCode }
-      );
+    await db.collection('deals').doc(dealId).update({
+      proposalId: proposalRef.id,
+      stage: 'S9_proposal_ready',
+      updatedAt: new Date().toISOString(),
+    });
 
-      await adminDb.collection('deals').doc(dealId).update({
-        'status': 'offered',
-        'terms': terms,
-        'documents.proposalUrl': proposalUrl,
-        'orchestration.currentStage': 9.1,
-        'orchestration.nextAction': 'initiate_signing',
-        'updatedAt': admin.firestore.FieldValue.serverTimestamp()
-      });
-
-      console.info(`[CloserAgent] S9.1 Proposal Finalized: ${dealId}`);
-      return { success: true, proposalUrl };
-    } catch (error) {
-      console.error(`[CloserAgent] S9.1 Finalization Failed:`, error);
-      return { success: false, error: (error as Error).message };
-    }
+    return proposalRef.id;
   }
 
-  /**
-   * S9.2: Initiates the E-Signature workflow (Docusign/Composio).
-   */
-  async initiateSigning(dealId: string, leadEmail: string) {
-    try {
-      console.info(`[CloserAgent] S9.2 Initiating Signing: ${dealId}`);
-      
-      // Placeholder for Docusign Integration
-      const signingUrl = `https://docusign.sierra-estates.com/sign?deal=${dealId}`;
+  async initiateSigning(dealId: string): Promise<{ envelopeId: string }> {
+    const envelopeId = `ENV-${dealId}-${Date.now()}`;
 
-      await adminDb.collection('deals').doc(dealId).update({
-        'status': 'signing',
-        'signing.status': 'sent',
-        'orchestration.currentStage': 9.2,
-        'orchestration.nextAction': 'wait_for_signature',
-        'updatedAt': admin.firestore.FieldValue.serverTimestamp()
-      });
+    await db.collection('deals').doc(dealId).update({
+      signingEnvelope: {
+        envelopeId,
+        status: 'created',
+        createdAt: new Date().toISOString(),
+      },
+      stage: 'S9_signing_initiated',
+      updatedAt: new Date().toISOString(),
+    });
 
-      return { success: true, signingUrl };
-    } catch (error) {
-      console.error(`[CloserAgent] S9.2 Signing Initiation Failed:`, error);
-      return { success: false, error: (error as Error).message };
-    }
+    return { envelopeId };
   }
 
-  /**
-   * S9.3: Processes the final closing and signals Agent 04 Stage 10.
-   */
-  async completeClosing(dealId: string) {
-    try {
-      console.info(`[CloserAgent] S9.3 Completing Deal: ${dealId}`);
+  async completeClosing(dealId: string): Promise<void> {
+    const doc = await db.collection('deals').doc(dealId).get();
+    if (!doc.exists) throw new Error(`Deal not found: ${dealId}`);
 
-      await adminDb.collection('deals').doc(dealId).update({
-        'status': 'closed',
-        'orchestration.currentStage': 9.3,
-        'orchestration.nextAction': 'trigger_s10_feedback',
-        'updatedAt': admin.firestore.FieldValue.serverTimestamp()
-      });
+    const data = doc.data()!;
 
-      return { 
-        success: true, 
-        message: getTemplate('signingComplete', 'en') 
-      };
-    } catch (error) {
-      console.error(`[CloserAgent] S9.3 Closing Failed:`, error);
-      return { success: false, error: (error as Error).message };
-    }
+    // Create sale record
+    await db.collection('sales').add({
+      dealId,
+      assetId: data.assetId,
+      leadId: data.stakeholderId,
+      salePriceEGP: data.negotiatedPrice || 0,
+      commissionRate: data.commissionRate || 2.5,
+      commissionEGP: data.commissionEGP || 0,
+      closeDate: new Date().toISOString(),
+      paymentStatus: 'pending',
+      createdAt: new Date().toISOString(),
+    });
+
+    await db.collection('deals').doc(dealId).update({
+      stage: 'S10_complete',
+      status: 'closed_won',
+      closedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
   }
 }
-
-export const closerAgent = CloserAgent.getInstance();

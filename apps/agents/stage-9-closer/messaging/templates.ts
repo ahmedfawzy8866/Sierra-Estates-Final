@@ -1,27 +1,29 @@
-/**
- * LEILA'S MESSAGE TEMPLATES (STAGE 9)
- * High-fidelity, warm, professional responses for deal closing.
- */
-
 export const leilaTemplates = {
   viewingFollowUp: {
-    en: "I hope you enjoyed the viewing of {propertyName}, {leadName}. It’s a truly exceptional property. I’ve prepared a detailed investment proposal for you to review at your convenience.",
-    ar: "أتمنى أن تكون قد استمتعت بمعاينة {propertyName}، يا {leadName}. إنه عقار استثنائي حقًا. لقد قمت بإعداد عرض استثماري مفصل لتراجعه في الوقت الذي يناسبك."
+    en: (name: string, property: string) =>
+      `Dear ${name}, thank you for viewing ${property}. We'd love to share our exclusive investment analysis. Shall we schedule a follow-up call?`,
+    ar: (name: string, property: string) =>
+      `عزيزنا ${name}، شكراً لزيارتك لـ${property}. نودّ مشاركتك تحليلنا الاستثماري الحصري. هل نحدد موعد للمتابعة؟`,
   },
-  proposalReady: {
-    en: "The proposal for {propertyName} is ready for your signature, {leadName}. You can review the terms and sign digitally here: {link}",
-    ar: "العرض الخاص بـ {propertyName} جاهز لتوقيعك، يا {leadName}. يمكنك مراجعة الشروط والتوقيع رقميًا هنا: {link}"
-  },
-  paymentRequested: {
-    en: "To secure {propertyName}, we require an earnest money deposit of {amount}. You can complete this securely via this link: {link}",
-    ar: "لتأمين {propertyName}، نحتاج إلى إيداع مبلغ جدية حجز قدره {amount}. يمكنك إكمال ذلك بأمان عبر هذا الرابط: {link}"
-  },
-  signingComplete: {
-    en: "Excellent news, {leadName}! The documents for {propertyName} are now fully signed. We are moving into the final closing phase. I'll be in touch shortly with the next steps.",
-    ar: "أخبار رائعة يا {leadName}! المستندات الخاصة بـ {propertyName} موقعة بالكامل الآن. نحن ننتقل إلى مرحلة الإغلاق النهائي. سأتواصل معك قريبًا بخصوص الخطوات التالية."
-  }
-};
 
-export const getTemplate = (key: keyof typeof leilaTemplates, locale: 'en' | 'ar' = 'en') => {
-  return leilaTemplates[key][locale];
+  proposalReady: {
+    en: (name: string, proposalUrl: string) =>
+      `Dear ${name}, your exclusive investment proposal is ready. View it here: ${proposalUrl}`,
+    ar: (name: string, proposalUrl: string) =>
+      `عزيزنا ${name}، عرضك الاستثماري الحصري جاهز. شاهده هنا: ${proposalUrl}`,
+  },
+
+  paymentReminder: {
+    en: (name: string, amount: number, dueDate: string) =>
+      `Dear ${name}, a friendly reminder that your payment of ${amount.toLocaleString()} EGP is due on ${dueDate}.`,
+    ar: (name: string, amount: number, dueDate: string) =>
+      `عزيزنا ${name}، تذكير ودي بأن دفعتك البالغة ${amount.toLocaleString()} جنيه مستحقة في ${dueDate}.`,
+  },
+
+  signingComplete: {
+    en: (name: string, property: string) =>
+      `Congratulations ${name}! The contract for ${property} has been signed. Welcome to the Sierra Estates family!`,
+    ar: (name: string, property: string) =>
+      `مبروك ${name}! تم توقيع عقد ${property}. أهلاً وسهلاً في عائلة Sierra Estates!`,
+  },
 };
