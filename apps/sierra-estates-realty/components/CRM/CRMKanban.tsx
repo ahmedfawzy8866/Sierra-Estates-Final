@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { db, getAnalyticsInstance } from '@/lib/firebase';
+import { auth, db, getAnalyticsInstance } from '@/lib/firebase';
 import { logAuditAction } from '@/lib/audit';
 import { 
   collection, 
@@ -567,11 +567,20 @@ export default function CRMKanban() {
   const syncLeadsFromPF = async () => {
     setSyncingPF(true);
     try {
-      const response = await fetch('/api/property-finder?action=sync-leads', { method: 'POST' });
+      const token = await auth.currentUser?.getIdToken();
+      const response = await fetch('/api/sync?action=sync-leads', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({}),
+      });
       const result = await response.json();
-      if (!response.ok || result.error) throw new Error(result.error);
+      if (!response.ok || result.error) throw new Error(result.error || 'Sync request failed');
 
-      const summary = result.summary || { created: 0, updated: 0, skipped: 0 };
+      // The API returns the direct sync counts, e.g. { created: X, updated: Y, skipped: Z }
+      const summary = result || { created: 0, updated: 0, skipped: 0 };
       alert(`Property Finder sync completed. Added ${summary.created}, refreshed ${summary.updated}, skipped ${summary.skipped}.`);
     } catch (err) {
       logger.error("PF Sync Error:", err);
