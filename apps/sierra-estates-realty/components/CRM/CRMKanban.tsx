@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { auth, db, getAnalyticsInstance } from '@/lib/firebase';
+import { db, getAnalyticsInstance } from '@/lib/firebase';
 import { logAuditAction } from '@/lib/audit';
 import { 
   collection, 
@@ -20,7 +20,6 @@ import { getDoc } from 'firebase/firestore';
 import { UserProfile, COLLECTIONS } from '@/lib/models/schema';
 import { motion } from 'framer-motion';
 import { cinematicEntrance, cinematicHover } from '@/lib/animations';
-import { logger } from '@/lib/logger';
 
 interface InvestmentStakeholder {
   id: string;
@@ -161,7 +160,7 @@ function StakeholderCard({ stakeholder, phase, onProgress, onDragStart }: {
       });
       if (res.ok) alert('Strategic Options Package generated and secured.');
     } catch (err) {
-      logger.error('Proposal generation failed:', err);
+      console.error('Proposal generation failed:', err);
     } finally {
       setIsGenerating(false);
     }
@@ -188,10 +187,10 @@ function StakeholderCard({ stakeholder, phase, onProgress, onDragStart }: {
         <div className="stakeholder-name-wrap">
           <div className="stakeholder-name-main serif">{stakeholder.name}</div>
           <div className="stakeholder-origin">
-            <span style={{ color: CHANNEL_METADATA[stakeholder.originChannel]?.color }}>
+            <span className={`channel-icon channel-${stakeholder.originChannel.toLowerCase().replace(/[^a-z0-9]/g, '')}`}>
               {CHANNEL_METADATA[stakeholder.originChannel]?.icon}
             </span>
-            <span style={{ letterSpacing: '0.5px' }}>{stakeholder.originChannel.toUpperCase()}</span>
+            <span className="channel-text-badge">{stakeholder.originChannel.toUpperCase()}</span>
           </div>
         </div>
         
@@ -321,7 +320,7 @@ export default function CRMKanban() {
           setUserProfile({ id: pDoc.id, ...pDoc.data() } as UserProfile);
         }
       } catch (err) {
-        logger.error("Profile recovery failure:", err);
+        console.error("Profile recovery failure:", err);
       }
     };
     fetchProfile();
@@ -344,7 +343,7 @@ export default function CRMKanban() {
        // Note: In Production we'd use where('assignedPartnerId', '==', user.uid)
        // but for now we'll do client-side filtering or handle it carefully.
        // The user requested: "each one should see his clients only"
-       logger.info('Restricting view to agent:', user?.uid);
+       console.log('Restricting view to agent:', user?.uid);
     }
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -390,7 +389,7 @@ export default function CRMKanban() {
       setActiveInventorySize(filteredLeads.length);
       setLoading(false);
     }, (error) => {
-      logger.error('Pipeline synchronization failure:', error);
+      console.error('Pipeline synchronization failure:', error);
       setLoading(false);
     });
 
@@ -472,7 +471,7 @@ export default function CRMKanban() {
       setShowModal(false);
       setStakeholderDraft(INITIAL_STAKEHOLDER_STATE);
     } catch (err) {
-      logger.error('Stakeholder onboarding failure:', err);
+      console.error('Stakeholder onboarding failure:', err);
     }
   };
 
@@ -516,7 +515,7 @@ export default function CRMKanban() {
         details: `Migrated stakeholder ${id} to ${targetPhase}`
       });
     } catch (err) {
-      logger.error('Phase transition failure:', err);
+      console.error('Phase transition failure:', err);
     }
   };
 
@@ -560,30 +559,21 @@ export default function CRMKanban() {
       setDragging(null);
       setPhaseTarget(null);
     } catch (err) {
-      logger.error('Strategic relocation failure:', err);
+      console.error('Strategic relocation failure:', err);
     }
   };
 
   const syncLeadsFromPF = async () => {
     setSyncingPF(true);
     try {
-      const token = await auth.currentUser?.getIdToken();
-      const response = await fetch('/api/sync?action=sync-leads', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({}),
-      });
+      const response = await fetch('/api/property-finder?action=sync-leads', { method: 'POST' });
       const result = await response.json();
-      if (!response.ok || result.error) throw new Error(result.error || 'Sync request failed');
+      if (!response.ok || result.error) throw new Error(result.error);
 
-      // The API returns the direct sync counts, e.g. { created: X, updated: Y, skipped: Z }
-      const summary = result || { created: 0, updated: 0, skipped: 0 };
+      const summary = result.summary || { created: 0, updated: 0, skipped: 0 };
       alert(`Property Finder sync completed. Added ${summary.created}, refreshed ${summary.updated}, skipped ${summary.skipped}.`);
     } catch (err) {
-      logger.error("PF Sync Error:", err);
+      console.error("PF Sync Error:", err);
       alert("Synchronization protocol failed to establish secure link with Property Finder. Check gateway configuration.");
     } finally {
       setSyncingPF(false);
@@ -655,21 +645,21 @@ export default function CRMKanban() {
           />
         </div>
 
-        <select value={filters.intensity} onChange={(event) => setFilters((prev) => ({ ...prev, intensity: event.target.value as StakeholderFilters['intensity'] }))}>
+        <select title="Filter by priority intensity" value={filters.intensity} onChange={(event) => setFilters((prev) => ({ ...prev, intensity: event.target.value as StakeholderFilters['intensity'] }))}>
           <option value="all">All priority</option>
           <option value="hot">Hot only</option>
           <option value="warm">Warm only</option>
           <option value="cold">Cold only</option>
         </select>
 
-        <select value={filters.channel} onChange={(event) => setFilters((prev) => ({ ...prev, channel: event.target.value }))}>
+        <select title="Filter by acquisition channel" value={filters.channel} onChange={(event) => setFilters((prev) => ({ ...prev, channel: event.target.value }))}>
           <option value="all">All channels</option>
           {Object.keys(CHANNEL_METADATA).map((channel) => (
             <option key={channel} value={channel}>{channel}</option>
           ))}
         </select>
 
-        <select value={filters.partnerId} onChange={(event) => setFilters((prev) => ({ ...prev, partnerId: event.target.value }))}>
+        <select title="Filter by assigned executive partner" value={filters.partnerId} onChange={(event) => setFilters((prev) => ({ ...prev, partnerId: event.target.value }))}>
           <option value="all">All advisors</option>
           {partners.map((partner) => (
             <option key={partner.id} value={partner.id}>{partner.name}</option>
@@ -680,22 +670,22 @@ export default function CRMKanban() {
       <div className="pipeline-metrics-row">
         <div className="metric-card-glass">
           <div className="metric-label">Visible Pipeline</div>
-          <div className="metric-value" style={{ color: 'var(--navy)' }}>{visibleStakeholders.length}</div>
+          <div className="metric-value color-navy">{visibleStakeholders.length}</div>
           <div className="metric-trend">Filtered operating view</div>
         </div>
         <div className="metric-card-glass">
           <div className="metric-label">Hot Prospects</div>
-          <div className="metric-value" style={{ color: '#dc2626' }}>{hotStakeholders}</div>
+          <div className="metric-value color-red">{hotStakeholders}</div>
           <div className="metric-trend">Immediate follow-up priority</div>
         </div>
         <div className="metric-card-glass">
           <div className="metric-label">Close Ready</div>
-          <div className="metric-value" style={{ color: 'var(--gold)' }}>{closeReady}</div>
+          <div className="metric-value color-gold">{closeReady}</div>
           <div className="metric-trend">Structuring + settlement</div>
         </div>
         <div className="metric-card-glass">
           <div className="metric-label">Pipeline Value</div>
-          <div className="metric-value" style={{ color: 'var(--success)' }}>
+          <div className="metric-value color-success">
             {pipelineValue > 0 ? `${(pipelineValue / 1000000).toFixed(1)}M` : '0'}
           </div>
           <div className="metric-trend">Estimated deal volume (EGP)</div>
@@ -703,7 +693,7 @@ export default function CRMKanban() {
         {PHASE_SEQUENCE.map(phase => (
           <div key={phase} className="metric-card-glass">
             <div className="metric-label">{PHASE_DEFS[phase].title}</div>
-            <div className="metric-value" style={{ color: PHASE_DEFS[phase].color }}>
+            <div className={`metric-value color-phase-${phase}`}>
               {visiblePipelineState[phase].length}
             </div>
             <div className="metric-trend">
@@ -723,10 +713,10 @@ export default function CRMKanban() {
               onDragLeave={() => setPhaseTarget(null)}
               onDrop={() => handlePhaseMigration(phase)}
             >
-              <div className="kanban-col-header-premium" style={{ '--accent': PHASE_DEFS[phase].color } as React.CSSProperties}>
+              <div className="kanban-col-header-premium" data-phase={phase}>
                 <div className="header-top">
                   <h3 className="col-title">{PHASE_DEFS[phase].title}</h3>
-                  <span className="col-badge" style={{ background: PHASE_DEFS[phase].color }}>{visiblePipelineState[phase].length}</span>
+                  <span className="col-badge">{visiblePipelineState[phase].length}</span>
                 </div>
                 <p className="col-sub">{PHASE_DEFS[phase].description}</p>
               </div>
@@ -801,7 +791,7 @@ export default function CRMKanban() {
 
               <div className="spec-group">
                 <label>Engagement Velocity</label>
-                <select value={stakeholderDraft.strategicIntensity} onChange={e => setStakeholderDraft(p => ({ ...p, strategicIntensity: e.target.value as any }))}>
+                <select title="Select engagement velocity" value={stakeholderDraft.strategicIntensity} onChange={e => setStakeholderDraft(p => ({ ...p, strategicIntensity: e.target.value as any }))}>
                   <option value="hot">Critical Intent / Hot</option>
                   <option value="warm">Proactive / Warm</option>
                   <option value="cold">Observational / Cold</option>
@@ -831,7 +821,7 @@ export default function CRMKanban() {
 
               <div className="spec-group">
                 <label>Assigned Executive Partner</label>
-                <select value={stakeholderDraft.assignedPartnerId} onChange={e => setStakeholderDraft(p => ({ ...p, assignedPartnerId: e.target.value }))}>
+                <select title="Select assigned executive partner" value={stakeholderDraft.assignedPartnerId} onChange={e => setStakeholderDraft(p => ({ ...p, assignedPartnerId: e.target.value }))}>
                   <option value="">Unassigned</option>
                   {partners.map(p => (
                     <option key={p.id} value={p.id}>{p.name}</option>
@@ -951,6 +941,12 @@ export default function CRMKanban() {
           box-shadow: 0 4px 12px rgba(0,0,0,0.02);
         }
 
+        .kanban-col-header-premium[data-phase="acquisition"] { --accent: var(--blue); }
+        .kanban-col-header-premium[data-phase="consultation"] { --accent: var(--blue-light); }
+        .kanban-col-header-premium[data-phase="inspection"] { --accent: var(--gold); }
+        .kanban-col-header-premium[data-phase="structuring"] { --accent: #10b981; }
+        .kanban-col-header-premium[data-phase="settlement"] { --accent: var(--navy); }
+
         .header-top {
           display: flex;
           align-items: center;
@@ -972,6 +968,7 @@ export default function CRMKanban() {
           font-weight: 700;
           padding: 2px 8px;
           border-radius: 12px;
+          background: var(--accent);
         }
 
         .col-sub {
@@ -1039,6 +1036,16 @@ export default function CRMKanban() {
           display: flex;
           align-items: center;
           gap: 4px;
+        }
+
+        .channel-icon.channel-whatsapp { color: #25D366; }
+        .channel-icon.channel-website { color: var(--blue); }
+        .channel-icon.channel-referral { color: var(--gold); }
+        .channel-icon.channel-instagram { color: #e11d48; }
+        .channel-icon.channel-walkin { color: var(--blue-light); }
+        
+        .channel-text-badge {
+          letter-spacing: 0.5px;
         }
 
         .intel-score {
@@ -1343,6 +1350,17 @@ export default function CRMKanban() {
           font-weight: 800;
           margin-bottom: 4px;
         }
+
+        .metric-value.color-navy { color: var(--navy); }
+        .metric-value.color-red { color: #dc2626; }
+        .metric-value.color-gold { color: var(--gold); }
+        .metric-value.color-success { color: var(--success); }
+        
+        .metric-value.color-phase-acquisition { color: var(--blue); }
+        .metric-value.color-phase-consultation { color: var(--blue-light); }
+        .metric-value.color-phase-inspection { color: var(--gold); }
+        .metric-value.color-phase-structuring { color: #10b981; }
+        .metric-value.color-phase-settlement { color: var(--navy); }
 
         .metric-trend {
           font-size: 10px;

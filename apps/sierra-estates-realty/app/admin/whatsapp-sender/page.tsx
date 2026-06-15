@@ -149,7 +149,7 @@ export default function WhatsAppSenderPage() {
   );
 
   return (
-    <div className="space-y-8" style={{ fontFamily: 'var(--font-body)' }}>
+    <div className="space-y-8">
       <SectionHeader
         eyebrow="Outbound Advisory Engine"
         title="WhatsApp Bulk Sender"
