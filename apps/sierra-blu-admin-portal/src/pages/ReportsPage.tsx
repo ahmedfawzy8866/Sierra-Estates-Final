@@ -22,8 +22,8 @@ const COMPOUNDS = [
 export function ReportsPage() {
   const [loaded, setLoaded] = useState(false);
   useEffect(() => {
-    const id = requestAnimationFrame(() => setLoaded(true));
-    return () => cancelAnimationFrame(id);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setLoaded(true);
   }, []);
 
   return (
