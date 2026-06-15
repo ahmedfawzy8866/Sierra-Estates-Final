@@ -7,9 +7,9 @@ import { Providers } from './providers';
 import '@/styles/globals.css';
 
 export const metadata: Metadata = {
-  title: { default: 'Sierra Estates — Luxury Real Estate New Cairo', template: '%s | Sierra Estates' },
-  description: 'Discover premium properties in New Cairo. Sierra Estates curates an exclusive portfolio of luxury residences, compounds, and investment assets.',
-  openGraph: { type: 'website', siteName: 'Sierra Estates' },
+  title: { default: 'Sierra Estates Admin Nexus', template: '%s | Admin Nexus' },
+  description: 'Agent coordination and workflow hub for Sierra Estates.',
+  openGraph: { type: 'website', siteName: 'Admin Nexus' },
 };
 
 export const viewport: Viewport = { themeColor: '#1B2B4B' };
@@ -31,7 +31,7 @@ export default async function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-sans antialiased bg-se-cream text-se-navy">
+      <body className="font-sans antialiased bg-[#0A1628] text-white">
         <NextIntlClientProvider messages={messages}>
           <Providers>{children}</Providers>
         </NextIntlClientProvider>
