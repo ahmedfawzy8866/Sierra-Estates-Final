@@ -6,7 +6,7 @@
  * Design: Quiet Luxury (Navy/Gold/Ivory)
  */
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Play } from 'lucide-react';
 
@@ -26,6 +26,8 @@ export default function PremiumHero({
   isArabic = false,
 }: PremiumHeroProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const bgRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const { scrollY } = useScroll();
 
   // Parallax effects
@@ -33,9 +35,31 @@ export default function PremiumHero({
   const contentY = useTransform(scrollY, [0, 500], [0, 100]);
   const contentOpacity = useTransform(scrollY, [0, 300], [1, 0]);
 
-  // Motion style variables to satisfy linter rules forbidding JSX inline style objects
-  const bgStyle = { y: bgY };
-  const contentStyle = { y: contentY, opacity: contentOpacity };
+  useEffect(() => {
+    const unsubBg = bgY.on('change', (latest) => {
+      if (bgRef.current) {
+        bgRef.current.style.transform = `translateY(${latest}px) translateZ(0)`;
+      }
+    });
+
+    const unsubContentY = contentY.on('change', (latest) => {
+      if (contentRef.current) {
+        contentRef.current.style.transform = `translateY(${latest}px) translateZ(0)`;
+      }
+    });
+
+    const unsubContentOpacity = contentOpacity.on('change', (latest) => {
+      if (contentRef.current) {
+        contentRef.current.style.opacity = String(latest);
+      }
+    });
+
+    return () => {
+      unsubBg();
+      unsubContentY();
+      unsubContentOpacity();
+    };
+  }, [bgY, contentY, contentOpacity]);
 
   return (
     <section
@@ -46,14 +70,12 @@ export default function PremiumHero({
       {/* --- BACKGROUND HERO IMAGE LAYERS --- */}
 
       {/* Primary Hero Image with Parallax */}
-      {/* eslint-disable-next-line */}
-      {/* noinspection CssInlineStyle */}
-      <motion.div
-        style={{ y: bgY }}
+      <div
+        ref={bgRef}
         className="absolute inset-0 w-full h-full"
       >
         <div className="w-full h-full bg-cover bg-center bg-fixed bg-[url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2000&fit=crop')]" />
-      </motion.div>
+      </div>
 
       {/* --- OVERLAY LAYERS --- */}
 
@@ -69,10 +91,8 @@ export default function PremiumHero({
       />
 
       {/* --- CONTENT --- */}
-      {/* eslint-disable-next-line */}
-      {/* noinspection CssInlineStyle */}
-      <motion.div
-        style={{ y: contentY, opacity: contentOpacity }}
+      <div
+        ref={contentRef}
         className="relative z-10 text-center max-w-4xl px-6 md:px-12"
       >
         {/* Badge */}
@@ -131,7 +151,7 @@ export default function PremiumHero({
             {ctaLabel}
           </motion.button>
         </motion.div>
-      </motion.div>
+      </div>
 
       {/* --- SCROLL INDICATOR --- */}
       <motion.div
