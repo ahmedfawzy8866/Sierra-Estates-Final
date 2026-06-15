@@ -9,9 +9,10 @@
     "build": "tsc"
   },
   "dependencies": {
+    "@google/genai": "^2.8.0",
     "@sierra-estates/exchange": "workspace:*",
-    "firebase": "^10.8.0",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "firebase": "^10.8.0"
   },
   "devDependencies": {
     "tsx": "^4.7.1",
