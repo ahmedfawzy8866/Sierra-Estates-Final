@@ -44,7 +44,7 @@ export function Hero() {
             {([['value_properties','500+'],['stat_years','12+'],['stat_portfolio','EGP 2B+']] as const).map(([k,v])=>(
               <div key={k}>
                 <p className="font-display text-3xl text-se-gold">{v}</p>
-                <p className="text-white/40 text-sm mt-1">{t(k as any)}</p>
+                <p className="text-white/40 text-sm mt-1">{t(k as 'value_properties' | 'stat_years' | 'stat_portfolio')}</p>
               </div>
             ))}
           </motion.div>

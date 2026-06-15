@@ -1,51 +1,115 @@
-# CLAUDE.md — Sierra Estates (Final)
+# CLAUDE.md — Sierra Estates (i-sierra-2027)
 
 Context for Claude Code / AI sessions. Keep this updated as the project evolves.
 
 ## What this is
-**Sierra Estates** — a luxury PropTech platform for the New Cairo market. Consolidated final monorepo combining all previous repositories (`i-sierra-2027`, `sierra-2026`, `68e...`, `sierra-blu-realty`, `28-5-Si`) into one clean, production-ready codebase.
 
-## Brand Identity
-- **Name:** Sierra Estates (not Sierra Blu, not Sierra Blue)
-- **Design Language:** "Quiet Luxury" — Navy (#1B2B4B) + Gold (#C5A55A)
-- **Terminology:** "Investment Stakeholders" (not leads), "Strategic Pipeline" (not CRM), "Portfolio Assets" (not listings)
-- **Languages:** English + Arabic (RTL support via next-intl)
+Sierra Estates — a luxury real-estate (PropTech) platform for the New Cairo market. pnpm + Turborepo monorepo.
 
 ## Stack
-Next.js 15 (App Router, Turbopack) · React 19 · TypeScript 5 (strict) · Tailwind 4 · Firebase (client SDK 11 + Admin SDK 13) · next-intl (en/ar) · **Docker n8n** (`localhost:5678`) · Python FastAPI.
+
+Next.js 16 (App Router, Turbopack) · React 19 · TypeScript 5 (strict) · Tailwind 4 · Firebase (client SDK 12 + Admin SDK 13: Firestore, Storage, Auth) · Leaflet maps · next-intl (en/ar) · **Docker n8n Workflow Engine** (`localhost:5678`) · Python API (Docker/Cloud Run). Observability: OpenTelemetry + Arize.
+
+## Deployment Architecture (authoritative)
+
+```
+ONE Vercel deployment → apps/sierra-estates-realty (Next.js)
+  /                  Public site: listings, search, about, contact
+  /listings          Property marketplace
+  /concierge/[id]    Client portfolio views
+  /admin/login       Staff authentication (Firebase Auth)
+  /admin            Unified admin dashboard (tabbed interface)
+    Dashboard        → KPIs, activity feed, sync health
+    Units            → Inventory CRUD, PropertyFinder publish
+    Leads            → CRM, AI matching, approvals
+    Deals            → Pipeline management (draft → closed)
+    Team             → Staff management
+    Media            → Asset hub
+    Reports          → Analytics & insights
+    Settings         → System configuration
+  /api/*             All backend APIs (auth-guarded per route)
+
+Firebase — infrastructure ONLY (no hosting)
+  Firestore          Database (staff-gated rules in firestore.rules)
+  Storage            Media (rules in storage.rules)
+  Auth               Authentication
+  Functions          Background jobs (functions/)
+```
+
+**Admin lives in ONE place**: `apps/sierra-estates-realty/app/admin/` (the old `sierra-estates-admin-portal` placeholder app was removed June 2026).
+
+## Config files
+
+- `vercel.json` (root) — Vercel config when root dir = repo root (buildCommand points to the realty app)
+- `apps/sierra-estates-realty/vercel.json` — Vercel config when root dir = `apps/sierra-estates-realty` in Vercel dashboard
+- `firebase.json` — Functions + Firestore rules + Storage rules + emulators (no hosting)
+- `.firebaserc` — Firebase project: `sierra-estates-prod`
 
 ## Layout
-```
-sierra-estates-final/
-├── apps/
-│   ├── web/                  ← Public hub (Next.js 15, Tailwind 4, bilingual)
-│   ├── admin/                ← Admin portal (Vite + React)
-│   ├── api/                  ← Python FastAPI (Property Finder sync, AI)
-│   └── agents/
-│       ├── stage-9-closer/   ← THE CLOSER: deal orchestration (Stage 9+10)
-│       └── whatsapp-scraper/ ← WhatsApp group scraper bot
-├── functions/                ← Firebase Cloud Functions (collectData, processDataForApp)
-├── packages/
-│   ├── db/                   ← Shared Firestore data layer
-│   └── agents-core/          ← Agent orchestration framework (15+ personas)
-├── workflows/                ← n8n automation (5 workflows + 4 templates)
-└── docs/obsidian-vault/
-```
 
-## Commands
+- `apps/sierra-estates-realty` — main Next.js app and the real codebase (public site + admin suite + all API routes).
+- `apps/api` — standalone Python service (Docker/Cloud Run): PropertyFinder sync + bot integration.
+- `functions` — Firebase Cloud Functions (ingestion pipeline: collectData, processDataForApp, + pure transform module).
+- `packages/*` — shared workspace packages. The realty app consumes `@sierra-estates/memory-engine`; `packages/db` holds the shared Firestore data layer.
+- `workflows` — Node scripts for the external data-sync pipeline, run on schedule by `.github/workflows/external-workflows.yml`.
+
+## Commands (from repo root)
+
 - `pnpm install`
-- `pnpm dev` — starts all apps (web :3000, admin :3001, API :8000)
-- `pnpm build` / `pnpm lint` / `pnpm type-check`
-- `docker-compose -f docker-compose.n8n.yml up -d` — n8n on :5678
+- `pnpm dev` — start Next.js web app (the main app)
+- `pnpm build` — build the web app
+- `pnpm lint` / `pnpm type-check` / `pnpm test:ci`
+- `pnpm deploy:rules` — deploy Firestore + Storage rules
+- `pnpm deploy:functions` — deploy Cloud Functions
+- Tests: Jest (realty app) + functions. `type-check` is a real CI gate (`tsc --noEmit`). `apps/sierra-estates-realty/next.config.ts` has `ignoreBuildErrors: false`.
 
-## Auth Model
-- Client role: Firestore `users/{uid}.role` in {admin, manager, agent}
-- Server: `verifyRequest()` — Firebase Bearer token OR `X-SE-SECRET-KEY` header
-- Firestore rules: public catalog readable; staff-gated for leads/deals/PII
+## Vercel Setup (one-time in dashboard)
 
-## Intelligence Pipeline
-1. WhatsApp Scraper → `/api/webhooks/whatsapp`
-2. `collectData` Cloud Function → `rawScrapeData`
-3. `processDataForApp` → `processedData`
-4. Matching Engine → stakeholders
-5. Stage-9 Closer Agent → deals → proposals → e-sign
+Current choice — **Root Directory = repo root**, driven by the root `vercel.json`:
+
+- Framework Preset: `Next.js`
+- Build Command: `pnpm run build` (builds the realty app via workspace filter)
+- Install Command: `pnpm install`
+- Output Directory: `apps/sierra-estates-realty/.next` (set in root `vercel.json`)
+
+Fallback if Vercel reports "No Next.js version detected" from the repo root: set
+Root Directory = `apps/sierra-estates-realty` (the app has its own `vercel.json`) — this is
+Vercel's natively-supported monorepo pattern and needs no repo changes.
+
+## Conventions
+
+- ESLint flat config (`apps/sierra-estates-realty/eslint.config.mjs`) with `eslint-plugin-unused-imports`; unused vars/args/caught-errors must be `_`-prefixed.
+- `apps/sierra-estates-realty/tsconfig.json` excludes `agents/**` and `public/**` from type-check.
+- Privileged server work uses the **Admin SDK** (`@/lib/server/firebase-admin`) which BYPASSES Firestore rules. Client uses `@/lib/firebase`.
+
+## Auth model (important)
+
+- Client role: read from Firestore `users/{uid}.role` in {admin, manager, agent} (see `lib/AuthContext.tsx`).
+- Server admin check: `verifyAdminRequest` (`lib/server/auth-guard.ts`) — Firebase Bearer token with `role==='admin'`. `verifyRequest` also accepts the `X-SBR-SECRET-KEY` header for service/cron calls.
+- Edge middleware (`apps/sierra-estates-realty/middleware.ts`) matches ONLY `/api/orchestrate` — it is NOT broad protection.
+- Admin page protection: client-side auth guard in `app/admin/layout.tsx` — redirects to `/admin/login` if not authenticated.
+- Firestore/Storage security rules are staff-gated via `users/{uid}.role` (see `firestore.rules`) — pending deploy (see NEXT_STEPS.md).
+
+## API Auth (hardened)
+
+- Admin-only: `viewing-requests`, `concierge/send-whatsapp`, `telegram/setup`, `wealth/roi` → `verifyAdminRequest`
+- Service+token: `admin/ingest` → `verifyRequest` (Firebase token OR X-SBR-SECRET-KEY)
+- Webhook secret: `telegram/webhook`, `whatsapp/webhook`, `ingest/whatsapp` → conditional SBR_SECRET_KEY check
+- Public: `listings`, `leads`, `leads/request-viewing`, `closer/initiate`, `concierge/[leadId]`, `wealth/portfolio`, `whatsapp/heartbeat`
+
+## Reality check
+
+Pre-production. Some services are mock/scaffolded (`MockAIService`, unwired i18n). Test coverage is thin. Older `STATUS.md`/`TODO.md` are aspirational/stale.
+
+## Obsidian Memory Engine & AI Sourcing
+
+- **Vault Location:** `docs/obsidian-vault/` contains the core cognitive and database architecture notes.
+- **Rules of Engagement:** For every new task, feature, or bugfix, the AI agent MUST search and read the relevant node in the Obsidian vault (e.g. `Sourcing Pipeline & Lead Aggregator.md`, `WhatsApp CRM & Hand-off Pipeline.md`).
+- **Graph Alignment:** Maintain double-bracket `[[Links]]` when editing vault files to preserve the Obsidian graph view.
+
+## Constraints for AI sessions
+
+- GitHub access is scoped to `ahmedfawzy8866/i-sierra-2027` only — do not touch other repos.
+- The `main` branch is protected on GitHub. Direct commits are blocked. Never force-push or delete `main`.
+- For all changes, checkout a new branch, push it to remote, and open a Pull Request.
+- Do not deploy without explicit approval. Never place API keys or credentials in raw code or in chat.

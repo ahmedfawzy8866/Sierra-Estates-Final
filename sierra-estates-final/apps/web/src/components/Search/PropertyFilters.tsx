@@ -1,6 +1,5 @@
 'use client';
 import { useRouter, usePathname } from 'next/navigation';
-import { useLocale } from 'next-intl';
 import { useState } from 'react';
 import { SlidersHorizontal, ChevronDown } from 'lucide-react';
 import { clsx } from 'clsx';
@@ -12,7 +11,6 @@ interface PropertyFiltersProps {
 export function PropertyFilters({ initialParams }: PropertyFiltersProps) {
   const router   = useRouter();
   const pathname = usePathname();
-  const locale   = useLocale();
   const [expanded, setExpanded] = useState<Record<string,boolean>>({ type:true, price:true, beds:true });
   const [type, setType]         = useState(initialParams.type ?? '');
   const [minPrice, setMinPrice] = useState(initialParams.minPrice ?? '');

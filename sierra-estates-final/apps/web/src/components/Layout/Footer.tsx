@@ -29,7 +29,7 @@ export function Footer() {
             <h4 className="text-se-gold text-xs tracking-[0.2em] uppercase mb-5">{t('navigation')}</h4>
             <ul className="space-y-3">
               {[['properties','/properties'],['new_projects','/projects'],['about','/about'],['contact','/contact'],['careers','/careers']].map(([k,h])=>(
-                <li key={k}><Link href={`/${locale}${h}`} className="text-white/50 hover:text-white text-sm transition-colors">{t(k as any)}</Link></li>
+                <li key={k}><Link href={`/${locale}${h}`} className="text-white/50 hover:text-white text-sm transition-colors">{t(k as Parameters<typeof t>[0])}</Link></li>
               ))}
             </ul>
           </div>

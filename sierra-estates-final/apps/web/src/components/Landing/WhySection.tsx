@@ -24,8 +24,8 @@ export function WhySection() {
               <div className="w-12 h-12 bg-se-cream rounded-lg flex items-center justify-center mb-5 group-hover:bg-se-gold/10 transition-colors">
                 <Icon className="w-5 h-5 text-se-gold" />
               </div>
-              <h3 className="font-display text-xl text-se-navy mb-2">{t(`${key}.title` as any)}</h3>
-              <p className="text-se-muted text-sm leading-relaxed">{t(`${key}.desc` as any)}</p>
+              <h3 className="font-display text-xl text-se-navy mb-2">{t(`${key}.title` as Parameters<typeof t>[0])}</h3>
+              <p className="text-se-muted text-sm leading-relaxed">{t(`${key}.desc` as Parameters<typeof t>[0])}</p>
             </motion.div>
           ))}
         </div>
