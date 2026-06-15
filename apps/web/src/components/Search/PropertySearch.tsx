@@ -37,7 +37,7 @@ export function PropertySearch() {
             {SALE_TYPES.map(st => (
               <button key={st} onClick={() => setSaleType(st)}
                 className={clsx('px-5 py-2 text-sm rounded-md transition-all', saleType === st ? 'bg-se-navy text-white shadow-sm' : 'text-se-navy/60 hover:text-se-navy')}>
-                {t(`sale_type.${st}` as any)}
+                {t(`sale_type.${st}` as Parameters<typeof t>[0])}
               </button>
             ))}
           </div>
@@ -52,7 +52,7 @@ export function PropertySearch() {
               <Home className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-se-gold" />
               <select value={type} onChange={e=>setType(e.target.value)}
                 className="w-full pl-10 pr-4 py-3.5 border border-se-stone rounded-lg text-se-navy text-sm bg-white appearance-none focus:outline-none focus:border-se-gold">
-                {TYPES.map(pt => <option key={pt} value={pt}>{t(`property_type.${pt}` as any)}</option>)}
+                {TYPES.map(pt => <option key={pt} value={pt}>{t(`property_type.${pt}` as Parameters<typeof t>[0])}</option>)}
               </select>
             </div>
             <div className="flex items-stretch gap-2">

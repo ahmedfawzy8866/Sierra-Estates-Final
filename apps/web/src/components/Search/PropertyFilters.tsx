@@ -1,6 +1,5 @@
 'use client';
 import { useRouter, usePathname } from 'next/navigation';
-import { useLocale } from 'next-intl';
 import { useState } from 'react';
 import { SlidersHorizontal, ChevronDown } from 'lucide-react';
 import { clsx } from 'clsx';
