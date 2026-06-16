@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import { Providers } from './providers';
+import useLenis from '@/lib/lenis';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import './styles/design.css';
@@ -30,6 +30,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  useLenis();
   return (
     <html lang="en" suppressHydrationWarning className={inter.variable}>
       <head>

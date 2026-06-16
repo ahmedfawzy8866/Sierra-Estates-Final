@@ -17,6 +17,7 @@ import TestimonialsCarousel from '@/components/UI/TestimonialsCarousel';
 import VirtualTour3D from '@/components/UI/VirtualTour3D';
 import ROICalculator from '@/components/UI/ROICalculator';
 import MobileBottomNav from '@/components/UI/MobileBottomNav';
+import KimiWidget from '@/components/KimiWidget';
 import InventoryShowcase from '@/components/Listings/InventoryShowcase';
 
 // ─── TRANSLATION DICTIONARY ───────────────────────────────────────────────────
@@ -184,6 +185,7 @@ export default function UnifiedHomepage() {
               onSearch={handleSearch}
               isArabic={isAr}
             />
+            <KimiWidget theme={isAr ? 'dark' : 'light'} />
 
             {/* Stats Bar */}
             <section className="py-12 px-6 bg-[#071422] dark:bg-[#050c14]">
