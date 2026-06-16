@@ -28,7 +28,7 @@
   --color-pinblue:                  #1E88D9;
 
   /* Typography */
-  --font-display: 'Manrope', sans-serif;
+  --font-display: 'Playfair Display', serif;
   --font-body:    'Inter', sans-serif;
   --font-arabic:  'Tajawal', sans-serif;
   --font-serif:   'Cormorant Garamond', serif;
@@ -63,7 +63,7 @@
   --outline-variant:          rgba(7, 20, 34, 0.08);
   --pinblue:                  #1E88D9;
 
-  --font-display: 'Manrope', sans-serif;
+  --font-display: 'Playfair Display', serif;
   --font-body:    'Inter', sans-serif;
   --font-arabic:  'Tajawal', sans-serif;
   --font-serif:   'Cormorant Garamond', serif;
