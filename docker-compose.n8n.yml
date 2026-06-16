@@ -1,8 +1,10 @@
 version: '3.8'
 
-# Sierra Estates — n8n Workflow Automation Engine
-# docker-compose -f docker-compose.n8n.yml up -d
-# Dashboard: http://localhost:5678
+# 🌌 Sierra Estates 2027 — Self-Hosted n8n Workflow Automation Engine
+# Usage:
+#   docker-compose -f docker-compose.n8n.yml up -d
+#
+# Dashboard will be available at: http://localhost:5678
 
 services:
   n8n:
@@ -13,7 +15,7 @@ services:
       - "5678:5678"
     environment:
       - N8N_PORT=5678
-      - N8N_SECURE_COOKIE=false
+      - N8N_SECURE_COOKIE=false # Set to true when running over HTTPS (production)
       - GENERIC_TIMEZONE=Africa/Cairo
       - TZ=Africa/Cairo
     volumes:

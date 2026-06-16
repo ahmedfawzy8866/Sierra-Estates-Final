@@ -21,7 +21,6 @@
   "author": "Sierra Estates Team",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^20",
     "typescript": "^5.0.0"
   },
   "exports": {

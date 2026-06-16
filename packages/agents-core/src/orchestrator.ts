@@ -1,91 +1,201 @@
-import { subscribeAgentTasks, updateExchange, type ExchangeRecord } from '@sierra-estates/exchange/exchange-client';
-import type { Unsubscribe } from 'firebase/firestore';
-import type { BaseAgent } from './base-agent';
+import { registry } from './registry';
+import { obedian } from '@sierra-estates/obedian';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-export class Orchestrator {
-  private activeLocks = new Set<string>();
-  private unsubscribeFn?: Unsubscribe;
-  private registeredAgents = new Map<string, BaseAgent>();
+export interface OrchestratorConfig {
+  apiKey?: string;
+  defaultModel?: string;
+  runCompletion?: (agentName: string, stage: string, systemPrompt: string, userPrompt: string) => Promise<string>;
+}
 
-  constructor(agents: BaseAgent[]) {
-    for (const agent of agents) {
-      this.registeredAgents.set(agent.name, agent);
+export interface TaskResult {
+  agentName: string;
+  status: 'success' | 'failed';
+  output: string;
+  error?: string;
+}
+
+export class AgentOrchestrator {
+  private genAI: GoogleGenerativeAI | null = null;
+  private defaultModel: string;
+  private runCompletionCustom?: OrchestratorConfig['runCompletion'];
+
+  constructor(config: OrchestratorConfig = {}) {
+    const apiKey = config.apiKey || process.env.GOOGLE_AI_API_KEY;
+    if (apiKey) {
+      this.genAI = new GoogleGenerativeAI(apiKey);
     }
+    this.defaultModel = config.defaultModel || 'gemini-flash-latest';
+    this.runCompletionCustom = config.runCompletion;
   }
 
-  public start() {
-    console.log(`[Orchestrator] Starting listener for agent tasks...`);
-    console.log(`[Orchestrator] Registered agents: ${Array.from(this.registeredAgents.keys()).join(', ')}`);
+  /**
+   * Helper to execute completions, using custom callback or direct SDK
+   */
+  private async executeCompletion(
+    agentName: string,
+    stage: string,
+    systemPrompt: string,
+    userPrompt: string
+  ): Promise<string> {
+    if (this.runCompletionCustom) {
+      return this.runCompletionCustom(agentName, stage, systemPrompt, userPrompt);
+    }
 
-    // Listen to Firebase Exchange collection for tasks assigned to any agent
-    this.unsubscribeFn = subscribeAgentTasks((records) => {
-      for (const record of records) {
-        this.processRecord(record);
-      }
+    if (!this.genAI) {
+      throw new Error(
+        `[AgentOrchestrator] Direct execution failed: GOOGLE_AI_API_KEY is not configured.`
+      );
+    }
+
+    const model = this.genAI.getGenerativeModel({
+      model: this.defaultModel,
+      generationConfig: { temperature: 0.2 },
+      systemInstruction: systemPrompt,
     });
+
+    const result = await model.generateContent(userPrompt);
+    return result.response.text();
   }
 
-  public stop() {
-    if (this.unsubscribeFn) {
-      this.unsubscribeFn();
-      this.unsubscribeFn = undefined;
-      console.log(`[Orchestrator] Stopped listener.`);
+  /**
+   * Query all shared knowledge stored in Obedian Memory
+   */
+  async getSharedKnowledge(): Promise<string> {
+    const memories = await obedian.search('', ['shared-knowledge']);
+    if (memories.length === 0) {
+      return 'No prior shared knowledge found.';
     }
+
+    return memories
+      .map(
+        (m) =>
+          `[Source: ${m.id} | Date: ${m.updatedAt}]\nTags: ${m.tags.join(', ')}\nContent: ${
+            typeof m.value === 'string' ? m.value : JSON.stringify(m.value, null, 2)
+          }`
+      )
+      .join('\n\n---\n\n');
   }
 
-  private async processRecord(record: ExchangeRecord) {
-    // Only process pending records
-    if (record.status !== 'pending') return;
-    
-    // Prevent double processing in the current Node instance
-    if (this.activeLocks.has(record.id)) return;
-    this.activeLocks.add(record.id);
+  /**
+   * Add new knowledge to the shared memory pool
+   */
+  async addSharedKnowledge(id: string, value: any, tags: string[] = []): Promise<void> {
+    const allTags = ['shared-knowledge', ...tags];
+    await obedian.set(id, value, allTags);
+  }
+
+  /**
+   * Executes a single agent task. The system prompt is automatically enriched
+   * with the shared knowledge of all other agents from Obedian memory.
+   */
+  async runAgentTask(
+    agentName: string,
+    taskDescription: string,
+    additionalContext?: string
+  ): Promise<TaskResult> {
+    console.log(`[Orchestrator] Starting task for agent: ${agentName}`);
+
+    const agent = registry.getAgent(agentName);
+    if (!agent) {
+      return {
+        agentName,
+        status: 'failed',
+        output: '',
+        error: `Agent "${agentName}" not found in registry.`,
+      };
+    }
 
     try {
-      // Look up the targeted agent
-      const targetAgentId = record.agentId;
-      if (!targetAgentId) {
-        throw new Error('No agentId specified in task');
-      }
+      // 1. Fetch Shared Knowledge from Obedian Memory
+      const sharedIntel = await this.getSharedKnowledge();
 
-      const agent = this.registeredAgents.get(targetAgentId);
-      if (!agent) {
-        throw new Error(`Agent ${targetAgentId} not found or not registered.`);
-      }
+      // 2. Synthesize System Prompt containing the Agent's profile + Shared Knowledge
+      const enrichedSystemPrompt = `
+${agent.systemPrompt}
 
-      // Mark the task as running
-      console.log(`[Orchestrator] Picking up task ${record.id} for agent ${targetAgentId}`);
-      await updateExchange(record.id, {
-        status: 'running',
-      });
+=========================================
+🧠 SHARED COGNITIVE MEMORY (OBEDIAN STORE)
+=========================================
+All agents share the knowledge below. You must use this context to inform your decision-making and ensure alignment with other specialists' progress and findings:
 
-      // Execute the agent
-      const result = await agent.execute(record);
+${sharedIntel}
+=========================================
+`;
 
-      // Mark the task as done or error based on result
-      if (result.success) {
-        await updateExchange(record.id, {
-          status: 'done',
-          result: result.data,
-          progress: 100,
-        });
-      } else {
-        await updateExchange(record.id, {
-          status: 'error',
-          error: result.error,
-        });
-      }
+      // 3. Synthesize User Prompt
+      const userPrompt = `
+TASK DESCRIPTION:
+${taskDescription}
 
-    } catch (error: any) {
-      console.error(`[Orchestrator] Error processing task ${record.id}:`, error);
-      // Try to mark as error in Firestore
-      await updateExchange(record.id, {
-        status: 'error',
-        error: error.message || 'Unknown error occurred in orchestrator.',
-      }).catch(err => console.error(`Failed to update status to error for ${record.id}`, err));
-    } finally {
-      // Release local lock
-      this.activeLocks.delete(record.id);
+${additionalContext ? `ADDITIONAL CONTEXT:\n${additionalContext}` : ''}
+
+Please execute this task and return your final response/results. Ensure your response is detailed, professional, and directly addresses the goal.
+`;
+
+      // 4. Execute Completion
+      const output = await this.executeCompletion(
+        agent.name,
+        'execute-task',
+        enrichedSystemPrompt.trim(),
+        userPrompt.trim()
+      );
+
+      // 5. Save the output to Shared Memory so other agents learn from this execution
+      await this.addSharedKnowledge(
+        `agent-task-${agentName}-${Date.now()}`,
+        {
+          taskDescription,
+          output,
+        },
+        [agentName, 'task-execution']
+      );
+
+      return {
+        agentName,
+        status: 'success',
+        output,
+      };
+    } catch (err: any) {
+      console.error(`[Orchestrator] Failed task execution for ${agentName}:`, err);
+      return {
+        agentName,
+        status: 'failed',
+        output: '',
+        error: err.message || String(err),
+      };
     }
+  }
+
+  /**
+   * Coordinated pipeline execution. Orchestrates multiple agents in sequence.
+   */
+  async orchestratePipeline(
+    pipelineName: string,
+    steps: Array<{ agentName: string; taskDescription: string }>,
+    initialContext?: string
+  ): Promise<TaskResult[]> {
+    console.log(`🚀 [Orchestrator] Running coordinated pipeline: ${pipelineName}`);
+    
+    // Save initial context to shared memory
+    if (initialContext) {
+      await this.addSharedKnowledge(`${pipelineName}-initial-context`, initialContext, ['pipeline-context']);
+    }
+
+    const results: TaskResult[] = [];
+
+    for (const step of steps) {
+      const result = await this.runAgentTask(
+        step.agentName,
+        step.taskDescription,
+        `Pipeline Step Context: Running pipeline "${pipelineName}"`
+      );
+      results.push(result);
+      if (result.status === 'failed') {
+        console.warn(`⚠️ [Orchestrator] Step failed for ${step.agentName}. Continuing pipeline...`);
+      }
+    }
+
+    return results;
   }
 }

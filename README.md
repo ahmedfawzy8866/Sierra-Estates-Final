@@ -24,6 +24,7 @@ i-sierra-2027/
 │   │   ├── main.py            # FastAPI entry point
 │   │   ├── requirements.txt   # Python dependencies
 │   │   └── Dockerfile         # Container definition
+│   └── sierra-estates-admin-portal/  # DEPRECATED — do not deploy
 ├── packages/
 │   ├── agents-core/           # Multi-agent framework & AI services
 │   ├── db/                    # Firestore models & schema
