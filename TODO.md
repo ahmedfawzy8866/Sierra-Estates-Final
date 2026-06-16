@@ -28,7 +28,6 @@ Aligned with STATUS.md. Sorted by deployment-readiness (pre-deploy → post-depl
 - [ ] **Consolidate secrets**: Move web app from Vercel to Firebase Hosting + Functions for unified secrets/deployment (lower priority)
 
 ## 🐛 Known Issues (low-priority)
-- Mock services: MockAIService, MockMatchingService (should be replaced when real service is ready)
 - i18n: next-intl wired but underutilized in some flows
 - Test coverage: 47 tests passing, but overall coverage ~45%; expand for critical paths
 
