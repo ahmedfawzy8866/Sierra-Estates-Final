@@ -12,7 +12,8 @@
   "scripts": {
     "test": "jest --passWithNoTests",
     "test:ci": "jest --ci --passWithNoTests",
-    "deploy": "firebase deploy --only functions"
+    "deploy": "firebase deploy --only functions",
+    "build": "echo 'No build step required'"
   },
   "private": true
 }

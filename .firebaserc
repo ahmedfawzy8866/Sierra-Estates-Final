@@ -1,6 +1,19 @@
 {
   "projects": {
-    "default": "sierra-estates-prod",
-    "production": "sierra-estates-prod"
+    "default": "sierra-blu",
+    "production": "sierra-blu"
+  },
+  "targets": {
+    "sierra-blu": {
+      "hosting": {
+        "sierra-estates-main": [
+          "sierra-blu"
+        ],
+        "sierra-estates-admin": [
+          "admin-sierra-blu",
+          "sierra-estates-admin"
+        ]
+      }
+    }
   }
 }
