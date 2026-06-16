@@ -279,3 +279,180 @@ section {
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover { background: var(--secondary); }
+
+/* ============================================================================
+   SIERRA ESTATES DESIGN SYSTEM TOKENS
+   ============================================================================ */
+
+:root {
+  /* Primary Navy & Elevation */
+  --navy: #0A1628;
+  --navy-deep: #142850;
+  --navy-light: #1A2F4D;
+  
+  /* Sky Blue (Accent) */
+  --sky: #2B5A9E;
+  --sky-light: #4A7BC4;
+  --sky-lighter: #6FA8E0;
+  
+  /* Text & Surfaces */
+  --ivory: #F4F0E8;
+  --ivory-90: rgba(244, 240, 232, 0.90);
+  --ivory-80: rgba(244, 240, 232, 0.80);
+  --ivory-60: rgba(244, 240, 232, 0.60);
+  --ivory-40: rgba(244, 240, 232, 0.40);
+  --ivory-20: rgba(244, 240, 232, 0.20);
+  
+  /* Status Colors */
+  --status-success: #1E8B7A;
+  --status-info: #3B82F6;
+  --status-warning: #C97D3D;
+  --status-error: #DC2626;
+  
+  /* Semantic Surface Colors */
+  --bg-primary: var(--navy);
+  --bg-secondary: var(--navy-deep);
+  --bg-surface: rgba(255, 255, 255, 0.04);
+  --bg-surface-hover: rgba(255, 255, 255, 0.08);
+  --bg-elevation-1: rgba(255, 255, 255, 0.06);
+  
+  /* Border Colors */
+  --border-default: rgba(255, 255, 255, 0.05);
+  --border-light: rgba(255, 255, 255, 0.02);
+  --border-accent: rgba(43, 90, 158, 0.15);
+  --border-focus: var(--sky);
+  
+  /* Text Colors */
+  --text-primary: var(--ivory);
+  --text-secondary: var(--ivory-80);
+  --text-tertiary: var(--ivory-60);
+  --text-muted: var(--ivory-40);
+  --text-disabled: var(--ivory-20);
+  
+  /* Interactive Colors */
+  --link-default: var(--sky);
+  --link-hover: var(--sky-light);
+  --link-active: var(--sky);
+  --link-visited: #8B7BA8;
+}
+
+:root {
+  /* Font Families */
+  --font-se-display: 'Playfair Display', serif;
+  --font-se-ui: 'Inter', sans-serif;
+  --font-se-arabic: 'Cairo', sans-serif;
+  
+  /* Display Sizes (English Headlines) */
+  --display-xl-size: 3.5rem;
+  --display-xl-line: 1.2;
+  --display-xl-weight: 600;
+  
+  --display-l-size: 2.8rem;
+  --display-l-line: 1.2;
+  --display-l-weight: 500;
+  
+  /* Heading Sizes */
+  --h1-size: 2.2rem;
+  --h1-line: 1.3;
+  --h1-weight: 600;
+  
+  --h2-size: 1.8rem;
+  --h2-line: 1.3;
+  --h2-weight: 600;
+  
+  --h3-size: 1.4rem;
+  --h3-line: 1.4;
+  --h3-weight: 600;
+  
+  --h4-size: 1.2rem;
+  --h4-line: 1.4;
+  --h4-weight: 600;
+  
+  /* Body Text */
+  --body-lg-size: 1.125rem;
+  --body-lg-line: 1.6;
+  --body-lg-weight: 400;
+  
+  --body-size: 1rem;
+  --body-line: 1.6;
+  --body-weight: 400;
+  
+  --body-sm-size: 0.875rem;
+  --body-sm-line: 1.5;
+  --body-sm-weight: 400;
+}
+
+/* ============================================================================
+   SEMANTIC TEXT STYLES (Ready-to-use)
+   ============================================================================ */
+
+/* Display XL (Hero Headlines) */
+.display-xl {
+  font-family: var(--font-se-display);
+  font-size: var(--display-xl-size);
+  line-height: var(--display-xl-line);
+  font-weight: var(--display-xl-weight);
+  color: var(--text-primary);
+}
+
+/* Display L (Section Headers) */
+.display-l {
+  font-family: var(--font-se-display);
+  font-size: var(--display-l-size);
+  line-height: var(--display-l-line);
+  font-weight: var(--display-l-weight);
+  color: var(--text-primary);
+}
+
+/* H1 (Page Titles) */
+.h1 {
+  font-family: var(--font-se-display);
+  font-size: var(--h1-size);
+  line-height: var(--h1-line);
+  font-weight: var(--h1-weight);
+  color: var(--text-primary);
+}
+
+/* H2 (Section Headers) */
+.h2 {
+  font-family: var(--font-se-display);
+  font-size: var(--h2-size);
+  line-height: var(--h2-line);
+  font-weight: var(--h2-weight);
+  color: var(--text-primary);
+}
+
+/* H3 (Card Titles) */
+.h3 {
+  font-family: var(--font-se-ui);
+  font-size: var(--h3-size);
+  line-height: var(--h3-line);
+  font-weight: var(--h3-weight);
+  color: var(--text-primary);
+}
+
+/* Body Large */
+.body-lg {
+  font-family: var(--font-se-ui);
+  font-size: var(--body-lg-size);
+  line-height: var(--body-lg-line);
+  font-weight: var(--body-lg-weight);
+  color: var(--text-primary);
+}
+
+/* Body (Default) */
+.body {
+  font-family: var(--font-se-ui);
+  font-size: var(--body-size);
+  line-height: var(--body-line);
+  font-weight: var(--body-weight);
+  color: var(--text-primary);
+}
+
+/* Arabic Text */
+[lang="ar"] .arabic-ready {
+  font-family: var(--font-se-arabic);
+  direction: rtl;
+  text-align: right;
+}
+
