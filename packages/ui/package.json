@@ -6,9 +6,12 @@
   "types": "src/index.ts",
   "private": true,
   "dependencies": {
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.40.0",
+    "lucide-react": "^1.7",
     "react": "^19",
     "react-dom": "^19",
-    "lucide-react": "^1.7"
+    "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
     "@types/node": "^20",
