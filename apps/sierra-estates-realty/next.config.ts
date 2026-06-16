@@ -1,7 +1,4 @@
 import type { NextConfig } from "next";
-import createNextIntlPlugin from 'next-intl/plugin';
-
-const withNextIntl = createNextIntlPlugin('./lib/i18n.ts');
 
 // Packages that use Node.js native binaries — must never be bundled client-side
 const SERVER_ONLY_PACKAGES = [
