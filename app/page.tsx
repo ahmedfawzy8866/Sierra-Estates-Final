@@ -1,22 +1,79 @@
 'use client';
+
 /**
- * SIERRA ESTATES 1.0 — TIER 1 CLIENT HUB
- * Deployed to Vercel (sierrablu.vercel.app)
- * Read-only Firestore listener (zero-latency updates)
+ * SIERRA ESTATES — UNIFIED HOMEPAGE
+ * Bilingual (EN/AR) · RTL · AI Matching · ROI · Virtual Tour · Testimonials
+ * Powered by Firestore live sync
  */
-import { useEffect, useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
+import { Languages } from 'lucide-react';
 import { collection, onSnapshot, query, where, orderBy, DocumentData } from 'firebase/firestore';
 import { clientDb } from '@/lib/firebase/client';
-import PremiumHeroCinematic from '@/components/UI/PremiumHeroCinematic';
-import PremiumHeroSearch from '@/components/UI/PremiumHeroSearch';
 
-const COMPOUNDS_21 = [
-  'Mountain View iCity','Hyde Park','Mivida','Uptown Cairo','Madinaty',
-  'Eastown','El Shorouk','Palm Hills NC','Villette','Al Rehab','Taj City',
-  'Sarai','Swan Lake','Katameya Heights','Golden Square','Beit Al Watan',
-  'Mostakbal City','Al Andalous','Cairo Festival City','Sodic East','MNHD',
-];
-const QUICK_12 = COMPOUNDS_21.slice(0, 12);
+import PremiumHero from '@/components/UI/PremiumHero';
+import AIMatchingEngine from '@/components/UI/AIMatchingEngine';
+import TestimonialsCarousel from '@/components/UI/TestimonialsCarousel';
+import VirtualTour3D from '@/components/UI/VirtualTour3D';
+import ROICalculator from '@/components/UI/ROICalculator';
+import MobileBottomNav from '@/components/UI/MobileBottomNav';
+import InventoryShowcase from '@/components/Listings/InventoryShowcase';
+
+// ─── TRANSLATION DICTIONARY ───────────────────────────────────────────────────
+const DICTIONARY = {
+  en: {
+    navTitle: 'SIERRA ESTATES',
+    navSubtitle: 'BEYOND BROKERAGE',
+    ctaExplore: 'Explore Portfolio',
+    ctaContact: 'Direct Advisory',
+    tagline: 'Sovereign Real Estate Advisory',
+    title: 'The Apex of Luxury Real Estate in New Cairo',
+    desc: 'Uncompromising standard. Highly vetted, off-market inventory matched intelligently to the capital goals of elite investors.',
+    stat1Val: '847+',
+    stat1Lbl: 'HNWI Advisory Clients',
+    stat2Val: '10.5%',
+    stat2Lbl: 'Average ROI Realized',
+    stat3Val: '$2.8B',
+    stat3Lbl: 'Assets Under Advisory',
+    spatialLabel: 'SPATIAL TELEMETRY',
+    spatialTitle: 'Walk Through Spatial Models Remotely',
+    spatialDesc: 'Eliminate friction and redundant site inspections. Our fully integrated Spatial Telemetry renders real-time 3D models with absolute accuracy.',
+    yieldsTitle: 'AI Capital Yield Index',
+    yieldsDesc: 'Benchmark yields, historic appreciation metrics, and rental indexes across Madinaty, Mostakbal City, and 5th Settlement.',
+    contactLabel: 'GOLDEN HOUR ADVISORY',
+    contactTitle: 'Direct Advisory Lines',
+    contactSubtitle: 'Request immediate callback or live telemetry walk.',
+    inputName: 'Full Name',
+    inputPhone: 'WhatsApp Contact Line',
+    btnSubmit: 'Request Golden Hour Call',
+  },
+  ar: {
+    navTitle: 'سييرا إستيتس',
+    navSubtitle: 'ما وراء الوساطة العقارية',
+    ctaExplore: 'استكشف المحفظة العقارية',
+    ctaContact: 'استشارة مباشرة',
+    tagline: 'مستشار التطوير العقاري السيادي',
+    title: 'قمة العقارات الفاخرة في القاهرة الجديدة',
+    desc: 'معايير لا تقبل المساومة. محفظة حصرية ومدروسة بعناية من العقارات المميزة تتطابق بذكاء مع الأهداف الرأسمالية للنخبة.',
+    stat1Val: '٨٤٧+',
+    stat1Lbl: 'عملاء الاستشارات الاستثمارية',
+    stat2Val: '١٠.٥٪',
+    stat2Lbl: 'متوسط العائد الاستثماري المحقق',
+    stat3Val: '٢.٨ مليار دولار',
+    stat3Lbl: 'الأصول الخاضعة للاستشارات',
+    spatialLabel: 'معاينة تكنولوجية متقدمة',
+    spatialTitle: 'عاين عقارك عن بعد عبر الواقع الافتراضي',
+    spatialDesc: 'لا داعي لإضاعة وقتك الثمين في الزيارات الميدانية. قمنا بهندسة نظام مسح وتليمتري ذكي يتيح لك التجول بدقة ملليمترية.',
+    yieldsTitle: 'مؤشر أداء العوائد الاستثمارية الذكي',
+    yieldsDesc: 'استخدم نظام تسعير سييرا المتطور لمقارنة عوائد الإيجار ونسب النمو التاريخية في مختلف قطاعات القاهرة الجديدة.',
+    contactLabel: 'بوابة النخبة',
+    contactTitle: 'قنوات الاتصال المباشرة',
+    contactSubtitle: 'اطلب إعادة الاتصال الفوري أو جولة بث افتراضية حية.',
+    inputName: 'الاسم بالكامل',
+    inputPhone: 'رقم الواتساب للتواصل المباشر',
+    btnSubmit: 'اطلب مكالمة الساعة الذهبية',
+  },
+};
 
 interface Property extends DocumentData {
   id: string;
@@ -29,239 +86,298 @@ interface Property extends DocumentData {
   area: string;
   aiScore: number;
   netCapitalRoi?: number;
-  annualAppreciationPct?: number;
 }
 
-export default function ClientHub() {
+export default function UnifiedHomepage() {
+  const [isAr, setIsAr] = useState(false);
+  const [activeMobileTab, setActiveMobileTab] = useState('explore');
+  const [filters, setFilters] = useState({
+    purpose: '',
+    type: '',
+    compound: '',
+    budget: '',
+  });
   const [properties, setProperties] = useState<Property[]>([]);
-  const [activeCompound, setActiveCompound] = useState<string>('all');
-  const [showAllCompounds, setShowAllCompounds] = useState(false);
-  const [showTour, setShowTour] = useState<Property | null>(null);
-  const [heroType, setHeroType] = useState<'cinematic' | 'search'>('cinematic');
 
+  const t = isAr ? DICTIONARY.ar : DICTIONARY.en;
+
+  // Live Firestore sync
   useEffect(() => {
-    const q = query(
-      collection(clientDb, 'properties'),
-      where('status', '==', 'active'),
-      orderBy('aiScore', 'desc')
-    );
-    const unsub = onSnapshot(q, snap => {
-      setProperties(snap.docs.map(d => ({ id: d.id, ...d.data() } as Property)));
-    }, err => {
-      console.error("Firestore Error:", err);
-    });
-    return () => unsub();
+    try {
+      const q = query(
+        collection(clientDb, 'properties'),
+        where('status', '==', 'active'),
+        orderBy('aiScore', 'desc')
+      );
+      const unsub = onSnapshot(q, snap => {
+        setProperties(snap.docs.map(d => ({ id: d.id, ...d.data() } as Property)));
+      }, err => {
+        console.error('Firestore sync error:', err);
+      });
+      return () => unsub();
+    } catch {
+      return () => {};
+    }
   }, []);
 
-  const filtered = activeCompound === 'all'
-    ? properties
-    : properties.filter(p => p.compound === activeCompound);
-
-  const displayedCompounds = showAllCompounds ? COMPOUNDS_21 : QUICK_12;
+  const handleSearch = (f: typeof filters) => {
+    setFilters(f);
+    const el = document.getElementById('inventory');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
-    <main className="min-h-screen bg-[var(--surface)] text-[var(--on-surface)] font-sans pb-24 transition-colors duration-500">
-      {/* Hero Section */}
-      <div className="relative">
-        <div className="absolute top-4 right-4 z-50 flex gap-2 p-1 bg-black/50 backdrop-blur-md rounded-lg border border-white/20">
-          <button 
-            onClick={() => setHeroType('cinematic')}
-            className={`px-3 py-1.5 text-xs font-mono tracking-widest uppercase transition-colors rounded ${heroType === 'cinematic' ? 'bg-[#C9A84C] text-[#0A1628]' : 'text-white hover:text-[#C9A84C]'}`}
-          >
-            Cinematic Parallax
-          </button>
-          <button 
-            onClick={() => setHeroType('search')}
-            className={`px-3 py-1.5 text-xs font-mono tracking-widest uppercase transition-colors rounded ${heroType === 'search' ? 'bg-[#C9A84C] text-[#0A1628]' : 'text-white hover:text-[#C9A84C]'}`}
-          >
-            Smart Search Card
-          </button>
-        </div>
+    <div
+      dir={isAr ? 'rtl' : 'ltr'}
+      className={`min-h-screen bg-[#F4F0E8] dark:bg-[#071422] text-[#071422] dark:text-[#F4F0E8] transition-all duration-700 ${
+        isAr ? 'font-arabic' : 'font-sans'
+      }`}
+    >
+      {/* ─── FLOATING TOP ADVISORY HEADER ─────────────────────────────────────── */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/70 dark:bg-[#071422]/70 backdrop-blur-md border-b border-[#071422]/10 dark:border-white/10 px-6 py-4 shadow-sm">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <div className="flex flex-col">
+            <span className="font-playfair text-xl font-bold tracking-[0.1em] text-[#071422] dark:text-white">
+              {t.navTitle}
+            </span>
+            <span className="text-[8px] tracking-[0.3em] font-mono text-[#C9A84C] font-semibold">
+              {t.navSubtitle}
+            </span>
+          </div>
 
-        {heroType === 'cinematic' ? (
-          <PremiumHeroCinematic 
-            title="Quiet Luxury in New Cairo."
-            subtitle="Live inventory. AI-driven matching. Zero-latency updates."
-            ctaLabel="Explore Portfolio"
-            onCtaClick={() => {
-              const el = document.getElementById('inventory');
-              if (el) el.scrollIntoView({ behavior: 'smooth' });
-            }}
-          />
-        ) : (
-          <PremiumHeroSearch 
-            onSearch={(filters) => console.log('Searching', filters)}
-          />
+          <div className="flex items-center gap-6">
+            {/* Language Toggle */}
+            <button
+              onClick={() => setIsAr(prev => !prev)}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[#071422]/15 dark:border-white/20 text-xs font-semibold hover:border-[#C9A84C] hover:text-[#C9A84C] transition-all"
+            >
+              <Languages size={14} />
+              <span>{isAr ? 'English' : 'العربية'}</span>
+            </button>
+
+            {/* Design Previews Link */}
+            <a
+              href="/design-previews"
+              className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono text-white/50 hover:text-[#C9A84C] transition-colors"
+            >
+              Design Archive
+            </a>
+
+            {/* CTA */}
+            <a
+              href="#contact"
+              className="hidden md:inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#C9A84C] to-[#E9C176] text-[#071422] font-semibold text-xs rounded-xl shadow-lg hover:shadow-2xl transition-all uppercase tracking-wider"
+            >
+              {t.ctaContact}
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      {/* ─── PAGE CONTENT ──────────────────────────────────────────────────────── */}
+      <div className="pt-20">
+        {/* EXPLORE TAB */}
+        {activeMobileTab === 'explore' && (
+          <>
+            {/* Premium Hero with Search + Virtual Tour */}
+            <PremiumHero
+              onSearch={handleSearch}
+              isArabic={isAr}
+            />
+
+            {/* Stats Bar */}
+            <section className="py-12 px-6 bg-[#071422] dark:bg-[#050c14]">
+              <div className="max-w-4xl mx-auto grid grid-cols-3 gap-8 text-center">
+                {[
+                  { val: t.stat1Val, lbl: t.stat1Lbl },
+                  { val: t.stat2Val, lbl: t.stat2Lbl },
+                  { val: t.stat3Val, lbl: t.stat3Lbl },
+                ].map(({ val, lbl }) => (
+                  <div key={lbl}>
+                    <div className="font-playfair text-3xl md:text-4xl font-bold text-[#C9A84C] mb-1">{val}</div>
+                    <div className="text-[10px] font-mono text-white/50 uppercase tracking-widest">{lbl}</div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* AI Matching Engine */}
+            <section className="py-16 px-6 md:px-12 max-w-7xl mx-auto">
+              <AIMatchingEngine isAr={isAr} />
+            </section>
+
+            {/* Live Inventory */}
+            <div id="inventory" className="relative z-10">
+              <InventoryShowcase filters={filters} />
+            </div>
+
+            {/* Testimonials */}
+            <div className="py-24 bg-[#F4F0E8] dark:bg-[#071422]/50 border-y border-[#071422]/5 dark:border-white/5">
+              <TestimonialsCarousel />
+            </div>
+
+            {/* Virtual Tour 3D */}
+            <section className="py-24 px-6 md:px-12 max-w-6xl mx-auto">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
+                <div className="lg:col-span-1">
+                  <span className="text-[10px] tracking-[0.25em] font-semibold text-[#C9A84C] uppercase font-mono block mb-2">
+                    {t.spatialLabel}
+                  </span>
+                  <h2 className="font-playfair text-3xl md:text-4xl font-light leading-tight mb-4 text-[#071422] dark:text-white">
+                    {t.spatialTitle}
+                  </h2>
+                  <p className="text-sm text-[#071422]/70 dark:text-white/70 leading-relaxed">
+                    {t.spatialDesc}
+                  </p>
+                </div>
+                <div className="lg:col-span-2">
+                  <VirtualTour3D isAr={isAr} />
+                </div>
+              </div>
+            </section>
+          </>
+        )}
+
+        {/* MAP TAB */}
+        {activeMobileTab === 'map' && (
+          <div className="px-4 py-8 max-w-5xl mx-auto pt-8">
+            <h2 className="font-playfair text-3xl text-[#071422] dark:text-white mb-6">
+              {isAr ? 'خريطة المجمعات السكنية' : 'Compound Map'}
+            </h2>
+            <div className="h-[60vh] rounded-2xl bg-[#0A1520] border border-white/10 flex items-center justify-center">
+              <div className="text-center text-white/40">
+                <div className="text-4xl mb-3">🗺️</div>
+                <p className="text-sm font-mono">Interactive Map — Available on Desktop</p>
+                <a href="/map" className="mt-4 inline-block text-xs text-[#C9A84C] underline">
+                  Open Full Map →
+                </a>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* YIELDS TAB */}
+        {activeMobileTab === 'yields' && (
+          <div className="px-6 py-12 max-w-4xl mx-auto">
+            <div className="text-center mb-10">
+              <h2 className="font-playfair text-3xl text-[#071422] dark:text-white mb-3">
+                {t.yieldsTitle}
+              </h2>
+              <p className="text-sm text-[#071422]/60 dark:text-white/60 max-w-lg mx-auto">
+                {t.yieldsDesc}
+              </p>
+            </div>
+
+            {/* ROI Benchmarks */}
+            <div className="p-6 rounded-2xl bg-white dark:bg-[#0A1520] border border-[#071422]/10 dark:border-white/10 mb-8">
+              {[
+                ['Mostakbal City Sector', '10.5%'],
+                ['Fifth Settlement Luxury BUA', '9.2%'],
+                ['Madinaty Premium Villas', '8.8%'],
+              ].map(([loc, roi]) => (
+                <div key={loc} className="flex justify-between py-3 border-b last:border-0 border-black/5 dark:border-white/5">
+                  <span className="text-xs text-[#071422]/60 dark:text-white/60">{loc}</span>
+                  <span className="text-emerald-400 font-bold text-sm">{roi} Est. ROI</span>
+                </div>
+              ))}
+            </div>
+
+            <ROICalculator isAr={isAr} />
+          </div>
+        )}
+
+        {/* CONSOLE TAB */}
+        {activeMobileTab === 'console' && (
+          <div className="px-6 py-12 max-w-xl mx-auto">
+            <div className="p-8 rounded-3xl bg-[#050b14] border border-[#C9A84C]/30 text-white font-mono text-xs shadow-2xl">
+              <div className="flex items-center gap-2 mb-6 border-b border-white/10 pb-4">
+                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-emerald-400 font-bold">SIERRA CONCIERGE TERMINAL v3.1</span>
+              </div>
+              <div className="space-y-4">
+                <p className="text-white/60">&gt; Status: Ingestion Engine Listening...</p>
+                <p className="text-white/60">&gt; Database: Firestore Connected.</p>
+                <p className="text-[#C9A84C] font-semibold">
+                  &gt; Live Listings: {properties.length} active properties synced.
+                </p>
+                <p className="text-white/40">&gt; Waiting for Lead Signal Trigger...</p>
+              </div>
+            </div>
+          </div>
         )}
       </div>
 
-      {/* Filter Matrix */}
-      <section id="inventory" className="max-w-7xl mx-auto px-6 mb-12 pt-12">
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          <button
-            onClick={() => setActiveCompound('all')}
-            className={`px-5 py-2.5 rounded-full text-xs font-semibold tracking-wider uppercase transition-all duration-300 ${
-              activeCompound === 'all' 
-                ? 'bg-[var(--secondary)] text-[var(--on-secondary)] shadow-ambient' 
-                : 'glass text-[var(--on-surface)] hover:border-[var(--secondary)]'
-            }`}
-          >
-            All Areas
-          </button>
-          
-          {displayedCompounds.map(c => (
-            <button
-              key={c}
-              onClick={() => setActiveCompound(c)}
-              className={`px-5 py-2.5 rounded-full text-xs font-semibold tracking-wider uppercase transition-all duration-300 ${
-                activeCompound === c 
-                  ? 'bg-[var(--secondary)] text-[var(--on-secondary)] shadow-ambient' 
-                  : 'glass text-[var(--on-surface)] hover:border-[var(--secondary)]'
-              }`}
-            >
-              {c}
-            </button>
-          ))}
-
-          <button
-            onClick={() => setShowAllCompounds(!showAllCompounds)}
-            className="px-5 py-2.5 rounded-full text-xs font-mono tracking-widest uppercase transition-all duration-300 bg-[var(--outline-variant)] text-[var(--on-surface)] hover:bg-[var(--outline-variant)]"
-          >
-            {showAllCompounds ? '− Show Less' : '+ More Areas'}
-          </button>
+      {/* ─── CONTACT / ADVISORY SECTION ────────────────────────────────────────── */}
+      <section id="contact" className="py-24 px-6 md:px-12 max-w-4xl mx-auto mt-12 border-t border-[#071422]/10 dark:border-white/10">
+        <div className="text-center mb-12">
+          <span className="text-[10px] tracking-[0.25em] font-semibold text-[#C9A84C] uppercase font-mono block mb-2">
+            {t.contactLabel}
+          </span>
+          <h2 className="font-playfair text-3xl md:text-4xl font-light mb-4 text-[#071422] dark:text-white">
+            {t.contactTitle}
+          </h2>
+          <p className="text-sm text-[#071422]/60 dark:text-white/60">
+            {t.contactSubtitle}
+          </p>
         </div>
+
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            alert(isAr ? 'تم الإرسال! سنتواصل معك قريباً.' : 'Lead qualified. Dispatching advisory team...');
+          }}
+          className="space-y-6"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-[10px] uppercase tracking-wider text-[#071422]/60 dark:text-white/60 mb-2 font-mono">
+                {t.inputName}
+              </label>
+              <input
+                type="text"
+                required
+                className="w-full px-5 py-4 rounded-xl bg-white dark:bg-[#071422] border border-[#071422]/15 dark:border-white/10 focus:border-[#C9A84C] outline-none transition-colors text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] uppercase tracking-wider text-[#071422]/60 dark:text-white/60 mb-2 font-mono">
+                {t.inputPhone}
+              </label>
+              <input
+                type="tel"
+                required
+                placeholder="+20 1..."
+                className="w-full px-5 py-4 rounded-xl bg-white dark:bg-[#071422] border border-[#071422]/15 dark:border-white/10 focus:border-[#C9A84C] outline-none transition-colors text-sm"
+              />
+            </div>
+          </div>
+          <button
+            type="submit"
+            className="w-full py-4 bg-[#071422] text-white dark:bg-gradient-to-r dark:from-[#C9A84C] dark:to-[#E9C176] dark:text-[#071422] font-semibold text-xs rounded-xl shadow-lg hover:shadow-2xl transition-all uppercase tracking-widest font-mono"
+          >
+            {t.btnSubmit}
+          </button>
+        </form>
       </section>
 
-      {/* 4-Column High-Density Grid */}
-      <section className="max-w-[1600px] mx-auto px-6">
-        <div className="flex items-center justify-between mb-8 border-b border-[var(--outline-variant)] pb-4">
-          <div className="text-sm font-mono tracking-widest text-[var(--on-surface-variant)]">
-            {filtered.length} ACTIVE LISTINGS {activeCompound !== 'all' && `IN ${activeCompound.toUpperCase()}`}
-          </div>
-          <div className="text-xs font-semibold text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            LIVE SYNC
-          </div>
+      {/* ─── FOOTER ─────────────────────────────────────────────────────────────── */}
+      <footer className="py-12 text-center text-xs text-[#071422]/40 dark:text-white/40 border-t border-[#071422]/5 dark:border-white/5 pb-24 md:pb-12">
+        <p className="font-mono">© {new Date().getFullYear()} SIERRA ESTATES. ALL RIGHTS RESERVED.</p>
+        <p className="mt-2 text-[10px]">{t.navSubtitle}</p>
+        <div className="flex items-center justify-center gap-6 mt-4 text-[10px]">
+          <a href="/design-previews" className="hover:text-[#C9A84C] transition-colors">Design Archive</a>
+          <a href="/listings" className="hover:text-[#C9A84C] transition-colors">Listings</a>
+          <a href="/about" className="hover:text-[#C9A84C] transition-colors">About</a>
+          <a href="/contact" className="hover:text-[#C9A84C] transition-colors">Contact</a>
         </div>
+      </footer>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filtered.map(p => (
-            <div key={p.id} className="group glass rounded-2xl overflow-hidden hover:-translate-y-1 hover:shadow-ambient transition-all duration-300">
-              
-              {/* Image & Badges */}
-              <div className="relative h-64 overflow-hidden">
-                <div className="absolute inset-0 bg-[var(--primary)]/20 z-10"></div>
-                <img 
-                  src={p.img || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80'} 
-                  alt={p.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                
-                {/* AI Investment Badge */}
-                <div className="absolute top-4 left-4 z-20 flex items-center gap-2 bg-[var(--primary)]/90 backdrop-blur-md border border-[var(--secondary)] rounded-lg p-2 shadow-lg">
-                  <div className={`text-xl font-bold leading-none ${p.aiScore >= 8 ? 'text-emerald-400' : p.aiScore >= 6 ? 'text-amber-400' : 'text-red-400'}`}>
-                    {p.aiScore?.toFixed(1) || '8.5'}
-                  </div>
-                  <div className="text-[8px] font-mono tracking-widest text-[var(--secondary)] uppercase leading-tight">
-                    AI<br/>Score
-                  </div>
-                </div>
-
-                {/* Virtual Tour FAB */}
-                <button 
-                  onClick={() => setShowTour(p)}
-                  className="absolute bottom-4 right-4 z-20 w-12 h-12 glass rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-200"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--primary)]">
-                    <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14v-4z"></path>
-                    <rect x="3" y="6" width="12" height="12" rx="2" ry="2"></rect>
-                  </svg>
-                </button>
-              </div>
-
-              {/* Details */}
-              <div className="p-6">
-                <div className="text-[10px] font-mono tracking-widest text-[var(--secondary)] mb-2 uppercase">
-                  {p.compound}
-                </div>
-                <h3 className="text-xl font-serif text-[var(--primary)] mb-4 truncate">
-                  {p.title}
-                </h3>
-                
-                <div className="flex items-center gap-4 text-xs font-semibold text-[var(--on-surface-variant)] mb-6 pb-6 border-b border-[var(--outline-variant)]">
-                  <span className="flex items-center gap-1">🛏 {p.beds} bd</span>
-                  <span className="flex items-center gap-1">🚿 {p.baths} ba</span>
-                  <span className="flex items-center gap-1">📐 {p.area}</span>
-                </div>
-
-                <div className="flex items-end justify-between">
-                  <div>
-                    <div className="text-[9px] font-mono tracking-widest text-[var(--on-surface-variant)] mb-1 uppercase">
-                      Asking Price
-                    </div>
-                    <div className="text-lg font-bold text-[var(--primary)]">
-                      {p.priceLabel}
-                    </div>
-                  </div>
-                  
-                  {p.netCapitalRoi && (
-                    <div className="text-right">
-                      <div className="text-[9px] font-mono tracking-widest text-emerald-400 mb-1 uppercase">
-                        Net ROI
-                      </div>
-                      <div className="text-sm font-bold text-emerald-400">
-                        +{p.netCapitalRoi}%/yr
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-        
-        {filtered.length === 0 && (
-          <div className="text-center py-32 text-[var(--on-surface-variant)]">
-            <div className="text-4xl mb-4">🏜️</div>
-            <div className="text-sm font-mono tracking-widest uppercase">No listings found in this area</div>
-          </div>
-        )}
-      </section>
-
-      {/* Virtual Tour Modal */}
-      {showTour && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8 bg-[var(--primary)]/80 backdrop-blur-md">
-          <div className="bg-[var(--surface)] w-full max-w-6xl h-[80vh] rounded-2xl overflow-hidden shadow-2xl border border-[var(--outline-variant)] flex flex-col animate-[fadeUp_0.4s_ease-out]">
-            
-            <div className="flex items-center justify-between p-4 border-b border-[var(--outline-variant)] bg-[var(--surface-container-low)]">
-              <div className="flex items-center gap-4">
-                <span className="text-xs font-mono tracking-widest text-[var(--secondary)] uppercase">
-                  3D Virtual Tour
-                </span>
-                <span className="text-sm font-serif text-[var(--primary)] hidden md:inline">
-                  {showTour.title}
-                </span>
-              </div>
-              <button 
-                onClick={() => setShowTour(null)}
-                className="w-8 h-8 flex items-center justify-center rounded-full glass hover:bg-[var(--outline-variant)] text-[var(--primary)] transition-colors"
-              >
-                ✕
-              </button>
-            </div>
-            
-            <div className="flex-1 relative flex items-center justify-center">
-              <div className="text-center">
-                <div className="w-12 h-12 border-2 border-[var(--outline-variant)] border-t-[var(--secondary)] rounded-full animate-spin mx-auto mb-4"></div>
-                <div className="text-xs font-mono tracking-widest text-[var(--secondary)]/50">
-                  LOADING PANORAMIC ENGINE...
-                </div>
-              </div>
-              <div className="absolute inset-0 bg-cover bg-center opacity-40 blur-sm" style={{ backgroundImage: `url(${showTour.img})` }}></div>
-            </div>
-          </div>
-        </div>
-      )}
-    </main>
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav
+        activeTab={activeMobileTab}
+        setActiveTab={setActiveMobileTab}
+        isAr={isAr}
+      />
+    </div>
   );
 }

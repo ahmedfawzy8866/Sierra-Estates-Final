@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Compass, Map, Eye, Terminal } from 'lucide-react';
+import { Compass, Map, Percent, Terminal } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface MobileBottomNavProps {
@@ -13,13 +13,13 @@ interface MobileBottomNavProps {
 export default function MobileBottomNav({ activeTab, setActiveTab, isAr = false }: MobileBottomNavProps) {
   const tabs = [
     { id: 'explore', label: isAr ? 'استكشف' : 'Explore', icon: Compass },
-    { id: 'virtual-tours', label: isAr ? 'جولات ثلاثية' : '3D Tours', icon: Eye },
-    { id: 'map', label: isAr ? 'خريطة الاستثمار' : 'Investment Map', icon: Map },
-    { id: 'console', label: isAr ? 'لوحة التحكم' : 'AI Console', icon: Terminal },
+    { id: 'map', label: isAr ? 'خريطة' : 'Map Index', icon: Map },
+    { id: 'yields', label: isAr ? 'عائد الذكاء' : 'AI Yields', icon: Percent },
+    { id: 'console', label: isAr ? 'لوحة التحكم' : 'Console', icon: Terminal },
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white/80 dark:bg-[#182535]/80 backdrop-blur-lg border-t border-[#182535]/10 dark:border-white/10 pb-safe shadow-luxury">
+    <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white/80 dark:bg-[#071422]/80 backdrop-blur-lg border-t border-[#071422]/10 dark:border-white/10 pb-safe shadow-luxury">
       <div className="flex justify-around items-center h-16 max-w-lg mx-auto px-4">
         {tabs.map((tab) => {
           const Icon = tab.icon;

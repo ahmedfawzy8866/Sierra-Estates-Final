@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Quote } from 'lucide-react';
 
 /**
- * SIERRA BLU — TESTIMONIALS CAROUSEL
+ * sierra estates — TESTIMONIALS CAROUSEL
  * A luxury, smooth-transition carousel for client testimonials
  */
 
@@ -17,7 +17,7 @@ interface Testimonial {
 }
 
 interface TestimonialsCarouselProps {
-  testimonials: Testimonial[];
+  testimonials?: Testimonial[];
   isArabic?: boolean;
 }
 
@@ -25,7 +25,7 @@ const DEFAULT_TESTIMONIALS: Testimonial[] = [
   {
     name: 'Sherif El-Gammal',
     role: 'Managing Director, Apex Capital',
-    quote: 'Sierra Blu\'s off-market inventory is truly elite. They secured a premium waterfront asset for us before it even hit the public registry.',
+    quote: 'Sierra Estates\'s off-market inventory is truly elite. They secured a premium waterfront asset for us before it even hit the public registry.',
   },
   {
     name: 'Layla Mansour',
@@ -38,7 +38,7 @@ const DEFAULT_TESTIMONIALS_AR: Testimonial[] = [
   {
     name: 'شريف الجمال',
     role: 'العضو المنتدب، أيبكس كابيتال',
-    quote: 'محفظة عقارات سييرا بلو الحصرية غير معلنة هي بالفعل نخبوية. لقد أمنوا لنا أصلاً مائياً متميزاً قبل طرحه للجمهور.',
+    quote: 'محفظة عقارات سييرا إستيتس الحصرية غير معلنة هي بالفعل نخبوية. لقد أمنوا لنا أصلاً مائياً متميزاً قبل طرحه للجمهور.',
   },
   {
     name: 'ليلى منصور',

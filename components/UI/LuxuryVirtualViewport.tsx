@@ -1,155 +1,94 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Eye, ShieldCheck, Compass, Move, Award } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Eye, ShieldCheck, Compass } from 'lucide-react';
 
 interface LuxuryVirtualViewportProps {
   isAr?: boolean;
-  onLaunchTour: (sceneUrl: string) => void;
 }
 
-const ROOMS = [
-  { id: 'living', labelEn: 'Living Area', labelAr: 'صالة المعيشة', img: 'https://images.unsplash.com/photo-1600210492493-0946911123ea?w=2400&q=80', pano: 'https://pannellum.org/images/alma.jpg' },
-  { id: 'master', labelEn: 'Master Suite', labelAr: 'الجناح الرئيسي', img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=2400&q=80', pano: 'https://pannellum.org/images/jfk.jpg' },
-  { id: 'garden', labelEn: 'Private Garden', labelAr: 'الحديقة الخاصة', img: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=2400&q=80', pano: 'https://pannellum.org/images/alma.jpg' },
-  { id: 'pool', labelEn: 'Pool Deck', labelAr: 'منطقة المسبح', img: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=2400&q=80', pano: 'https://pannellum.org/images/jfk.jpg' },
-  { id: 'terrace', labelEn: 'Sky Terrace', labelAr: 'التراس العلوي', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=2400&q=80', pano: 'https://pannellum.org/images/alma.jpg' },
-  { id: 'exterior', labelEn: 'Villa Exterior', labelAr: 'الواجهة الخارجية', img: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=2400&q=80', pano: 'https://pannellum.org/images/jfk.jpg' }
-];
-
-export default function LuxuryVirtualViewport({ isAr = false, onLaunchTour }: LuxuryVirtualViewportProps) {
-  const [activeRoomIndex, setActiveRoomIndex] = useState(0);
-  const activeRoom = ROOMS[activeRoomIndex];
-
-  // Drag Panning States
-  const stageRef = useRef<HTMLDivElement>(null);
-  const panoRef = useRef<HTMLImageElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const pointerX = useRef(0);
-  const startX = useRef(0);
-  const startPos = useRef(0);
-
-  // Pointer event handlers for draggable preview
-  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!stageRef.current || !panoRef.current) return;
-    setIsDragging(true);
-    startX.current = e.clientX;
-    startPos.current = pointerX.current;
-    stageRef.current.setPointerCapture(e.pointerId);
-  };
-
-  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDragging || !stageRef.current || !panoRef.current) return;
-    const delta = e.clientX - startX.current;
-    const maxPan = stageRef.current.clientWidth - panoRef.current.clientWidth;
-    let newX = startPos.current + delta;
-    newX = Math.max(maxPan, Math.min(0, newX));
-    pointerX.current = newX;
-    panoRef.current.style.transform = `translateX(${newX}px)`;
-  };
-
-  const handlePointerUp = () => {
-    setIsDragging(false);
-  };
-
-  // Auto-drift gentle panning simulation
-  useEffect(() => {
-    const tick = () => {
-      if (isDragging || !stageRef.current || !panoRef.current) return;
-      const maxPan = stageRef.current.clientWidth - panoRef.current.clientWidth;
-      let newX = pointerX.current - 0.5; // gentle auto-rotation
-      if (newX <= maxPan) newX = 0;
-      pointerX.current = newX;
-      panoRef.current.style.transform = `translateX(${newX}px)`;
-    };
-    const intervalId = setInterval(tick, 30);
-    return () => clearInterval(intervalId);
-  }, [isDragging, activeRoomIndex]);
-
-  // Reset panning offset when room changes
-  useEffect(() => {
-    pointerX.current = 0;
-    if (panoRef.current) {
-      panoRef.current.style.transform = `translateX(0px)`;
-    }
-  }, [activeRoomIndex]);
+export default function LuxuryVirtualViewport({ isAr = false }: LuxuryVirtualViewportProps) {
+  const [isLoaded, setIsLoaded] = useState(false);
 
   return (
-    <div className="flex flex-col gap-6" dir={isAr ? 'rtl' : 'ltr'}>
-      {/* Draggable Room Panorama Preview Screen */}
-      <div className="relative">
-        <div
-          ref={stageRef}
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerLeave={handlePointerUp}
-          className={`relative h-[320px] md:h-[420px] w-full border border-[#071422]/15 dark:border-white/10 rounded-[32px] overflow-hidden shadow-luxury select-none ${
-            isDragging ? 'cursor-grabbing' : 'cursor-grab'
-          }`}
-        >
-          {/* Pano Background Wrapper (Wide Image) */}
-          <img
-            ref={panoRef}
-            src={activeRoom.img}
-            alt={isAr ? activeRoom.labelAr : activeRoom.labelEn}
-            className="absolute top-0 left-0 h-full w-[260%] object-cover transition-transform duration-100 ease-out pointer-events-none will-change-transform"
-          />
-
-          {/* Top Indicator overlays */}
-          <div className="absolute top-4 left-4 z-10 flex items-center gap-2 bg-[#182535]/85 backdrop-blur-md border border-[#C9A84C]/35 px-4 py-2 rounded-xl text-[9px] font-mono font-semibold text-white uppercase tracking-wider">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>360° · {isAr ? activeRoom.labelAr : activeRoom.labelEn}</span>
+    <div className="relative w-full aspect-[16/9] min-h-[300px] bg-gradient-to-br from-[#071422]/10 to-[#C9A84C]/5 rounded-3xl border border-[#071422]/15 dark:border-white/10 overflow-hidden shadow-luxury">
+      {!isLoaded ? (
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-gradient-to-b from-[#F4F0E8] to-[#eae5d8] dark:from-[#071422] dark:to-[#0a1520] transition-all duration-500">
+          {/* Parallax style vector circles */}
+          <div className="absolute inset-0 opacity-[0.02] pointer-events-none flex items-center justify-center">
+            <div className="w-[500px] h-[500px] rounded-full border border-current animate-spin" style={{ animationDuration: '30s' }} />
+            <div className="w-[300px] h-[300px] rounded-full border border-dashed border-current animate-spin" style={{ animationDuration: '15s' }} />
           </div>
 
-          {/* Drag Overlay Helper */}
-          <div className="absolute bottom-4 left-4 z-10 pointer-events-none flex items-center gap-2 bg-[#182535]/70 backdrop-blur-sm text-white text-[10px] font-medium tracking-wide px-4 py-2 rounded-full shadow-lg">
-            <Move size={12} className="animate-pulse" />
-            <span>{isAr ? 'اسحب للمعاينة ثنائية الأبعاد' : 'Drag to pan view'}</span>
-          </div>
-
-          {/* Launch Fullscreen 3D WebGL Virtual Tour Button */}
-          <div className="absolute inset-0 bg-black/30 flex items-center justify-center pointer-events-none">
-            <motion.button
-              whileHover={{ scale: 1.05, boxShadow: '0 20px 40px rgba(201, 168, 76, 0.4)' }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => onLaunchTour(activeRoom.pano)}
-              className="pointer-events-auto inline-flex items-center gap-2.5 px-8 py-4 bg-gradient-to-r from-[#C9A84C] to-[#E9C176] text-[#182535] font-semibold text-xs rounded-xl shadow-xl hover:shadow-2xl transition-all uppercase tracking-widest font-mono"
-            >
-              <Eye size={14} className="stroke-[2.5px]" />
-              <span>{isAr ? 'إطلاق جولة ثلاثية الأبعاد كاملة' : 'Launch Fullscreen 3D Tour'}</span>
-            </motion.button>
-          </div>
-        </div>
-      </div>
-
-      {/* Room Selection Tabs */}
-      <div className={`flex flex-wrap gap-2 justify-start ${isAr ? 'flex-row-reverse' : 'flex-row'}`}>
-        {ROOMS.map((room, idx) => (
-          <button
-            key={room.id}
-            onClick={() => setActiveRoomIndex(idx)}
-            className={`px-4 py-2.5 rounded-xl text-xs font-semibold tracking-wide border transition-all duration-300 ${
-              activeRoomIndex === idx
-                ? 'bg-[#C9A84C] text-[#182535] border-transparent shadow-md font-bold'
-                : 'bg-white/40 dark:bg-[#1E3046]/30 hover:bg-white dark:hover:bg-[#1E3046]/50 text-[#182535] dark:text-white/80 border-[#182535]/10 dark:border-white/10'
-            }`}
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="z-10"
           >
-            {isAr ? room.labelAr : room.labelEn}
-          </button>
-        ))}
-      </div>
+            <div className="flex items-center justify-center w-16 h-16 rounded-full bg-[#C9A84C]/10 border border-[#C9A84C]/30 text-[#C9A84C] mb-6 mx-auto">
+              <Compass size={28} className="animate-pulse" />
+            </div>
+            
+            <span className="text-[10px] tracking-[0.25em] font-semibold text-[#C9A84C] uppercase font-mono block mb-2">
+              {isAr ? 'بوابة افتراضية ثلاثية الأبعاد' : '3D SPATIAL TELEMETRY'}
+            </span>
+            <h4 className="text-2xl font-playfair font-light text-[#071422] dark:text-white mb-3">
+              {isAr ? 'جولة افتراضية عالية الدقة 360°' : '360° Ultra-High-Fidelity Virtual Walkthrough'}
+            </h4>
+            <p className="text-xs text-[#071422]/60 dark:text-white/60 max-w-md mx-auto mb-8 leading-relaxed">
+              {isAr
+                ? 'اختبر المشي الفضائي في أرقى المشاريع العقارية بالتجمع الخامس عبر بوابة معالجة لا مركزية فائقة السرعة.'
+                : 'Teleport directly inside New Cairo\'s premier luxury estates. Stream highly complex spatial models instantly on demand.'}
+            </p>
 
-      {/* Trust & Optimization Info */}
-      <div className="flex items-center gap-2 text-[10px] text-[#071422]/50 dark:text-white/40 justify-center">
-        <ShieldCheck size={12} className="text-emerald-500" />
-        <span>
-          {isAr
-            ? 'نظام تليمتري آمن ومشفر بالكامل. يدعم التسارع الرسومي WebGL.'
-            : 'Fully encrypted WebGL telemetry stream. Responsive touch & gyroscope panning supported.'}
-        </span>
-      </div>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setIsLoaded(true)}
+              className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#071422] text-white dark:bg-gradient-to-r dark:from-[#C9A84C] dark:to-[#E9C176] dark:text-[#071422] font-semibold text-xs rounded-xl shadow-lg hover:shadow-2xl transition-all uppercase tracking-widest"
+            >
+              <Eye size={14} />
+              {isAr ? 'بدء جولة المعاينة الحية' : 'Launch 360 Teleportation'}
+            </motion.button>
+
+            <div className="flex items-center justify-center gap-2 mt-6 text-[10px] text-[#071422]/40 dark:text-white/40">
+              <ShieldCheck size={12} />
+              <span>{isAr ? 'اتصال مؤمن ومحسن للسرعة (أقل من ثانيتين)' : 'End-to-End Encrypted telemetry & Speed Optimized (<2s)'}</span>
+            </div>
+          </motion.div>
+        </div>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="absolute inset-0 w-full h-full"
+        >
+          {/* Embedded Virtual Telemetry Frame (simulated with interactive visual component) */}
+          <div className="relative w-full h-full bg-[#050b14] flex items-center justify-center">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d110502.66579294578!2d31.428781600000004!3d30.007949399999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x145822de0cdfae65%3A0x280e22709e365022!2sFifth%20Settlement%2C%20New%20Cairo%201%2C%20Cairo%20Governorate!5e0!3m2!1sen!2seg!4v1717172000000!5m2!1sen!2seg"
+              className="w-full h-full border-0 opacity-80"
+              allowFullScreen={true}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+            {/* Control Overlays */}
+            <div className="absolute bottom-6 right-6 z-10 flex gap-2">
+              <button
+                onClick={() => setIsLoaded(false)}
+                className="px-4 py-2 bg-[#071422]/90 hover:bg-[#071422] text-white border border-[#C9A84C]/30 hover:border-[#C9A84C] text-[10px] font-mono rounded-lg transition-all"
+              >
+                {isAr ? 'إنهاء البث ✕' : 'Terminate Telemetry ✕'}
+              </button>
+            </div>
+            {/* Live Indicator */}
+            <div className="absolute top-6 left-6 z-10 flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full text-[9px] font-mono text-white tracking-widest font-semibold animate-pulse">
+              ● LIVE VIEWPORTSTREAM
+            </div>
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 }
