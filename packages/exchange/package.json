@@ -22,6 +22,10 @@
     ".": {
       "types": "./index.ts",
       "default": "./index.ts"
+    },
+    "./*": {
+      "types": "./*.ts",
+      "default": "./*.ts"
     }
   }
 }
