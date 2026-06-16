@@ -1,15 +1,23 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Languages, Percent } from 'lucide-react';
-import InteractiveCrmMap from '@/components/UI/InteractiveCrmMap';
-import MobileBottomNav from '@/components/UI/MobileBottomNav';
-import { PremiumHero } from '@sierra-estates/ui';
-import InventoryShowcase from '@/components/Listings/InventoryShowcase';
-import TestimonialsCarousel from '@/components/UI/TestimonialsCarousel';
+/**
+ * SIERRA ESTATES — UNIFIED HOMEPAGE
+ * Bilingual (EN/AR) · RTL · AI Matching · ROI · Virtual Tour · Testimonials
+ * Powered by Firestore live sync
+ */
+
+import React, { useState, useEffect } from 'react';
+import { Languages } from 'lucide-react';
+import { collection, onSnapshot, query, where, orderBy, DocumentData } from 'firebase/firestore';
+import { clientDb } from '@/lib/firebase/client';
+
+import PremiumHero from '@/components/UI/PremiumHero';
 import AIMatchingEngine from '@/components/UI/AIMatchingEngine';
+import TestimonialsCarousel from '@/components/UI/TestimonialsCarousel';
 import VirtualTour3D from '@/components/UI/VirtualTour3D';
 import ROICalculator from '@/components/UI/ROICalculator';
+import MobileBottomNav from '@/components/UI/MobileBottomNav';
+import InventoryShowcase from '@/components/Listings/InventoryShowcase';
 
 // ─── TRANSLATION DICTIONARY ───────────────────────────────────────────────────
 const DICTIONARY = {
@@ -17,23 +25,22 @@ const DICTIONARY = {
     navTitle: 'SIERRA ESTATES',
     navSubtitle: 'BEYOND BROKERAGE',
     ctaExplore: 'Explore Portfolio',
-    ctaContact: 'Direct advisory',
+    ctaContact: 'Direct Advisory',
     tagline: 'Sovereign Real Estate Advisory',
     title: 'The Apex of Luxury Real Estate in New Cairo',
     desc: 'Uncompromising standard. Highly vetted, off-market inventory matched intelligently to the capital goals of elite investors.',
     stat1Val: '847+',
-    stat1Lbl: ' HNWI Advisory Clients',
+    stat1Lbl: 'HNWI Advisory Clients',
     stat2Val: '10.5%',
     stat2Lbl: 'Average ROI Realized',
     stat3Val: '$2.8B',
-    stat3Lbl: 'Assets Under advisory',
-    featuresTitle: 'Advisory Pillars',
-    feature1Title: 'Off-Market Access',
-    feature1Desc: 'Direct integration with primary luxury developers and private asset holders, bypassing noisy listings.',
-    feature2Title: 'ROI Data Engines',
-    feature2Desc: 'Advanced points tracking metrics verifying capital yield, rental index rates, and compound histories.',
-    feature3Title: 'Defensive Integrity',
-    feature3Desc: 'Zero spam. Encrypted secure databases, qualified point routing, and absolute transactional transparency.',
+    stat3Lbl: 'Assets Under Advisory',
+    spatialLabel: 'SPATIAL TELEMETRY',
+    spatialTitle: 'Walk Through Spatial Models Remotely',
+    spatialDesc: 'Eliminate friction and redundant site inspections. Our fully integrated Spatial Telemetry renders real-time 3D models with absolute accuracy.',
+    yieldsTitle: 'AI Capital Yield Index',
+    yieldsDesc: 'Benchmark yields, historic appreciation metrics, and rental indexes across Madinaty, Mostakbal City, and 5th Settlement.',
+    contactLabel: 'GOLDEN HOUR ADVISORY',
     contactTitle: 'Direct Advisory Lines',
     contactSubtitle: 'Request immediate callback or live telemetry walk.',
     inputName: 'Full Name',
@@ -54,13 +61,12 @@ const DICTIONARY = {
     stat2Lbl: 'متوسط العائد الاستثماري المحقق',
     stat3Val: '٢.٨ مليار دولار',
     stat3Lbl: 'الأصول الخاضعة للاستشارات',
-    featuresTitle: 'ركائز الاستشارة',
-    feature1Title: 'عقارات حصرية خارج السوق',
-    feature1Desc: 'تواصل مباشر مع كبار المطورين وملاك العقارات الحصريين بعيداً عن ضوضاء السماسرة.',
-    feature2Title: 'محركات بيانات العائد',
-    feature2Desc: 'نظام متطور لتتبع ومراقبة العائد على رأس المال، ومؤشرات الإيجار والنمو التاريخي للمجمعات السكنية.',
-    feature3Title: 'الخصوصية الدفاعية والأمان',
-    feature3Desc: 'خصوصية كاملة. قواعد بيانات مشفرة، توجيه ذكي للمكالمات وتأكيد كامل للشفافية التعاقدية.',
+    spatialLabel: 'معاينة تكنولوجية متقدمة',
+    spatialTitle: 'عاين عقارك عن بعد عبر الواقع الافتراضي',
+    spatialDesc: 'لا داعي لإضاعة وقتك الثمين في الزيارات الميدانية. قمنا بهندسة نظام مسح وتليمتري ذكي يتيح لك التجول بدقة ملليمترية.',
+    yieldsTitle: 'مؤشر أداء العوائد الاستثمارية الذكي',
+    yieldsDesc: 'استخدم نظام تسعير سييرا المتطور لمقارنة عوائد الإيجار ونسب النمو التاريخية في مختلف قطاعات القاهرة الجديدة.',
+    contactLabel: 'بوابة النخبة',
     contactTitle: 'قنوات الاتصال المباشرة',
     contactSubtitle: 'اطلب إعادة الاتصال الفوري أو جولة بث افتراضية حية.',
     inputName: 'الاسم بالكامل',
@@ -68,6 +74,19 @@ const DICTIONARY = {
     btnSubmit: 'اطلب مكالمة الساعة الذهبية',
   },
 };
+
+interface Property extends DocumentData {
+  id: string;
+  title: string;
+  compound: string;
+  priceLabel: string;
+  img: string;
+  beds: number;
+  baths: number;
+  area: string;
+  aiScore: number;
+  netCapitalRoi?: number;
+}
 
 export default function UnifiedHomepage() {
   const [isAr, setIsAr] = useState(false);
@@ -78,11 +97,33 @@ export default function UnifiedHomepage() {
     compound: '',
     budget: '',
   });
-  
+  const [properties, setProperties] = useState<Property[]>([]);
+
   const t = isAr ? DICTIONARY.ar : DICTIONARY.en;
 
-  const toggleLanguage = () => {
-    setIsAr((prev) => !prev);
+  // Live Firestore sync
+  useEffect(() => {
+    try {
+      const q = query(
+        collection(clientDb, 'properties'),
+        where('status', '==', 'active'),
+        orderBy('aiScore', 'desc')
+      );
+      const unsub = onSnapshot(q, snap => {
+        setProperties(snap.docs.map(d => ({ id: d.id, ...d.data() } as Property)));
+      }, err => {
+        console.error('Firestore sync error:', err);
+      });
+      return () => unsub();
+    } catch {
+      return () => {};
+    }
+  }, []);
+
+  const handleSearch = (f: typeof filters) => {
+    setFilters(f);
+    const el = document.getElementById('inventory');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
@@ -92,7 +133,7 @@ export default function UnifiedHomepage() {
         isAr ? 'font-arabic' : 'font-sans'
       }`}
     >
-      {/* ─── FLOATING TOP ADVISORY HEADER ────────────────────────────────────────── */}
+      {/* ─── FLOATING TOP ADVISORY HEADER ─────────────────────────────────────── */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/70 dark:bg-[#071422]/70 backdrop-blur-md border-b border-[#071422]/10 dark:border-white/10 px-6 py-4 shadow-sm">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex flex-col">
@@ -105,14 +146,24 @@ export default function UnifiedHomepage() {
           </div>
 
           <div className="flex items-center gap-6">
+            {/* Language Toggle */}
             <button
-              onClick={toggleLanguage}
+              onClick={() => setIsAr(prev => !prev)}
               className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[#071422]/15 dark:border-white/20 text-xs font-semibold hover:border-[#C9A84C] hover:text-[#C9A84C] transition-all"
             >
               <Languages size={14} />
               <span>{isAr ? 'English' : 'العربية'}</span>
             </button>
-            
+
+            {/* Design Previews Link */}
+            <a
+              href="/design-previews"
+              className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono text-white/50 hover:text-[#C9A84C] transition-colors"
+            >
+              Design Archive
+            </a>
+
+            {/* CTA */}
             <a
               href="#contact"
               className="hidden md:inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#C9A84C] to-[#E9C176] text-[#071422] font-semibold text-xs rounded-xl shadow-lg hover:shadow-2xl transition-all uppercase tracking-wider"
@@ -123,47 +174,60 @@ export default function UnifiedHomepage() {
         </div>
       </nav>
 
-      {/* ─── MOBILE VIEW DECIDER INDEX ───────────────────────────────────────── */}
+      {/* ─── PAGE CONTENT ──────────────────────────────────────────────────────── */}
       <div className="pt-20">
+        {/* EXPLORE TAB */}
         {activeMobileTab === 'explore' && (
           <>
-            {/* Interactive AR Virtual Tour & Refined Filter Hero Section */}
+            {/* Premium Hero with Search + Virtual Tour */}
             <PremiumHero
+              onSearch={handleSearch}
               isArabic={isAr}
-              title={t.title}
-              subtitle={t.desc}
-              ctaLabel={t.ctaExplore}
             />
 
-            {/* AI Matching Engine Section */}
+            {/* Stats Bar */}
+            <section className="py-12 px-6 bg-[#071422] dark:bg-[#050c14]">
+              <div className="max-w-4xl mx-auto grid grid-cols-3 gap-8 text-center">
+                {[
+                  { val: t.stat1Val, lbl: t.stat1Lbl },
+                  { val: t.stat2Val, lbl: t.stat2Lbl },
+                  { val: t.stat3Val, lbl: t.stat3Lbl },
+                ].map(({ val, lbl }) => (
+                  <div key={lbl}>
+                    <div className="font-playfair text-3xl md:text-4xl font-bold text-[#C9A84C] mb-1">{val}</div>
+                    <div className="text-[10px] font-mono text-white/50 uppercase tracking-widest">{lbl}</div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* AI Matching Engine */}
             <section className="py-16 px-6 md:px-12 max-w-7xl mx-auto">
               <AIMatchingEngine isAr={isAr} />
             </section>
 
-            {/* Live Synchronized High-Fidelity Inventory Showcase */}
+            {/* Live Inventory */}
             <div id="inventory" className="relative z-10">
               <InventoryShowcase filters={filters} />
             </div>
 
-            {/* Testimonials Carousel Section */}
+            {/* Testimonials */}
             <div className="py-24 bg-[#F4F0E8] dark:bg-[#071422]/50 border-y border-[#071422]/5 dark:border-white/5">
               <TestimonialsCarousel />
             </div>
 
-            {/* 360 Telemetry Spatial Tour Section */}
+            {/* Virtual Tour 3D */}
             <section className="py-24 px-6 md:px-12 max-w-6xl mx-auto">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
                 <div className="lg:col-span-1">
                   <span className="text-[10px] tracking-[0.25em] font-semibold text-[#C9A84C] uppercase font-mono block mb-2">
-                    {isAr ? 'معاينة تكنولوجية متقدمة' : 'SPATIAL TELEMETRY'}
+                    {t.spatialLabel}
                   </span>
-                  <h3 className="font-playfair text-3xl md:text-4xl font-light leading-tight mb-4 text-[#071422] dark:text-white">
-                    {isAr ? 'عاين عقارك عن بعد عبر الواقع الافتراضي' : 'Walk Through Spatial Models Remotely'}
-                  </h3>
-                  <p className="text-sm text-[#071422]/70 dark:text-white/70 leading-relaxed mb-6">
-                    {isAr
-                      ? 'لا داعي لإضاعة وقتك الثمين في الزيارات الميدانية. قمنا بهندسة نظام مسح وتليمتري ذكي يتيح لك التجول بدقة ملليمترية داخل الوحدات من أي مكان في العالم.'
-                      : 'Eliminate friction and redundant site inspections. Our fully integrated Spatial Telemetry renders real-time 3D models with absolute accuracy.'}
+                  <h2 className="font-playfair text-3xl md:text-4xl font-light leading-tight mb-4 text-[#071422] dark:text-white">
+                    {t.spatialTitle}
+                  </h2>
+                  <p className="text-sm text-[#071422]/70 dark:text-white/70 leading-relaxed">
+                    {t.spatialDesc}
                   </p>
                 </div>
                 <div className="lg:col-span-2">
@@ -174,60 +238,68 @@ export default function UnifiedHomepage() {
           </>
         )}
 
+        {/* MAP TAB */}
         {activeMobileTab === 'map' && (
-          <div className="px-4 py-8 max-w-5xl mx-auto">
-            <InteractiveCrmMap isAr={isAr} />
-          </div>
-        )}
-
-        {activeMobileTab === 'yields' && (
-          <div className="px-6 py-12 max-w-4xl mx-auto text-center">
-            <div className="w-16 h-16 rounded-full bg-[#C9A84C]/10 border border-[#C9A84C]/30 text-[#C9A84C] flex items-center justify-center mx-auto mb-6">
-              <Percent size={28} />
-            </div>
-            <h3 className="font-playfair text-2xl font-semibold mb-4 text-[#071422] dark:text-white">
-              {isAr ? 'مؤشر أداء العوائد الاستثمارية الذكي' : 'AI Capital Yield Index'}
-            </h3>
-            <p className="text-sm text-[#071422]/70 dark:text-white/70 max-w-lg mx-auto mb-8">
-              {isAr
-                ? 'استخدم نظام تسعير سييرا المتطور لمقارنة عوائد الإيجار ونسب النمو التاريخية في مختلف قطاعات القاهرة الجديدة.'
-                : 'Benchmark yields, historic appreciation metrics, and rental indexes across Madinaty, Mostakbal City, and 5th Settlement.'}
-            </p>
-            <div className="p-6 rounded-2xl bg-white dark:bg-[#0A1520] border border-[#071422]/10 dark:border-white/10 text-left">
-              <div className="space-y-4">
-                <div className="flex justify-between border-b border-black/5 dark:border-white/5 pb-2">
-                  <span className="text-xs text-[#071422]/60 dark:text-white/60">Mostakbal City Sector</span>
-                  <span className="text-emerald-400 font-bold">10.5% Est. ROI</span>
-                </div>
-                <div className="flex justify-between border-b border-black/5 dark:border-white/5 pb-2">
-                  <span className="text-xs text-[#071422]/60 dark:text-white/60">Fifth Settlement Luxury BUA</span>
-                  <span className="text-emerald-400 font-bold">9.2% Est. ROI</span>
-                </div>
-                <div className="flex justify-between pb-2">
-                  <span className="text-xs text-[#071422]/60 dark:text-white/60">Madinaty Premium Villas</span>
-                  <span className="text-emerald-400 font-bold">8.8% Est. ROI</span>
-                </div>
+          <div className="px-4 py-8 max-w-5xl mx-auto pt-8">
+            <h2 className="font-playfair text-3xl text-[#071422] dark:text-white mb-6">
+              {isAr ? 'خريطة المجمعات السكنية' : 'Compound Map'}
+            </h2>
+            <div className="h-[60vh] rounded-2xl bg-[#0A1520] border border-white/10 flex items-center justify-center">
+              <div className="text-center text-white/40">
+                <div className="text-4xl mb-3">🗺️</div>
+                <p className="text-sm font-mono">Interactive Map — Available on Desktop</p>
+                <a href="/map" className="mt-4 inline-block text-xs text-[#C9A84C] underline">
+                  Open Full Map →
+                </a>
               </div>
             </div>
-
-            {/* ROI Calculator Section */}
-            <div className="mt-12 text-left">
-              <ROICalculator isAr={isAr} />
-            </div>
           </div>
         )}
 
+        {/* YIELDS TAB */}
+        {activeMobileTab === 'yields' && (
+          <div className="px-6 py-12 max-w-4xl mx-auto">
+            <div className="text-center mb-10">
+              <h2 className="font-playfair text-3xl text-[#071422] dark:text-white mb-3">
+                {t.yieldsTitle}
+              </h2>
+              <p className="text-sm text-[#071422]/60 dark:text-white/60 max-w-lg mx-auto">
+                {t.yieldsDesc}
+              </p>
+            </div>
+
+            {/* ROI Benchmarks */}
+            <div className="p-6 rounded-2xl bg-white dark:bg-[#0A1520] border border-[#071422]/10 dark:border-white/10 mb-8">
+              {[
+                ['Mostakbal City Sector', '10.5%'],
+                ['Fifth Settlement Luxury BUA', '9.2%'],
+                ['Madinaty Premium Villas', '8.8%'],
+              ].map(([loc, roi]) => (
+                <div key={loc} className="flex justify-between py-3 border-b last:border-0 border-black/5 dark:border-white/5">
+                  <span className="text-xs text-[#071422]/60 dark:text-white/60">{loc}</span>
+                  <span className="text-emerald-400 font-bold text-sm">{roi} Est. ROI</span>
+                </div>
+              ))}
+            </div>
+
+            <ROICalculator isAr={isAr} />
+          </div>
+        )}
+
+        {/* CONSOLE TAB */}
         {activeMobileTab === 'console' && (
           <div className="px-6 py-12 max-w-xl mx-auto">
-            <div className="p-8 rounded-3xl bg-[#050b14] border border-[#C9A84C]/30 text-white font-mono text-xs shadow-luxury">
+            <div className="p-8 rounded-3xl bg-[#050b14] border border-[#C9A84C]/30 text-white font-mono text-xs shadow-2xl">
               <div className="flex items-center gap-2 mb-6 border-b border-white/10 pb-4">
                 <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
                 <span className="text-emerald-400 font-bold">SIERRA CONCIERGE TERMINAL v3.1</span>
               </div>
               <div className="space-y-4">
                 <p className="text-white/60">&gt; Status: Ingestion Engine Listening...</p>
-                <p className="text-white/60">&gt; Database: Firestore Spark Connected.</p>
-                <p className="text-[#C9A84C] font-semibold">&gt; Live API Endpoint: ghp_HnhlnsCBqUaEOvPDm2F... Active.</p>
+                <p className="text-white/60">&gt; Database: Firestore Connected.</p>
+                <p className="text-[#C9A84C] font-semibold">
+                  &gt; Live Listings: {properties.length} active properties synced.
+                </p>
                 <p className="text-white/40">&gt; Waiting for Lead Signal Trigger...</p>
               </div>
             </div>
@@ -235,11 +307,11 @@ export default function UnifiedHomepage() {
         )}
       </div>
 
-      {/* ─── DIRECT ADVISORY & CALLBACK GATEWAY ─────────────────────────────────── */}
+      {/* ─── CONTACT / ADVISORY SECTION ────────────────────────────────────────── */}
       <section id="contact" className="py-24 px-6 md:px-12 max-w-4xl mx-auto mt-12 border-t border-[#071422]/10 dark:border-white/10">
         <div className="text-center mb-12">
           <span className="text-[10px] tracking-[0.25em] font-semibold text-[#C9A84C] uppercase font-mono block mb-2">
-            {isAr ? 'بوابة النخبة' : 'GOLDEN HOUR ADVISORY'}
+            {t.contactLabel}
           </span>
           <h2 className="font-playfair text-3xl md:text-4xl font-light mb-4 text-[#071422] dark:text-white">
             {t.contactTitle}
@@ -249,7 +321,13 @@ export default function UnifiedHomepage() {
           </p>
         </div>
 
-        <form onSubmit={(e) => { e.preventDefault(); alert('Lead qualified. Dispatching Scribe Webhook...'); }} className="space-y-6">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            alert(isAr ? 'تم الإرسال! سنتواصل معك قريباً.' : 'Lead qualified. Dispatching advisory team...');
+          }}
+          className="space-y-6"
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-[10px] uppercase tracking-wider text-[#071422]/60 dark:text-white/60 mb-2 font-mono">
@@ -282,14 +360,24 @@ export default function UnifiedHomepage() {
         </form>
       </section>
 
-      {/* ─── FOOTER SECTION ────────────────────────────────────────────────────── */}
+      {/* ─── FOOTER ─────────────────────────────────────────────────────────────── */}
       <footer className="py-12 text-center text-xs text-[#071422]/40 dark:text-white/40 border-t border-[#071422]/5 dark:border-white/5 pb-24 md:pb-12">
         <p className="font-mono">© {new Date().getFullYear()} SIERRA ESTATES. ALL RIGHTS RESERVED.</p>
         <p className="mt-2 text-[10px]">{t.navSubtitle}</p>
+        <div className="flex items-center justify-center gap-6 mt-4 text-[10px]">
+          <a href="/design-previews" className="hover:text-[#C9A84C] transition-colors">Design Archive</a>
+          <a href="/listings" className="hover:text-[#C9A84C] transition-colors">Listings</a>
+          <a href="/about" className="hover:text-[#C9A84C] transition-colors">About</a>
+          <a href="/contact" className="hover:text-[#C9A84C] transition-colors">Contact</a>
+        </div>
       </footer>
 
-      {/* Fixed Mobile Bottom Touch zone navigation */}
-      <MobileBottomNav activeTab={activeMobileTab} setActiveTab={setActiveMobileTab} isAr={isAr} />
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav
+        activeTab={activeMobileTab}
+        setActiveTab={setActiveMobileTab}
+        isAr={isAr}
+      />
     </div>
   );
 }

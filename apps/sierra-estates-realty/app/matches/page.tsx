@@ -65,7 +65,7 @@ export default function BestMatchesPage() {
         {/* Toggle Filters */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <h2 style={{ margin: 0, fontSize: '1.75rem', fontFamily: "'Cormorant Garamond', serif', font-weight: 300" }}>Your AI Curated Matches</h2>
+            <h2 style={{ margin: 0, fontSize: '1.75rem', fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}>Your AI Curated Matches</h2>
             <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: th.textSub }}>High owner direct ratio listings prioritized.</p>
           </div>
 
