@@ -23,9 +23,12 @@ const fs = require('fs');
 const SHEET_ID = process.env.BROKER_INBOX_SHEET_ID;
 const SENDGRID_KEY = process.env.SENDGRID_API_KEY;
 const FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || 'noreply@sierra-estates.com';
-const SERVICE_ACCOUNT_KEY = JSON.parse(
-  fs.readFileSync(process.env.GOOGLE_SERVICE_ACCOUNT_KEY, 'utf8')
-);
+let SERVICE_ACCOUNT_KEY;
+try {
+  SERVICE_ACCOUNT_KEY = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY);
+} catch (e) {
+  SERVICE_ACCOUNT_KEY = JSON.parse(fs.readFileSync(process.env.GOOGLE_SERVICE_ACCOUNT_KEY, 'utf8'));
+}
 
 sgMail.setApiKey(SENDGRID_KEY);
 

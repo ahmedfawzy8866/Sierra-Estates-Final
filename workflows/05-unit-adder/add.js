@@ -24,9 +24,12 @@ const crypto = require('crypto');
 const fs = require('fs');
 
 const SHEET_ID = process.env.BROKER_INBOX_SHEET_ID;
-const SERVICE_ACCOUNT_KEY = JSON.parse(
-  fs.readFileSync(process.env.GOOGLE_SERVICE_ACCOUNT_KEY, 'utf8')
-);
+let SERVICE_ACCOUNT_KEY;
+try {
+  SERVICE_ACCOUNT_KEY = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY);
+} catch (e) {
+  SERVICE_ACCOUNT_KEY = JSON.parse(fs.readFileSync(process.env.GOOGLE_SERVICE_ACCOUNT_KEY, 'utf8'));
+}
 
 // Initialize Firebase
 admin.initializeApp({

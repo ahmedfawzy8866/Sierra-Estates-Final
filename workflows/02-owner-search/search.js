@@ -22,9 +22,12 @@ const fs = require('fs');
 const PF_API_BASE = process.env.PROPERTY_FINDER_API_BASE || 'https://api.propertyfinder.com.eg/v3';
 const PF_TOKEN = process.env.PROPERTY_FINDER_JWT_TOKEN;
 const SHEET_ID = process.env.BROKER_INBOX_SHEET_ID;
-const SERVICE_ACCOUNT_KEY = JSON.parse(
-  fs.readFileSync(process.env.GOOGLE_SERVICE_ACCOUNT_KEY, 'utf8')
-);
+let SERVICE_ACCOUNT_KEY;
+try {
+  SERVICE_ACCOUNT_KEY = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY);
+} catch (e) {
+  SERVICE_ACCOUNT_KEY = JSON.parse(fs.readFileSync(process.env.GOOGLE_SERVICE_ACCOUNT_KEY, 'utf8'));
+}
 
 const sheets = google.sheets({
   version: 'v4',
