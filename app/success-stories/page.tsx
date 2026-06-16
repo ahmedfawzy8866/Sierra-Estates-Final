@@ -54,7 +54,7 @@ const COPY = {
       },
       {
         type: 'Testimonial',
-        quote: '"Sierra\\'s AI chat answered every question I had about the compound, walkability, schools nearby. It made the decision so much easier."',
+        quote: "\"Sierra's AI chat answered every question I had about the compound, walkability, schools nearby. It made the decision so much easier.\"",
         author: 'Leila Boutros',
         role: 'Expatriate, Cairo',
         meta: [
@@ -66,7 +66,7 @@ const COPY = {
         type: 'Case Study',
         title: 'First-Time Buyer Success',
         location: 'Villette, New Cairo',
-        content: 'Young professional, first property purchase. Sierra\\'s Smart Matching algorithm identified a 3BR apartment that fit budget AND lifestyle. Closed in 6 weeks with financing support.',
+        content: "Young professional, first property purchase. Sierra's Smart Matching algorithm identified a 3BR apartment that fit budget AND lifestyle. Closed in 6 weeks with financing support.",
         meta: [
           { label: 'Price', val: 'EGP 6.8M' },
           { label: 'Time to Close', val: '6 weeks' },
