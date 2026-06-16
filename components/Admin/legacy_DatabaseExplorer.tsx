@@ -82,6 +82,7 @@ export default function DatabaseExplorer() {
           </div>
           <button 
             onClick={fetchDocuments}
+            title="Refresh Database"
             className="p-3 rounded-2xl bg-white/[0.03] border border-white/5 text-white/50 hover:text-white transition-colors"
           >
             <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
@@ -219,6 +220,7 @@ export default function DatabaseExplorer() {
                 </div>
                 <button 
                   onClick={() => setSelectedDoc(null)}
+                  title="Close"
                   className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-white transition-all hover:scale-110 active:scale-95"
                 >
                   <X size={20} />

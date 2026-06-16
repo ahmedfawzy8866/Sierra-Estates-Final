@@ -74,6 +74,7 @@ export default function AddAdvisorModal({ isOpen, onClose }: AddAdvisorModalProp
               </div>
               <button 
                 onClick={onClose}
+                title="Close"
                 className="p-3 rounded-2xl bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all"
               >
                 <X size={20} />
@@ -132,10 +133,12 @@ export default function AddAdvisorModal({ isOpen, onClose }: AddAdvisorModalProp
 
                 {/* Role */}
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ms-1">System Role</label>
+                  <label htmlFor="system-role" className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ms-1">System Role</label>
                   <div className="relative group">
                     <Shield size={18} className="absolute start-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-gold transition-colors" />
                     <select
+                      id="system-role"
+                      title="System Role"
                       value={formData.role}
                       onChange={(e) => setFormData({ ...formData, role: e.target.value as any })}
                       className="w-full bg-white/[0.02] border border-white/10 rounded-2xl py-4 ps-12 pe-6 text-white appearance-none focus:outline-none focus:border-gold/30 focus:bg-white/[0.05] transition-all"

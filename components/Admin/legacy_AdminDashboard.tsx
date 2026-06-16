@@ -270,7 +270,10 @@ export default function AdminDashboard({ greeting, firstName, dateString }: Admi
               <p className="text-white/30 text-sm mt-1">{t('admin.syncHealth')}</p>
             </div>
             <div className="flex gap-2">
-               <button className="p-3 rounded-xl bg-white/5 border border-white/5 text-white/50 hover:text-white transition-colors">
+               <button 
+                 title="System Activity"
+                 className="p-3 rounded-xl bg-white/5 border border-white/5 text-white/50 hover:text-white transition-colors"
+               >
                  <ActivityIcon size={18} />
                </button>
             </div>
