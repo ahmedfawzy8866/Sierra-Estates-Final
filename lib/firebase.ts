@@ -79,13 +79,9 @@ const unavailableClientService = <T>(serviceName: string): T =>
 
 export const auth: Auth = getAuth(app);
 
-export const db: Firestore = hasValidFirebaseConfig
-  ? getFirestore(app)
-  : unavailableClientService<Firestore>('firestore');
+export const db: Firestore = getFirestore(app);
 
-export const storage: FirebaseStorage = hasValidFirebaseConfig
-  ? getStorage(app)
-  : unavailableClientService<FirebaseStorage>('storage');
+export const storage: FirebaseStorage = getStorage(app);
 
 export async function getAnalyticsInstance() {
   if (typeof window === 'undefined') return null;
