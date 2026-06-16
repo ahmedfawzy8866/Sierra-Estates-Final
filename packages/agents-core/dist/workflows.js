@@ -1,11 +1,8 @@
-export class AgentWorkflows {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AgentWorkflows = void 0;
+class AgentWorkflows {
     constructor(orchestrator) {
-        Object.defineProperty(this, "orchestrator", {
-            enumerable: true,
-            configurable: true,
-            writable: true,
-            value: void 0
-        });
         this.orchestrator = orchestrator;
     }
     /**
@@ -116,4 +113,5 @@ export class AgentWorkflows {
         ], taskDescription);
     }
 }
+exports.AgentWorkflows = AgentWorkflows;
 //# sourceMappingURL=workflows.js.map

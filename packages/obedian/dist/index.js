@@ -1,13 +1,43 @@
-import * as fs from 'fs';
-import * as path from 'path';
-export class ObedianMemory {
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.obedian = exports.ObedianMemory = void 0;
+const fs = __importStar(require("fs"));
+const path = __importStar(require("path"));
+class ObedianMemory {
     constructor(customPath) {
-        Object.defineProperty(this, "filePath", {
-            enumerable: true,
-            configurable: true,
-            writable: true,
-            value: void 0
-        });
         // Write to root workspace by default, fallback to current dir
         this.filePath = customPath || path.resolve(process.cwd(), 'obedian-store.json');
     }
@@ -105,6 +135,7 @@ export class ObedianMemory {
         this.writeStore({});
     }
 }
+exports.ObedianMemory = ObedianMemory;
 // Export a default shared instance
-export const obedian = new ObedianMemory();
+exports.obedian = new ObedianMemory();
 //# sourceMappingURL=index.js.map
