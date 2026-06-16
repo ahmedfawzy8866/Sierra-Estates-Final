@@ -1,227 +1,220 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useI18n } from '@/lib/I18nContext';
 import Link from 'next/link';
-import { useTheme } from 'next-themes';
-import { ArrowLeft, Smartphone, Upload, AlertCircle } from 'lucide-react';
 
-const G = '#E9C176';
+declare const THREE: any;
 
-const THEMES = {
-  dark: {
-    bg: '#0D2035', text: '#EFF8F7', textSub: 'rgba(239,248,247,0.78)',
-    border: 'rgba(233,193,118,0.18)', card: '#122A47', bg2: '#0A1520',
-  },
-  light: {
-    bg: '#EEF2F4', text: '#0C1B2E', textSub: 'rgba(12,27,46,0.74)',
-    border: 'rgba(12,27,46,0.14)', card: '#FFFFFF', bg2: '#DCE4E8',
-  },
-};
+const ROOMS = [
+  {name:'Living Area', icon:'🛋️', img:'https://images.unsplash.com/photo-1600210492493-0946911123ea?w=3200&q=85'},
+  {name:'Master Suite', icon:'🛏️', img:'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=3200&q=85'},
+  {name:'Private Garden', icon:'🌿', img:'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=3200&q=85'},
+  {name:'Pool Deck', icon:'🏊', img:'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=3200&q=85'},
+  {name:'Sky Terrace', icon:'🌅', img:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=3200&q=85'},
+  {name:'Villa Exterior', icon:'🏡', img:'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=3200&q=85'}
+];
 
-export default function S24VirtualTourPage() {
-  const { theme } = useTheme();
-  const mode = (theme === 'light' ? 'light' : 'dark') as 'light' | 'dark';
-  const th = THEMES[mode];
+export default function VirtualTourPage() {
+  const { locale } = useI18n();
+  const [mounted, setMounted] = useState(false);
+  const [activeRoom, setActiveRoom] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [progress, setProgress] = useState(0);
+  
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const threeState = useRef<any>({});
 
-  // Drag State for Interactive 360° simulated player
-  const [bgPosition, setBgPosition] = useState(0);
-  const isDragging = useRef(false);
-  const startX = useRef(0);
-  const [tourStatus, setTourStatus] = useState<'idle' | 'uploading' | 'processing' | 'ready'>('idle');
+  useEffect(() => {
+    setMounted(true);
+    
+    // Load Three.js
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js';
+    script.onload = initThree;
+    document.body.appendChild(script);
+    
+    return () => {
+      document.body.removeChild(script);
+      if (threeState.current.reqId) cancelAnimationFrame(threeState.current.reqId);
+      if (threeState.current.renderer) {
+        threeState.current.renderer.dispose();
+      }
+    };
+  }, []);
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    isDragging.current = true;
-    startX.current = e.clientX - bgPosition;
-  };
+  const initThree = () => {
+    if (!canvasRef.current) return;
+    const canvas = canvasRef.current;
+    const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    
+    const scene = new THREE.Scene();
+    const fov = 75;
+    const camera = new THREE.PerspectiveCamera(fov, window.innerWidth/window.innerHeight, 1, 2000);
+    camera.position.set(0, 0, 0.001);
+    
+    const geo = new THREE.SphereGeometry(500, 72, 48);
+    geo.scale(-1, 1, 1);
+    const mat = new THREE.MeshBasicMaterial({map:null, side:THREE.FrontSide});
+    const sphere = new THREE.Mesh(geo, mat);
+    scene.add(sphere);
+    
+    threeState.current = {
+      renderer, scene, camera, mat,
+      lon: 0, lat: 0, tLon: 0, tLat: 0,
+      isDown: false, sx: 0, sy: 0, pLon: 0, pLat: 0,
+      fov, texCache: {}, currentRoom: 0
+    };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging.current) return;
-    const newPos = e.clientX - startX.current;
-    setBgPosition(newPos);
-  };
+    const animate = () => {
+      const ts = threeState.current;
+      ts.reqId = requestAnimationFrame(animate);
+      ts.lon += (ts.tLon - ts.lon) * 0.085;
+      ts.lat += (ts.tLat - ts.lat) * 0.085;
+      ts.lat = Math.max(-85, Math.min(85, ts.lat));
+      const phi = THREE.MathUtils.degToRad(90 - ts.lat);
+      const theta = THREE.MathUtils.degToRad(ts.lon);
+      ts.camera.lookAt(
+        500 * Math.sin(phi) * Math.cos(theta),
+        500 * Math.cos(phi),
+        500 * Math.sin(phi) * Math.sin(theta)
+      );
+      ts.renderer.render(ts.scene, ts.camera);
+    };
 
-  const handleMouseUp = () => {
-    isDragging.current = false;
-  };
+    const handleResize = () => {
+      const ts = threeState.current;
+      ts.camera.aspect = window.innerWidth / window.innerHeight;
+      ts.camera.updateProjectionMatrix();
+      ts.renderer.setSize(window.innerWidth, window.innerHeight);
+    };
 
-  // Touch handlers for S24 Ultra device simulations
-  const handleTouchStart = (e: React.TouchEvent) => {
-    isDragging.current = true;
-    startX.current = e.touches[0].clientX - bgPosition;
-  };
+    window.addEventListener('resize', handleResize);
+    
+    // Pointer Events on canvas
+    canvas.addEventListener('pointerdown', (e) => {
+      const ts = threeState.current;
+      ts.isDown = true; ts.sx = e.clientX; ts.sy = e.clientY; ts.pLon = ts.tLon; ts.pLat = ts.tLat;
+      canvas.style.cursor = 'grabbing';
+      canvas.setPointerCapture(e.pointerId);
+    });
+    canvas.addEventListener('pointermove', (e) => {
+      const ts = threeState.current;
+      if (!ts.isDown) return;
+      ts.tLon = ts.pLon - (e.clientX - ts.sx) * 0.22;
+      ts.tLat = Math.max(-85, Math.min(85, ts.pLat + (e.clientY - ts.sy) * 0.22));
+    });
+    canvas.addEventListener('pointerup', () => { threeState.current.isDown = false; canvas.style.cursor = 'grab'; });
+    canvas.addEventListener('pointerleave', () => { threeState.current.isDown = false; canvas.style.cursor = 'grab'; });
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const ts = threeState.current;
+      ts.fov = Math.max(35, Math.min(105, ts.fov + e.deltaY * 0.045));
+      ts.camera.fov = ts.fov; ts.camera.updateProjectionMatrix();
+    }, {passive:false});
 
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging.current) return;
-    const newPos = e.touches[0].clientX - startX.current;
-    setBgPosition(newPos);
-  };
-
-  const handleSimulateUpload = () => {
-    setTourStatus('uploading');
+    loadRoomTex(0);
+    animate();
+    
+    // Preload rest
     setTimeout(() => {
-      setTourStatus('processing');
-      setTimeout(() => {
-        setTourStatus('ready');
-      }, 2000);
-    }, 1500);
+      const preload = new THREE.TextureLoader();
+      preload.crossOrigin = 'anonymous';
+      ROOMS.forEach((r, i) => {
+        if (i > 0) preload.load(r.img, (tex: any) => { tex.minFilter = THREE.LinearFilter; tex.generateMipmaps = false; threeState.current.texCache[i] = tex; });
+      });
+    }, 2000);
   };
+
+  const loadRoomTex = (idx: number) => {
+    const ts = threeState.current;
+    if (!ts.mat) return;
+    
+    setLoading(true);
+    setProgress(0);
+    
+    if (ts.texCache[idx]) {
+      ts.mat.map = ts.texCache[idx];
+      ts.mat.needsUpdate = true;
+      setLoading(false);
+      return;
+    }
+
+    let p = 0;
+    const iv = setInterval(() => { p = Math.min(p + Math.random() * 12 + 3, 88); setProgress(p); }, 120);
+    
+    const loader = new THREE.TextureLoader();
+    loader.crossOrigin = 'anonymous';
+    loader.load(ROOMS[idx].img, (tex: any) => {
+      clearInterval(iv);
+      setProgress(100);
+      tex.minFilter = THREE.LinearFilter;
+      tex.generateMipmaps = false;
+      ts.texCache[idx] = tex;
+      ts.mat.map = tex;
+      ts.mat.needsUpdate = true;
+      setTimeout(() => setLoading(false), 350);
+    });
+  };
+
+  const switchRoom = (idx: number) => {
+    if (idx === activeRoom) return;
+    setActiveRoom(idx);
+    if (threeState.current) {
+      threeState.current.tLon = 0;
+      threeState.current.tLat = 0;
+    }
+    loadRoomTex(idx);
+  };
+
+  if (!mounted) return null;
 
   return (
-    <div style={{ background: th.bg, color: th.text, minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: "'Jost', sans-serif" }}>
+    <div className="fixed inset-0 w-full h-full bg-[#07111E] overflow-hidden">
+      
+      {/* Loading Overlay */}
+      <div className={`fixed inset-0 z-50 bg-[#07111E] flex flex-col items-center justify-center transition-all duration-700 ${loading ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        <div className="font-se-display text-[36px] text-[var(--gold-lt)] mb-1.5">Sierra Estates</div>
+        <div className="font-mono text-[9px] tracking-[0.22em] text-[rgba(233,193,118,0.45)] uppercase mb-8">Full Virtual Tour</div>
+        <div className="w-[200px] h-[2px] bg-[rgba(200,150,26,0.15)] rounded overflow-hidden">
+          <div className="h-full bg-gradient-to-r from-[var(--gold)] to-[var(--gold-lt)] transition-all duration-200" style={{ width: `${progress}%` }} />
+        </div>
+      </div>
+
+      <canvas ref={canvasRef} className="fixed inset-0 w-full h-full cursor-grab outline-none touch-none" />
+
       {/* Header */}
-      <div style={{ height: 72, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 2rem', borderBottom: `1px solid ${th.border}`, backdropFilter: 'blur(20px)', zIndex: 100 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <Link href="/">
-            <button style={{ background: 'transparent', border: `1px solid ${th.border}`, color: th.text, width: 40, height: 40, borderRadius: '12px', display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer' }}>
-              <ArrowLeft size={18} />
-            </button>
-          </Link>
-          <div>
-            <h1 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 500, fontFamily: "'Cormorant Garamond', serif", letterSpacing: '0.02em' }}>S24 Ultra Virtual Tour Hub</h1>
-            <p style={{ margin: 0, fontSize: '0.75rem', color: th.textSub }}>AI-powered panoramic property mapping</p>
-          </div>
+      <div className="fixed top-0 left-0 right-0 z-20 h-14 flex items-center px-5 bg-gradient-to-b from-[rgba(7,17,30,0.92)] to-transparent pointer-events-none">
+        <Link href="/" className="flex items-center gap-2.5 pointer-events-auto">
+          <div className="w-7 h-7 bg-gradient-to-br from-[var(--gold)] to-[var(--gold-lt)] rounded-lg flex items-center justify-center font-se-display text-[17px] font-bold text-[var(--navy)]">S</div>
+          <div className="font-mono text-[10px] font-bold tracking-[0.18em] text-[var(--gold-lt)] uppercase">Sierra Estates</div>
+        </Link>
+        <div className="ml-3 font-se-display text-[22px] text-white/90">
+          {ROOMS[activeRoom].name}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(233,193,118,0.1)', border: `1px solid ${G}`, borderRadius: '24px', padding: '6px 16px', fontSize: '0.8rem', color: G }}>
-          <Smartphone size={14} />
-          <span>Galaxy S24 Ultra Tuned</span>
+        <div className="ml-auto pointer-events-auto">
+          <Link href="/" className="px-3.5 py-1.5 bg-white/10 border border-white/15 text-white/80 rounded-full text-[11px] font-semibold flex items-center gap-1.5 transition-all hover:bg-[rgba(200,150,26,0.2)] hover:border-[rgba(200,150,26,0.4)] hover:text-[var(--gold-lt)]">
+            ✕ Exit
+          </Link>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div style={{ maxWidth: 1200, margin: '2rem auto', width: '100%', padding: '0 2rem', display: 'grid', gridTemplateColumns: '1fr 420px', gap: '2rem', flex: 1 }}>
-        
-        {/* Left Pane: Interactive 360° Simulated Player */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div>
-            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '2rem', fontWeight: 400, margin: '0 0 0.5rem 0' }}>
-              Simulated Interactive 360° Property Player
-            </h2>
-            <p style={{ margin: 0, fontSize: '0.9rem', color: th.textSub }}>
-              Click and drag horizontally in the viewport below to experience a live New Cairo villa panorama.
-            </p>
-          </div>
-
-          {/* Interactive Player Viewport */}
-          <div 
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleMouseUp}
-            style={{ 
-              height: '420px', 
-              width: '100%', 
-              background: `url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1800&q=80')`,
-              backgroundSize: 'cover',
-              backgroundPositionX: `${bgPosition}px`,
-              backgroundPositionY: 'center',
-              border: `1px solid ${G}`,
-              borderRadius: '24px',
-              cursor: 'grab',
-              position: 'relative',
-              overflow: 'hidden',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-              userSelect: 'none'
-            }}
+      {/* Room Navigation */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-1.5 items-center bg-[rgba(7,17,30,0.88)] backdrop-blur-md border border-[rgba(200,150,26,0.18)] rounded-full p-2 overflow-x-auto max-w-[95vw]">
+        {ROOMS.map((room, i) => (
+          <button
+            key={i}
+            onClick={() => switchRoom(i)}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-[11px] font-semibold transition-all whitespace-nowrap ${activeRoom === i ? 'bg-gradient-to-br from-[var(--gold)] to-[var(--gold-lt)] text-[var(--navy)]' : 'bg-transparent text-white/50 hover:bg-[rgba(200,150,26,0.1)] hover:text-[var(--gold-lt)]'}`}
           >
-            {/* Compass HUD Overlay */}
-            <div style={{ position: 'absolute', top: '1.5rem', left: '1.5rem', backgroundColor: 'rgba(13,32,53,0.8)', border: `1px solid ${th.border}`, borderRadius: '12px', padding: '6px 14px', fontSize: '0.75rem', color: G, backdropFilter: 'blur(8px)' }}>
-              🧭 Living Room · Mivida Premium
-            </div>
-
-            {/* Draggable indicator */}
-            <div style={{ position: 'absolute', bottom: '1.5rem', left: '50%', transform: 'translateX(-50%)', backgroundColor: 'rgba(13,32,53,0.8)', border: `1px solid ${th.border}`, borderRadius: '16px', padding: '6px 16px', fontSize: '0.75rem', color: '#fff', pointerEvents: 'none', backdropFilter: 'blur(8px)', display: 'flex', gap: '8px', alignItems: 'center' }}>
-              <span>↔ Drag to Rotate Panorama</span>
-            </div>
-          </div>
-
-          {/* S24 Ultra Sourcing Upload Card */}
-          <div style={{ background: th.card, border: `1px solid ${th.border}`, borderRadius: '24px', padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <h3 style={{ margin: 0, fontSize: '1.25rem', fontFamily: "'Cormorant Garamond', serif", display: 'flex', alignItems: 'center', gap: '0.5rem', color: G }}>
-              <Upload size={18} />
-              S24 Ultra Panorama Uploader
-            </h3>
-            
-            <div style={{ border: `2px dashed ${th.border}`, borderRadius: '16px', padding: '2.5rem', textAlign: 'center', backgroundColor: 'rgba(255,255,255,0.01)', cursor: 'pointer', transition: 'all 0.3s' }} onClick={handleSimulateUpload}>
-              <Smartphone size={36} color={G} style={{ margin: '0 auto 1rem auto' }} />
-              <strong style={{ display: 'block', fontSize: '0.95rem', color: '#fff', marginBottom: '0.25rem' }}>
-                {tourStatus === 'idle' && 'Drop S24 Ultra raw 360° panoramas here'}
-                {tourStatus === 'uploading' && 'Uploading high-res panoramic frame...'}
-                {tourStatus === 'processing' && 'AI stitching & leveling in progress...'}
-                {tourStatus === 'ready' && 'Virtual Tour is fully rendered! ✓'}
-              </strong>
-              <span style={{ fontSize: '0.75rem', color: th.textSub }}>
-                {tourStatus === 'idle' && 'Supports raw 50MP / 200MP JPEG/HEIC captures'}
-                {tourStatus === 'uploading' && 'Transferring 42MB asset...'}
-                {tourStatus === 'processing' && 'Calibrating horizon & depth factors...'}
-                {tourStatus === 'ready' && 'Ready to share with client in custom PDF brochure!'}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Pane: Galaxy S24 Ultra Settings Guide */}
-        <div style={{ background: th.card, border: `1px solid ${th.border}`, borderRadius: '24px', padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div>
-            <h3 style={{ margin: 0, fontSize: '1.5rem', fontFamily: "'Cormorant Garamond', serif", color: G, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Smartphone size={20} />
-              S24 Ultra Setup Guide
-            </h3>
-            <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.8rem', color: th.textSub }}>
-              Optimized checklist for capturing luxury 360° tours natively.
-            </p>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', fontSize: '0.85rem', lineHeight: 1.6 }}>
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-              <span style={{ background: 'rgba(233,193,118,0.1)', color: G, width: '24px', height: '24px', borderRadius: '50%', display: 'inline-flex', justifyContent: 'center', alignItems: 'center', fontWeight: 600, flexShrink: 0 }}>1</span>
-              <div>
-                <strong style={{ color: '#fff', display: 'block' }}>Set Camera Resolution</strong>
-                Configure your native camera to **50MP or 200MP Mode** inside the Samsung camera settings to maximize clarity in wide panoramas.
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-              <span style={{ background: 'rgba(233,193,118,0.1)', color: G, width: '24px', height: '24px', borderRadius: '50%', display: 'inline-flex', justifyContent: 'center', alignItems: 'center', fontWeight: 600, flexShrink: 0 }}>2</span>
-              <div>
-                <strong style={{ color: '#fff', display: 'block' }}>Use Ultra-Wide 0.6x Panorama</strong>
-                Switch your camera format to **Panorama Mode** and select the **0.6x (Ultra-Wide)** lens to capture full ceiling-to-floor sweeps.
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-              <span style={{ background: 'rgba(233,193,118,0.1)', color: G, width: '24px', height: '24px', borderRadius: '50%', display: 'inline-flex', justifyContent: 'center', alignItems: 'center', fontWeight: 600, flexShrink: 0 }}>3</span>
-              <div>
-                <strong style={{ color: '#fff', display: 'block' }}>Level Placement at 1.5m</strong>
-                Mount the S24 Ultra on a **level tripod** positioned exactly in the center of the room at chest height (approximately 1.5 meters).
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-              <span style={{ background: 'rgba(233,193,118,0.1)', color: G, width: '24px', height: '24px', borderRadius: '50%', display: 'inline-flex', justifyContent: 'center', alignItems: 'center', fontWeight: 600, flexShrink: 0 }}>4</span>
-              <div>
-                <strong style={{ color: '#fff', display: 'block' }}>Voice Command / 2s Timer</strong>
-                Enable "Voice Commands" (say *'Smile'* or *'Capture'*) or configure a **2-second timer delay** to eliminate minor phone shakes when starting the panorama sweep.
-              </div>
-            </div>
-          </div>
-
-          <div style={{ borderTop: `1px solid ${th.border}`, paddingTop: '1.5rem', display: 'flex', gap: '0.75rem', alignItems: 'flex-start', background: 'rgba(233,193,118,0.02)', border: `1px dashed ${th.border}`, padding: '1rem', borderRadius: '12px' }}>
-            <AlertCircle size={20} color={G} style={{ flexShrink: 0 }} />
-            <span style={{ fontSize: '0.75rem', color: th.textSub, lineHeight: 1.5 }}>
-              *Note: Lola AI integrates a customized stitching pipeline that automatically extracts lighting factors and aligns shadows for perfect professional listing output.*
-            </span>
-          </div>
-
-          <Link href="/">
-            <button style={{ width: '100%', padding: '12px', background: 'transparent', border: `1px solid ${th.border}`, color: th.text, borderRadius: '12px', cursor: 'pointer', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              ← Return Home
-            </button>
-          </Link>
-        </div>
+            <span className="text-[14px]">{room.icon}</span>
+            <span className="hidden md:inline">{room.name.split(' ')[0]}</span>
+          </button>
+        ))}
       </div>
+
     </div>
   );
 }

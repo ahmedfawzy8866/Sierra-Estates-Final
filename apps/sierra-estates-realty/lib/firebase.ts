@@ -1,5 +1,5 @@
 /**
- * sierra estates — FIREBASE CLIENT SINGLETON
+ * SIERRA BLU — FIREBASE CLIENT SINGLETON
  * Central Firebase initialization for the frontend.
  * Admin SDK (service-account.json) is for server/scripts only.
  */
@@ -7,7 +7,6 @@ import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
-import { logger } from '@/lib/logger';
 
 const isDummyKey = (key?: string) => {
   if (!key) return true;
@@ -25,7 +24,7 @@ const hasValidFirebaseConfig = Boolean(
 const canUsePlaceholderConfig = !hasValidFirebaseConfig && typeof window === 'undefined';
 
 if (!hasValidFirebaseConfig && !canUsePlaceholderConfig && typeof window !== 'undefined') {
-  logger.warn('[firebase] Using development mock - real Firebase not configured.');
+  console.warn('[firebase] Using development mock - real Firebase not configured.');
 }
 
 const firebaseConfig = hasValidFirebaseConfig
@@ -50,7 +49,7 @@ let app: FirebaseApp;
 try {
   app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 } catch (error) {
-  logger.warn('[firebase] Failed to initialize app:', error);
+  console.warn('[firebase] Failed to initialize app:', error);
   app = getApps()[0];
 }
 
@@ -78,9 +77,7 @@ const unavailableClientService = <T>(serviceName: string): T =>
     }
   ) as T;
 
-export const auth: Auth = hasValidFirebaseConfig
-  ? getAuth(app)
-  : createMockAuth();
+export const auth: Auth = getAuth(app);
 
 export const db: Firestore = getFirestore(app);
 

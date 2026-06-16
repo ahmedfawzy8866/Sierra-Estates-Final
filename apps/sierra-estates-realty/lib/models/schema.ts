@@ -1,5 +1,5 @@
 /**
- * sierra estates — FIRESTORE DATA MODEL
+ * SIERRA BLU — FIRESTORE DATA MODEL
  * Canonical type definitions for all collections.
  * This is the single source of truth for the database schema.
  */
@@ -131,7 +131,7 @@ export interface Unit extends BaseDocument {
   floorPlanUrl?: string;
 
   // Sync
-  syncSource?: 'manual' | 'property-finder' | 'airtable' | 'sheets';
+  syncSource?: 'manual' | 'property-finder';
   pfReferenceNumber?: string;
   manualOverrides?: string[];   // Fields that should not be overwritten by sync
   lastSyncAt?: Timestamp | FieldValue | string;
@@ -578,5 +578,4 @@ export const COLLECTIONS = {
   intelligence: 'intelligence', // Global Neural Memory
   conciergeSelections: 'concierge_selections', // S8 Curated Portfolios
   strategicPipeline: 'strategic_pipeline',      // S9 Deal Pipeline
-  portfolioAssets: 'portfolio_assets',
 } as const;

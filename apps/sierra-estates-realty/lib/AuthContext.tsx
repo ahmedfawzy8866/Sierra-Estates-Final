@@ -2,7 +2,6 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { User, onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth, isFirebaseClientConfigured } from './firebase';
-import { logger } from '@/lib/logger';
 
 interface AuthContextType {
   user: User | null;
@@ -55,7 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setRole(null);
       setIsGuest(false);
     } catch (error) {
-      logger.error('Sign-out failed:', error);
+      console.error('Sign-out failed:', error);
     }
   }, []);
 
@@ -94,7 +93,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setRole('agent');
           }
         } catch (err) {
-          logger.error("Error fetching user role:", err);
+          console.error("Error fetching user role:", err);
           setRole('agent');
         }
       } else {
@@ -108,7 +107,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         clearTimer();
       }
     }, (error) => {
-      logger.error("Auth error:", error);
+      console.error("Auth error:", error);
       setLoading(false);
       clearTimer();
     });
@@ -153,4 +152,3 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 }
 
 export const useAuth = () => useContext(AuthContext);
-

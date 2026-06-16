@@ -1,4 +1,4 @@
-import { getFirestore, doc, getDoc, collection, getDocs, query, limit } from 'firebase/firestore';
+import { getFirestore, doc, getDoc, collection, getDocs, query, where, limit } from 'firebase/firestore';
 import { initializeApp, getApps } from 'firebase/app';
 
 const firebaseConfig = {
@@ -12,9 +12,6 @@ const firebaseConfig = {
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 const db = getFirestore(app);
-
-export type OfferType = 'sale' | 'rent';
-export type ListingType = 'primary' | 'resale' | 'landlord_direct' | 'developer_inventory';
 
 export interface Property {
   id: string;
@@ -31,8 +28,6 @@ export interface Property {
   coordinates?: { lat: number; lng: number };
   finishingType?: string;
   description?: string;
-  offerType?: OfferType;
-  listingType?: ListingType;
 }
 
 export const InventoryService = {

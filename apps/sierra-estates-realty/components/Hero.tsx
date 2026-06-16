@@ -194,7 +194,7 @@ export default function Hero() {
         {/* ── Filter Bar ───────────────────────────────────────────── */}
         <div style={{ animation: 'reveal-up 700ms 600ms both' }}>
           <FilterBar
-            onFilter={(_filters) => {
+            onFilter={(filters) => {
               const el = document.getElementById('listings-section');
               if (el) el.scrollIntoView({ behavior: 'smooth' });
             }}

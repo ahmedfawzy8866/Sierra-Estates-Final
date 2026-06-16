@@ -45,7 +45,7 @@ export default function PropertyDetailPage() {
         <button onClick={() => router.back()} className="label-sm text-secondary hover:text-primary transition-colors flex items-center gap-2">
           ← {t('common.back')}
         </button>
-        <div className="font-display font-extrabold tracking-tight text-primary text-xl uppercase">sierra estates</div>
+        <div className="font-display font-extrabold tracking-tight text-primary text-xl uppercase">SIERRA BLU</div>
         <button className="label-sm bg-primary text-on-primary px-6 py-2 rounded">Concierge</button>
       </nav>
 
@@ -88,7 +88,7 @@ export default function PropertyDetailPage() {
             <div className="w-12 h-px bg-secondary mb-8" />
             <p className="text-on-surface-variant font-light leading-relaxed text-lg mb-8">
               A rare {property.propertyType} positioned within the high-velocity {property.compound} corridor. 
-              Built to capture the optimum market yield while maintaining the privacy and prestige expected of a Sierra Estates listing.
+              Built to capture the optimum market yield while maintaining the privacy and prestige expected of a Sierra Blu listing.
             </p>
             <p className="text-on-surface-variant font-light leading-relaxed text-lg italic">
               "This unit has been manually vetted by our Senior Intelligence Analysts and meets all DQE standards for resale liquidity."
@@ -97,7 +97,7 @@ export default function PropertyDetailPage() {
         </div>
 
         {/* Sidebar */}
-        <aside className="space-y-8 print:hidden">
+        <aside className="space-y-8">
           <div className="bg-surface-container-low p-10 rounded-xl shadow-ambient border border-outline-variant text-center">
             <span className="label-sm text-secondary mb-6 block">Ready to proceed?</span>
             <div className="font-display text-2xl font-bold text-primary mb-10">Acquisition Protocol</div>
@@ -107,11 +107,8 @@ export default function PropertyDetailPage() {
             >
               Schedule Inspection
             </button>
-            <button 
-              onClick={() => window.print()}
-              className="w-full py-4 border border-outline-variant text-on-surface-variant rounded font-display font-bold text-[10px] tracking-widest uppercase hover:border-secondary transition-all flex items-center justify-center gap-2"
-            >
-              📥 Download PDF Brochure
+            <button className="w-full py-4 border border-outline-variant text-on-surface-variant rounded font-display font-bold text-[10px] tracking-widest uppercase hover:border-secondary transition-all">
+              Request Brochure
             </button>
           </div>
 
@@ -123,53 +120,6 @@ export default function PropertyDetailPage() {
             </div>
           </div>
         </aside>
-
-        {/* CSS Print Styles Sheet */}
-        <style jsx global>{`
-          @media print {
-            body {
-              background: #fff !important;
-              color: #000 !important;
-              font-size: 12pt !important;
-            }
-            nav, aside, footer, .print\\:hidden, button {
-              display: none !important;
-            }
-            .fixed {
-              position: relative !important;
-              top: auto !important;
-            }
-            section {
-              padding: 0 !important;
-              margin: 0 !important;
-              height: auto !important;
-              page-break-inside: avoid;
-            }
-            img {
-              max-height: 45vh !important;
-              width: 100% !important;
-              object-cover: cover !important;
-              border-radius: 12px !important;
-            }
-            h1 {
-              font-size: 28pt !important;
-              color: #1a1a1a !important;
-              margin-top: 20px !important;
-            }
-            .text-secondary {
-              color: #cca44c !important;
-            }
-            .grid {
-              display: block !important;
-            }
-            .border-y {
-              border-top: 2px solid #eaeaea !important;
-              border-bottom: 2px solid #eaeaea !important;
-              padding: 20px 0 !important;
-              margin: 20px 0 !important;
-            }
-          }
-        `}</style>
       </section>
 
       {/* ══ MODAL ══ */}
@@ -204,7 +154,7 @@ export default function PropertyDetailPage() {
                 } else {
                   throw new Error(data.error);
                 }
-              } catch (_err) {
+              } catch (err) {
                 alert('Connection Error: Pipeline could not be established.');
               }
             }}>

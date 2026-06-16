@@ -5,7 +5,7 @@ import { db } from '../../lib/firebase';
 import { useI18n } from '../../lib/I18nContext';
 import { formatCompactEGP, calcROI, calcGrossYield } from '../../lib/financial-engine';
 import { motion } from 'framer-motion';
-import { Home, Users, BarChart3, ShieldCheck } from 'lucide-react';
+import { Home, Users, BarChart3, ShieldCheck, TrendingUp, Activity, Target } from 'lucide-react';
 
 interface KPIStats {
   listings: number;
@@ -115,16 +115,15 @@ export default function KPIGrid({ onNavigate }: KPIGridProps) {
       color: '#C8A96E'
     },
     {
-      id: 'acquisition',
-      label: locale === 'ar' ? 'حصة الملاك (Acquisition)' : 'Owner Quota',
-      value: `${Math.min(stats.stakeholders, 100)} / 100`,
-      badge: locale === 'ar' ? 'تارجت الموظف' : 'Rep Target',
+      id: 'partners',
+      label: locale === 'ar' ? 'الشركاء' : 'Strategic Partners',
+      value: stats.partners.toString(),
+      badge: locale === 'ar' ? 'مؤمن' : 'Secured Status',
       icon: <ShieldCheck size={22} />,
       screen: 'team' as const,
-      color: '#4ADE80'
+      color: '#A0AEC0'
     },
   ], [stats, locale]);
-
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
