@@ -51,7 +51,7 @@ export default function VirtualTourPage() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     
     const scene = new THREE.Scene();
-    let fov = 75;
+    const fov = 75;
     const camera = new THREE.PerspectiveCamera(fov, window.innerWidth/window.innerHeight, 1, 2000);
     camera.position.set(0, 0, 0.001);
     

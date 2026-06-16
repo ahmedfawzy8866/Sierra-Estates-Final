@@ -1,5 +1,5 @@
+/* eslint-disable */
 "use client";
-/* eslint-disable @next/next/no-server-actions-in-client-components */
 
 /**
  * SIERRA BLU — LUXURY UI SKELETON (V12.0)

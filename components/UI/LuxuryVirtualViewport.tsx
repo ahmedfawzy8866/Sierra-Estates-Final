@@ -24,7 +24,7 @@ export default function LuxuryVirtualViewport({ isAr = false, onLaunchTour }: Lu
 
   // Drag Panning States
   const stageRef = useRef<HTMLDivElement>(null);
-  const panoRef = useRef<HTMLDivElement>(null);
+  const panoRef = useRef<HTMLImageElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const pointerX = useRef(0);
   const startX = useRef(0);
@@ -55,7 +55,6 @@ export default function LuxuryVirtualViewport({ isAr = false, onLaunchTour }: Lu
 
   // Auto-drift gentle panning simulation
   useEffect(() => {
-    let intervalId: any;
     const tick = () => {
       if (isDragging || !stageRef.current || !panoRef.current) return;
       const maxPan = stageRef.current.clientWidth - panoRef.current.clientWidth;
@@ -64,7 +63,7 @@ export default function LuxuryVirtualViewport({ isAr = false, onLaunchTour }: Lu
       pointerX.current = newX;
       panoRef.current.style.transform = `translateX(${newX}px)`;
     };
-    intervalId = setInterval(tick, 30);
+    const intervalId = setInterval(tick, 30);
     return () => clearInterval(intervalId);
   }, [isDragging, activeRoomIndex]);
 
@@ -91,10 +90,11 @@ export default function LuxuryVirtualViewport({ isAr = false, onLaunchTour }: Lu
           }`}
         >
           {/* Pano Background Wrapper (Wide Image) */}
-          <div
+          <img
             ref={panoRef}
-            className="absolute top-0 left-0 h-full w-[260%] bg-cover bg-center transition-transform duration-100 ease-out pointer-events-none will-change-transform"
-            style={{ backgroundImage: `url('${activeRoom.img}')` }}
+            src={activeRoom.img}
+            alt={isAr ? activeRoom.labelAr : activeRoom.labelEn}
+            className="absolute top-0 left-0 h-full w-[260%] object-cover transition-transform duration-100 ease-out pointer-events-none will-change-transform"
           />
 
           {/* Top Indicator overlays */}
@@ -125,7 +125,7 @@ export default function LuxuryVirtualViewport({ isAr = false, onLaunchTour }: Lu
       </div>
 
       {/* Room Selection Tabs */}
-      <div className="flex flex-wrap gap-2 justify-start" style={{ flexDirection: isAr ? 'row-reverse' : 'row' }}>
+      <div className={`flex flex-wrap gap-2 justify-start ${isAr ? 'flex-row-reverse' : 'flex-row'}`}>
         {ROOMS.map((room, idx) => (
           <button
             key={room.id}
