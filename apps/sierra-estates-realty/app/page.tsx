@@ -9,7 +9,7 @@
 import React, { useState, useEffect } from 'react';
 import { Languages } from 'lucide-react';
 import { collection, onSnapshot, query, where, orderBy, DocumentData } from 'firebase/firestore';
-import { clientDb } from '@/lib/firebase/client';
+import { db as clientDb } from '@/lib/firebase';
 
 import PremiumHero from '@/components/UI/PremiumHero';
 import AIMatchingEngine from '@/components/UI/AIMatchingEngine';
