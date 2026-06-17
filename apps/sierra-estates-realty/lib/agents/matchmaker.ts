@@ -4,6 +4,7 @@ import { instrumentAgent } from '../arize';
 import { OrchestrationStage } from '../services/orchestrator';
 import { conductPrecisionInterview } from '../services/profiling-service';
 import { generateConciergeSelection, generateOptionsPackage } from '../services/sales-engine';
+import { curateConciergePortfolio } from '../services/portfolio-engine';
 import { generateAgentBriefing } from '../services/handoff-service';
 import { runMatchingForLead } from '../services/matching-engine';
 import { StateManager } from '../orchestration/StateManager';
@@ -62,6 +63,9 @@ export const runMatchmaker = async (
 
       const selectionUrl = await generateConciergeSelection(docId);
       logger.info(`[MATCHMAKER] S8: Selection URL generated: ${selectionUrl}`);
+
+      const portfolio = await curateConciergePortfolio(docId);
+      logger.info(`[MATCHMAKER] S8: Concierge portfolio curated: ${portfolio.id}`);
 
       await StateManager.completeStage(docId, collection, 'S9');
     }

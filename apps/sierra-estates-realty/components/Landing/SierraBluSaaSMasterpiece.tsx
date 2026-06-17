@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion';
-import { fetchPropertiesFromDB, Property } from '@/lib/firebase';
+import { fetchPropertiesFromDB, type Property } from '@/lib/services/fetchProperties';
 
 const SERVICES = [
   { title: "Personalized Luxury", desc: "Tailored guidance with market expertise and negotiation excellence.", icon: "👤" },
@@ -225,7 +225,7 @@ export default function SierraBluSaaSMasterpiece() {
                   className="group bg-white rounded-[2.5rem] overflow-hidden border border-gray-200/50 shadow-sm hover:shadow-2xl transition-all duration-500 cursor-pointer flex flex-col"
                 >
                   <div className="relative w-full h-[360px] overflow-hidden bg-gray-100">
-                    <Image src={prop.imageUrl || prop.image} alt={prop.compound} fill className="object-cover transition-transform duration-700 ease-out group-hover:scale-102" />
+                    <Image src={prop.imageUrl} alt={prop.compound} fill className="object-cover transition-transform duration-700 ease-out group-hover:scale-102" />
                     <div className="absolute top-5 left-5 bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full text-[10px] font-bold tracking-wider shadow-sm text-[#0B2341]">
                       {prop.sbrCode}
                     </div>
