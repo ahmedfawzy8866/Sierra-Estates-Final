@@ -7,7 +7,6 @@ import {
   TrendingUp, 
   Activity as ActivityIcon, 
   ShieldCheck,
-  Zap,
   ArrowUpRight,
   Clock,
   Wifi,
@@ -17,7 +16,6 @@ import {
 import { useAuth } from '../../lib/AuthContext';
 import { useI18n } from '../../lib/I18nContext';
 import { useSierraBlu } from '@/hooks/useSierraBlu';
-import { Activity as ActivityType } from '../../lib/models/schema';
 
 interface AdminDashboardProps {
   greeting: string;

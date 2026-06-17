@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import FilterBar from './FilterBar';
 

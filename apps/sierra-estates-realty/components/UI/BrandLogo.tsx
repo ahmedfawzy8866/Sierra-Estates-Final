@@ -71,7 +71,7 @@ export default function BrandLogo({
   }
 
   // ── WORDMARK VARIANT (Red Shield Logo next to styled Sierra Estates text) ─
-  const { width } = wordmarkSizes[size];
+  const { width: _width } = wordmarkSizes[size];
   return (
     <div className="flex items-center gap-3 select-none cursor-pointer" style={{ width: 'max-content' }}>
       <ShieldLogo size={size === 'sm' ? 32 : size === 'md' ? 42 : size === 'lg' ? 64 : 84} />

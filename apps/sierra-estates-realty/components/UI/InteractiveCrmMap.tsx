@@ -2,11 +2,11 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, TrendingUp, Info } from 'lucide-react';
+import { TrendingUp } from 'lucide-react';
 import { useSierraBlu } from '@/hooks/useSierraBlu';
 
 // Leaflet imports (only loaded on client)
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 

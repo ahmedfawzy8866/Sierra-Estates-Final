@@ -55,7 +55,7 @@ try {
 
 export const isFirebaseClientConfigured = hasValidFirebaseConfig;
 
-const createMockAuth = (): Auth => {
+const _createMockAuth = (): Auth => {
   return new Proxy({} as any, {
     get(target, prop) {
       if (prop === '_isProxy') return true;
@@ -65,7 +65,7 @@ const createMockAuth = (): Auth => {
   });
 };
 
-const unavailableClientService = <T>(serviceName: string): T =>
+const _unavailableClientService = <T>(serviceName: string): T =>
   new Proxy(
     {},
     {

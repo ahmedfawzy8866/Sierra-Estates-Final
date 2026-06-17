@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Compass, ShieldCheck, Play, Award, Check, Percent, ArrowRight, Sparkles } from 'lucide-react';
+import { Search, Check, Percent, Sparkles } from 'lucide-react';
 import ShieldLogo from '../Landing/ShieldLogo';
 
 const COMPOUNDS = [

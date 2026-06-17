@@ -16,7 +16,7 @@ const ROOMS = [
 ];
 
 export default function VirtualTourPage() {
-  const { locale } = useI18n();
+  const { locale: _locale } = useI18n();
   const [mounted, setMounted] = useState(false);
   const [activeRoom, setActiveRoom] = useState(0);
   const [loading, setLoading] = useState(true);

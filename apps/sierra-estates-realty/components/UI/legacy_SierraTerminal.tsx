@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, Send, Sparkles, User, Brain } from 'lucide-react';
+import { X, Send, Sparkles, User, Brain } from 'lucide-react';
 
 interface ChatMessage {
   id: string;
@@ -63,7 +63,7 @@ export default function SierraTerminal() {
         text: data.response || "Error communicating with Sierra Core.",
         isVIP: data.vipAlert
       }]);
-    } catch (error) {
+    } catch (_error) {
       setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
         sender: 'sierra',
