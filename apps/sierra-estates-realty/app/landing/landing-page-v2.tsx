@@ -12,7 +12,7 @@
  * ─────────────────────────────────────────────────────────────────
  */
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { collection, addDoc, getDocs, query, limit, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";

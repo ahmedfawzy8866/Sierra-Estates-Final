@@ -1,7 +1,5 @@
 'use client';
 
-import Image from 'next/image';
-import Link from 'next/link';
 import { useState } from 'react';
 
 // ── Icons ─────────────────────────────────────────────────────────────────────
@@ -53,7 +51,7 @@ export default function PropertyCard({ property: p, index = 0, onClick, href }: 
   const [imgErr, setImgErr] = useState(false);
 
   const delay = `${index * 80}ms`;
-  const cardHref = href || `/listings/${p.id}`;
+  const _cardHref = href || `/listings/${p.id}`;
 
   const badgeColor = BADGE_COLORS[p.badge || ''] || 'bg-[var(--gold)]';
   const purposeClass = p.purpose === 'rent'

@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { ChevronDown, MapPin, Bed, Bath, Square, Heart, Share2, Phone, Mail, AlertCircle, Check } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { MapPin, Bed, Bath, Square, Heart, Check } from 'lucide-react';
 
 /**
  * SIERRA BLU — PRODUCTION APPLICATION

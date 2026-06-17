@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@google/genai": "^2.8.0",
-    "@sierra-estates/exchange": "0.0.0",
+    "@sierra-estates/exchange": "workspace:*",
     "dotenv": "^16.4.5",
     "firebase": "^10.8.0"
   },

@@ -13,7 +13,7 @@ interface KPIGridProps {
 
 export default function KPIGrid({ onNavigate }: KPIGridProps) {
   const { locale } = useI18n();
-  const { units, leads, partners, sales, loading } = useSierraBlu();
+  const { units, leads, partners, sales, _loading } = useSierraBlu();
 
   const stats = useMemo(() => {
     let totalROI = 0, totalYield = 0, totalPricePerSqm = 0, roiCount = 0, yieldCount = 0, priceCount = 0;

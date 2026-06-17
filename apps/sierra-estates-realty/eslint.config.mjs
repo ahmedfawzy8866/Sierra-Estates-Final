@@ -2,7 +2,7 @@ import tseslint from 'typescript-eslint'
 import unusedImports from 'eslint-plugin-unused-imports'
 
 export default [
-  { ignores: ['.next/**', 'out/**', 'build/**', 'coverage/**', 'next-env.d.ts', 'public/assets/**'] },
+  { ignores: ['.next/**', 'out/**', 'build/**', 'coverage/**', 'next-env.d.ts', 'public/**'] },
   ...tseslint.configs.recommended,
   {
     files: ['**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],

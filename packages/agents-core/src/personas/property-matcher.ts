@@ -10,9 +10,15 @@ export class PropertyMatcherAgent extends BaseAgent {
 
   constructor() {
     super();
-    // Initialize the official Google Gen AI SDK
-    // Relies on the GEMINI_API_KEY environment variable being set.
-    this.ai = new GoogleGenAI({});
+    // Vertex AI mode: billed to the GCP project via IAM/ADC instead of a
+    // personal Gemini API key. Requires Application Default Credentials in
+    // the runtime environment (GOOGLE_APPLICATION_CREDENTIALS or Workload
+    // Identity Federation) with the Vertex AI User role on the project.
+    this.ai = new GoogleGenAI({
+      vertexai: true,
+      project: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+      location: process.env.GOOGLE_CLOUD_LOCATION || 'us-central1',
+    });
   }
 
   public async execute(record: ExchangeRecord): Promise<AgentResult> {
