@@ -43,18 +43,6 @@
   },
   "hosting": [
     {
-      "target": "sierra-estates-main",
-      "source": "apps/sierra-estates-realty",
-      "ignore": [
-        "firebase.json",
-        "**/.*",
-        "**/node_modules/**"
-      ],
-      "frameworksBackend": {
-        "region": "us-central1"
-      }
-    },
-    {
       "target": "sierra-estates-admin",
       "source": "apps/admin-dashboard",
       "ignore": [

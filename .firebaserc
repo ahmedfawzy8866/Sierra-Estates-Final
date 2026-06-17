@@ -6,9 +6,6 @@
   "targets": {
     "sierra-blu": {
       "hosting": {
-        "sierra-estates-main": [
-          "sierra-blu"
-        ],
         "sierra-estates-admin": [
           "admin-sierra-blu",
           "sierra-estates-admin"
