@@ -36,25 +36,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: pnpm
+          cache: npm
 
-      - name: Install Vercel CLI
-        run: npm install -g vercel@latest
-
-      - name: Resolve deploy target
-        id: target
-        run: |
-          TARGET="${{ github.event.inputs.environment || 'production' }}"
-          echo "name=$TARGET" >> "$GITHUB_OUTPUT"
-          if [ "$TARGET" = "production" ]; then
-            echo "flag=--prod" >> "$GITHUB_OUTPUT"
-          else
-            echo "flag=" >> "$GITHUB_OUTPUT"
-          fi
+      - name: Install dependencies
+        run: npm ci
 
       - name: Pin project Root Directory to the web app (monorepo)
         run: |
