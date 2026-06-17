@@ -1,24 +1,15 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
-import { MapPin, Bed, Bath, Square, Heart, Check } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { MapPin, Bed, Bath, Square, Heart, Check, Loader } from 'lucide-react';
 
 /**
- * SIERRA BLU — PRODUCTION APPLICATION
- * Tasteskill v2 + Quiet Luxury Design System
- * 
- * 8 Sections:
- * 1. Onboarding Intent Capture
- * 2. Split-Screen Dual-View (Map 55% / Feed 45%)
- * 3. Property Profile Hero
- * 4. Floorplan Exploded View
- * 5. Cost Breakdown (Fintech Terminal)
- * 6. Trust Badges & Compliance
- * 7. Co-Buyer Collaboration
- * 8. Footer & CTA
+ * SIERRA ESTATES 3.2 — CLIENT HUB
+ * Modern luxury property discovery with AI-driven matching
+ * Backend: remix-whatsapp-campaign-agent
  */
 
-// ─── TYPES ────────────────────────────────────────────────────────────
+const BACKEND_URL = 'https://remix-remix-remix-whatsapp-campaign-agent-product-755638710103.europe-west2.run.app';
 
 type UserIntent = 'homebuyer' | 'collector' | 'investor' | null;
 type PropertyCard = {
@@ -37,8 +28,7 @@ type PropertyCard = {
   transit?: string;
 };
 
-// ─── MOCK DATA ────────────────────────────────────────────────────────────
-
+// Mock fallback data
 const MOCK_PROPERTIES: PropertyCard[] = [
   {
     id: '1',
@@ -48,11 +38,11 @@ const MOCK_PROPERTIES: PropertyCard[] = [
     baths: 2,
     area: 2400,
     image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80',
-    lat: 25.195,
-    lng: 55.278,
+    lat: 30.0587,
+    lng: 31.2263,
     yield: 5.2,
     capRate: 6.8,
-    schoolDist: '0.8 km to Al Khaleej School',
+    schoolDist: '0.8 km to American University',
     transit: '5 min to Metro'
   },
   {
@@ -63,11 +53,11 @@ const MOCK_PROPERTIES: PropertyCard[] = [
     baths: 4,
     area: 4100,
     image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80',
-    lat: 25.182,
-    lng: 55.271,
+    lat: 30.0444,
+    lng: 31.2169,
     yield: 4.8,
     capRate: 5.9,
-    schoolDist: '1.2 km to Dubai Modern School',
+    schoolDist: '1.2 km to GIS',
     transit: '12 min to Metro'
   },
   {
@@ -78,11 +68,11 @@ const MOCK_PROPERTIES: PropertyCard[] = [
     baths: 2,
     area: 1400,
     image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80',
-    lat: 25.165,
-    lng: 55.258,
+    lat: 30.0331,
+    lng: 31.2088,
     yield: 6.1,
     capRate: 7.4,
-    schoolDist: '1.5 km to Emirates International',
+    schoolDist: '1.5 km to NIS',
     transit: '8 min to Metro'
   }
 ];
