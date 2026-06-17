@@ -1,29 +1,24 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
-import { MapPin, Bed, Bath, Square, Heart, Check } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  MapPin, Bed, Bath, Square, Heart, Check, Loader,
+  Home, Sparkles, BarChart3, Map, Ruler, Box,
+  CheckCircle2, Camera, ClipboardCheck, Users, ThumbsUp
+} from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 /**
- * SIERRA BLU — PRODUCTION APPLICATION
- * Tasteskill v2 + Quiet Luxury Design System
- * 
- * 8 Sections:
- * 1. Onboarding Intent Capture
- * 2. Split-Screen Dual-View (Map 55% / Feed 45%)
- * 3. Property Profile Hero
- * 4. Floorplan Exploded View
- * 5. Cost Breakdown (Fintech Terminal)
- * 6. Trust Badges & Compliance
- * 7. Co-Buyer Collaboration
- * 8. Footer & CTA
+ * SIERRA ESTATES 3.2 — CLIENT HUB
+ * Modern luxury property discovery with AI-driven matching
  */
-
-// ─── TYPES ────────────────────────────────────────────────────────────
 
 type UserIntent = 'homebuyer' | 'collector' | 'investor' | null;
 type PropertyCard = {
   id: string;
   title: string;
+  location: string;
   price: number;
   beds: number;
   baths: number;
@@ -37,52 +32,54 @@ type PropertyCard = {
   transit?: string;
 };
 
-// ─── MOCK DATA ────────────────────────────────────────────────────────────
-
+// Mock fallback data — used until /api/listings returns live inventory
 const MOCK_PROPERTIES: PropertyCard[] = [
   {
     id: '1',
-    title: 'Downtown Penthouse',
+    title: 'Mivida Garden Penthouse',
+    location: 'Mivida',
     price: 2_800_000,
     beds: 3,
     baths: 2,
     area: 2400,
     image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80',
-    lat: 25.195,
-    lng: 55.278,
+    lat: 30.0587,
+    lng: 31.2263,
     yield: 5.2,
     capRate: 6.8,
-    schoolDist: '0.8 km to Al Khaleej School',
+    schoolDist: '0.8 km to American University',
     transit: '5 min to Metro'
   },
   {
     id: '2',
-    title: 'Marina Waterfront Villa',
+    title: 'Uptown Cairo Villa',
+    location: 'Uptown Cairo',
     price: 4_200_000,
     beds: 5,
     baths: 4,
     area: 4100,
     image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80',
-    lat: 25.182,
-    lng: 55.271,
+    lat: 30.0444,
+    lng: 31.2169,
     yield: 4.8,
     capRate: 5.9,
-    schoolDist: '1.2 km to Dubai Modern School',
+    schoolDist: '1.2 km to GIS',
     transit: '12 min to Metro'
   },
   {
     id: '3',
-    title: 'Historic District Townhouse',
+    title: 'Katameya Heights Townhouse',
+    location: 'Katameya Heights',
     price: 1_500_000,
     beds: 2,
     baths: 2,
     area: 1400,
     image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80',
-    lat: 25.165,
-    lng: 55.258,
+    lat: 30.0331,
+    lng: 31.2088,
     yield: 6.1,
     capRate: 7.4,
-    schoolDist: '1.5 km to Emirates International',
+    schoolDist: '1.5 km to NIS',
     transit: '8 min to Metro'
   }
 ];
@@ -93,24 +90,41 @@ function OnboardingIntent({ onSelect }: { onSelect: (intent: UserIntent) => void
   return (
     <section className="min-h-screen bg-gradient-to-br from-[#0A1628] to-[#0F1B2E] flex items-center justify-center px-6">
       <div className="max-w-2xl w-full text-center">
-        <h1 className="font-display text-6xl italic text-[#F4F0E8] mb-4">Sierra Blu</h1>
-        <p className="text-[#F4F0E8]/70 text-lg mb-16">Find your next property. Invest with intelligence.</p>
+        <motion.h1
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+          className="font-display text-6xl italic text-[#F4F0E8] mb-4"
+        >
+          Sierra Blu
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
+          className="text-[#F4F0E8]/70 text-lg mb-16"
+        >
+          Find your next property. Invest with intelligence.
+        </motion.p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
-            { id: 'homebuyer', icon: '🏡', label: 'Primary Homebuyer', desc: 'School districts, transit, neighborhoods' },
-            { id: 'collector', icon: '✨', label: 'Luxury Collector', desc: 'Prestige, exclusivity, heritage' },
-            { id: 'investor', icon: '📊', label: 'Data-Driven Investor', desc: 'Yield, cap rate, cash flow' }
-          ].map(item => (
-            <button
+            { id: 'homebuyer', icon: Home, label: 'Primary Homebuyer', desc: 'School districts, transit, neighborhoods' },
+            { id: 'collector', icon: Sparkles, label: 'Luxury Collector', desc: 'Prestige, exclusivity, heritage' },
+            { id: 'investor', icon: BarChart3, label: 'Data-Driven Investor', desc: 'Yield, cap rate, cash flow' }
+          ].map((item, i) => (
+            <motion.button
               key={item.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 + i * 0.1, ease: 'easeOut' }}
               onClick={() => onSelect(item.id as UserIntent)}
               className="group p-8 border-2 border-[#C9A84C] rounded-lg bg-transparent hover:bg-[#C9A84C]/10 transition-all duration-300 hover:scale-105"
             >
-              <div className="text-4xl mb-4">{item.icon}</div>
+              <item.icon className="w-9 h-9 mb-4 text-[#C9A84C]" strokeWidth={1.5} />
               <h3 className="text-[#C9A84C] font-semibold text-sm uppercase tracking-wider mb-2">{item.label}</h3>
               <p className="text-[#F4F0E8]/60 text-xs">{item.desc}</p>
-            </button>
+            </motion.button>
           ))}
         </div>
       </div>
@@ -121,10 +135,14 @@ function OnboardingIntent({ onSelect }: { onSelect: (intent: UserIntent) => void
 // ─── COMPONENT: SECTION 2 — DUAL-VIEW COMMAND CENTER ────────────────────
 
 function DualViewCommandCenter({
+  properties,
+  loading,
   intent,
   onPropertySelect,
   selectedId
 }: {
+  properties: PropertyCard[];
+  loading: boolean;
   intent: UserIntent;
   onPropertySelect: (id: string) => void;
   selectedId: string | null;
@@ -136,9 +154,9 @@ function DualViewCommandCenter({
   const getDisplayValue = (prop: PropertyCard) => {
     switch (intent) {
       case 'investor':
-        return `${prop.capRate}% cap rate`;
+        return prop.capRate ? `${prop.capRate}% cap rate` : 'Cap rate on request';
       case 'homebuyer':
-        return prop.schoolDist;
+        return prop.schoolDist ?? 'Schools nearby';
       case 'collector':
         return `${(prop.price / 1_000_000).toFixed(1)}M`;
       default:
@@ -156,7 +174,7 @@ function DualViewCommandCenter({
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#C9A84C_1px,transparent_1px),linear-gradient(to_bottom,#C9A84C_1px,transparent_1px)] bg-[size:8rem_8rem] opacity-5"></div>
 
         {/* Map pins */}
-        {MOCK_PROPERTIES.map(prop => (
+        {properties.map(prop => (
           <button
             key={prop.id}
             onClick={() => onPropertySelect(prop.id)}
@@ -185,20 +203,25 @@ function DualViewCommandCenter({
         ))}
 
         {/* Map label */}
-        <div className="absolute top-6 left-6 text-[#F4F0E8]/40 text-xs uppercase tracking-widest font-semibold">
-          🗺 Mapbox GL Integration
+        <div className="absolute top-6 left-6 flex items-center gap-1.5 text-[#F4F0E8]/40 text-xs uppercase tracking-widest font-semibold">
+          <Map className="w-3.5 h-3.5" />
+          Interactive Map
         </div>
       </div>
 
       {/* FEED LAYER (45%) */}
       <div className="w-full md:w-[45%] bg-[#0A1628] border-l border-[#C9A84C]/20 overflow-y-auto p-6 space-y-4">
-        <div className="text-[#C9A84C] text-xs uppercase tracking-widest font-semibold mb-4">
+        <div className="flex items-center gap-2 text-[#C9A84C] text-xs uppercase tracking-widest font-semibold mb-4">
           Featured Listings
+          {loading && <Loader className="w-3 h-3 animate-spin" />}
         </div>
 
-        {MOCK_PROPERTIES.map(prop => (
-          <button
+        {properties.map((prop, i) => (
+          <motion.button
             key={prop.id}
+            initial={{ opacity: 0, x: 16 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4, delay: i * 0.06, ease: 'easeOut' }}
             onClick={() => onPropertySelect(prop.id)}
             onMouseEnter={() => setHoveredId(prop.id)}
             onMouseLeave={() => setHoveredId(null)}
@@ -216,7 +239,7 @@ function DualViewCommandCenter({
             </div>
             <p className="text-[#F4F0E8]/60 text-xs mb-3 flex items-center gap-1">
               <MapPin className="w-3 h-3" />
-              Dubai, UAE
+              {prop.location}
             </p>
             <div className="flex justify-between text-xs text-[#C9A84C] mb-3">
               <span className="flex items-center gap-1"><Bed className="w-3 h-3" /> {prop.beds} beds</span>
@@ -227,7 +250,7 @@ function DualViewCommandCenter({
               <span className="text-[#C9A84C] font-bold text-lg">${(prop.price / 1_000_000).toFixed(1)}M</span>
               <span className="text-[#F4F0E8]/50 text-xs">{getDisplayValue(prop)}</span>
             </div>
-          </button>
+          </motion.button>
         ))}
       </div>
     </section>
@@ -239,33 +262,44 @@ function DualViewCommandCenter({
 function PropertyProfileHero({ property }: { property: PropertyCard }) {
   return (
     <section className="relative h-96 bg-[#0A1628] overflow-hidden">
-      {/* Hero image */}
-      <img
-        src={property.image}
-        alt={property.title}
-        className="w-full h-full object-cover opacity-40"
-      />
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={property.id}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.35, ease: 'easeOut' }}
+          className="absolute inset-0"
+        >
+          {/* Hero image */}
+          <img
+            src={property.image}
+            alt={property.title}
+            className="w-full h-full object-cover opacity-40"
+          />
 
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0A1628] via-[#0A1628]/50 to-transparent"></div>
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0A1628] via-[#0A1628]/50 to-transparent"></div>
 
-      {/* Content */}
-      <div className="absolute bottom-0 left-0 right-0 p-8">
-        <div className="flex items-end justify-between">
-          <div>
-            <p className="text-[#C9A84C] text-xs uppercase tracking-widest font-semibold mb-2">Featured Property</p>
-            <h2 className="text-[#F4F0E8] text-4xl font-display italic mb-2">{property.title}</h2>
-            <p className="text-[#F4F0E8]/70 text-sm flex items-center gap-2">
-              <MapPin className="w-4 h-4" />
-              Dubai, UAE
-            </p>
+          {/* Content */}
+          <div className="absolute bottom-0 left-0 right-0 p-8">
+            <div className="flex items-end justify-between">
+              <div>
+                <p className="text-[#C9A84C] text-xs uppercase tracking-widest font-semibold mb-2">Featured Property</p>
+                <h2 className="text-[#F4F0E8] text-4xl font-display italic mb-2">{property.title}</h2>
+                <p className="text-[#F4F0E8]/70 text-sm flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  {property.location}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-[#C9A84C] text-xs uppercase tracking-widest font-semibold mb-1">Price</p>
+                <p className="text-[#F4F0E8] text-3xl font-bold">${(property.price / 1_000_000).toFixed(1)}M</p>
+              </div>
+            </div>
           </div>
-          <div className="text-right">
-            <p className="text-[#C9A84C] text-xs uppercase tracking-widest font-semibold mb-1">Price</p>
-            <p className="text-[#F4F0E8] text-3xl font-bold">${(property.price / 1_000_000).toFixed(1)}M</p>
-          </div>
-        </div>
-      </div>
+        </motion.div>
+      </AnimatePresence>
     </section>
   );
 }
@@ -277,7 +311,13 @@ function FloorplanExplodedView() {
 
   return (
     <section className="bg-[#0F1B2E] px-8 py-16">
-      <div className="max-w-6xl mx-auto">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-80px' }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+        className="max-w-6xl mx-auto"
+      >
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
           <div>
             <p className="text-[#C9A84C] text-xs uppercase tracking-widest font-semibold mb-2">Visual Exploration</p>
@@ -309,16 +349,19 @@ function FloorplanExplodedView() {
 
         <div className="bg-gradient-to-br from-[#1a2e4a] to-[#0d1b2e] rounded-lg p-12 h-96 flex items-center justify-center border border-[#C9A84C]/20">
           <div className="text-center">
-            <div className="text-6xl mb-4">{view === '2d' ? '📐' : '🧊'}</div>
+            {view === '2d'
+              ? <Ruler className="w-16 h-16 mx-auto mb-4 text-[#C9A84C]" strokeWidth={1.25} />
+              : <Box className="w-16 h-16 mx-auto mb-4 text-[#C9A84C]" strokeWidth={1.25} />
+            }
             <p className="text-[#F4F0E8]/60 text-sm">
-              {view === '2d' 
+              {view === '2d'
                 ? 'Engineering blueprint with room-by-room breakdown'
                 : 'Interactive 3D model - rotate to explore spatial configuration'
               }
             </p>
           </div>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }
@@ -337,7 +380,13 @@ function FinTechTerminal({ property }: { property: PropertyCard }) {
 
   return (
     <section className="bg-[#0A1628] px-8 py-16">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-80px' }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+        className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8"
+      >
         {/* LEFT: Cost Breakdown */}
         <div>
           <p className="text-[#C9A84C] text-xs uppercase tracking-widest font-semibold mb-2">Financial Transparency</p>
@@ -368,10 +417,10 @@ function FinTechTerminal({ property }: { property: PropertyCard }) {
 
           {/* Compliance */}
           <div className="mt-8 space-y-2">
-            <p className="text-[#C9A84C] text-xs uppercase tracking-widest font-semibold mb-3">RERA Compliance</p>
+            <p className="text-[#C9A84C] text-xs uppercase tracking-widest font-semibold mb-3">Title &amp; Registration</p>
             <div className="flex items-center gap-2 text-xs text-[#F4F0E8]/70 p-2 bg-[#C9A84C]/10 rounded">
               <Check className="w-4 h-4 text-[#C9A84C]" />
-              <span>Escrow: DIFC Bank #7734</span>
+              <span>Escrow: Verified Trust Account #7734</span>
             </div>
             <div className="flex items-center gap-2 text-xs text-[#F4F0E8]/70 p-2 bg-[#C9A84C]/10 rounded">
               <Check className="w-4 h-4 text-[#C9A84C]" />
@@ -437,7 +486,7 @@ function FinTechTerminal({ property }: { property: PropertyCard }) {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }
@@ -453,15 +502,22 @@ function TrustBadges() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
-            { icon: '✓', label: 'Price Verified', detail: 'Updated 4 hours ago' },
-            { icon: '📸', label: 'Physical Walkthrough', detail: 'Confirmed by agent' },
-            { icon: '📋', label: 'Title Cleared', detail: 'RERA certified' }
+            { icon: CheckCircle2, label: 'Price Verified', detail: 'Updated 4 hours ago' },
+            { icon: Camera, label: 'Physical Walkthrough', detail: 'Confirmed by agent' },
+            { icon: ClipboardCheck, label: 'Title Cleared', detail: 'Registration certified' }
           ].map((badge, i) => (
-            <div key={i} className="bg-[#0A1628] rounded-lg p-6 border border-[#C9A84C]/30">
-              <div className="text-3xl mb-3">{badge.icon}</div>
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: i * 0.1, ease: 'easeOut' }}
+              className="bg-[#0A1628] rounded-lg p-6 border border-[#C9A84C]/30"
+            >
+              <badge.icon className="w-7 h-7 mb-3 text-[#C9A84C]" strokeWidth={1.5} />
               <p className="text-[#F4F0E8] font-semibold text-sm mb-1">{badge.label}</p>
               <p className="text-[#F4F0E8]/60 text-xs">{badge.detail}</p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -476,7 +532,13 @@ function CoBuyerHub() {
 
   return (
     <section className="bg-[#0A1628] px-8 py-16">
-      <div className="max-w-6xl mx-auto">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-80px' }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+        className="max-w-6xl mx-auto"
+      >
         <p className="text-[#C9A84C] text-xs uppercase tracking-widest font-semibold mb-2">Partnership & Collaboration</p>
         <h3 className="text-[#F4F0E8] text-2xl font-display italic mb-12">Shared Portfolio</h3>
 
@@ -485,7 +547,7 @@ function CoBuyerHub() {
           <div>
             <div className="bg-[#0F1B2E] rounded-lg p-6 border border-[#C9A84C]/30 mb-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="text-2xl">👥</div>
+                <Users className="w-6 h-6 text-[#C9A84C]" strokeWidth={1.5} />
                 <div>
                   <p className="text-[#F4F0E8] font-semibold">You + Sarah</p>
                   <p className="text-[#F4F0E8]/60 text-xs">Partnership active • 4 properties</p>
@@ -498,12 +560,16 @@ function CoBuyerHub() {
             </div>
 
             <div className="space-y-3">
-              {['Downtown Penthouse', 'Marina Villa', 'Historic Townhouse'].map((name, i) => (
+              {['Mivida Garden Penthouse', 'Uptown Cairo Villa', 'Katameya Heights Townhouse'].map((name, i) => (
                 <div key={i} className="bg-[#0F1B2E] rounded-lg p-4 border border-[#C9A84C]/20">
                   <p className="text-[#F4F0E8] text-sm font-semibold mb-2">{name}</p>
                   <div className="flex gap-2 text-xs">
-                    <button className="flex-1 py-2 bg-[#C9A84C]/20 text-[#C9A84C] rounded hover:bg-[#C9A84C]/30">👍 You</button>
-                    <button className="flex-1 py-2 bg-[#C9A84C]/20 text-[#C9A84C] rounded hover:bg-[#C9A84C]/30">👍 Sarah</button>
+                    <button className="flex-1 py-2 bg-[#C9A84C]/20 text-[#C9A84C] rounded hover:bg-[#C9A84C]/30 flex items-center justify-center gap-1.5">
+                      <ThumbsUp className="w-3.5 h-3.5" /> You
+                    </button>
+                    <button className="flex-1 py-2 bg-[#C9A84C]/20 text-[#C9A84C] rounded hover:bg-[#C9A84C]/30 flex items-center justify-center gap-1.5">
+                      <ThumbsUp className="w-3.5 h-3.5" /> Sarah
+                    </button>
                   </div>
                 </div>
               ))}
@@ -517,12 +583,12 @@ function CoBuyerHub() {
             <div className="space-y-4 max-h-80 overflow-y-auto">
               <div className="bg-[#0A1628] rounded-lg p-4">
                 <p className="text-[#C9A84C] text-xs font-semibold mb-1">Sarah • 2 hours ago</p>
-                <p className="text-[#F4F0E8]/80 text-sm">Downtown penthouse has amazing light. Can we negotiate HOA fees?</p>
+                <p className="text-[#F4F0E8]/80 text-sm">Mivida penthouse has amazing light. Can we negotiate the maintenance fees?</p>
               </div>
 
               <div className="bg-[#0A1628] rounded-lg p-4 ml-4">
                 <p className="text-[#C9A84C] text-xs font-semibold mb-1">You • just now</p>
-                <p className="text-[#F4F0E8]/80 text-sm">Called the broker. HOA is fixed, but sellers might cover closing costs.</p>
+                <p className="text-[#F4F0E8]/80 text-sm">Called the broker. Fees are fixed, but sellers might cover closing costs.</p>
               </div>
             </div>
 
@@ -533,17 +599,66 @@ function CoBuyerHub() {
             />
           </div>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }
 
 // ─── MAIN APP ────────────────────────────────────────────────────────────
 
+interface ApiListing {
+  id: string;
+  title: string;
+  price: number;
+  compound: string;
+  beds: number;
+  baths: number;
+  area: number;
+  image?: string;
+}
+
+function mapListingToCard(listing: ApiListing): PropertyCard {
+  return {
+    id: listing.id,
+    title: listing.title,
+    location: listing.compound || 'New Cairo',
+    price: listing.price,
+    beds: listing.beds,
+    baths: listing.baths,
+    area: listing.area,
+    image: listing.image || MOCK_PROPERTIES[0].image,
+    lat: 30.03 + Math.random() * 0.03,
+    lng: 31.20 + Math.random() * 0.03,
+  };
+}
+
 export default function ClientHub() {
   const [intent, setIntent] = useState<UserIntent>(null);
+  const [properties, setProperties] = useState<PropertyCard[]>(MOCK_PROPERTIES);
+  const [loadingProperties, setLoadingProperties] = useState(true);
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(MOCK_PROPERTIES[0].id);
-  const selectedProperty = MOCK_PROPERTIES.find(p => p.id === selectedPropertyId) || MOCK_PROPERTIES[0];
+  const selectedProperty = properties.find(p => p.id === selectedPropertyId) || properties[0];
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadListings() {
+      try {
+        const res = await fetch('/api/listings?limit=6');
+        const data = await res.json();
+        if (!cancelled && data.success && Array.isArray(data.listings) && data.listings.length > 0) {
+          const mapped = data.listings.map(mapListingToCard);
+          setProperties(mapped);
+          setSelectedPropertyId(mapped[0].id);
+        }
+      } catch (error) {
+        logger.error('[CLIENT_HUB] Failed to load live listings, using fallback inventory:', error);
+      } finally {
+        if (!cancelled) setLoadingProperties(false);
+      }
+    }
+    loadListings();
+    return () => { cancelled = true; };
+  }, []);
 
   if (!intent) {
     return <OnboardingIntent onSelect={setIntent} />;
@@ -553,6 +668,8 @@ export default function ClientHub() {
     <div className="bg-[#0A1628] text-[#F4F0E8] min-h-screen">
       {/* Section 2: Dual-View */}
       <DualViewCommandCenter
+        properties={properties}
+        loading={loadingProperties}
         intent={intent}
         onPropertySelect={setSelectedPropertyId}
         selectedId={selectedPropertyId}
