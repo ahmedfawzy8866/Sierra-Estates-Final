@@ -1,276 +1,148 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
-type Lang = "en" | "ar";
-
-interface LanguageContextType {
-  lang: Lang;
-  toggleLang: () => void;
-  t: (key: string) => string;
-  isRTL: boolean;
-}
-
-const translations: Record<string, Record<string, string>> = {
-  en: {
-    // Navbar
-    "nav.home": "Home",
-    "nav.listings": "Listings",
-    "nav.tour": "Virtual Tour",
-    "nav.about": "About",
-    "nav.contact": "Contact",
-    "nav.lang": "عربي",
-    "nav.cta": "Find Property",
-
-    // Hero
-    "hero.badge": "Premium Real Estate",
-    "hero.headline1": "Where Luxury",
-    "hero.headline2": "Meets Living",
-    "hero.sub": "Discover curated estates, penthouses, and villas across the most prestigious addresses.",
-    "hero.cta.primary": "Explore Properties",
-    "hero.cta.secondary": "Virtual Tour",
-    "hero.search.placeholder": "Search by city, neighborhood, or property type…",
-    "hero.search.btn": "Search",
-    "hero.filter.all": "All",
-    "hero.filter.villa": "Villa",
-    "hero.filter.penthouse": "Penthouse",
-    "hero.filter.apartment": "Apartment",
-    "hero.filter.estate": "Estate",
-
-    // Stats
-    "stats.label": "Our Numbers",
-    "stats.title": "Built on a Foundation\nof Excellence",
-    "stats.listings": "Luxury Listings",
-    "stats.clients": "Happy Clients",
-    "stats.years": "Years Experience",
-    "stats.cities": "Global Cities",
-    "stats.value": "Portfolio Value",
-
-    // Listings
-    "listings.label": "Properties",
-    "listings.title": "Curated\nResidences",
-    "listings.sub": "Handpicked for those who demand the extraordinary.",
-    "listings.filter.all": "All",
-    "listings.filter.villa": "Villa",
-    "listings.filter.penthouse": "Penthouse",
-    "listings.filter.apartment": "Apartment",
-    "listings.filter.estate": "Estate",
-    "listings.beds": "Beds",
-    "listings.baths": "Baths",
-    "listings.sqft": "sq ft",
-    "listings.tap": "Tap to flip for details",
-    "listings.inquire": "Inquire Now",
-    "listings.schedule": "Schedule Visit",
-    "listings.flip_back": "Tap to go back",
-    "listings.view_all": "View All Properties",
-    "listings.for_sale": "For Sale",
-    "listings.for_rent": "For Rent",
-    "listings.exclusive": "Exclusive",
-    "listings.new": "New",
-    "listings.featured": "Featured",
-
-    // Virtual Tour
-    "tour.label": "Virtual Tour",
-    "tour.title": "Step Inside\nYour Dream Home",
-    "tour.sub": "Explore every room of our signature penthouse — navigate with arrows, keyboard, or swipe.",
-    "tour.keyboard": "Use ← → arrow keys to navigate",
-    "tour.fullscreen": "Fullscreen",
-    "tour.room.living": "Grand Living Room",
-    "tour.room.master": "Master Suite",
-    "tour.room.kitchen": "Gourmet Kitchen",
-    "tour.room.bath": "Spa Bathroom",
-    "tour.room.dining": "Formal Dining",
-    "tour.room.pool": "Infinity Pool",
-    "tour.room.office": "Private Study",
-    "tour.cta": "Book a Private Viewing",
-
-    // Testimonials
-    "test.label": "Client Stories",
-    "test.title": "Trusted by the\nWorld's Finest",
-    "test.1.text": "Sierra Estates redefined what luxury meant for our family. The process was seamless, the team extraordinary.",
-    "test.1.name": "Alexander Hartmann",
-    "test.1.role": "CEO, Hartmann Capital",
-    "test.2.text": "I've bought properties on three continents. None compared to the experience and portfolio Sierra Estates offers.",
-    "test.2.name": "Sophia Reyes",
-    "test.2.role": "International Investor",
-    "test.3.text": "From search to signing, every detail was perfection. Our penthouse in Dubai exceeded every expectation.",
-    "test.3.name": "Omar Al-Rashid",
-    "test.3.role": "Managing Director",
-
-    // Contact
-    "contact.label": "Get in Touch",
-    "contact.title": "Let's Find Your\nPerfect Estate",
-    "contact.name": "Full Name",
-    "contact.email": "Email Address",
-    "contact.phone": "Phone Number",
-    "contact.budget": "Budget Range",
-    "contact.message": "Your message…",
-    "contact.submit": "Send Message",
-    "contact.address": "Sierra Tower, Downtown Dubai, UAE",
-    "contact.phone_val": "+971 4 000 0000",
-    "contact.email_val": "hello@sierra-estates.com",
-
-    // Footer
-    "footer.tagline": "Where Luxury Meets Living",
-    "footer.rights": "© 2025 Sierra Estates. All rights reserved.",
-    "footer.company": "Company",
-    "footer.properties": "Properties",
-    "footer.services": "Services",
-    "footer.about": "About Us",
-    "footer.careers": "Careers",
-    "footer.press": "Press",
-    "footer.villas": "Villas",
-    "footer.penthouses": "Penthouses",
-    "footer.apartments": "Apartments",
-    "footer.estates": "Estates",
-    "footer.consultation": "Consultation",
-    "footer.management": "Property Mgmt",
-    "footer.investment": "Investment",
-    "footer.relocation": "Relocation",
-  },
-  ar: {
-    // Navbar
-    "nav.home": "الرئيسية",
-    "nav.listings": "العقارات",
-    "nav.tour": "جولة افتراضية",
-    "nav.about": "عنا",
-    "nav.contact": "اتصل بنا",
-    "nav.lang": "English",
-    "nav.cta": "ابحث عن عقار",
-
-    // Hero
-    "hero.badge": "عقارات فاخرة",
-    "hero.headline1": "حيث يلتقي",
-    "hero.headline2": "الفخامة بالحياة",
-    "hero.sub": "اكتشف مجموعة مختارة من القصور والبنتهاوس والفيلات في أرقى العناوين.",
-    "hero.cta.primary": "استعرض العقارات",
-    "hero.cta.secondary": "جولة افتراضية",
-    "hero.search.placeholder": "ابحث بالمدينة أو الحي أو نوع العقار…",
-    "hero.search.btn": "بحث",
-    "hero.filter.all": "الكل",
-    "hero.filter.villa": "فيلا",
-    "hero.filter.penthouse": "بنتهاوس",
-    "hero.filter.apartment": "شقة",
-    "hero.filter.estate": "قصر",
-
-    // Stats
-    "stats.label": "أرقامنا",
-    "stats.title": "مبنيون على أساس\nمن التميز",
-    "stats.listings": "عقار فاخر",
-    "stats.clients": "عميل سعيد",
-    "stats.years": "سنوات خبرة",
-    "stats.cities": "مدينة عالمية",
-    "stats.value": "قيمة المحفظة",
-
-    // Listings
-    "listings.label": "العقارات",
-    "listings.title": "مساكن\nمختارة بعناية",
-    "listings.sub": "اخترناها لمن يستحق الاستثنائي.",
-    "listings.filter.all": "الكل",
-    "listings.filter.villa": "فيلا",
-    "listings.filter.penthouse": "بنتهاوس",
-    "listings.filter.apartment": "شقة",
-    "listings.filter.estate": "قصر",
-    "listings.beds": "غرف",
-    "listings.baths": "حمامات",
-    "listings.sqft": "قدم مربع",
-    "listings.tap": "اضغط لعرض التفاصيل",
-    "listings.inquire": "استفسر الآن",
-    "listings.schedule": "حجز زيارة",
-    "listings.flip_back": "اضغط للعودة",
-    "listings.view_all": "عرض جميع العقارات",
-    "listings.for_sale": "للبيع",
-    "listings.for_rent": "للإيجار",
-    "listings.exclusive": "حصري",
-    "listings.new": "جديد",
-    "listings.featured": "مميز",
-
-    // Virtual Tour
-    "tour.label": "جولة افتراضية",
-    "tour.title": "ادخل إلى\nمنزل أحلامك",
-    "tour.sub": "استكشف كل غرفة في البنتهاوس المميز — تنقّل بالأسهم أو لوحة المفاتيح أو السحب.",
-    "tour.keyboard": "استخدم مفاتيح الأسهم ← → للتنقل",
-    "tour.fullscreen": "ملء الشاشة",
-    "tour.room.living": "غرفة المعيشة الكبرى",
-    "tour.room.master": "الجناح الرئيسي",
-    "tour.room.kitchen": "المطبخ الفاخر",
-    "tour.room.bath": "حمام السبا",
-    "tour.room.dining": "غرفة الطعام الرسمية",
-    "tour.room.pool": "حمام سباحة لانهائي",
-    "tour.room.office": "مكتب خاص",
-    "tour.cta": "احجز جولة خاصة",
-
-    // Testimonials
-    "test.label": "قصص العملاء",
-    "test.title": "موثوق به من\nقِبَل الأفضل في العالم",
-    "test.1.text": "أعادت سيرا إيستيتس تعريف معنى الفخامة لعائلتنا. كانت العملية سلسة والفريق استثنائياً.",
-    "test.1.name": "ألكسندر هارتمان",
-    "test.1.role": "الرئيس التنفيذي، هارتمان كابيتال",
-    "test.2.text": "اشتريت عقارات في ثلاث قارات. لم تُقارن أيٌّ منها بتجربة ومحفظة سيرا إيستيتس.",
-    "test.2.name": "صوفيا ريس",
-    "test.2.role": "مستثمرة دولية",
-    "test.3.text": "من البحث إلى التوقيع، كل تفصيلة كانت مثالية. بنتهاوسنا في دبي فاق كل التوقعات.",
-    "test.3.name": "عمر الراشد",
-    "test.3.role": "المدير التنفيذي",
-
-    // Contact
-    "contact.label": "تواصل معنا",
-    "contact.title": "لنجد عقارك\nالمثالي معاً",
-    "contact.name": "الاسم الكامل",
-    "contact.email": "البريد الإلكتروني",
-    "contact.phone": "رقم الهاتف",
-    "contact.budget": "نطاق الميزانية",
-    "contact.message": "رسالتك…",
-    "contact.submit": "إرسال الرسالة",
-    "contact.address": "برج سيرا، وسط مدينة دبي، الإمارات",
-    "contact.phone_val": "٠٠٩٧١ ٤ ٠٠٠ ٠٠٠٠",
-    "contact.email_val": "hello@sierra-estates.com",
-
-    // Footer
-    "footer.tagline": "حيث يلتقي الفخامة بالحياة",
-    "footer.rights": "© ٢٠٢٥ سيرا إيستيتس. جميع الحقوق محفوظة.",
-    "footer.company": "الشركة",
-    "footer.properties": "العقارات",
-    "footer.services": "الخدمات",
-    "footer.about": "عنّا",
-    "footer.careers": "الوظائف",
-    "footer.press": "الصحافة",
-    "footer.villas": "فيلات",
-    "footer.penthouses": "بنتهاوس",
-    "footer.apartments": "شقق",
-    "footer.estates": "قصور",
-    "footer.consultation": "استشارة",
-    "footer.management": "إدارة عقارات",
-    "footer.investment": "استثمار",
-    "footer.relocation": "انتقال",
-  },
+const EN: Record<string, string> = {
+  "ann.text": "25% OFF service fees · First 50 users only",
+  "ann.spots": "47 SPOTS · Claim Now",
+  "nav.home": "Home", "nav.listings": "Listings", "nav.tour": "Virtual Tour",
+  "nav.intel": "Intelligence", "nav.about": "About", "nav.contact": "Contact",
+  "nav.lang": "ع", "nav.cta": "Smart Request",
+  "nav.all": "All", "nav.rent": "Rent", "nav.resale": "Resale",
+  "nav.compounds": "All Compounds", "nav.rooms": "Rooms", "nav.nearby": "Nearby",
+  "hero.eyebrow": "Artificial Intelligence · New Cairo",
+  "hero.title1": "Find Your", "hero.titleEm": "Dream Home", "hero.title2": "Driven by AI",
+  "hero.sub": "19 premium compounds · instant AI-powered matching",
+  "hero.listings": "Listings", "hero.compounds": "Compounds",
+  "hero.aiScore": "AI Score", "hero.response": "Response",
+  "listings.eyebrow": "AI-Curated Inventory", "listings.title": "Properties Found",
+  "listings.sort.ai": "AI Score ↓", "listings.sort.priceLow": "Price ↑",
+  "listings.sort.priceHigh": "Price ↓", "listings.sort.area": "Largest Area",
+  "listings.view": "View Property", "listings.cta": "Call / WhatsApp Agent",
+  "listings.empty": "No properties match. Try broadening your filters.",
+  "tour.eyebrow": "Immersive Experience", "tour.title": "Virtual Property Tour",
+  "tour.sub": "Explore our finest properties from wherever you are.",
+  "intel.eyebrow": "Intelligence OS", "intel.title": "Powered by AI",
+  "intel.sub": "Our platform uses advanced AI to match you with the perfect property.",
+  "intel.f1.title": "AI Score Engine",
+  "intel.f1.desc": "Every listing rated 1–10 using 40+ data points including appreciation, yield, and lifestyle fit.",
+  "intel.f2.title": "Instant Matching",
+  "intel.f2.desc": "Tell us your budget and preferences — our AI returns curated matches in under 4 seconds.",
+  "intel.f3.title": "Market Signals",
+  "intel.f3.desc": "Live price trends, ROI forecasts, and demand heatmaps for every New Cairo compound.",
+  "intel.f4.title": "Virtual Tours",
+  "intel.f4.desc": "Photorealistic panoramic walkthroughs — visit any property before you step outside.",
+  "why.eyebrow": "Why Sierra Estates", "why.title": "Beyond Brokerage",
+  "why.sub": "We combine local expertise with AI-driven intelligence to give you an unfair advantage.",
+  "why.c1.title": "Curated Portfolio",
+  "why.c1.desc": "Hand-selected properties across 19 compounds in New Cairo — only the finest make our list.",
+  "why.c2.title": "AI-First Platform",
+  "why.c2.desc": "Real-time market intelligence, AI scoring, and instant compound analysis at your fingertips.",
+  "why.c3.title": "Bilingual Experts",
+  "why.c3.desc": "Our advisors are fully bilingual and available 24 hours a day, 7 days a week.",
+  "stats.title": "Trusted by Thousands",
+  "stats.portfolio": "Portfolio Value", "stats.listings": "Active Listings",
+  "stats.clients": "Happy Clients", "stats.compounds": "Compounds",
+  "testi.eyebrow": "Client Reviews", "testi.title": "Voices of Trust",
+  "testi.sub": "Real experiences from our valued clients across New Cairo.",
+  "contact.eyebrow": "Get In Touch", "contact.title": "Find Your Property",
+  "contact.sub": "Tell us what you're looking for and we'll match you with the best options in 24 hours.",
+  "contact.name": "Full Name", "contact.wa": "WhatsApp Number",
+  "contact.compound": "Preferred Compound", "contact.budget": "Budget",
+  "contact.submit": "Submit Request — 25% OFF",
+  "contact.success.title": "Request Received!",
+  "contact.success.desc": "Our team will contact you within 24 hours with matched listings.",
+  "footer.slogan": "Future of Real Estates",
+  "footer.company": "Company", "footer.services": "Services",
+  "footer.compounds": "Compounds", "footer.legal": "Legal",
+  "footer.copy": "© 2026 Sierra Estates. All rights reserved.",
+  "chat.placeholder": "Ask Sierra anything…", "chat.online": "● Online · AI Assistant",
+  "smart.name": "Name", "smart.wa": "WhatsApp Number",
 };
 
-const LanguageContext = createContext<LanguageContextType>({
-  lang: "en",
-  toggleLang: () => {},
-  t: (k) => k,
-  isRTL: false,
+const AR: Record<string, string> = {
+  "ann.text": "خصم 25% على رسوم الخدمة · أول 50 مستخدم فقط",
+  "ann.spots": "47 مكانًا · احجز الآن",
+  "nav.home": "الرئيسية", "nav.listings": "العقارات", "nav.tour": "جولة افتراضية",
+  "nav.intel": "الذكاء", "nav.about": "عن سييرا", "nav.contact": "اتصل بنا",
+  "nav.lang": "EN", "nav.cta": "طلب ذكي",
+  "nav.all": "الكل", "nav.rent": "إيجار", "nav.resale": "إعادة بيع",
+  "nav.compounds": "كل المجمعات", "nav.rooms": "الغرف", "nav.nearby": "قريب من",
+  "hero.eyebrow": "ذكاء اصطناعي · القاهرة الجديدة",
+  "hero.title1": "اعثر على", "hero.titleEm": "بيتك المثالي", "hero.title2": "مدعوم بالذكاء الاصطناعي",
+  "hero.sub": "١٩ مجمعاً فاخراً · مطابقة فورية",
+  "hero.listings": "عقار", "hero.compounds": "مجمع",
+  "hero.aiScore": "تقييم الذكاء", "hero.response": "استجابة",
+  "listings.eyebrow": "مختار بالذكاء الاصطناعي", "listings.title": "عقارات متاحة",
+  "listings.sort.ai": "تقييم الذكاء ↓", "listings.sort.priceLow": "السعر ↑",
+  "listings.sort.priceHigh": "السعر ↓", "listings.sort.area": "الأكبر مساحة",
+  "listings.view": "عرض العقار", "listings.cta": "اتصل / واتساب",
+  "listings.empty": "لا توجد عقارات مطابقة.",
+  "tour.eyebrow": "تجربة غامرة", "tour.title": "جولة افتراضية للعقارات",
+  "tour.sub": "استكشف أفضل عقاراتنا من أي مكان.",
+  "intel.eyebrow": "نظام الذكاء", "intel.title": "مدعوم بالذكاء الاصطناعي",
+  "intel.sub": "منصتنا تستخدم الذكاء الاصطناعي لتطابقك مع العقار المثالي.",
+  "intel.f1.title": "محرك التقييم",
+  "intel.f1.desc": "كل عقار يُقيَّم من 1-10 باستخدام أكثر من 40 نقطة بيانات.",
+  "intel.f2.title": "مطابقة فورية",
+  "intel.f2.desc": "أخبرنا بميزانيتك وتفضيلاتك — يعيد ذكاؤنا الاصطناعي نتائج منتقاة خلال 4 ثوانٍ.",
+  "intel.f3.title": "إشارات السوق",
+  "intel.f3.desc": "اتجاهات الأسعار المباشرة وتوقعات العائد لكل مجمع.",
+  "intel.f4.title": "جولات افتراضية",
+  "intel.f4.desc": "جولات بانورامية — زر أي عقار قبل أن تغادر منزلك.",
+  "why.eyebrow": "لماذا سييرا عستاتس", "why.title": "أكثر من سمسرة",
+  "why.sub": "نجمع بين الخبرة المحلية والذكاء الاصطناعي لنمنحك ميزة استثنائية.",
+  "why.c1.title": "محفظة منتقاة",
+  "why.c1.desc": "عقارات مختارة يدوياً عبر 19 مجمعاً في القاهرة الجديدة.",
+  "why.c2.title": "منصة الذكاء أولاً",
+  "why.c2.desc": "معلومات السوق الفورية وتحليل المجمعات في متناول يدك.",
+  "why.c3.title": "خبراء ثنائيو اللغة",
+  "why.c3.desc": "مستشارونا ثنائيو اللغة ومتاحون على مدار 24 ساعة طوال الأسبوع.",
+  "stats.title": "موثوق به من آلاف العملاء",
+  "stats.portfolio": "قيمة المحفظة", "stats.listings": "عقارات نشطة",
+  "stats.clients": "عميل سعيد", "stats.compounds": "مجمع",
+  "testi.eyebrow": "آراء العملاء", "testi.title": "أصوات الثقة",
+  "testi.sub": "تجارب حقيقية من عملائنا الكرام في القاهرة الجديدة.",
+  "contact.eyebrow": "تواصل معنا", "contact.title": "ابحث عن عقارك",
+  "contact.sub": "أخبرنا بما تبحث عنه وسنطابقك مع أفضل الخيارات خلال 24 ساعة.",
+  "contact.name": "الاسم الكامل", "contact.wa": "رقم واتساب",
+  "contact.compound": "المجمع المفضل", "contact.budget": "الميزانية",
+  "contact.submit": "إرسال الطلب — خصم 25%",
+  "contact.success.title": "تم استلام الطلب!",
+  "contact.success.desc": "سيتواصل معك فريقنا خلال 24 ساعة مع العقارات المطابقة.",
+  "footer.slogan": "مستقبل العقارات",
+  "footer.company": "الشركة", "footer.services": "الخدمات",
+  "footer.compounds": "المجمعات", "footer.legal": "قانوني",
+  "footer.copy": "© 2026 Sierra Estates. جميع الحقوق محفوظة.",
+  "chat.placeholder": "اسأل سييرا…", "chat.online": "● متاح · مساعد ذكي",
+  "smart.name": "الاسم", "smart.wa": "رقم واتساب",
+};
+
+type LangContextType = {
+  lang: "en" | "ar";
+  isRTL: boolean;
+  t: (key: string) => string;
+  toggleLang: () => void;
+};
+
+const LangCtx = createContext<LangContextType>({
+  lang: "en", isRTL: false, t: (k) => k, toggleLang: () => {},
 });
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState<Lang>("en");
-
-  const toggleLang = () => setLang((l) => (l === "en" ? "ar" : "en"));
+  const [lang, setLang] = useState<"en" | "ar">("en");
   const isRTL = lang === "ar";
-
-  const t = (key: string) => translations[lang]?.[key] ?? key;
 
   useEffect(() => {
     document.documentElement.setAttribute("dir", isRTL ? "rtl" : "ltr");
     document.documentElement.setAttribute("lang", lang);
   }, [lang, isRTL]);
 
-  return (
-    <LanguageContext.Provider value={{ lang, toggleLang, t, isRTL }}>
-      {children}
-    </LanguageContext.Provider>
-  );
+  const t = (key: string) => {
+    const dict = lang === "ar" ? AR : EN;
+    return dict[key] ?? EN[key] ?? key;
+  };
+
+  const toggleLang = () => setLang(l => l === "en" ? "ar" : "en");
+  return <LangCtx.Provider value={{ lang, isRTL, t, toggleLang }}>{children}</LangCtx.Provider>;
 }
 
-export function useLang() {
-  return useContext(LanguageContext);
-}
+export const useLang = () => useContext(LangCtx);

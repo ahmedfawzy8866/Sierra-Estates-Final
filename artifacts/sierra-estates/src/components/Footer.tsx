@@ -1,136 +1,64 @@
 import { useLang } from "@/contexts/LanguageContext";
-import { Instagram, Twitter, Linkedin, Youtube } from "lucide-react";
 
 export default function Footer() {
-  const { t, lang } = useLang();
+  const { t, isRTL } = useLang();
+  const scrollTo = (href: string) => document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
 
   const cols = [
-    {
-      title: t("footer.company"),
-      links: [t("footer.about"), t("footer.careers"), t("footer.press"), "Blog"],
-    },
-    {
-      title: t("footer.properties"),
-      links: [t("footer.villas"), t("footer.penthouses"), t("footer.apartments"), t("footer.estates")],
-    },
-    {
-      title: t("footer.services"),
-      links: [t("footer.consultation"), t("footer.management"), t("footer.investment"), t("footer.relocation")],
-    },
+    { title: t("footer.company"), links: ["About Sierra", "Our Team", "Press", "Careers"] },
+    { title: t("footer.services"), links: ["Property Search", "Virtual Tours", "AI Matching", "Investment Advice"] },
+    { title: t("footer.compounds"), links: ["Hyde Park", "Mountain View iCity", "Mivida", "Uptown Cairo", "Madinaty"] },
+    { title: t("footer.legal"), links: ["Privacy Policy", "Terms of Use", "Cookie Policy"] },
   ];
 
   return (
-    <footer style={{ background: "#060606", borderTop: "1px solid rgba(201,169,110,0.1)", padding: "4rem 1.5rem 2rem" }}>
-      <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-        <div className="footer-grid">
-          {/* Brand */}
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: "1.2rem" }}>
-              <div style={{
-                width: 40, height: 40, background: "linear-gradient(135deg, #C9A96E, #A07840)",
-                borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: "1rem", fontWeight: 700, color: "#0A0A0A", flexShrink: 0,
-              }}>S</div>
-              <div>
-                <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "1.1rem", fontWeight: 500, color: "white" }}>
-                  Sierra Estates
-                </div>
-                <div style={{ fontSize: "0.58rem", letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--gold)", opacity: 0.75 }}>
-                  {t("footer.tagline")}
-                </div>
-              </div>
-            </div>
-            <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.83rem", lineHeight: 1.8, maxWidth: 260, marginBottom: "1.5rem" }}>
-              {lang === "ar"
-                ? "نرسم معايير الفخامة العقارية لمن يرفضون التسوية."
-                : "Redefining luxury real estate for those who refuse to compromise."}
-            </p>
-            {/* Social */}
-            <div style={{ display: "flex", gap: 10 }}>
-              {[
-                { icon: <Instagram size={16} />, label: "Instagram" },
-                { icon: <Twitter size={16} />, label: "Twitter" },
-                { icon: <Linkedin size={16} />, label: "LinkedIn" },
-                { icon: <Youtube size={16} />, label: "YouTube" },
-              ].map(({ icon, label }) => (
-                <button
-                  key={label}
-                  aria-label={label}
-                  style={{
-                    width: 38, height: 38, borderRadius: "50%",
-                    border: "1px solid rgba(201,169,110,0.2)",
-                    background: "rgba(201,169,110,0.04)",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    cursor: "pointer", color: "rgba(255,255,255,0.5)",
-                    transition: "border-color 0.3s, color 0.3s, background 0.3s",
-                  }}
-                  onMouseOver={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = "var(--gold)";
-                    (e.currentTarget as HTMLElement).style.color = "var(--gold)";
-                    (e.currentTarget as HTMLElement).style.background = "rgba(201,169,110,0.08)";
-                  }}
-                  onMouseOut={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = "rgba(201,169,110,0.2)";
-                    (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.5)";
-                    (e.currentTarget as HTMLElement).style.background = "rgba(201,169,110,0.04)";
-                  }}
-                >
-                  {icon}
-                </button>
-              ))}
+    <footer className="ftr" dir={isRTL ? "rtl" : "ltr"}>
+      <div className="ftr-grid">
+        {/* Brand col */}
+        <div>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18 }}>
+            <img src="/logo.jpg" alt="Sierra Estates" style={{ width: 42, height: 42, objectFit: "cover", borderRadius: 8, border: "1.5px solid rgba(211,167,71,.3)", flexShrink: 0 }} />
+            <div>
+              <div style={{ fontFamily: "var(--font-serif)", fontSize: 17, fontWeight: 600, letterSpacing: ".24em", color: "var(--gold)", textTransform: "uppercase", lineHeight: 1.1 }}>Sierra Estates</div>
+              <div style={{ fontSize: 7.5, letterSpacing: ".2em", color: "rgba(211,167,71,.45)", marginTop: 3, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>{t("footer.slogan")}</div>
             </div>
           </div>
-
-          {/* Link Columns */}
-          {cols.map((col) => (
-            <div key={col.title}>
-              <div style={{ fontSize: "0.68rem", letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--gold)", fontWeight: 600, marginBottom: "1.2rem" }}>
-                {col.title}
-              </div>
-              {col.links.map((link) => (
-                <div key={link} style={{ marginBottom: "0.7rem" }}>
-                  <button
-                    style={{
-                      background: "none", border: "none", cursor: "pointer",
-                      color: "rgba(255,255,255,0.45)", fontSize: "0.85rem",
-                      transition: "color 0.3s", padding: 0,
-                      fontFamily: lang === "ar" ? "'Cairo',sans-serif" : "'Inter',sans-serif",
-                    }}
-                    onMouseOver={(e) => (e.currentTarget.style.color = "var(--gold)")}
-                    onMouseOut={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.45)")}
-                  >
-                    {link}
-                  </button>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-
-        {/* Divider */}
-        <div style={{ margin: "3rem 0 1.5rem", height: 1, background: "linear-gradient(90deg, transparent, rgba(201,169,110,0.15), transparent)" }} />
-
-        {/* Bottom row */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
-          <div style={{ color: "rgba(255,255,255,0.25)", fontSize: "0.78rem" }}>
-            {t("footer.rights")}
-          </div>
-          <div style={{ display: "flex", gap: "1.5rem" }}>
-            {["Privacy Policy", "Terms", "Cookies"].map((item) => (
-              <button
-                key={item}
-                style={{
-                  background: "none", border: "none", cursor: "pointer",
-                  color: "rgba(255,255,255,0.25)", fontSize: "0.75rem",
-                  transition: "color 0.3s",
-                }}
-                onMouseOver={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.6)")}
-                onMouseOut={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.25)")}
-              >
-                {item}
-              </button>
+          <p style={{ fontSize: 12, color: "rgba(255,255,255,.38)", lineHeight: 1.8, maxWidth: 260, marginBottom: 22 }}>
+            New Cairo's most intelligent real estate platform. AI-driven. Human-curated. Always ahead.
+          </p>
+          <div style={{ display: "flex", gap: 10 }}>
+            {["𝕏", "in", "📷", "▶"].map((ic, i) => (
+              <div key={i} style={{
+                width: 34, height: 34, borderRadius: "50%",
+                border: "1px solid rgba(211,167,71,.18)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                cursor: "pointer", color: "rgba(255,255,255,.42)", fontSize: 13,
+                transition: "all .2s",
+              }}
+                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(211,167,71,.5)"; (e.currentTarget as HTMLDivElement).style.color = "var(--gold-lt)"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(211,167,71,.18)"; (e.currentTarget as HTMLDivElement).style.color = "rgba(255,255,255,.42)"; }}
+              >{ic}</div>
             ))}
           </div>
+        </div>
+
+        {/* Link cols */}
+        {cols.map((col, ci) => (
+          <div key={ci}>
+            <div className="ftr-col-t">{col.title}</div>
+            {col.links.map((l, li) => (
+              <span key={li} className="ftr-link" onClick={() => scrollTo("#hero")}>{l}</span>
+            ))}
+          </div>
+        ))}
+      </div>
+
+      {/* Bottom bar */}
+      <div style={{ maxWidth: 1320, margin: "0 auto", paddingTop: 28, borderTop: "1px solid rgba(211,167,71,.07)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+        <span style={{ fontSize: 11, color: "rgba(255,255,255,.24)" }}>{t("footer.copy")}</span>
+        <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#4ade80", display: "block" }} />
+          <span style={{ fontSize: 10, color: "rgba(255,255,255,.3)", fontFamily: "var(--font-mono)" }}>All systems operational</span>
         </div>
       </div>
     </footer>
