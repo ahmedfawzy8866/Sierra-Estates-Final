@@ -7,10 +7,10 @@
     "sierra-blu": {
       "hosting": {
         "sierra-estates-admin": [
-          "admin-sierra-blu",
-          "sierra-estates-admin"
+          "admin-sierra-blu"
         ]
       }
     }
-  }
+  },
+  "etags": {}
 }

@@ -4,10 +4,12 @@ import type { NextConfig } from 'next';
 
 
 const nextConfig: NextConfig = {
+  output: 'export',
   reactStrictMode: true,
   typescript: { ignoreBuildErrors: false },
   eslint: { ignoreDuringBuilds: false },
   images: {
+    unoptimized: true,
     remotePatterns: [
       { protocol: 'https', hostname: 'firebasestorage.googleapis.com' },
       { protocol: 'https', hostname: 'images.propertyfinder.ae' },

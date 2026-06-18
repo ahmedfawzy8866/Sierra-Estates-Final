@@ -44,15 +44,20 @@
   "hosting": [
     {
       "target": "sierra-estates-admin",
-      "source": "apps/admin-dashboard",
+      "public": "apps/admin-dashboard/out",
       "ignore": [
         "firebase.json",
         "**/.*",
         "**/node_modules/**"
       ],
-      "frameworksBackend": {
-        "region": "us-central1"
-      }
+      "cleanUrls": true,
+      "trailingSlash": false,
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
     }
   ]
 }
