@@ -1,81 +1,44 @@
-import { useRef, useEffect, useState } from "react";
 import { useLang } from "@/contexts/LanguageContext";
-import { Star } from "lucide-react";
 
 const TESTIMONIALS = [
-  { nameKey: "test.1.name", roleKey: "test.1.role", textKey: "test.1.text", avatar: "A", color: "#C9A96E" },
-  { nameKey: "test.2.name", roleKey: "test.2.role", textKey: "test.2.text", avatar: "S", color: "#818CF8" },
-  { nameKey: "test.3.name", roleKey: "test.3.role", textKey: "test.3.text", avatar: "O", color: "#34D399" },
+  { name: "Ahmed Hassan", role: "Villa Owner · Hyde Park", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&q=75", text: "Sierra Estates found us our dream villa in Hyde Park within 2 weeks. The AI matching was spot on — every property they showed us was exactly what we described. Exceptional service.", stars: 5 },
+  { name: "Sarah Al-Mansouri", role: "Investor · Mountain View iCity", img: "https://images.unsplash.com/photo-1494790108755-2616b612b05b?w=80&q=75", text: "The AI score system is incredibly accurate. My investment in Mountain View showed the predicted 24% appreciation within the first year. Their market intelligence is unmatched.", stars: 5 },
+  { name: "James & Layla Chen", role: "Expat Family · Mivida", img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&q=75", text: "Moving from Singapore, we were nervous about the process. Sierra's bilingual team made everything seamless. From virtual tour to keys in hand — flawless experience.", stars: 5 },
 ];
 
 export default function Testimonials() {
   const { t } = useLang();
-  const sectionRef = useRef<HTMLElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); el.querySelectorAll(".reveal,.reveal-scale").forEach((c) => c.classList.add("visible")); } }, { threshold: 0.1 });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-
   return (
-    <section id="about" ref={sectionRef as any} style={{ padding: "6rem 1.5rem", background: "#0A0A0A", position: "relative", overflow: "hidden" }}>
-      {/* Ambient */}
-      <div style={{ position: "absolute", bottom: 0, right: 0, width: 400, height: 400, background: "radial-gradient(circle, rgba(201,169,110,0.03) 0%, transparent 70%)", pointerEvents: "none" }} />
-
-      <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-        {/* Header */}
-        <div style={{ textAlign: "center", marginBottom: "4rem" }}>
-          <span className="section-label reveal">{t("test.label")}</span>
-          <div className="gold-divider reveal" />
-          <h2 className="section-title font-serif reveal" style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", color: "white", whiteSpace: "pre-line" }}>
-            {t("test.title")}
-          </h2>
+    <section style={{ background: "var(--ivory)", padding: "90px 0" }}>
+      <div style={{ maxWidth: 1320, margin: "0 auto", padding: "0 24px" }}>
+        <div style={{ textAlign: "center", marginBottom: 56 }}>
+          <div className="sec-eyebrow" style={{ justifyContent: "center" }}>{t("testi.eyebrow")}</div>
+          <h2 className="sec-title">{t("testi.title")}</h2>
+          <p className="sec-sub" style={{ maxWidth: 520, margin: "0 auto" }}>{t("testi.sub")}</p>
         </div>
-
-        {/* Cards */}
-        <div className="stagger-children" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.5rem" }}>
-          {TESTIMONIALS.map((t2, i) => (
-            <div
-              key={i}
-              className="testimonial-card reveal-scale"
-            >
-              {/* Stars */}
-              <div style={{ display: "flex", gap: 3, marginBottom: "1rem" }}>
-                {Array.from({ length: 5 }).map((_, s) => (
-                  <Star key={s} size={14} fill="var(--gold)" color="var(--gold)" />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24 }}>
+          {TESTIMONIALS.map((t_, i) => (
+            <div key={i} className="testi-card">
+              <div style={{ display: "flex", gap: 4, marginBottom: 16 }}>
+                {Array.from({ length: t_.stars }).map((_, j) => (
+                  <span key={j} style={{ color: "var(--gold)", fontSize: 16 }}>★</span>
                 ))}
               </div>
-
-              {/* Text */}
-              <p style={{ color: "rgba(255,255,255,0.72)", fontSize: "0.92rem", lineHeight: 1.8, marginBottom: "1.5rem", fontStyle: "italic" }}>
-                {t(t2.textKey)}
+              <p style={{ fontSize: 13, color: "var(--text-m)", lineHeight: 1.8, marginBottom: 20, fontStyle: "italic" }}>
+                "{t_.text}"
               </p>
-
-              {/* Author */}
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <div style={{
-                  width: 44, height: 44, borderRadius: "50%",
-                  background: `linear-gradient(135deg, ${t2.color}33, ${t2.color}66)`,
-                  border: `2px solid ${t2.color}55`,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontFamily: "'Cormorant Garamond',serif", fontSize: "1.1rem", fontWeight: 500, color: t2.color,
-                  flexShrink: 0,
-                }}>
-                  {t2.avatar}
-                </div>
+                <img src={t_.img} alt={t_.name} style={{ width: 44, height: 44, borderRadius: "50%", objectFit: "cover", border: "2px solid rgba(211,167,71,.3)", flexShrink: 0 }} loading="lazy" />
                 <div>
-                  <div style={{ fontWeight: 600, fontSize: "0.88rem", color: "white" }}>{t(t2.nameKey)}</div>
-                  <div style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.4)", letterSpacing: "0.05em" }}>{t(t2.roleKey)}</div>
+                  <div style={{ fontFamily: "var(--font-serif)", fontSize: 16, fontWeight: 600, color: "var(--navy)", lineHeight: 1.1 }}>{t_.name}</div>
+                  <div style={{ fontSize: 10, color: "var(--gold-dk)", fontFamily: "var(--font-mono)", letterSpacing: ".12em", marginTop: 3 }}>{t_.role}</div>
                 </div>
               </div>
             </div>
           ))}
         </div>
       </div>
+      <style>{`@media(max-width:768px){.testi-card+.testi-card{margin-top:0}}@media(max-width:768px){div[style*="repeat(3,1fr)"]{grid-template-columns:1fr!important;}}`}</style>
     </section>
   );
 }
