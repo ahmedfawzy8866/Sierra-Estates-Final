@@ -131,7 +131,7 @@ export interface Unit extends BaseDocument {
   floorPlanUrl?: string;
 
   // Sync
-  syncSource?: 'manual' | 'property-finder';
+  syncSource?: 'manual' | 'property-finder' | 'airtable' | 'sheets';
   pfReferenceNumber?: string;
   manualOverrides?: string[];   // Fields that should not be overwritten by sync
   lastSyncAt?: Timestamp | FieldValue | string;
@@ -562,6 +562,7 @@ export interface Activity extends BaseDocument {
 
 export const COLLECTIONS = {
   units: 'listings',        // keeping backward compat with existing 'listings' collection
+  portfolioAssets: 'portfolio_assets',
   projects: 'projects',
   developers: 'developers',
   mediaAssets: 'mediaAssets',

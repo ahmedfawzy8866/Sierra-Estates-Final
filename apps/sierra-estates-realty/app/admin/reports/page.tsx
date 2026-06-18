@@ -11,7 +11,7 @@ interface ReportMetric {
   label: string;
   value: string | number;
   change?: string;
-  icon: React.ElementType;
+  icon: any;
   color: string;
 }
 

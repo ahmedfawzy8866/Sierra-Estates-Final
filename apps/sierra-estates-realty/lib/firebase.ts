@@ -94,4 +94,18 @@ export async function getAnalyticsInstance() {
   }
 }
 
+import { DocumentData } from 'firebase/firestore';
+export interface Property extends DocumentData {
+  id: string;
+  title: string;
+  compound: string;
+  priceLabel: string;
+  img: string;
+  beds: number;
+  baths: number;
+  area: string;
+  aiScore: number;
+  netCapitalRoi?: number;
+}
+
 export default app;
