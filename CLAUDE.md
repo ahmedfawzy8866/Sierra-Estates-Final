@@ -82,7 +82,7 @@ Current choice — **Root Directory = repo root**, driven by the root `vercel.js
 - Framework Preset: `Next.js`
 - Build Command: `pnpm run build` (builds the realty app via workspace filter)
 - Install Command: `pnpm install`
-- Output Directory: `apps/sierra-estates-realty/.next` (set in root `vercel.json`)
+- Output Directory: auto-detected by the Next.js framework preset — do not set `outputDirectory` in root `vercel.json`; an explicit override there previously caused a deploy output-directory mismatch and was removed.
 
 Fallback if Vercel reports "No Next.js version detected" from the repo root: set
 Root Directory = `apps/sierra-estates-realty` (the app has its own `vercel.json`) — this is
