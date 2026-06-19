@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Timestamp } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { verifyRequest, unauthorizedResponse } from '@/lib/server/auth-guard';
-import {
 import { logger } from '@/lib/logger';
+import {
   propertyFinderService,
   type PropertyFinderListing,
 } from '@/lib/propertyFinder-service';

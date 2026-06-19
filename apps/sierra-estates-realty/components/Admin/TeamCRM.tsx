@@ -18,7 +18,7 @@ import AddAdvisorModal from './AddAdvisorModal';
 import { useI18n } from '../../lib/I18nContext';
 
 export default function TeamCRM() {
-  const { _locale, t } = useI18n();
+  const { locale: _locale, t } = useI18n();
   const [team, setTeam] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');

@@ -12,7 +12,7 @@ import { useI18n } from '@/lib/I18nContext';
 import { logger } from '@/lib/logger';
 
 export default function MediaHub() {
-  const { _t, locale } = useI18n();
+  const { t: _t, locale } = useI18n();
   const [files, setFiles] = useState<{name: string, url: string, fullPath: string}[]>([]);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);

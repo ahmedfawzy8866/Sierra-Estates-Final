@@ -18,7 +18,7 @@ import { collection, query, limit, getDocs, orderBy } from 'firebase/firestore';
  */
 
 export default function MarketIntelligence() {
-  const { _t } = useI18n();
+  const { t: _t } = useI18n();
   const [marketData, setMarketData] = useState<any[]>([]);
   const [_loading, setLoading] = useState(true);
 
