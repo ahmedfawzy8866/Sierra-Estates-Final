@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const result = await pfService.publishListing(unitId);
-    return NextResponse.json({ success: true, ...result });
+    return NextResponse.json(result);
   } catch (err) {
     console.error('[sync/publish] error:', err);
     return NextResponse.json({ error: 'Failed to publish listing' }, { status: 500 });

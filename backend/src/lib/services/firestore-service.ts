@@ -1,7 +1,7 @@
 import { adminDb } from '@/lib/server/firebase-admin';
-import type { FirebaseFirestore } from 'firebase-admin/firestore';
+import type { CollectionReference, WhereFilterOp, Query, QueryDocumentSnapshot } from 'firebase-admin/firestore';
 
-type QueryConstraint = Parameters<FirebaseFirestore.CollectionReference['where']>;
+type QueryConstraint = Parameters<CollectionReference['where']>;
 
 export async function createDocument(
   collectionName: string,
@@ -43,10 +43,10 @@ export async function deleteDocument(
 
 export async function queryDocuments(
   collectionName: string,
-  constraints: Array<{ field: string; op: FirebaseFirestore.WhereFilterOp; value: unknown }>,
+  constraints: Array<{ field: string; op: WhereFilterOp; value: unknown }>,
   options: { orderBy?: string; orderDir?: 'asc' | 'desc'; limit?: number } = {}
 ): Promise<Array<Record<string, unknown>>> {
-  let q: FirebaseFirestore.Query = adminDb.collection(collectionName);
+  let q: Query = adminDb.collection(collectionName);
 
   for (const c of constraints) {
     q = q.where(c.field, c.op, c.value);
@@ -59,7 +59,7 @@ export async function queryDocuments(
   }
 
   const snap = await q.get();
-  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  return snap.docs.map((d: QueryDocumentSnapshot) => ({ id: d.id, ...d.data() }));
 }
 
 // Client-side subscription helper (for use with client SDK, not Admin)

@@ -24,7 +24,7 @@ export async function runMatchingForLead(leadId: string): Promise<MatchResult[]>
   }
 
   const snap = await query.limit(50).get();
-  const listings = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  const listings = snap.docs.map(d => ({ id: d.id, ...d.data() } as any));
 
   if (listings.length === 0) return [];
 
@@ -70,7 +70,7 @@ export async function runMatchingForUnit(unitId: string): Promise<Array<{ leadId
     .limit(50)
     .get();
 
-  const leads = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  const leads = snap.docs.map(d => ({ id: d.id, ...d.data() } as any));
 
   try {
     const aiResult = await ai.generateContent(
