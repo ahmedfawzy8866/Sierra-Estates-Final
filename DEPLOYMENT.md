@@ -84,9 +84,11 @@ serverless model can't host anyway.
   project for compute isolation — see below). Activated by the `ADMIN_HOST`
   env/host-split in `middleware.ts`: when set, `/admin` on any other host
   307-redirects to the admin host, so the public domain never serves the console.
-  **Inert until the subdomain exists** (no behaviour change today).
-- **To enable the split (one-time):** add `admin.sierra-estates.net` to the Vercel
-  project → add the DNS record Vercel shows (`CNAME admin → cname.vercel-dns.com`)
+  Reported linked + `ADMIN_HOST` set on Vercel (see `RECOMMENDATIONS.md`) — this
+  sandbox could not independently resolve `admin.sierra-estates.net`, so confirm
+  `https://admin.sierra-estates.net/admin/login` loads in a real browser.
+- **To enable the split (one-time, if not already done):** add `admin.sierra-estates.net`
+  to the Vercel project → add the DNS record Vercel shows (`CNAME admin → cname.vercel-dns.com`)
   → set `ADMIN_HOST=admin.sierra-estates.net`.
 - **Compute isolation (optional upgrade):** create a *second* Vercel project from
   the same repo, give it `admin.sierra-estates.net` + `ADMIN_HOST`, leave the
@@ -116,14 +118,14 @@ Firestore rules + App Check, not secrecy). Canonical env templates: root
 | Step | Status today | Policy target |
 |---|---|---|
 | **Lint** (`pnpm run lint`, turbo, all workspaces) | **Hard gate — blocks** | keep blocking |
-| **Type-check** (`tsc --noEmit`) | non-blocking (`continue-on-error`) | **make blocking** once the known gap is fixed |
-| **Build** (`pnpm run build`, turbo) | non-blocking | **make blocking** once the concierge/portfolio gap is restored |
+| **Type-check** (`tsc --noEmit`) | **Hard gate — blocks** | keep blocking |
+| **Build** (`pnpm run build`, turbo) | **Hard gate — blocks** | keep blocking |
 | **Test** (`pnpm test:ci`) | non-blocking | make blocking as coverage grows |
 | **CodeQL** (`codeql.yml`) | security analysis | keep |
 
-> Reality check: only **Lint** currently fails the build. Treat green CI as
-> "lint-clean," and **always run `pnpm type-check` + `pnpm build` locally** before
-> merging anything that touches app code until the two are promoted to hard gates.
+> Reality check: Lint, type-check, and build are all hard gates now (verified
+> locally against current `main` — all three pass clean). Test coverage is still
+> thin and stays non-blocking until that improves.
 
 ---
 
@@ -194,7 +196,7 @@ Before a new thing ships, classify it and follow its lane:
 
 ## 10. Current gaps to reach the target state
 
-- [ ] Add `admin.sierra-estates.net` to Vercel + DNS, then set `ADMIN_HOST` to activate the admin/public split (see §3).
-- [ ] Promote **type-check** and **build** to hard CI gates once the concierge/portfolio build gap is fixed (`ci.yml` notes it).
-- [ ] Pin the **one** Firebase project ID (`sierra-blu`) across `.firebaserc`, app env, and the admin applet config (a stray `sierra-blu-realty` remains in `apps/admin-dashboard`).
+- [x] Promote **type-check** and **build** to hard CI gates — done in `ci.yml`; verified both pass against current `main`.
+- [x] Pin the **one** Firebase project ID (`sierra-blu`) across `.firebaserc`, app env, and the admin applet config — stray `sierra-blu-realty` in `apps/admin-dashboard` fixed.
+- [x] Add `admin.sierra-estates.net` to Vercel + DNS, then set `ADMIN_HOST` — reported done (see `RECOMMENDATIONS.md`); confirm `https://admin.sierra-estates.net/admin/login` loads in a browser, since this sandbox couldn't independently verify it.
 - [ ] (Optional) Split the admin into its own Vercel project for full compute isolation.
