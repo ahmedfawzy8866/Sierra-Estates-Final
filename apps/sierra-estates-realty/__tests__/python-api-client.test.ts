@@ -3,7 +3,6 @@
  * Note: The client reads PYTHON_API_BASE_URL at module import time,
  * so tests mock at the integration level and reset modules between tests.
  */
-import { logger } from '@/lib/logger';
 import type { PortfolioAssetPayload } from '@/lib/server/python-api-client';
 
 jest.mock('@/lib/logger');

@@ -95,7 +95,7 @@
 #### Application Configuration
 | Variable | Type | Source | Priority | Notes |
 |----------|------|--------|----------|-------|
-| `NEXT_PUBLIC_SITE_URL` | Public | Configured domain | **REQUIRED** | Public URL: `https://sierraestates.luxury` (production) |
+| `NEXT_PUBLIC_SITE_URL` | Public | Configured domain | **REQUIRED** | Public URL: `https://sierra-estates.net` (production) |
 | `NODE_ENV` | Public | Set by deployment | **REQUIRED** | `development`, `staging`, or `production` |
 | `NEXT_PUBLIC_ENVIRONMENT` | Public | Set manually | Optional | Redundant with NODE_ENV; can deprecate |
 
@@ -200,7 +200,7 @@ Required for property listing sync (`/api/properties/sync`).
 # 2. Go to Developer Settings → Applications → Create New Application
 # 3. Configure OAuth:
 #    - App Name: "Sierra Estates Platform"
-#    - Redirect URIs: https://sierraestates.luxury/api/auth/callback
+#    - Redirect URIs: https://sierra-estates.net/api/auth/callback
 # 4. Copy credentials:
 #    - PROPERTY_FINDER_CLIENT_ID
 #    - PROPERTY_FINDER_CLIENT_SECRET
@@ -257,7 +257,7 @@ curl -X POST http://localhost:3000/api/sync/airtable \
 # 2. Send /newbot
 # 3. Follow instructions, copy token to TELEGRAM_BOT_TOKEN
 # 4. Enable webhook:
-#    - /setwebhook https://sierraestates.luxury/api/webhooks/telegram
+#    - /setwebhook https://sierra-estates.net/api/webhooks/telegram
 # 5. Get chat ID:
 #    - Add bot to group or DM it
 #    - Forward any message to https://api.telegram.org/bot{TOKEN}/getUpdates
@@ -272,7 +272,7 @@ curl -X POST http://localhost:3000/api/sync/airtable \
 #    - WHATSAPP_API_TOKEN (permanent access token)
 #    - WHATSAPP_PHONE_NUMBER_ID (from Phone Numbers section)
 # 4. Set webhook in settings:
-#    - Callback URL: https://sierraestates.luxury/api/webhooks/whatsapp
+#    - Callback URL: https://sierra-estates.net/api/webhooks/whatsapp
 #    - Verify Token: Generate WHATSAPP_VERIFY_TOKEN
 ```
 
@@ -304,7 +304,7 @@ cp /home/user/i-sierra-2027/.env.example /home/user/i-sierra-2027/.env.local
 # - SBR_SECRET_KEY, CRON_SECRET (Step 1.2)
 # - PROPERTY_FINDER_* (Step 2.1)
 # - AIRTABLE_* (Step 3.1)
-# - NEXT_PUBLIC_SITE_URL = "https://sierraestates.luxury"
+# - NEXT_PUBLIC_SITE_URL = "https://sierra-estates.net"
 # - NODE_ENV = "production"
 ```
 
@@ -315,8 +315,8 @@ cp /home/user/i-sierra-2027/apps/web/.env.local.example /home/user/i-sierra-2027
 
 # Fill in:
 # - All NEXT_PUBLIC_FIREBASE_* (same as root)
-# - NEXT_PUBLIC_SITE_URL = "https://sierraestates.luxury"
-# - NEXT_PUBLIC_APP_URL = "https://sierraestates.luxury"
+# - NEXT_PUBLIC_SITE_URL = "https://sierra-estates.net"
+# - NEXT_PUBLIC_APP_URL = "https://sierra-estates.net"
 # - NEXT_PUBLIC_DEFAULT_LOCALE = "en"
 ```
 

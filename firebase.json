@@ -44,7 +44,7 @@
   "hosting": [
     {
       "target": "sierra-estates-admin",
-      "public": "apps/admin-dashboard/dist",
+      "public": "apps/admin-dashboard/redirect",
       "ignore": [
         "firebase.json",
         "**/.*",
@@ -52,10 +52,11 @@
       ],
       "cleanUrls": true,
       "trailingSlash": false,
-      "rewrites": [
+      "redirects": [
         {
           "source": "**",
-          "destination": "/index.html"
+          "destination": "https://sierra-estates.net/admin",
+          "type": 302
         }
       ]
     }

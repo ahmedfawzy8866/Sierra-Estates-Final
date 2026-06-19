@@ -13,7 +13,7 @@ The customer-facing UI lives in a **separate frontend repo** and consumes the
 
 | Environment | Base URL |
 |-------------|----------|
-| Production  | `https://sierraestates.luxury` |
+| Production  | `https://sierra-estates.net` |
 | Local dev   | `http://localhost:3000` |
 
 The frontend should read the base URL from its own env (e.g.
@@ -32,7 +32,7 @@ comma-separated) enforced in `middleware.ts` (`lib/server/cors.ts`).
 - Preflight `OPTIONS` is answered by middleware with `204`.
 
 ```
-ALLOWED_ORIGINS=http://localhost:3000,https://sierraestates.luxury
+ALLOWED_ORIGINS=http://localhost:3000,https://sierra-estates.net
 ```
 
 ## 3. Authentication
@@ -157,7 +157,7 @@ Listed for completeness — these authenticate server-to-server and should
 ## 7. Example: calling the API from the frontend
 
 ```ts
-const API = process.env.NEXT_PUBLIC_API_BASE_URL!; // e.g. https://sierraestates.luxury
+const API = process.env.NEXT_PUBLIC_API_BASE_URL!; // e.g. https://sierra-estates.net
 
 // Public read
 const res = await fetch(`${API}/api/listings?limit=12`);

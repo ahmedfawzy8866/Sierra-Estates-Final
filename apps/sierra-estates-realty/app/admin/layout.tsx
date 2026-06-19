@@ -9,7 +9,8 @@ import { useAuth } from '@/lib/AuthContext';
 import {
   LayoutDashboard, Building2, RefreshCw, ImageIcon, Settings, LogOut,
   Menu, X, Shield, Bot, BookOpen, ClipboardList, Zap, Handshake,
-  BarChart3, Database, Wand2, Briefcase, MessageSquare, type LucideIcon,
+  BarChart3, Database, Wand2, Briefcase, MessageSquare, BrainCircuit,
+  type LucideIcon,
 } from 'lucide-react';
 import {
   navForRole, canAccessPath, NAV_SECTION_ORDER, type AdminNavItem,
@@ -19,7 +20,7 @@ import {
 const ICONS: Record<string, LucideIcon> = {
   LayoutDashboard, Building2, RefreshCw, ImageIcon, Settings, Bot,
   BookOpen, ClipboardList, Zap, Handshake, BarChart3, Database,
-  Wand2, Briefcase, MessageSquare,
+  Wand2, Briefcase, MessageSquare, BrainCircuit,
 };
 
 const BADGE_STYLES: Record<string, string> = {

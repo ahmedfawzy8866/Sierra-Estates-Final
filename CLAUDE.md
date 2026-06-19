@@ -8,42 +8,50 @@ Sierra Estates — a luxury real-estate (PropTech) platform for the New Cairo ma
 
 ## Stack
 
-Next.js 16 (App Router, Turbopack) · React 19 · TypeScript 5 (strict) · Tailwind 4 · Firebase (client SDK 12 + Admin SDK 13: Firestore, Storage, Auth) · Leaflet maps · next-intl (en/ar) · **Docker n8n Workflow Engine** (`localhost:5678`) · Python API (Docker/Cloud Run). Observability: OpenTelemetry + Arize.
+Next.js 16 (App Router, Turbopack) · React 19 · TypeScript 5 (strict) · Tailwind 4 · Firebase (client SDK 12 + Admin SDK 13: Firestore, Storage, Auth) · Leaflet maps · custom i18n (en/ar, `lib/I18nContext.tsx` — `next-intl` was removed) · **Docker n8n Workflow Engine** (`localhost:5678`) · Python API (Docker/Cloud Run). Observability: OpenTelemetry + Arize.
 
 ## Deployment Architecture (authoritative)
 
-```
-ONE Vercel deployment → apps/sierra-estates-realty (Next.js)
-  /                  Public site: listings, search, about, contact
-  /listings          Property marketplace
-  /concierge/[id]    Client portfolio views
-  /admin/login       Staff authentication (Firebase Auth)
-  /admin            Unified admin dashboard (tabbed interface)
-    Dashboard        → KPIs, activity feed, sync health
-    Units            → Inventory CRUD, PropertyFinder publish
-    Leads            → CRM, AI matching, approvals
-    Deals            → Pipeline management (draft → closed)
-    Team             → Staff management
-    Media            → Asset hub
-    Reports          → Analytics & insights
-    Settings         → System configuration
-  /api/*             All backend APIs (auth-guarded per route)
+Production domain: **sierra-estates.net** (Vercel). Firebase project: **sierra-blu**.
 
-Firebase — infrastructure ONLY (no hosting)
-  Firestore          Database (staff-gated rules in firestore.rules)
-  Storage            Media (rules in storage.rules)
-  Auth               Authentication
-  Functions          Background jobs (functions/)
+```
+Vercel → apps/sierra-estates-realty (Next.js)        [auto-deploys on push to main]
+  sierra-estates.net           Public site: listings, search, about, contact, concierge
+  sierra-estates.net/api/*     Backend APIs (auth-guarded per route). Lightweight —
+                               they only TRIGGER the workers below; no heavy/long jobs.
+  admin.sierra-estates.net     Staff admin console — SAME codebase, intended as a
+    /admin                     SEPARATE Vercel project so its bot/agent traffic is
+    /admin/intelligence-os     isolated from the public site. Enabled by the ADMIN_HOST
+    /admin/...                 env var (host-split in middleware.ts); INERT until that
+                               subdomain + its Vercel project exist (single-deploy today).
+
+Firebase (project sierra-blu) — backend + one redirect (NOT the web host)
+  Firestore / Storage / Auth   Database, media, authentication (staff-gated rules)
+  Functions                    Background jobs (functions/)
+  Hosting (admin-sierra-blu)   302-redirects the legacy admin URL → the Vercel /admin
+
+Workers — where the heavy / long-running work runs (NEVER inside the website)
+  n8n (Docker/VPS, :5678)      WhatsApp scraping + workflow automation
+  apps/api (Cloud Run)         Python: PropertyFinder sync + bot integration
+  Intelligence OS (Cloud Run)  Remix cognitive console (embedded in /admin/intelligence-os)
+  GitHub Actions (workflows/)  Scheduled external data-sync
 ```
 
-**Admin lives in ONE place**: `apps/sierra-estates-realty/app/admin/` (the old `sierra-estates-admin-portal` placeholder app was removed June 2026).
+The admin console only **triggers/monitors** the workers (via `lib/server/n8n-client.ts`
+and `lib/server/python-api-client.ts`) — scrapers/agents never run in the Next.js request
+path, so they cannot affect public-site performance.
+
+**Admin lives in ONE place**: `apps/sierra-estates-realty/app/admin/`. The duplicate
+`apps/admin-dashboard` (Vite SPA) is no longer a deployed admin — its Firebase Hosting site
+now redirects to the Vercel `/admin`. (The older `sierra-estates-admin-portal` was removed
+June 2026.)
 
 ## Config files
 
 - `vercel.json` (root) — Vercel config when root dir = repo root (buildCommand points to the realty app)
 - `apps/sierra-estates-realty/vercel.json` — Vercel config when root dir = `apps/sierra-estates-realty` in Vercel dashboard
-- `firebase.json` — Functions + Firestore rules + Storage rules + emulators (no hosting)
-- `.firebaserc` — Firebase project: `sierra-estates-prod`
+- `firebase.json` — Functions + Firestore rules + Storage rules + emulators + Hosting (the `admin-sierra-blu` site is a 302 redirect to the Vercel `/admin`, not a real web host)
+- `.firebaserc` — Firebase project: `sierra-blu` (hosting target `sierra-estates-admin` → site `admin-sierra-blu`)
 
 ## Layout
 
@@ -109,7 +117,7 @@ Pre-production. Some services are mock/scaffolded (`MockAIService`, unwired i18n
 
 ## Constraints for AI sessions
 
-- GitHub access is scoped to `ahmedfawzy8866/i-sierra-2027` only — do not touch other repos.
+- GitHub access is scoped to `ahmedfawzy8866/Sierra-Estates-Final` only — do not touch other repos.
 - The `main` branch is protected on GitHub. Direct commits are blocked. Never force-push or delete `main`.
 - For all changes, checkout a new branch, push it to remote, and open a Pull Request.
 - Do not deploy without explicit approval. Never place API keys or credentials in raw code or in chat.
