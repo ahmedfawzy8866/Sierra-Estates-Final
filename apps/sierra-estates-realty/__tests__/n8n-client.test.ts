@@ -3,8 +3,6 @@
  * Note: The client reads N8N_BASE_URL/N8N_API_KEY at module import time,
  * so tests mock at the integration level rather than unit level.
  */
-import { logger } from '@/lib/logger';
-
 jest.mock('@/lib/logger');
 
 describe('lib/server/n8n-client', () => {
