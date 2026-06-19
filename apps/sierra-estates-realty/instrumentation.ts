@@ -7,5 +7,8 @@ export async function register() {
   if (process.env.NEXT_RUNTIME === 'nodejs') {
     const { bootstrapIntelligence } = await import('./lib/intelligence');
     bootstrapIntelligence();
+
+    const { initArize } = await import('./lib/arize');
+    initArize();
   }
 }
