@@ -579,4 +579,6 @@ export const COLLECTIONS = {
   intelligence: 'intelligence', // Global Neural Memory
   conciergeSelections: 'concierge_selections', // S8 Curated Portfolios
   strategicPipeline: 'strategic_pipeline',      // S9 Deal Pipeline
+  agentStatus: 'agents',         // operational status reported by workers (n8n, whatsapp-scraper, etc.)
+  automationWorkflows: 'workflows', // admin-managed automation toggles, surfaced in /admin
 } as const;
