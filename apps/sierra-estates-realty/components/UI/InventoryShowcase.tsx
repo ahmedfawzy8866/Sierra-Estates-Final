@@ -59,7 +59,7 @@ const MOCK_PROPERTIES: Property[] = [
   },
 ];
 
-export default function InventoryShowcase({ _filters }: { filters?: any }) {
+export default function InventoryShowcase({ filters: _filters }: { filters?: any }) {
   return (
     <section className="py-24 px-6 md:px-12 bg-sb-navy-deep relative overflow-hidden">
       {/* Decorative Background Elements */}
