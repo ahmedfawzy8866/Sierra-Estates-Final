@@ -12,7 +12,6 @@
 //   const { grouped }                  = useDSLView(VIEW_CONFIGS.crm_kanban.dsl);
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { logger } from '@/lib/logger';
 import {
   onSnapshot,
   DocumentData,
