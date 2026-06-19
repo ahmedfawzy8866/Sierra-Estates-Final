@@ -11,7 +11,7 @@ interface SettingsPageProps {
 
 export default function SettingsPage({ T, isAr = false, currentUser }: SettingsPageProps) {
   const [saved, setSaved] = useState(false);
-  const [projectId, setProjectId] = useState('sierra-blu-realty');
+  const [projectId, setProjectId] = useState('sierra-blu');
   const [geminiKey, setGeminiKey] = useState('AIza••••••••••••••');
   const [whatsappToken, setWhatsappToken] = useState('EAAx••••••••••');
   const [webhookUrl, setWebhookUrl] = useState('https://n8n.sierra-blu.com/webhook');

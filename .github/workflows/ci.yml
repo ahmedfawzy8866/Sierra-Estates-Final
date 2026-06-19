@@ -38,17 +38,14 @@ jobs:
       # ── Type-check (skip emit, just check types) ───────────────────────────
       - name: Type-check
         run: pnpm run type-check
-        # Allow type-check to warn without blocking deploy
-        continue-on-error: true
+        # Enforce type-check as a hard gate
+        continue-on-error: false
 
       # ── Build (real production build via Turbo) ────────────────────────────
       - name: Build
         run: pnpm run build
-        # Pre-existing app bug (missing hooks/useSierraBlu + portfolio-engine
-        # export in the concierge/WhatsApp flow) currently fails this step.
-        # Non-blocking until that feature gap is restored deliberately —
-        # see PR discussion. Remove once fixed.
-        continue-on-error: true
+        # Enforce build as a hard gate
+        continue-on-error: false
         env:
           # Provide dummy Firebase config so build doesn't crash on missing env
           NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY || 'ci-placeholder' }}
