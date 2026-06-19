@@ -1,0 +1,259 @@
+/* ═══════════════════════════════════════════════════════════════
+   SIERRA BLU — GLOBAL DESIGN TOKENS
+   Source: Sierra Blu Refined Filter.html (light mode palette)
+           Sierra Blu Portal v4.html (brand colors & type scale)
+   ═══════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Inter:wght@300;400;500;600;700;800&family=Cairo:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+  /* ── Brand Colors ───────────────────────────────────────────── */
+  --navy:          #0A1628; /* Primary Navy Background */
+  --navy-secondary:#10233F; /* Secondary Navy accents */
+  --navy-80:       rgba(10, 22, 40, 0.8);
+  --navy-60:       rgba(10, 22, 40, 0.6);
+  --navy-40:       rgba(10, 22, 40, 0.4);
+  --navy-15:       rgba(10, 22, 40, 0.15);
+  --navy-08:       rgba(10, 22, 40, 0.08);
+
+  --ivory:         #F7F4EE; /* Light Canvas Background */
+  --ivory-soft:    #FAF8F3;
+  --ivory-mid:     #F0EDE5;
+
+  --gold:          #C9A84C; /* Elegant Gold Accent */
+  --gold-light:    #D8BB6A; /* Soft Gold Interactive Glow */
+  --gold-pale:     rgba(201, 168, 76, 0.15);
+  --gold-shadow:   rgba(201, 168, 76, 0.4);
+
+  --red:           #E63946;
+  --red-deep:      #B71C2C;
+  --red-glow:      rgba(230, 57, 70, 0.3);
+
+  --green-live:    #22C55E;
+  --blue-rent:     #3B82F6;
+  --green-sale:    #16A34A;
+
+  /* ── Light Mode Surface ─────────────────────────────────────── */
+  --bg-primary:    #FAF8F3;
+  --bg-card:       #FFFFFF;
+  --bg-subtle:     #F4F0E8;
+  --bg-subtle-30:  rgba(244, 240, 232, 0.3);
+  --bg-subtle-50:  rgba(244, 240, 232, 0.5);
+
+  /* ── Typography ─────────────────────────────────────────────── */
+  --font-sans:     'Inter', system-ui, -apple-system, sans-serif;
+  --font-serif:    'Cormorant Garamond', Georgia, serif;
+  --font-mono:     'JetBrains Mono', 'Courier New', monospace;
+  --font-arabic:   'Cairo', sans-serif;
+
+  /* ── Type Scale ─────────────────────────────────────────────── */
+  --text-xs:       0.625rem;   /* 10px */
+  --text-sm:       0.75rem;    /* 12px */
+  --text-base:     0.875rem;   /* 14px */
+  --text-md:       1rem;       /* 16px */
+  --text-lg:       1.125rem;   /* 18px */
+  --text-xl:       1.25rem;    /* 20px */
+  --text-2xl:      1.5rem;     /* 24px */
+  --text-3xl:      2rem;       /* 32px */
+  --text-4xl:      2.5rem;     /* 40px */
+  --text-5xl:      3.5rem;     /* 56px */
+  --text-6xl:      4.5rem;     /* 72px */
+
+  /* ── Letter Spacing ─────────────────────────────────────────── */
+  --tracking-tight:   -0.02em;
+  --tracking-normal:   0;
+  --tracking-wide:     0.12em;
+  --tracking-wider:    0.18em;
+  --tracking-widest:   0.36em;
+  --tracking-label:    0.15em;
+
+  /* ── Spacing ────────────────────────────────────────────────── */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* ── Border Radius ──────────────────────────────────────────── */
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  14px;
+  --radius-xl:  20px;
+  --radius-2xl: 28px;
+  --radius-full: 9999px;
+
+  /* ── Shadows ────────────────────────────────────────────────── */
+  --shadow-sm:   0 2px 8px rgba(7, 20, 34, 0.08);
+  --shadow-md:   0 8px 24px rgba(7, 20, 34, 0.10);
+  --shadow-lg:   0 20px 50px rgba(7, 20, 34, 0.12);
+  --shadow-xl:   0 30px 80px rgba(7, 20, 34, 0.16);
+  --shadow-gold: 0 4px 16px rgba(200, 150, 26, 0.35);
+  --shadow-red:  0 8px 24px rgba(230, 57, 70, 0.30);
+
+  /* ── Transitions ────────────────────────────────────────────── */
+  --ease-silk:   cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out:    cubic-bezier(0.0, 0.0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --transition-fast:   180ms;
+  --transition-base:   300ms;
+  --transition-slow:   500ms;
+  --transition-silk:   600ms;
+
+  /* ── Z-Index ────────────────────────────────────────────────── */
+  --z-below:   -1;
+  --z-base:     0;
+  --z-raised:   10;
+  --z-dropdown: 40;
+  --z-sticky:   50;
+  --z-overlay:  60;
+  --z-modal:    70;
+  --z-toast:    90;
+
+  /* ── Layout ─────────────────────────────────────────────────── */
+  --max-width:      1500px;
+  --content-width:  1200px;
+  --header-height:  72px;
+}
+
+/* ── Global Resets & Base ───────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-primary);
+  color: var(--navy);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* ── Custom Scrollbar ───────────────────────────────────────────── */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: var(--ivory-mid); }
+::-webkit-scrollbar-thumb {
+  background: var(--navy-15);
+  border-radius: 5px;
+  border: 2px solid var(--ivory-mid);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--navy-40); }
+
+/* ── Typography Utilities ───────────────────────────────────────── */
+.font-serif  { font-family: var(--font-serif); }
+.font-mono   { font-family: var(--font-mono); }
+.font-arabic { font-family: var(--font-arabic); }
+
+/* ── Animation Keyframes ────────────────────────────────────────── */
+@keyframes aura-pulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.05); }
+}
+
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-live {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+  50%       { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+}
+
+@keyframes bounce-down {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%       { transform: translateX(-50%) translateY(10px); }
+}
+
+@keyframes counter-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Utility Classes ────────────────────────────────────────────── */
+.ease-silk { transition-timing-function: var(--ease-silk); }
+
+.stagger-child {
+  opacity: 0;
+  animation: reveal-up 600ms var(--ease-silk) forwards;
+}
+
+.reveal-up {
+  opacity: 0;
+  animation: reveal-up 700ms var(--ease-silk) both;
+}
+
+.pulse-live { animation: pulse-live 2s ease-in-out infinite; }
+
+/* ── Custom Range Slider ────────────────────────────────────────── */
+input[type=range].sb-range {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(
+    to right,
+    var(--gold) 0%,
+    var(--gold) var(--val, 0%),
+    #e5e5e5 var(--val, 0%),
+    #e5e5e5 100%
+  );
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+input[type=range].sb-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  background: var(--gold);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: var(--shadow-gold);
+  transition: transform var(--transition-fast) var(--ease-silk);
+}
+input[type=range].sb-range::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+/* ── Glassmorphism Card ─────────────────────────────────────────── */
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-xl);
+}
+
+/* ── Gradient Text ──────────────────────────────────────────────── */
+.gradient-gold {
+  background: linear-gradient(135deg, var(--gold), var(--gold-light), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
