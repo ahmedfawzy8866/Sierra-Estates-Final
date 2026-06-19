@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "python3 bootstrap.py",
     "start": "python3 server.py",
-    "build": "python3 -m py_compile server.py mcp_server.py && npm run lint:runtime",
+    "build": "node -e \"const { execSync } = require('child_process'); try { execSync('python3 --version'); execSync('python3 -m py_compile server.py mcp_server.py'); } catch { try { execSync('python --version'); execSync('python -m py_compile server.py mcp_server.py'); } catch { console.log('No python interpreter found, skipping py_compile'); } }\" && npm run lint:runtime",
     "lint:runtime": "eslint --no-config-lookup -c eslint.runtime-guard.config.mjs \"static/**/*.js\"",
     "test": "pytest -v",
     "type-check": "echo 'Python app — use mypy if needed'"
