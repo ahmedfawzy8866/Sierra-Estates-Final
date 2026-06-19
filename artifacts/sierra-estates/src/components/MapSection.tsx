@@ -30,37 +30,34 @@ export default function MapSection() {
   const leafRef   = useRef<L.Map | null>(null);
   const [sel, setSel] = useState<typeof COMPOUNDS[0] | null>(null);
   const [darkMode, setDarkMode] = useState(false);
+  const [zoom, setZoom] = useState(11);
 
   useEffect(() => {
-    let L: typeof import("leaflet");
     import("leaflet").then(mod => {
-      L = mod.default ?? mod as unknown as typeof import("leaflet");
+      const L = mod.default ?? mod as unknown as typeof import("leaflet");
       if (!mapRef.current || leafRef.current) return;
 
-      // Center between Uptown Cairo (31.43) and New Capital (31.78) → ~31.60, lat ~30.025
       const map = L.map(mapRef.current, {
         center: [30.022, 31.610],
         zoom: 11,
-        zoomControl: false,
+        zoomControl: false,        // ← disable default control
+        scrollWheelZoom: false,    // ← disable scroll-to-zoom
         attributionControl: false,
       });
       leafRef.current = map;
 
-      // OpenStreetMap tile — natural colors
+      // Track zoom changes to sync state
+      map.on("zoomend", () => setZoom(map.getZoom()));
+
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 18,
         attribution: "© OpenStreetMap",
       }).addTo(map);
 
-      // Add custom zoom control bottom-right
-      L.control.zoom({ position: "bottomright" }).addTo(map);
-
-      // Compound markers
       COMPOUNDS.forEach(c => {
         const score = c.score;
         const isTop = score >= 9.5;
         const colorMain  = isTop ? "#D3A747" : score >= 9.0 ? "#D3A747" : "rgba(211,167,71,.7)";
-        const border     = isTop ? "#fff" : "rgba(255,255,255,.65)";
 
         const icon = L.divIcon({
           className: "",
@@ -85,7 +82,6 @@ export default function MapSection() {
         });
       });
 
-      // Fit to show all compounds + New Capital
       map.fitBounds([[29.97, 31.40], [30.12, 31.82]], { padding: [40, 40] });
     });
 
@@ -95,24 +91,30 @@ export default function MapSection() {
     };
   }, []);
 
-  // dark mode filter
   useEffect(() => {
     const el = mapRef.current?.querySelector(".leaflet-tile-pane") as HTMLElement;
     if (el) el.style.filter = darkMode ? "brightness(.68) saturate(.85) hue-rotate(185deg)" : "";
   }, [darkMode]);
 
+  const handleZoom = (dir: "in" | "out") => {
+    const map = leafRef.current;
+    if (!map) return;
+    if (dir === "in")  map.zoomIn();
+    else               map.zoomOut();
+  };
+
   return (
     <section id="map" style={{ background: "var(--ivory)", padding: "90px 0 0" }}>
       <div style={{ maxWidth: 1320, margin: "0 auto", padding: "0 24px 36px" }}>
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 36, flexWrap: "wrap", gap: 16 }}>
-          <div>
+          <div className="rv">
             <div className="sec-eyebrow">Map Intelligence</div>
             <h2 className="sec-title" style={{ marginBottom: 0 }}>New Cairo · New Capital</h2>
             <p className="sec-sub" style={{ marginBottom: 0, marginTop: 8, maxWidth: 480 }}>
               {COMPOUNDS.length} compounds mapped — from Uptown Cairo to the New Administrative Capital.
             </p>
           </div>
-          <div style={{ display: "flex", gap: 8 }}>
+          <div style={{ display: "flex", gap: 8 }} className="rv">
             <button onClick={() => setDarkMode(d => !d)} style={{ padding: "8px 18px", borderRadius: 10, border: "1px solid var(--border)", background: darkMode ? "rgba(0,45,98,.08)" : "var(--white)", fontSize: 11, fontWeight: 600, color: "var(--navy)", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 6, boxShadow: "0 1px 8px rgba(10,26,43,.06)", transition: "all .2s" }}>
               {darkMode ? "☀️ Light" : "🌙 Dark"} Map
             </button>
@@ -123,8 +125,42 @@ export default function MapSection() {
         </div>
 
         <div style={{ position: "relative", borderRadius: 20, overflow: "hidden", boxShadow: "0 16px 56px rgba(10,26,43,.16), 0 0 0 1px rgba(211,167,71,.15)" }}>
-          {/* Map */}
           <div ref={mapRef} style={{ width: "100%", height: 540 }} />
+
+          {/* ── Custom Zoom Buttons ── */}
+          <div style={{ position: "absolute", top: 14, right: 14, zIndex: 900, display: "flex", flexDirection: "column", gap: 4 }}>
+            {[
+              { label: "+", dir: "in"  as const, title: "Zoom in"  },
+              { label: "−", dir: "out" as const, title: "Zoom out" },
+            ].map(({ label, dir, title }) => (
+              <button
+                key={dir}
+                onClick={() => handleZoom(dir)}
+                title={title}
+                style={{
+                  width: 36, height: 36,
+                  borderRadius: 10,
+                  background: "rgba(255,255,255,.97)",
+                  border: "1.5px solid rgba(211,167,71,.3)",
+                  color: "var(--navy)",
+                  fontSize: 20, fontWeight: 400, lineHeight: 1,
+                  cursor: "pointer",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  boxShadow: "0 4px 14px rgba(10,26,43,.15)",
+                  transition: "all .2s",
+                  fontFamily: "var(--font-sans)",
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "linear-gradient(135deg,var(--gold),var(--gold-lt))"; (e.currentTarget as HTMLButtonElement).style.color = "var(--navy)"; (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--gold)"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,.97)"; (e.currentTarget as HTMLButtonElement).style.color = "var(--navy)"; (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(211,167,71,.3)"; }}
+              >
+                {label}
+              </button>
+            ))}
+            {/* Zoom level indicator */}
+            <div style={{ width: 36, height: 26, borderRadius: 8, background: "rgba(0,45,98,.85)", border: "1px solid rgba(211,167,71,.25)", display: "flex", alignItems: "center", justifyContent: "center", marginTop: 2 }}>
+              <span style={{ fontSize: 8.5, fontFamily: "var(--font-mono)", color: "var(--gold)", fontWeight: 600 }}>{zoom}×</span>
+            </div>
+          </div>
 
           {/* Selected compound card */}
           {sel && (
@@ -143,11 +179,11 @@ export default function MapSection() {
               </div>
               <div style={{ display: "flex", gap: 7 }}>
                 <button onClick={() => { leafRef.current?.flyTo([sel.lat, sel.lng], 14, { duration: 1.5 }); }} style={{ flex: 1, padding: "8px", borderRadius: 9, background: "rgba(0,45,98,.06)", border: "1px solid rgba(211,167,71,.2)", color: "var(--navy)", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
-                  📍 Zoom In
+                  📍 Fly To
                 </button>
-                <button style={{ flex: 1, padding: "8px", borderRadius: 9, background: "linear-gradient(135deg,var(--gold),var(--gold-lt))", border: "none", color: "var(--navy)", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                <a href={`https://wa.me/201092048333?text=I'm interested in ${encodeURIComponent(sel.name)}`} target="_blank" rel="noreferrer" style={{ flex: 1, padding: "8px", borderRadius: 9, background: "linear-gradient(135deg,var(--gold),var(--gold-lt))", border: "none", color: "var(--navy)", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", textDecoration: "none", display: "flex", alignItems: "center", justifyContent: "center" }}>
                   💬 Inquire
-                </button>
+                </a>
               </div>
             </div>
           )}
@@ -177,14 +213,10 @@ export default function MapSection() {
         </div>
       </div>
 
-      {/* Tooltip + ring CSS via style tag */}
       <style>{`
         .se-tooltip { background: var(--navy) !important; border: 1px solid rgba(211,167,71,.35) !important; color: #fff !important; font-family: 'Inter', sans-serif !important; font-size: 11px !important; border-radius: 9px !important; padding: 6px 10px !important; box-shadow: 0 8px 24px rgba(0,0,0,.28) !important; }
         .se-tooltip b { color: var(--gold) !important; }
         .se-tooltip::before { border-top-color: rgba(211,167,71,.35) !important; }
-        .leaflet-control-zoom { border: 1px solid rgba(211,167,71,.3) !important; border-radius: 12px !important; overflow: hidden; box-shadow: 0 4px 20px rgba(13,32,53,.15) !important; }
-        .leaflet-control-zoom a { background: rgba(255,255,255,.97) !important; color: var(--navy) !important; border-color: rgba(211,167,71,.2) !important; font-size: 16px !important; width: 36px !important; height: 36px !important; line-height: 36px !important; }
-        .leaflet-control-zoom a:hover { background: rgba(211,167,71,.1) !important; color: var(--gold) !important; }
         .leaflet-control-attribution { display: none !important; }
         @keyframes cmRing { 0% { transform: scale(1); opacity: .6; } 100% { transform: scale(1.7); opacity: 0; } }
         @media(max-width:900px){ div[style*="repeat(5, 1fr)"]{ grid-template-columns:repeat(2,1fr)!important; } }
