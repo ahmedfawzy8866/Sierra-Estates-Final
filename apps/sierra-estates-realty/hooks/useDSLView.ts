@@ -28,7 +28,7 @@ import {
   ParsedView,
   CompareClause,
 } from "@/lib/dsl/parser";
-import { logger } from "@/lib/logger";
+
 
 // ════════════════════════════════════════════════════════════════
 // TYPES
@@ -258,7 +258,7 @@ export default function CRMPage() {
 import { VIEW_CONFIGS }   from "@/config/views";
 import { useDSLView }     from "@/hooks/useDSLView";
 import CompoundROICard    from "@/components/CompoundROICard";
-import { logger } from '@/lib/logger';
+
 
 export default function InvestorPage() {
   const benchmarks = {

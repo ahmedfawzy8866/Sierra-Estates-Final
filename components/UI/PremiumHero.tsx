@@ -149,11 +149,8 @@ export default function PremiumHero({ onSearch, isArabic = false }: PremiumHeroP
       if (newX <= maxPan) newX = 0;
       pointerX.current = newX;
       panoRef.current.style.transform = `translateX(${newX}px)`;
-    }, 30);
-
-    return () => {
-      clearInterval(intervalId);
     };
+
     const intervalId: any = setInterval(tick, 30);
     return () => clearInterval(intervalId);
   }, [isDragging]);
