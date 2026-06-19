@@ -15,7 +15,7 @@
 
 ### Step 1: Install Dependencies
 ```bash
-cd /path/to/i-sierra-2027
+cd /path/to/Sierra-Estates-Final
 pnpm install
 ```
 

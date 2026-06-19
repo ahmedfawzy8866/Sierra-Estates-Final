@@ -130,7 +130,7 @@ These must be configured before any functionality works.
 
 **Validation:**
 ```bash
-cd /home/user/i-sierra-2027
+cd /home/user/Sierra-Estates-Final
 pnpm dev
 # Check browser console: "Firebase initialized" message
 # Check server logs: No auth errors
@@ -143,8 +143,8 @@ SBR_SECRET_KEY=$(openssl rand -base64 32)
 CRON_SECRET=$(openssl rand -base64 32)
 
 # Add to .env.local and apps/web/.env.local
-echo "SBR_SECRET_KEY=$SBR_SECRET_KEY" >> /home/user/i-sierra-2027/.env.local
-echo "CRON_SECRET=$CRON_SECRET" >> /home/user/i-sierra-2027/.env.local
+echo "SBR_SECRET_KEY=$SBR_SECRET_KEY" >> /home/user/Sierra-Estates-Final/.env.local
+echo "CRON_SECRET=$CRON_SECRET" >> /home/user/Sierra-Estates-Final/.env.local
 ```
 
 **Validation:**
@@ -179,7 +179,7 @@ curl -X POST http://localhost:3000/api/agent/hub \
 
 #### ✅ Step 1.4: Deploy Firestore Security Rules (5 minutes)
 ```bash
-cd /home/user/i-sierra-2027
+cd /home/user/Sierra-Estates-Final
 # Review rules
 cat firestore.rules
 
@@ -294,8 +294,8 @@ curl -X POST $ZAPIER_CALENDAR_WEBHOOK_URL \
 
 ### 3.1 Root `.env.local`
 ```bash
-# Create /home/user/i-sierra-2027/.env.local
-cp /home/user/i-sierra-2027/.env.example /home/user/i-sierra-2027/.env.local
+# Create /home/user/Sierra-Estates-Final/.env.local
+cp /home/user/Sierra-Estates-Final/.env.example /home/user/Sierra-Estates-Final/.env.local
 
 # Fill in (DO NOT COMMIT):
 # - All NEXT_PUBLIC_FIREBASE_* (from Step 1.1)
@@ -310,8 +310,8 @@ cp /home/user/i-sierra-2027/.env.example /home/user/i-sierra-2027/.env.local
 
 ### 3.2 Apps Web `.env.local`
 ```bash
-# Create /home/user/i-sierra-2027/apps/web/.env.local
-cp /home/user/i-sierra-2027/apps/web/.env.local.example /home/user/i-sierra-2027/apps/web/.env.local
+# Create /home/user/Sierra-Estates-Final/apps/web/.env.local
+cp /home/user/Sierra-Estates-Final/apps/web/.env.local.example /home/user/Sierra-Estates-Final/apps/web/.env.local
 
 # Fill in:
 # - All NEXT_PUBLIC_FIREBASE_* (same as root)
@@ -322,8 +322,8 @@ cp /home/user/i-sierra-2027/apps/web/.env.local.example /home/user/i-sierra-2027
 
 ### 3.3 Workflows `.env` (if needed)
 ```bash
-# Create /home/user/i-sierra-2027/workflows/.env
-cp /home/user/i-sierra-2027/workflows/.env.example /home/user/i-sierra-2027/workflows/.env
+# Create /home/user/Sierra-Estates-Final/workflows/.env
+cp /home/user/Sierra-Estates-Final/workflows/.env.example /home/user/Sierra-Estates-Final/workflows/.env
 
 # Fill in:
 # - GOOGLE_SERVICE_ACCOUNT_KEY

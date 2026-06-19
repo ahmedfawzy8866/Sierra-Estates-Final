@@ -46,6 +46,6 @@
 12. Add Zod validation at remaining API boundaries (zod already in the tree).
 
 ### Operations
-13. **Stop working in the OneDrive clone** — OneDrive sync makes git checkouts take 10+ minutes. Use `C:\Users\sierr\source\repos\i-sierra-2027-work`.
+13. **Stop working in the OneDrive clone** — OneDrive sync makes git checkouts take 10+ minutes. Use `C:\Users\sierr\source\repos\Sierra-Estates-Final-work`.
 14. Add branch protection on `main` requiring the CI check — deploys then only happen on green builds.
 15. The committed `packages/*/dist/` build outputs churn on every build — consider gitignoring them and building in CI.

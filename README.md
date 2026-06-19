@@ -9,7 +9,7 @@ A production-ready, unified monorepo consolidating all Sierra-related repositori
 ## 📦 Repository Structure
 
 ```
-i-sierra-2027/
+Sierra-Estates-Final/
 ├── apps/
 │   ├── sierra-estates-realty/  # Main backend/API + admin dashboard (Next.js 16 + Turbopack)
 │   │   ├── app/               # App Router pages & API routes (/api/*)
