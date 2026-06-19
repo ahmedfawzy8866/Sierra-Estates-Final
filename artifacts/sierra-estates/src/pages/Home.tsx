@@ -5,6 +5,7 @@ import SmartRequest from "@/components/SmartRequest";
 import Hero from "@/components/Hero";
 import Listings from "@/components/Listings";
 import VirtualTour from "@/components/VirtualTour";
+import MapSection from "@/components/MapSection";
 import IntelligenceOS from "@/components/IntelligenceOS";
 import WhySierra from "@/components/WhySierra";
 import Stats from "@/components/Stats";
@@ -13,7 +14,7 @@ import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import AIChat from "@/components/AIChat";
 
-const ALL_CMP_COUNT = 18;
+const ALL_CMP_COUNT = 19;
 
 export default function Home() {
   const [annVisible, setAnnVisible] = useState(true);
@@ -59,12 +60,12 @@ export default function Home() {
         onClose={() => setSmartOpen(false)}
       />
 
-      {/* Spacer for fixed header */}
       <div style={{ height: 58 }} />
 
       <Hero />
       <Listings mode={mode} selCmps={selCmps} rooms={rooms} />
       <VirtualTour />
+      <MapSection />
       <IntelligenceOS />
       <WhySierra />
       <Stats />
@@ -75,7 +76,7 @@ export default function Home() {
           <div className="sec-eyebrow" style={{ justifyContent: "center" }}>Get In Touch</div>
           <h2 className="sec-title">Find Your Property</h2>
           <p className="sec-sub" style={{ maxWidth: 520, margin: "0 auto 36px" }}>
-            Tell us what you're looking for and we'll match you with the best options in 24 hours.
+            Tell us what you are looking for and we will match you with the best options in 24 hours.
           </p>
           <button
             onClick={() => setContactOpen(true)}
@@ -83,13 +84,12 @@ export default function Home() {
             onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-3px)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 14px 36px rgba(211,167,71,.45)"; }}
             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = ""; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 8px 28px rgba(211,167,71,.35)"; }}
           >
-            ✈ Submit Request — 25% OFF
+            Submit Request - 25% OFF
           </button>
 
-          {/* Contact cards */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 20, marginTop: 52, textAlign: "left" }}>
             {[
-              { icon: "📞", title: "Call Us", desc: "+20 100 123 4567", sub: "Sun–Thu · 9am–9pm" },
+              { icon: "📞", title: "Call Us", desc: "+20 100 123 4567", sub: "Sun-Thu 9am-9pm" },
               { icon: "💬", title: "WhatsApp", desc: "+20 110 123 4567", sub: "Available 24/7" },
               { icon: "📍", title: "Visit Us", desc: "90 South Street, 5th Settlement", sub: "New Cairo, Egypt" },
             ].map((c, i) => (
