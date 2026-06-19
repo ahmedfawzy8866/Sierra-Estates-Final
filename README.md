@@ -9,7 +9,7 @@ Clean backend-only monorepo for the Sierra Estates luxury PropTech platform (New
 ## 📦 Repository Structure
 
 ```
-i-sierra-2027/
+Sierra-Estates-Final/
 ├── apps/
 │   ├── sierra-estates-realty/  # Main backend/API + admin dashboard (Next.js 16 + Turbopack)
 │   │   ├── app/               # App Router pages & API routes (/api/*)
