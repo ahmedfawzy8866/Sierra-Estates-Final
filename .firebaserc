@@ -3,14 +3,5 @@
     "default": "sierra-blu",
     "production": "sierra-blu"
   },
-  "targets": {
-    "sierra-blu": {
-      "hosting": {
-        "sierra-estates-admin": [
-          "admin-sierra-blu"
-        ]
-      }
-    }
-  },
   "etags": {}
 }

@@ -31,5 +31,25 @@
       "enabled": true
     },
     "singleProjectMode": true
-  }
+  },
+  "hosting": [
+    {
+      "target": "sierra-estates-admin",
+      "public": "apps/admin-dashboard/redirect",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "cleanUrls": true,
+      "trailingSlash": false,
+      "redirects": [
+        {
+          "source": "**",
+          "destination": "https://sierra-estates.net/admin",
+          "type": 302
+        }
+      ]
+    }
+  ]
 }
