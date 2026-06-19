@@ -64,8 +64,6 @@ jobs:
         if: steps.secrets.outputs.configured == 'true'
         with:
           node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: 'workflows/package-lock.json'
 
       - name: Install workflow dependencies
         if: steps.secrets.outputs.configured == 'true'
@@ -124,8 +122,6 @@ jobs:
         if: steps.secrets.outputs.configured == 'true'
         with:
           node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: 'workflows/package-lock.json'
 
       - name: Install workflow dependencies
         if: steps.secrets.outputs.configured == 'true'
@@ -180,8 +176,6 @@ jobs:
         if: steps.secrets.outputs.configured == 'true'
         with:
           node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: 'workflows/package-lock.json'
 
       - name: Install workflow dependencies
         if: steps.secrets.outputs.configured == 'true'
@@ -236,8 +230,6 @@ jobs:
         if: steps.secrets.outputs.configured == 'true'
         with:
           node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: 'workflows/package-lock.json'
 
       - name: Install workflow dependencies
         if: steps.secrets.outputs.configured == 'true'

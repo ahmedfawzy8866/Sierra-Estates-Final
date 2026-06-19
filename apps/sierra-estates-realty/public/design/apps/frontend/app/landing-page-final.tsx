@@ -1,8 +1,7 @@
 'use client';
-import React, { useState, useEffect, useRef } from 'react';
-import { useAuth } from '@/lib/AuthContext';
+import { useState, useEffect } from 'react';
+import type { CSSProperties } from 'react';
 import { useI18n } from '@/lib/I18nContext';
-import dynamic from 'next/dynamic';
 
 // Constants & Design Tokens
 const COLORS = {
@@ -44,11 +43,29 @@ const THEMES = {
   },
 };
 
+interface ListingCard {
+  id: number;
+  title: string;
+  description: string;
+}
+
+const MOCK_LISTINGS: ListingCard[] = [
+  { id: 1, title: 'Luxury Villa #1', description: 'Exclusive property in prime location.' },
+  { id: 2, title: 'Luxury Villa #2', description: 'Exclusive property in prime location.' },
+  { id: 3, title: 'Luxury Villa #3', description: 'Exclusive property in prime location.' },
+];
+
+const LANDING_STYLE_VARS = {
+  '--lp-gap-md': '12px',
+  '--lp-card-radius': '12px',
+  '--lp-filter-padding': '16px',
+} as CSSProperties;
+
 // i18n Copy
 const COPY = {
   en: {
     dir: 'ltr',
-    brand: 'SIERRA BLU',
+    brand: 'SIERRA ESTATES',
     sub: 'REALTY',
     tagline: 'AI-POWERED REAL ESTATE INTELLIGENCE',
     nav: ['Properties', 'Intelligence', 'About', 'Contact'],
@@ -73,8 +90,8 @@ const COPY = {
     viewAll: 'View All →',
     beds: 'bed',
     baths: 'bath',
-    secWhy: 'Why Sierra Blu',
-    h2Why: 'The Sierra Blu Difference',
+    secWhy: 'Why Sierra Estates',
+    h2Why: 'The Sierra Estates Difference',
     why: [
       {
         icon: '◆',
@@ -102,7 +119,7 @@ const COPY = {
     formPhone: 'Phone Number',
     formSubmit: 'Get Started',
     formSuccess: 'Thank you! We\'ll be in touch shortly.',
-    copyright: '© 2026 Sierra Blu Realty. All rights reserved.',
+    copyright: '© 2026 Sierra Estates Realty. All rights reserved.',
     footerLinks: ['About', 'Contact', 'Privacy', 'Terms'],
   },
   ar: {
@@ -169,7 +186,7 @@ export default function LandingPage() {
   const [mode, setMode] = useState<'dark' | 'light'>('dark');
   const [formData, setFormData] = useState({ name: '', phone: '' });
   const [submitted, setSubmitted] = useState(false);
-  const [listings, setListings] = useState<any[]>([]);
+  const listings = MOCK_LISTINGS;
   const [mounted, setMounted] = useState(false);
 
   const T = COPY[locale as keyof typeof COPY] || COPY.en;
@@ -247,6 +264,7 @@ export default function LandingPage() {
           fontFamily: '"Jost", "Inter", sans-serif',
           direction: T.dir as 'ltr' | 'rtl',
           transition: 'background 500ms ease, color 500ms ease',
+          ...LANDING_STYLE_VARS,
         }}
       >
         {/* ══ NAVIGATION ══ */}

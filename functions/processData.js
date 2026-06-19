@@ -1,5 +1,5 @@
 const functions = require('firebase-functions');
-const admin = require('firebase-admin');
+const admin     = require('firebase-admin');
 const { normalizeProperty } = require('./transform');
 
 if (!admin.apps.length) admin.initializeApp();

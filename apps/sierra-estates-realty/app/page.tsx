@@ -126,6 +126,15 @@ export default function UnifiedHomepage() {
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const resetFilters = () => {
+    setFilters({
+      purpose: '',
+      type: '',
+      compound: '',
+      budget: '',
+    });
+  };
+
   return (
     <div
       dir={isAr ? 'rtl' : 'ltr'}
@@ -208,6 +217,16 @@ export default function UnifiedHomepage() {
 
             {/* Live Inventory */}
             <div id="inventory" className="relative z-10">
+              {(filters.purpose || filters.type || filters.compound || filters.budget) && (
+                <div className="max-w-6xl mx-auto px-4 md:px-12 pt-6">
+                  <button
+                    onClick={resetFilters}
+                    className="text-xs font-mono uppercase tracking-wider text-[#071422]/70 dark:text-white/70 hover:text-[#C9A84C] transition-colors"
+                  >
+                    {isAr ? 'إعادة تعيين الفلاتر' : 'Reset Filters'}
+                  </button>
+                </div>
+              )}
               <InventoryShowcase filters={filters} />
             </div>
 

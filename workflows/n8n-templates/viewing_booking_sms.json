@@ -2,11 +2,7 @@
   "name": "📅 Sierra Estates — Viewing Booking & SMS",
   "nodes": [
     {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "viewing-booking-request",
-        "options": {}
-      },
+      "parameters": { "httpMethod": "POST", "path": "viewing-booking-request" },
       "id": "119e0758-c0b8-4d57-b08e-17482811a001",
       "name": "Booking Request Webhook",
       "type": "n8n-nodes-base.webhook",
@@ -105,35 +101,7 @@
       }
     }
   ],
-  "connections": {
-    "Booking Request Webhook": {
-      "main": [
-        [
-          {
-            "node": "Google Calendar Event",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Google Calendar Event": {
-      "main": [
-        [
-          {
-            "node": "Send Confirmation SMS",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Telegram Alert to Agents",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    }
-  },
+  "connections": {},
   "active": false,
   "settings": {}
 }

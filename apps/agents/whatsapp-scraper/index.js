@@ -1,3 +1,16 @@
+/**
+ * WhatsApp Scraper Bot
+ * Monitors WhatsApp broker groups for property listings
+ * Forwards messages to the Sierra Estates backend API
+ *
+ * Usage: node index.js
+ * Env vars:
+ *   - SE_API_URL: Backend API URL (default: http://localhost:3000)
+ *   - X_SE_SECRET_KEY: Service auth key
+ */
+
+require('dotenv').config();
+
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const axios  = require('axios');
@@ -34,5 +47,19 @@ client.on('message', async msg => {
     msg.reply('🤖 Sierra Estates Intelligence Bot: Online & Syncing.');
   }
 });
+
+function startHeartbeat() {
+  setInterval(async () => {
+    try {
+      await axios.post(
+        `${API_URL}/api/whatsapp/heartbeat`,
+        { status: 'alive', timestamp: new Date().toISOString() },
+        { headers: { 'x-se-secret-key': SECRET }, timeout: 5000 }
+      );
+    } catch {
+      // Heartbeat failures are non-critical
+    }
+  }, HEARTBEAT);
+}
 
 client.initialize();

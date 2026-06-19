@@ -1,8 +1,8 @@
 # Sierra Estates Platform - Unified Monorepo
 
-> Luxury Real Estate Intelligence Platform with AI-Powered Insights
+Clean backend-only monorepo for the Sierra Estates luxury PropTech platform (New Cairo market). No frontend code; this repo contains only API routes, services, agents, Firebase functions, and automation workflows.
 
-A production-ready, unified monorepo consolidating all Sierra-related repositories into one cohesive, high-performance platform.
+## Stack
 
 > **Migration complete**: Code and history from several legacy repositories have been consolidated here under the Sierra Estates brand. See [MIGRATION.md](./MIGRATION.md) for details.
 
@@ -61,178 +61,77 @@ i-sierra-2027/
 ### Installation
 
 ```bash
-# Install dependencies across all workspaces
 pnpm install
-
-# Set up environment variables
-cp .env.example .env.local
-# Edit .env.local with your Firebase config and API keys
+cp .env.example .env   # fill in your credentials
+pnpm dev               # Next.js API on :3000
+docker-compose -f docker-compose.n8n.yml up -d  # n8n on :5678
 ```
 
-### Development
-
-```bash
-# Start all apps & functions in dev mode (parallel)
-pnpm dev
-
-# Or start individual apps
-pnpm dev:web       # Main app on http://localhost:3000
-pnpm dev:admin     # Admin on http://localhost:5173
-pnpm dev:functions # Functions on http://localhost:5001
-```
-
-### Building for Production
-
-```bash
-# Type-check all packages
-pnpm type-check
-
-# Lint code
-pnpm lint
-
-# Run tests
-pnpm test
-
-# Build all apps & functions
-pnpm build
-
-# Validate complete build
-pnpm validate-build
-```
-
-## 🔧 Key Technologies
-
-| Layer | Technology | Version |
-|-------|-----------|---------|
-| **Frontend** | Next.js + Turbopack | 16.2 |
-| **Framework** | React | 19 |
-| **Language** | TypeScript | 5.3 |
-| **Build** | Turbopack | Latest |
-| **Styling** | Tailwind CSS | 4 |
-| **Backend** | Firebase Cloud Functions | Node 20 |
-| **Database** | Firestore | Real-time |
-| **Auth** | Firebase Auth | + JWT |
-| **AI** | Google Gemini 2.5 | + Anthropic API |
-| **Observability** | OpenTelemetry + Arize | Latest |
-| **Monorepo** | pnpm workspaces | 9 |
-| **Build Cache** | Turborepo | Latest |
-
-## 📊 Apps Overview
-
-### Web App (`apps/web`)
-- **Purpose**: Main customer-facing platform
-- **Technology**: Next.js 16 + Turbopack (fastest Next.js build)
-- **Features**:
-  - Cinematic dark-mode luxury design
-  - AI-powered property intelligence
-  - Real-time CRM Kanban board
-  - Guest advisor access management
-  - Multi-channel integrations (Telegram, WhatsApp)
-- **Performance**: < 2.5s LCP, < 100ms TTFB
-- **Deploy**: Firebase Hosting + Next.js standalone mode
-
-### Admin Portal (`apps/admin`)
-- **Purpose**: Internal management interface
-- **Technology**: Vite SPA (super-fast dev builds)
-- **Features**:
-  - Agent orchestration dashboard
-  - Batch job monitoring
-  - User & permission management
-  - Analytics & observability
-  - Configuration management
-- **Deploy**: Separate Vite build → Firebase Hosting `/admin` route
-
-## 🛠️ Cloud Functions Architecture
-
-Located in `/functions`, deployed to Firebase Cloud Functions (Node.js 20):
+## Project Structure
 
 ```
-/api/*              → REST API routes
-/webhooks/*         → External integrations (PropertyFinder, Telegram, etc.)
-/batch/*            → Batch job submission & monitoring
-/agents/*           → Agent orchestration & execution
-/cron/*             → Scheduled tasks (every hour, daily, etc.)
+.
+├── backend/                    # Next.js 15 API-only app
+│   └── src/
+│       ├── app/api/            # 20 REST API routes
+│       └── lib/
+│           ├── agents/         # AI agent definitions
+│           ├── firebase/       # Firebase client init
+│           ├── models/         # Firestore schemas
+│           ├── server/         # Admin SDK, auth, AI
+│           ├── services/       # 15 business-logic services
+│           └── types/          # Shared TypeScript types
+├── apps/
+│   ├── api/                    # Python FastAPI
+│   └── agents/
+│       ├── stage-9-closer/     # Deal orchestration (S9–S10)
+│       └── whatsapp-scraper/   # WhatsApp group scraper bot
+├── functions/                  # Firebase Cloud Functions
+├── packages/
+│   ├── db/                     # Shared Firestore DSL
+│   └── agents-core/            # 15-agent orchestration framework
+└── workflows/                  # n8n + external scripts
 ```
 
-**Key Features**:
-- Multi-region deployment (us-central1, us-east1, asia-east1)
-- Firestore triggers for real-time processing
-- Pub/Sub for async event handling
-- Request validation with Zod
-- OpenTelemetry instrumentation
+## API Routes
 
-## 🗄️ Shared Packages
+| Route | Method | Description |
+|-------|--------|-------------|
+| `/api/admin/deploy` | POST | Admin deploy trigger |
+| `/api/agent/hub` | POST | Multi-agent hub (Scribe/Curator/Matchmaker/Closer) |
+| `/api/closer/initiate` | POST | Stage 9 closer agent |
+| `/api/ingest/whatsapp` | POST | WhatsApp message ingestion |
+| `/api/leads` | POST | Create investment stakeholder |
+| `/api/leads/request-viewing` | POST | Request property viewing |
+| `/api/listings` | GET | Fetch portfolio assets |
+| `/api/matching` | POST | Run AI matching engine |
+| `/api/orchestrate` | POST | Full S1–S10 pipeline |
+| `/api/properties/sync` | POST | Property Finder sync |
+| `/api/property-finder` | GET/POST/PUT/DELETE | PF gateway |
+| `/api/proposals` | POST | Generate proposal |
+| `/api/sync` | GET/POST | Sync management |
+| `/api/sync/publish` | POST | Publish to Property Finder |
+| `/api/telegram/setup` | GET | Telegram webhook setup |
+| `/api/telegram/webhook` | POST | Telegram bot handler |
+| `/api/viewing-requests` | GET/POST | Viewing requests |
+| `/api/webhooks/property-finder` | POST | PF webhook (HMAC verified) |
+| `/api/webhooks/whatsapp` | GET/POST | WhatsApp webhook |
+| `/api/whatsapp/heartbeat` | POST | Scraper heartbeat |
+| `/api/whatsapp/webhook` | POST | WhatsApp message handler |
 
-All packages in `/packages` are shareable across apps:
+## Intelligence Pipeline
 
-### `@api`
-- API types & Zod schemas
-- HTTP client wrappers
-- Error handling standards
-
-### `@db`
-- Firestore collection models
-- Type-safe query builders
-- Migration utilities
-
-### `@auth`
-- Firebase Auth wrapper
-- JWT token management
-- Role-based access control
-
-### `@agents`
-- Multi-agent framework
-- Tool definitions
-- Workflow orchestration
-
-### `@config`
-- Environment validation (Zod)
-- Feature flags
-- Constants & settings
-
-### `@ui`
-- Shared React components
-- Tailwind CSS utilities
-- Design system tokens
-
-## 📈 Performance Metrics
-
-**Build Times**:
-- Web app: ~45s (Turbopack) vs ~120s (webpack)
-- Admin app: ~8s (Vite)
-- Functions: ~15s
-
-**Lighthouse Scores** (Target):
-- Performance: 95+
-- Accessibility: 95+
-- Best Practices: 95+
-- SEO: 100
-
-**Core Web Vitals**:
-- LCP: < 2.5s
-- FID: < 100ms
-- CLS: < 0.1
-
-## 🧪 Testing
-
-```bash
-# Run all tests with coverage
-pnpm test
-
-# Unit tests only
-pnpm test --testPathPattern=unit
-
-# Integration tests
-pnpm test --testPathPattern=integration
-
-# E2E tests (requires running app)
-pnpm test:e2e
-
-# Watch mode
-pnpm test --watch
+```
+WhatsApp Groups
+    └─→ /api/webhooks/whatsapp (Scribe agent — S1/S2)
+            └─→ Firestore rawScrapeData
+                    └─→ processDataForApp (Cloud Function)
+                            └─→ Matching Engine (S6/S7/S8)
+                                    └─→ Stage 9 Closer Agent
+                                            └─→ Telegram alerts + Proposals
 ```
 
-## 🚢 Deployment
+## Agents
 
 ### Staging
 ```bash
@@ -240,17 +139,12 @@ pnpm build
 firebase deploy --project sierra-estates-staging
 ```
 
-### Production (with approval)
-```bash
-# Validate build first
-pnpm validate-build
+## Deployment
 
 # Deploy to production
 firebase deploy --project sierra-estates-prod
 
-# Monitor deployment
-firebase functions:log --region us-central1
-```
+## Security
 
 ### Rollback
 ```bash

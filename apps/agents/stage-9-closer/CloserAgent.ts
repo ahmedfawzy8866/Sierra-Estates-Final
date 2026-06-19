@@ -74,5 +74,3 @@ export class CloserAgent {
     return { success: true, message: getTemplate('signingComplete', 'en') };
   }
 }
-
-export const closerAgent = CloserAgent.getInstance();

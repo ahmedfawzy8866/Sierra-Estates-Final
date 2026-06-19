@@ -2,6 +2,20 @@
 
 Aligned with STATUS.md. Sorted by deployment-readiness (pre-deploy → post-deploy).
 
+## ✅ Sierra Estates 2026 Completed
+- [x] Split-Hero with Virtual Tour
+- [x] AI Smart Filter
+- [x] CRM Leads API
+- [x] Property Finder Sync API
+- [x] Careers Page (Framer Motion)
+- [x] Design System (`design.css`)
+
+## 🆕 Next Logical Steps
+- [ ] Connect AI Smart Filter to real Firestore query
+- [ ] Integrate real Virtual Tour SDK
+- [ ] Add unit tests for CRM leads API
+- [ ] Mobile responsive fixes for PremiumHero
+
 ## 🚨 Pre-Deployment (blocking)
 - [ ] **Deploy Firestore rules** to production: `firebase deploy --only firestore:rules,storage` (requires local Firebase credentials; user action)
 - [ ] **Set environment secrets** in Vercel + Google Secret Manager (never in chat/git)
@@ -35,3 +49,14 @@ Aligned with STATUS.md. Sorted by deployment-readiness (pre-deploy → post-depl
 - [ ] Update CLAUDE.md if stack/conventions change
 - [ ] Keep STATUS.md + TODO.md in sync with actual state
 - [ ] Archive closed issues/PRs if their TODO/STATUS refs become confusing
+
+## 🐍 Python
+- [ ] Schedule analytics-report.py via GitHub Actions cron
+- [ ] Add unit tests for LeadScorer class
+- [ ] Connect lead-scorer.py to live Firestore in production
+- [ ] WhatsApp template message approval workflow
+
+## 🎨 Frontend
+- [ ] Wire LeadScoreBadge into CRM dashboard
+- [ ] Add StatsCard to admin analytics page
+- [ ] Mobile responsive pass for PremiumHero

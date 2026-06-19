@@ -1,4 +1,4 @@
-const { normalizeProperty, parsePrice } = require('../transform');
+const { parsePrice, normalizeProperty } = require('../transform');
 
 describe('parsePrice', () => {
   it('passes finite numbers through unchanged', () => {

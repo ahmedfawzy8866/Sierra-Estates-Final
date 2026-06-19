@@ -1,6 +1,6 @@
 # CLAUDE.md — Sierra Estates (i-sierra-2027)
 
-Context for Claude Code / AI sessions. Keep this updated as the project evolves.
+Context for Claude Code / AI sessions.
 
 ## What this is
 

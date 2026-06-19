@@ -1,69 +1,90 @@
-import { Deal } from '../../lib/models/deals';
-import theme from '../../documents/themes/sierra-blu-quiet-luxury.json';
-import { adminApp } from '../../lib/server/firebase-admin';
-import { getStorage } from 'firebase-admin/storage';
+import * as admin from 'firebase-admin';
 
-export class ProposalGenerator {
-  private bucket: ReturnType<ReturnType<typeof getStorage>['bucket']> | null = null;
-
-  private getBucket() {
-    if (this.bucket) {
-      return this.bucket;
-    }
-
-    const bucketName = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || adminApp.options.storageBucket;
-    if (!bucketName) {
-      throw new Error('Firebase storage bucket is not configured.');
-    }
-
-    this.bucket = getStorage(adminApp).bucket(bucketName);
-    return this.bucket;
-  }
-
-  /**
-   * Generates a branded proposal PDF from a deal snapshot.
-   */
-  async generate(deal: Deal, lead: any, property: any): Promise<string> {
-    console.log(`[ProposalGenerator] Generating luxury proposal for Deal ${deal.id}`);
-
-    // 1. Prepare data payload
-    const payload = {
-      title: `Investment Proposal: ${property.title}`,
-      leadName: lead.name,
-      propertyDetails: {
-        address: property.location,
-        price: deal.terms.offerPrice,
-        area: property.area,
-        bedrooms: property.bedrooms,
-      },
-      terms: deal.terms,
-      branding: theme.palette,
-    };
-
-    // 2. Logic to generate DOCX/PDF
-    // (This would use a library like docxtemplater or similar)
-    const generatedContent = Buffer.from(JSON.stringify(payload)); // Placeholder
-
-    // 3. Upload to Firebase Storage
-    const bucket = this.getBucket();
-    const filePath = `proposals/${deal.id}_proposal.pdf`;
-    const file = bucket.file(filePath);
-
-    await file.save(generatedContent, {
-      contentType: 'application/pdf',
-      resumable: false,
-    });
-
-    return `https://storage.googleapis.com/${bucket.name}/${filePath}`;
-  }
-
-  /**
-   * Generates a formal offer letter for the seller.
-   */
-  async generateOfferLetter(deal: Deal, sellerName: string): Promise<string> {
-    console.log(`[ProposalGenerator] Generating offer letter for Seller ${sellerName}`);
-    return "https://storage.sierra-blu.com/offers/placeholder.pdf";
-  }
+if (!admin.apps.length) {
+  admin.initializeApp();
 }
 
-export const proposalGenerator = new ProposalGenerator();
+const db      = admin.firestore();
+const storage = admin.storage();
+
+export class ProposalGenerator {
+  async generate(
+    leadId: string,
+    assetId: string,
+    dealId: string
+  ): Promise<{ proposalUrl: string; proposalId: string }> {
+    const [leadDoc, assetDoc] = await Promise.all([
+      db.collection('leads').doc(leadId).get(),
+      db.collection('listings').doc(assetId).get(),
+    ]);
+
+    if (!leadDoc.exists) throw new Error(`Lead not found: ${leadId}`);
+    if (!assetDoc.exists) throw new Error(`Asset not found: ${assetId}`);
+
+    const lead  = leadDoc.data()!;
+    const asset = assetDoc.data()!;
+
+    // Generate proposal content
+    const proposalContent = this.buildProposalTemplate(lead, asset);
+
+    // Upload to Firebase Storage
+    const fileName  = `proposals/${dealId}/proposal-${Date.now()}.txt`;
+    const bucket    = storage.bucket();
+    const file      = bucket.file(fileName);
+
+    await file.save(proposalContent, { contentType: 'text/plain' });
+    const [proposalUrl] = await file.getSignedUrl({
+      action:  'read',
+      expires: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    const proposalRef = await db.collection('proposals').add({
+      leadId,
+      assetId,
+      dealId,
+      proposalUrl,
+      storagePath: fileName,
+      status: 'generated',
+      createdAt: new Date().toISOString(),
+    });
+
+    return { proposalUrl, proposalId: proposalRef.id };
+  }
+
+  private buildProposalTemplate(
+    lead: admin.firestore.DocumentData,
+    asset: admin.firestore.DocumentData
+  ): string {
+    return `
+SIERRA ESTATES
+Exclusive Investment Proposal
+==============================
+
+Prepared for: ${lead.name}
+Date: ${new Date().toLocaleDateString('en-EG')}
+
+PROPERTY DETAILS
+----------------
+Property: ${asset.title || `${asset.bedrooms}BR in ${asset.compound}`}
+Compound: ${asset.compound}
+Area: ${asset.area} sqm
+Bedrooms: ${asset.bedrooms}
+Bathrooms: ${asset.bathrooms}
+Price: ${Number(asset.price).toLocaleString()} EGP
+
+INVESTMENT HIGHLIGHTS
+----------------------
+- Premium location in New Cairo
+- Expected ROI: ${asset.roiEstimate || '12-15'}%
+- Capital appreciation potential in ${asset.compound}
+
+NEXT STEPS
+----------
+1. Review this proposal
+2. Schedule a viewing at your convenience
+3. Our team will guide you through the purchase process
+
+Contact: Sierra Estates Concierge Team
+`;
+  }
+}

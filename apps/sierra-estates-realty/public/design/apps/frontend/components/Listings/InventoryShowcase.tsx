@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * SIERRA BLU — INVENTORY SHOWCASE
+ * SIERRA ESTATES — INVENTORY SHOWCASE
  * Demonstrates how to use the useSierraBlu hook for data fetching
  * Component: High-fidelity grid of available properties with live data
  */
@@ -14,6 +14,17 @@ import { MapPin, TrendingUp, ArrowRight } from 'lucide-react';
 
 export default function InventoryShowcase() {
   const { units, loading, error } = useSierraBlu();
+  const normalizedFilters = useMemo(
+    () => ({
+      purposeFilter: filters?.purpose?.trim() ?? '',
+      typeFilter: filters?.type?.trim() ?? '',
+      compoundFilter: filters?.compound?.trim() ?? '',
+      budgetFilter: filters?.budget?.trim() ?? '',
+    }),
+    [filters?.purpose, filters?.type, filters?.compound, filters?.budget]
+  );
+  const { purposeFilter, typeFilter, compoundFilter, budgetFilter } = normalizedFilters;
+  const hasActiveFilters = Boolean(purposeFilter || typeFilter || compoundFilter || budgetFilter);
 
   // Sort and limit units for showcase (top 6)
   const featuredUnits = useMemo(() => {
@@ -126,7 +137,11 @@ export default function InventoryShowcase() {
           ))
         ) : (
           <div className="col-span-full text-center py-12">
-            <p className="text-[#0A1628]/60">No properties available at this time.</p>
+            <p className="text-[#0A1628]/60">
+              {hasActiveFilters
+                ? 'No results found for your current filters. Try broadening your search.'
+                : 'No properties available at this time.'}
+            </p>
           </div>
         )}
       </div>

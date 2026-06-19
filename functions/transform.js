@@ -21,4 +21,4 @@ function normalizeProperty(rawData = {}) {
   };
 }
 
-module.exports = { normalizeProperty, parsePrice };
+module.exports = { parsePrice, normalizeProperty };
