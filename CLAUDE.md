@@ -12,6 +12,10 @@ Next.js 16 (App Router, Turbopack) · React 19 · TypeScript 5 (strict) · Tailw
 
 ## Deployment Architecture (authoritative)
 
+> **Full policy: [`DEPLOYMENT.md`](./DEPLOYMENT.md)** — the single source of truth for how
+> every app deploys, domains/DNS, secrets, CI gates, and how to add a new app. Read it
+> before any deployment/infra change. The summary below must stay consistent with it.
+
 Production domain: **sierra-estates.net** (Vercel). Firebase project: **sierra-blu**.
 
 ```
