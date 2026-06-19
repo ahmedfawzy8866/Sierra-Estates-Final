@@ -1,5 +1,10 @@
-// sierra-estatese/lib/dsl/parser.ts
-// Sierra Estatese DSL V2.0 — Full Parser + Firestore Query Builder
+// sierra-estates/lib/dsl/parser.ts
+// Sierra Estates DSL V2.0 — Full Parser + Firestore Query Builder
+//
+// Usage:
+//   import { parseDSL, buildFirestoreQuery } from "@/lib/dsl/parser";
+//   const view   = parseDSL(dsl, "listings");
+//   const query  = buildFirestoreQuery(view, db);
 
 import {
   Firestore,

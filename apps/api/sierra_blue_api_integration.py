@@ -356,7 +356,7 @@ class GoogleCalendarIntegration:
                 {'email': customer_email},
                 {'email': 'agent@sierrablue.com'}  # Your agent email
             ],
-            'location': 'سييرا بلو - مكتب التجمع الخامس',
+            'location': 'سييرا إستيتس - مكتب التجمع الخامس',
             'reminders': {
                 'useDefault': False,
                 'overrides': [
@@ -538,7 +538,7 @@ class IntegratedSierraBlueBot:
         property_data = self.property_api.check_property_availability(reference_code)
         
         # 4. Send WhatsApp greeting
-        greeting_msg = f"أهلاً بحضرتك في سييرا بلو"
+        greeting_msg = f"أهلاً بحضرتك في سييرا إستيتس"
         self.whatsapp.send_text_message(phone, greeting_msg)
         
         # 5. Track discovery and schedule

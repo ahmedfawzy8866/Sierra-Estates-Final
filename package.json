@@ -1,17 +1,31 @@
 {
   "name": "sierra-estates-final",
   "version": "1.0.0",
+  "description": "Sierra Estates - Luxury Real Estate Platform",
   "private": true,
   "packageManager": "pnpm@9.15.9",
   "scripts": {
     "dev": "turbo dev",
+    "dev:web": "cd apps/sierra-blu-realty && npm run dev",
+    "dev:admin": "cd apps/sierra-blu-admin-portal && npm run dev",
+    "dev:functions": "cd functions && npm run dev",
     "build": "turbo build",
+    "build:web": "cd apps/sierra-blu-realty && npm run build",
+    "build:admin": "cd apps/sierra-blu-admin-portal && npm run build",
+    "build:functions": "cd functions && npm run build",
+    "start": "cd apps/sierra-blu-realty && npm start",
     "lint": "turbo lint",
-    "type-check": "turbo type-check",
+    "test": "turbo run test",
     "test:ci": "turbo test:ci",
-    "clean": "turbo clean"
+    "type-check": "turbo type-check",
+    "clean": "turbo clean && rm -rf node_modules pnpm-lock.yaml",
+    "deploy": "firebase deploy --project sierra-blu-prod",
+    "deploy:staging": "firebase deploy --project sierra-blu-staging",
+    "deploy:preview": "firebase deploy --only hosting:preview",
+    "validate-build": "npm run lint && npm run type-check && npm run build"
   },
   "devDependencies": {
+    "cross-env": "^10.1.0",
     "turbo": "^2.3.3",
     "typescript": "^5.7.2"
   },
