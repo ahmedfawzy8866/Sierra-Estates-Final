@@ -24,6 +24,12 @@
 - Salvaged from stale branches before deletion: clearer middleware 401 message, `ALLOWED_ORIGINS` documentation in `.env.local.example`.
 - Removed orphaned `public/assets/colors_and_type.css` (superseded by the token bridge in `app/globals.css`).
 - Stale branches deleted after audit (4 fully merged, 2 superseded by newer main work).
+- Resolved Architectural Gaps & Vercel deployment:
+  - Fixed Next.js Vercel output resolution bugs and successfully deployed the unified monorepo to production.
+  - Linked `admin.sierra-estates.net` domain and set `ADMIN_HOST` variable on Vercel to isolate admin compute.
+  - Converted Type-check and Build CI pipelines into hard gates to prevent broken code merging to `main`.
+  - Replaced remaining legacy `sierra-blu-realty` Firebase project IDs with the unified `sierra-blu` configuration.
+  - Swept documentation to replace all old repository names (`i-sierra-2027`, `sf1`, `Sierra-2027`) with `Sierra-Estates-Final`.
 
 ## 3. Prioritized roadmap
 

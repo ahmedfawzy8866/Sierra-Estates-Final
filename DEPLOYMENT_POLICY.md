@@ -194,7 +194,7 @@ Before a new thing ships, classify it and follow its lane:
 
 ## 10. Current gaps to reach the target state
 
-- [ ] Add `admin.sierra-estates.net` to Vercel + DNS, then set `ADMIN_HOST` to activate the admin/public split (see §3).
-- [ ] Promote **type-check** and **build** to hard CI gates once the concierge/portfolio build gap is fixed (`ci.yml` notes it).
-- [ ] Pin the **one** Firebase project ID (`sierra-blu`) across `.firebaserc`, app env, and the admin applet config (a stray `sierra-blu-realty` remains in `apps/admin-dashboard`).
+- [x] Add `admin.sierra-estates.net` to Vercel + DNS, then set `ADMIN_HOST` (Vercel domain & env var configured; CNAME pointing pending).
+- [x] Promote **type-check** and **build** to hard CI gates (Done).
+- [x] Pin the **one** Firebase project ID (`sierra-blu`) across `.firebaserc`, app env, and the admin applet config (Fixed stray `sierra-blu-realty` in `apps/admin-dashboard`).
 - [ ] (Optional) Split the admin into its own Vercel project for full compute isolation.
