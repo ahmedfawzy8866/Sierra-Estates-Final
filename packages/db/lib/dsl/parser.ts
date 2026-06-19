@@ -249,3 +249,32 @@ export function applyFieldVisibility<T extends Record<string, unknown>>(
   }
   return result;
 }
+
+/** Client-side groupBy — returns a Map of groupValue → docs */
+export function groupDocuments<T extends Record<string, unknown>>(
+  docs: T[],
+  groupBy: string,
+): Map<string, T[]> {
+  const map = new Map<string, T[]>();
+  for (const doc of docs) {
+    const key = String(doc[groupBy] ?? "Uncategorized");
+    if (!map.has(key)) map.set(key, []);
+    map.get(key)!.push(doc);
+  }
+  return map;
+}
+
+/** Returns delta % between a field value and a benchmark value */
+export function computeComparisonDelta(
+  fieldValue: number,
+  benchmarkValue: number,
+): { delta: number; label: string; direction: "up" | "down" | "neutral" } {
+  if (!benchmarkValue) return { delta: 0, label: "N/A", direction: "neutral" };
+  const delta = ((fieldValue - benchmarkValue) / benchmarkValue) * 100;
+  const abs   = Math.abs(delta).toFixed(1);
+  return {
+    delta,
+    label:     delta > 0 ? `+${abs}%` : `${abs}%`,
+    direction: delta > 0.5 ? "up" : delta < -0.5 ? "down" : "neutral",
+  };
+}

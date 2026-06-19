@@ -115,8 +115,8 @@ export class PFIntegrationService {
         // Trigger n8n webhook for new listing matching
         await triggerNewListingNotification({
           id: newDocRef.id,
-          title: payload.title,
-          price: payload.price,
+          title: payload.title || '',
+          price: payload.price || 0,
           compound: payload.compound || payload.location || payload.city || ''
         });
       } else {
