@@ -1,4 +1,8 @@
-# Sierra Estates Realty - Deployment & Configuration Guide
+# Sierra Estates Realty - Local Dev & Configuration Guide
+
+> **For production deployment policy, CI gates, domains, and the release flow,
+> see [`DEPLOYMENT.md`](./DEPLOYMENT.md) — that file is authoritative.** This
+> guide only covers local environment setup.
 
 ## 📋 Table of Contents
 1. [Environment Setup](#environment-setup)
@@ -6,8 +10,7 @@
 3. [Python API (apps/api)](#python-api)
 4. [Data Seeding](#data-seeding)
 5. [Local Development](#local-development)
-6. [Production Deployment](#production-deployment)
-7. [Verification & Testing](#verification--testing)
+6. [Verification & Testing](#verification--testing)
 
 ---
 
@@ -103,9 +106,9 @@ gcloud run deploy sierra-estates-api \
 ### Using Script
 ```bash
 # First, download service account from Firebase Console
-# Save to: apps/web/firebase-service-account.json
+# Save to: apps/sierra-estates-realty/firebase-service-account.json
 
-cd apps/web
+cd apps/sierra-estates-realty
 node scripts/seed-firestore.mjs
 ```
 
@@ -121,11 +124,9 @@ pnpm dev
 
 ### Start individual apps
 ```bash
-# Web frontend (Next.js)
-cd apps/web && pnpm dev    # http://localhost:3000
-
-# Admin portal (Vite)
-cd apps/admin && pnpm dev  # http://localhost:5173
+# Web frontend + admin suite (Next.js — admin lives at /admin in this same app)
+cd apps/sierra-estates-realty && pnpm dev    # http://localhost:3000
+                                              # admin: http://localhost:3000/admin
 
 # Python API (FastAPI)
 cd apps/api && uvicorn main:app --reload --port 8000
@@ -135,63 +136,23 @@ cd apps/api && uvicorn main:app --reload --port 8000
 - [ ] Landing page loads at http://localhost:3000
 - [ ] Theme switcher works
 - [ ] Language switcher works (EN/AR)
-- [ ] Admin dashboard at http://localhost:5173
+- [ ] Admin console at http://localhost:3000/admin
 - [ ] Python API health check at http://localhost:8000/health
 - [ ] No console errors
 
 ---
 
-## Production Deployment
+## Verification & Testing
 
-### Web App: Vercel (Recommended)
-```bash
-vercel deploy
-# Set environment variables via Vercel dashboard or vercel env add
-```
-
-### Firebase Functions
-```bash
-firebase deploy --only functions
-```
-
-### Python API: Docker / Cloud Run
-```bash
-cd apps/api
-docker build -t sierra-api .
-# Push to your container registry and deploy
-```
-
-### Firebase Hosting (Admin Portal)
-```bash
-cd apps/admin && pnpm build
-firebase deploy --only hosting
-```
-
----
-
-## Pre-Deployment Checklist
-- [ ] `.env.local` configured with Firebase credentials
-- [ ] Firebase project created and Firestore enabled
-- [ ] Firestore rules deployed
-- [ ] Sample data seeded (if needed)
-- [ ] Tests pass: `pnpm run test:ci`
-- [ ] Build succeeds: `pnpm run build`
-- [ ] Local verification complete
-- [ ] No TypeScript errors
-- [ ] No ESLint errors
-- [ ] Python API starts without errors
-
----
-
-## Quick Commands
 ```bash
 pnpm install          # Install all workspace deps
-pnpm dev              # Start all apps in parallel
-pnpm build            # Production build all apps
-pnpm test:ci          # Run all tests
-pnpm type-check       # TypeScript check all apps
-pnpm lint             # ESLint all apps
+pnpm dev               # Start all apps in parallel
+pnpm build             # Production build (Turbo, hard CI gate)
+pnpm test:ci           # Run all tests
+pnpm type-check        # TypeScript check, all apps (hard CI gate)
+pnpm lint              # ESLint, all apps (hard CI gate)
 ```
 
-**See [MIGRATION.md](./MIGRATION.md) for details on the repository consolidation.**
+**See [`DEPLOYMENT.md`](./DEPLOYMENT.md)** for the production release flow, CI
+gates, domains/DNS, and the policy for adding any new app or service.
 
