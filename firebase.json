@@ -55,7 +55,7 @@
       "redirects": [
         {
           "source": "**",
-          "destination": "https://sierraestates.luxury/admin",
+          "destination": "https://sierra-estates.net/admin",
           "type": 302
         }
       ]

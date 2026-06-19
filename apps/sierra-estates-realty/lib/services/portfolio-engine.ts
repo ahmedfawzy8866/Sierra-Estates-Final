@@ -112,7 +112,7 @@ export async function curateConciergePortfolio(leadId: string): Promise<Concierg
   const personalNote = await generateSierraNoteFromTemplate(lead, conciergeUnits);
   const matchingScore = matchSum / conciergeUnits.length;
   const estimatedPortfolioROI = totalROI / conciergeUnits.length;
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sierraestates.luxury';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sierra-estates.net';
   const whatsappLink = `${siteUrl}/concierge/${leadId}?gallery=true`;
 
   // 5. Create Concierge Selection document
