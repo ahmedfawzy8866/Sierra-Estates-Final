@@ -8,6 +8,7 @@ import {
 } from '../../lib/firebase/inventory';
 import { X, Save, MapPin, DollarSign, Home, Ruler, Images, Flag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { logger } from '@/lib/logger';
 
 interface PropertyFormProps {
   property?: Property;
@@ -64,7 +65,7 @@ export default function PropertyForm({ property, onSave, onClose }: PropertyForm
       const normalizedKey = generateNormalizedKey(formData);
       await onSave({ ...formData, normalized_key: normalizedKey });
     } catch (err) {
-      console.error(err);
+      logger.error(err);
     } finally {
       setSaving(false);
     }

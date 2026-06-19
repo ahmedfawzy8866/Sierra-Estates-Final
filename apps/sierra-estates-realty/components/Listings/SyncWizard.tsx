@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { db } from '../../lib/firebase';
 import { collection, writeBatch, doc, serverTimestamp } from 'firebase/firestore';
 import { logAuditAction } from '../../lib/audit';
+import { logger } from '@/lib/logger';
 
 interface SyncWizardProps {
   onClose: () => void;
@@ -251,7 +252,7 @@ export default function SyncWizard({ onClose, onSuccess }: SyncWizardProps) {
       setStage('COMPLETE');
       setTimeout(() => onSuccess(mappedData.length), 1500);
     } catch (err) {
-      console.error("Integration Failure:", err);
+      logger.error("Integration Failure:", err);
       alert("Synchronization protocol interrupted. Please verify connectivity.");
       setStage('PREVIEW');
     }
@@ -403,7 +404,7 @@ export default function SyncWizard({ onClose, onSuccess }: SyncWizardProps) {
 
                         setStage('PREVIEW');
                       } catch (err) {
-                        console.error("Portal Ingest Error:", err);
+                        logger.error("Portal Ingest Error:", err);
                         alert("Gateway synchronization protocol failed. Verify credentials in environmental vault.");
                         setStage('PORTAL');
                       }

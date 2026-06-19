@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/lib/AuthContext';
 import toast from 'react-hot-toast';
+import { logger } from '@/lib/logger';
 
 interface SyncRecord {
   id: string;
@@ -40,7 +41,7 @@ export default function DedupeReviewQueue() {
       const data = await res.json();
       setItems(data.items || []);
     } catch (err) {
-      console.error('Failed to fetch dedup queue:', err);
+      logger.error('Failed to fetch dedup queue:', err);
       toast.error('Failed to load pending reviews');
     } finally {
       setLoading(false);
@@ -70,7 +71,7 @@ export default function DedupeReviewQueue() {
       toast.success('Synchronization complete');
       await fetchPending(); // Refresh the queue
     } catch (err: any) {
-      console.error('Sync failed:', err);
+      logger.error('Sync failed:', err);
       toast.error(`Sync failed: ${err.message}`);
     } finally {
       setSyncing(false);
@@ -94,7 +95,7 @@ export default function DedupeReviewQueue() {
       toast.success(`Item ${resolution === 'matched' ? 'merged' : resolution === 'new' ? 'created' : 'skipped'} successfully`);
       setItems(prev => prev.filter(item => item.id !== queueId));
     } catch (err) {
-      console.error('Failed to resolve:', err);
+      logger.error('Failed to resolve:', err);
       toast.error('Failed to resolve item');
     }
   };

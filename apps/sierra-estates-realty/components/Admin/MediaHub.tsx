@@ -9,6 +9,7 @@ import {
   deleteObject 
 } from 'firebase/storage';
 import { useI18n } from '@/lib/I18nContext';
+import { logger } from '@/lib/logger';
 
 export default function MediaHub() {
   const { t: _t, locale } = useI18n();
@@ -29,7 +30,7 @@ export default function MediaHub() {
       );
       setFiles(fileData);
     } catch (err) {
-      console.error("Media retrieval failed:", err);
+      logger.error("Media retrieval failed:", err);
     }
   };
 
@@ -51,7 +52,7 @@ export default function MediaHub() {
         setProgress(p);
       }, 
       (error) => {
-        console.error(error);
+        logger.error(error);
         setUploading(false);
       }, 
       () => {
@@ -70,7 +71,7 @@ export default function MediaHub() {
       await deleteObject(ref(storage, fullPath));
       fetchMedia();
     } catch (err) {
-      console.error(err);
+      logger.error(err);
     }
   };
 

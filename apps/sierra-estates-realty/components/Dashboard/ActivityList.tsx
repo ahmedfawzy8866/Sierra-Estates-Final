@@ -4,6 +4,7 @@ import { db } from '@/lib/firebase';
 import { collection, query, orderBy, limit, onSnapshot, Timestamp } from 'firebase/firestore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RefreshCcw, Bell, Clock, ArrowUpRight, CheckCircle2, Info, Activity } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 interface ActivityItem {
   id: string;
@@ -47,7 +48,7 @@ export default function ActivityList() {
       setActivities(list);
       setLoading(false);
     }, (error) => {
-      console.error('Failed to load activity feed:', error);
+      logger.error('Failed to load activity feed:', error);
       setActivities([]);
       setLoading(false);
     });

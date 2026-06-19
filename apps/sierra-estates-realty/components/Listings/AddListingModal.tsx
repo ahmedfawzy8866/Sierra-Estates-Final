@@ -6,6 +6,7 @@ import { db, storage, getAnalyticsInstance } from '../../lib/firebase';
 import { logEvent } from 'firebase/analytics';
 import { useAuth } from '../../lib/AuthContext';
 import { Listing } from './ListingsHub';
+import { logger } from '@/lib/logger';
 
 interface AddListingModalProps {
   onClose: () => void;
@@ -88,7 +89,7 @@ export default function AddListingModal({ onClose, onSuccess, listing }: AddList
       const url = await getDownloadURL(uploadResult.ref);
       setFormData(prev => ({ ...prev, imageUrl: url }));
     } catch (error) {
-      console.error("Storage upload error:", error);
+      logger.error("Storage upload error:", error);
       alert('Failed to upload high-fidelity asset image.');
     } finally {
       setUploading(false);
@@ -135,7 +136,7 @@ export default function AddListingModal({ onClose, onSuccess, listing }: AddList
       if (listing?.docId) {
         await updateDoc(doc(db, 'listings', listing.docId), payload);
       } else if (listing) {
-        console.warn('Editing demo data creates a new saved listing.');
+        logger.warn('Editing demo data creates a new saved listing.');
         await addDoc(collection(db, 'listings'), {
           ...payload,
           id: listing.id,
@@ -161,7 +162,7 @@ export default function AddListingModal({ onClose, onSuccess, listing }: AddList
       
       onSuccess();
     } catch (error) {
-      console.error("Error saving listing:", error);
+      logger.error("Error saving listing:", error);
       alert('We could not save the listing. Please try again.');
     } finally {
       setLoading(false);

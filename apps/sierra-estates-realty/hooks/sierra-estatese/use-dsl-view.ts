@@ -12,6 +12,7 @@
 //   const { grouped }                  = useDSLView(VIEW_CONFIGS.crm_kanban.dsl);
 
 import { useState, useEffect, useMemo, useCallback } from "react";
+import { logger } from '@/lib/logger';
 import {
   onSnapshot,
   DocumentData,
@@ -129,14 +130,14 @@ export function useDSLView(
           setLoading(false);
         },
         err => {
-          console.error("[useDSLView] Firestore error:", err);
+          logger.error("[useDSLView] Firestore error:", err);
           setError(err.message);
           setLoading(false);
         },
       );
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      console.error("[useDSLView] Query build error:", msg);
+      logger.error("[useDSLView] Query build error:", msg);
       setError(msg);
       setLoading(false);
     }

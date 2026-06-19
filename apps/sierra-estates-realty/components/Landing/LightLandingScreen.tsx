@@ -6,6 +6,7 @@ import BrandLogo from '../UI/BrandLogo';
 import { collection, query, limit, getDocs } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { COLLECTIONS, Unit } from '../../lib/models/schema';
+import { logger } from '@/lib/logger';
 
 /* ─────────────────────────────────────────────────────────
    PROPERTY CARD — mobile-friendly horizontal snap card
@@ -70,7 +71,7 @@ export default function LightLandingScreen({ onEnterPortal }: { onEnterPortal: (
         const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Unit));
         setProperties(data);
       } catch (e) {
-        console.error(e);
+        logger.error(e);
       } finally {
         setLoading(false);
       }

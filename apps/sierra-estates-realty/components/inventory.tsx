@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Filter, ArrowUpDown, House, MapPin, Bed, Bath, Maximize, ExternalLink, Diamond } from 'lucide-react';
 import { getProperties, Property, PropertyFilters } from '@/lib/firebase/inventory';
+import { logger } from '@/lib/logger';
 
 export default function InventoryGrid() {
   const [properties, setProperties] = useState<Property[]>([]);
@@ -21,7 +22,7 @@ export default function InventoryGrid() {
       const data = await getProperties(filters);
       setProperties(data);
     } catch (error) {
-      console.error("Error fetching inventory:", error);
+      logger.error("Error fetching inventory:", error);
     } finally {
       setLoading(false);
     }

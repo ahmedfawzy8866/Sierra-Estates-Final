@@ -7,6 +7,7 @@ import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
+import { logger } from '@/lib/logger';
 
 const isDummyKey = (key?: string) => {
   if (!key) return true;
@@ -24,7 +25,7 @@ const hasValidFirebaseConfig = Boolean(
 const canUsePlaceholderConfig = !hasValidFirebaseConfig && typeof window === 'undefined';
 
 if (!hasValidFirebaseConfig && !canUsePlaceholderConfig && typeof window !== 'undefined') {
-  console.warn('[firebase] Using development mock - real Firebase not configured.');
+  logger.warn('[firebase] Using development mock - real Firebase not configured.');
 }
 
 const firebaseConfig = hasValidFirebaseConfig
@@ -49,7 +50,7 @@ let app: FirebaseApp;
 try {
   app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 } catch (error) {
-  console.warn('[firebase] Failed to initialize app:', error);
+  logger.warn('[firebase] Failed to initialize app:', error);
   app = getApps()[0];
 }
 

@@ -5,6 +5,7 @@ import { X, User, Mail, Phone, Shield, Loader2 } from 'lucide-react';
 import { db } from '../../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { COLLECTIONS, UserProfile } from '../../lib/models/schema';
+import { logger } from '@/lib/logger';
 
 interface AddAdvisorModalProps {
   isOpen: boolean;
@@ -41,7 +42,7 @@ export default function AddAdvisorModal({ isOpen, onClose }: AddAdvisorModalProp
         status: 'active'
       });
     } catch (error) {
-      console.error("Error adding advisor:", error);
+      logger.error("Error adding advisor:", error);
       alert("Failed to add advisor. Please try again.");
     } finally {
       setLoading(false);

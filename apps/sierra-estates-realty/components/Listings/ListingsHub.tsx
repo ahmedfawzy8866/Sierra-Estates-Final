@@ -5,6 +5,7 @@ import { db } from '../../lib/firebase';
 import AddListingModal from './AddListingModal';
 import ShareListingModal from './ShareListingModal';
 import SyncWizard from './SyncWizard';
+import { logger } from '@/lib/logger';
 
 export interface Listing {
   docId?: string;
@@ -172,7 +173,7 @@ export default function ListingsHub() {
       }
       setLoading(false);
     }, (error) => {
-      console.warn("Firestore access error, using secure fallback data:", error);
+      logger.warn("Firestore access error, using secure fallback data:", error);
       setListings(FALLBACK_LISTINGS);
       setLoading(false);
     });
