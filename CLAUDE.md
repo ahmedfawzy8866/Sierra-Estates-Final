@@ -75,18 +75,23 @@ June 2026.)
 - `pnpm deploy:functions` — deploy Cloud Functions
 - Tests: Jest (realty app) + functions. `type-check` is a real CI gate (`tsc --noEmit`). `apps/sierra-estates-realty/next.config.ts` has `ignoreBuildErrors: false`.
 
-## Vercel Setup (one-time in dashboard)
+## Vercel Setup
 
-Current choice — **Root Directory = repo root**, driven by the root `vercel.json`:
+**Root Directory = `apps/sierra-estates-realty`** — this is the real, enforced setting:
+`.github/workflows/deploy-vercel.yml` re-pins it via the Vercel API (`PATCH .../projects/:id`)
+on every deploy, so the dashboard value is self-healing even if changed manually.
+`apps/sierra-estates-realty/vercel.json` is the config Vercel actually reads (crons,
+security headers, the `/api` rewrite, redirects) — keep it in sync with the root
+`vercel.json` below.
 
-- Framework Preset: `Next.js`
-- Build Command: `pnpm run build` (builds the realty app via workspace filter)
-- Install Command: `pnpm install`
-- Output Directory: auto-detected by the Next.js framework preset — do not set `outputDirectory` in root `vercel.json`; an explicit override there previously caused a deploy output-directory mismatch and was removed.
+- Framework Preset: `Next.js` (zero-config detected inside the app directory)
+- Build/Install commands: left to Vercel's Next.js zero-config detection (no override needed)
+- Deploy mechanism: **GitHub Action only** (`deploy-vercel.yml`, `vercel pull` → `vercel build` → `vercel deploy --prebuilt`). Vercel's own git auto-deploy is OFF (`git.deploymentEnabled: false`).
 
-Fallback if Vercel reports "No Next.js version detected" from the repo root: set
-Root Directory = `apps/sierra-estates-realty` (the app has its own `vercel.json`) — this is
-Vercel's natively-supported monorepo pattern and needs no repo changes.
+The root `vercel.json` is kept as a ready-made fallback for the **alternate** topology
+(Root Directory = repo root) — only relevant if the dashboard root directory is ever
+changed back and the re-pin step in `deploy-vercel.yml` is removed. Until then, it is
+not read by Vercel; `apps/sierra-estates-realty/vercel.json` is the live one.
 
 ## Conventions
 

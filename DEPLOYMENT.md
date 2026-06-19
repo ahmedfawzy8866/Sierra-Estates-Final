@@ -2,11 +2,12 @@
 
 > **Authoritative.** This file is the single source of truth for *how Sierra Estates
 > is built, deployed, and extended*. It supersedes the older, partly-aspirational
-> deploy notes (`ARCHITECTURE.md`, `DEPLOYMENT_GUIDE.md`, `PRE_DEPLOYMENT_GUIDE.md`,
-> `RECOMMENDATIONS.md`, `sierra_estates_OVERVIEW.md`) for anything deployment-related.
-> When they disagree with this file, **this file wins.** Keep it updated as the
-> system evolves — a change to where/how something deploys is not "done" until it
-> is reflected here.
+> deploy notes (`ARCHITECTURE.md`, `RECOMMENDATIONS.md`, `sierra_estates_OVERVIEW.md`)
+> for anything deployment-related. `DEPLOYMENT_GUIDE.md` is scoped down to **local dev
+> setup only** and points back here for policy. `PRE_DEPLOYMENT_GUIDE.md` was removed
+> (zero references, fully superseded). When other docs disagree with this file,
+> **this file wins.** Keep it updated as the system evolves — a change to
+> where/how something deploys is not "done" until it is reflected here.
 
 ---
 
@@ -199,4 +200,7 @@ Before a new thing ships, classify it and follow its lane:
 - [x] Promote **type-check** and **build** to hard CI gates — done in `ci.yml`; verified both pass against current `main`.
 - [x] Pin the **one** Firebase project ID (`sierra-blu`) across `.firebaserc`, app env, and the admin applet config — stray `sierra-blu-realty` in `apps/admin-dashboard` fixed.
 - [x] Add `admin.sierra-estates.net` to Vercel + DNS, then set `ADMIN_HOST` — reported done (see `RECOMMENDATIONS.md`); confirm `https://admin.sierra-estates.net/admin/login` loads in a browser, since this sandbox couldn't independently verify it.
+- [x] **`deploy-vercel.yml` was broken on every run** (all 30+ runs on `main` failed) — `actions/setup-node`'s `cache: npm` had no `package-lock.json` to key on (repo is pnpm-only), so the job died at step 3 before ever reaching the Vercel CLI steps. Fixed: added `pnpm/action-setup@v4`, switched to `cache: pnpm` + `pnpm install --frozen-lockfile`. Also added the missing `id: target` step — `steps.target.outputs.name`/`.flag` were referenced but never produced, so every deploy would have silently run as **preview**, never production, even once the install step worked.
+- [x] **`apps/sierra-estates-realty/vercel.json` did not exist**, despite Vercel's Root Directory being pinned to that folder (`deploy-vercel.yml`'s PATCH step) and both `CLAUDE.md` and this file documenting it as present. Vercel only reads `vercel.json` from the configured root directory, so the root-level crons/headers/rewrites/redirects were never actually applied in production. Fixed: created `apps/sierra-estates-realty/vercel.json` mirroring the root file's crons/headers/rewrites/redirects.
+- [x] `.vercel/project.json` and `.vercel/README.txt` were tracked in git despite `.gitignore` listing `.vercel` — harmless (IDs are non-secret and match the ones hardcoded in `deploy-vercel.yml`), but redundant. Fixed: untracked with `git rm --cached` so `.gitignore` is actually enforced; files remain on disk locally.
 - [ ] (Optional) Split the admin into its own Vercel project for full compute isolation.
