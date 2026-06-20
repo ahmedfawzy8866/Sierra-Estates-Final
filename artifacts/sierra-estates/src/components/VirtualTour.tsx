@@ -4,32 +4,32 @@ import { useLang } from "@/contexts/LanguageContext";
 const ROOMS = [
   {
     name: "Living Area",      icon: "🛋️", of: "01 / 07",
-    img: "https://images.unsplash.com/photo-1600210492493-0946911123ea?w=2400&q=85",
+    img: "/panoramas/vr_living_room_1781980971227.png",
     specs: [["450m²","Total Area"],["6","Bedrooms"],["5","Baths"],["EGP 35M","Price"]],
   },
   {
     name: "Master Suite",     icon: "🛏️", of: "02 / 07",
-    img: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=2400&q=85",
+    img: "/panoramas/vr_master_suite_1781980980947.png",
     specs: [["85m²","Suite Area"],["En-Suite","Bathroom"],["Walk-In","Wardrobe"],["Garden","View"]],
   },
   {
     name: "Private Garden",   icon: "🌿", of: "03 / 07",
-    img: "https://images.unsplash.com/photo-1598228723793-52759bba239c?w=2400&q=85",
+    img: "/panoramas/vr_private_garden_1781980995315.png",
     specs: [["280m²","Garden"],["Landscape","Design"],["Irrigation","System"],["Private","Access"]],
   },
   {
     name: "Pool Deck",        icon: "🏊", of: "04 / 07",
-    img: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=2400&q=85",
+    img: "/panoramas/vr_pool_deck_1781981007863.png",
     specs: [["12×5m","Pool Size"],["Infinity","Edge"],["Heated","Pool"],["Outdoor","Lounge"]],
   },
   {
     name: "Sky Terrace",      icon: "🌅", of: "05 / 07",
-    img: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=2400&q=85",
+    img: "/panoramas/vr_sky_terrace_1781981024531.png",
     specs: [["120m²","Terrace"],["360°","Panorama"],["BBQ","Station"],["Sunset","Views"]],
   },
   {
     name: "Villa Exterior",   icon: "🏡", of: "06 / 07",
-    img: "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=2400&q=85",
+    img: "/panoramas/vr_exterior_1781981036306.png",
     specs: [["800m²","Plot"],["Corner","Position"],["3 Car","Garage"],["2026","Delivery"]],
   },
   {

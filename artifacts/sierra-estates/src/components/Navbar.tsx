@@ -167,7 +167,7 @@ export default function Navbar({
             </div>
 
             <button className="hdr-cta" onClick={() => { setOpen(null); onSmartRequest(); }}>
-              {t("nav.cta")} · {matchCount}
+              {t("nav.cta")}
             </button>
           </div>
         </div>

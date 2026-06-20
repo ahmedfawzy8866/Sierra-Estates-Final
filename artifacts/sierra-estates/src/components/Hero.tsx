@@ -190,12 +190,12 @@ export default function Hero() {
         <span style={{ fontFamily: "var(--font-mono)", fontSize: 8.5, letterSpacing: ".18em", color: "rgba(240,237,229,.65)", textTransform: "uppercase" }}>{cur.loc}</span>
       </div>
 
-      <div className="hero-content" style={{ zIndex: 4 }}>
-        <div className="hero-eyebrow">{t("hero.eyebrow")}</div>
-        <h1 className="hero-title">
-          {t("hero.title1")} <em>{t("hero.titleEm")}</em><br />{t("hero.title2")}
+      <div className="hero-content" style={{ zIndex: 4 }} key={`content-${scene}`}>
+        <div className="hero-eyebrow" style={{ animation: "fadeUp .8s both" }}>{t(`hero.${scene + 1}.eyebrow`)}</div>
+        <h1 className="hero-title" style={{ animation: "fadeUp .8s .1s both" }}>
+          {t(`hero.${scene + 1}.title1`)} <em>{t(`hero.${scene + 1}.titleEm`)}</em><br />{t(`hero.${scene + 1}.title2`)}
         </h1>
-        <p className="hero-sub">{t("hero.sub")}</p>
+        <p className="hero-sub" style={{ animation: "fadeUp .8s .2s both" }}>{t(`hero.${scene + 1}.sub`)}</p>
         <div className="hero-stats">
           {[["26","hero.listings"],["19","hero.compounds"],["9.8","hero.aiScore"],["24h","hero.response"]].map(([v, lk], i) => (
             <div key={i} className="hero-stat" style={{ padding: "2px 8px" }}>
