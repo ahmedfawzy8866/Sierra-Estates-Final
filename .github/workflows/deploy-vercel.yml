@@ -67,6 +67,9 @@ jobs:
             -d '{"rootDirectory":"apps/sierra-estates-realty"}' > /dev/null
           echo "Root Directory pinned to apps/sierra-estates-realty"
 
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
       - name: Pull Vercel project settings
         run: vercel pull --yes --environment=${{ steps.target.outputs.name }} --token=${{ secrets.VERCEL_TOKEN }}
 
