@@ -6,6 +6,9 @@ import { mapListingToSpa, mapSpaToListingPatch } from '@/lib/server/admin-spa-ma
 import { Timestamp } from 'firebase-admin/firestore';
 import { logger } from '@/lib/logger';
 
+// Force dynamic rendering — uses Firebase/auth at runtime
+export const dynamic = 'force-dynamic';
+
 /** Admin-scoped listings CRUD via the Admin SDK — unlike the public /api/listings (read-only REST key). */
 export async function GET(req: NextRequest) {
   const authResult = await verifyAdminRequest(req);

@@ -1,8 +1,8 @@
 /**
- * SIERRA BLUE — الورك فلوز الخارجية
+ * sierra estates — الورك فلوز الخارجية
  * ─────────────────────────────────────────────────────────────────────
  * المجلد ده يروح في:
- * H:\Sierra Blue SaaS Program Locally V2\workflows\
+ * H:\sierra estates SaaS Program Locally V2\workflows\
  *
  * الهيكل:
  *   workflows/

@@ -6,6 +6,9 @@ import { mapLeadToSpa, mapSpaToLeadPatch } from '@/lib/server/admin-spa-mappers'
 import { Timestamp } from 'firebase-admin/firestore';
 import { logger } from '@/lib/logger';
 
+// Force dynamic rendering — uses Firebase/auth at runtime
+export const dynamic = 'force-dynamic';
+
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const authResult = await verifyAdminRequest(req);
   if (!authResult.authenticated) {

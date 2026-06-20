@@ -258,7 +258,7 @@ export default function AddListingModal({ onClose, onSuccess, listing }: AddList
               <select className="form-select" value={formData.ownerType} onChange={e => setFormData({...formData, ownerType: e.target.value as any})}>
                 <option value="Owner">Direct Owner</option>
                 <option value="Broker">Broker Partnership</option>
-                <option value="Internal">Sierra Blue Internal</option>
+                <option value="Internal">sierra estates Internal</option>
               </select>
             </div>
           </div>
@@ -340,7 +340,7 @@ export default function AddListingModal({ onClose, onSuccess, listing }: AddList
             <input 
               type="url" 
               className="form-input" 
-              placeholder="https://sierrablu.com/tours/..."
+              placeholder="https://sierraestates.com/tours/..."
               value={formData.virtualTourUrl}
               onChange={e => setFormData({...formData, virtualTourUrl: e.target.value})}
             />

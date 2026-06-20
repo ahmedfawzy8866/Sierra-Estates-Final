@@ -28,6 +28,12 @@ service cloud.firestore {
       return isBootstrappedAdmin() || isRegisteredAdmin();
     }
 
+    function isStaff() {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'manager', 'agent'];
+    }
+
     function isValidId(id) {
        return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
     }
@@ -40,7 +46,7 @@ service cloud.firestore {
       return resource.data;
     }
 
-    // STANDALONE DATA SCHEMA BLUEPRINTS FOR VALIDATION (Anti-Update-Gap)
+    // STANDALONE DATA SCHEMA BLUEPRINTS FOR VALIDATION
     function isValidLead(data) {
       return data.keys().hasAll(['name', 'phone', 'interest', 'stage', 'hot', 'createdAt', 'updatedAt'])
         && data.keys().size() <= 10
@@ -67,7 +73,6 @@ service cloud.firestore {
         && data.img is int;
     }
 
-    // Custom properties / components support (from Sierra-Estates details)
     function isValidProperty(data) {
       return data.keys().hasAll(['title', 'price', 'location', 'type', 'beds', 'baths', 'area', 'imageUrl'])
         && data.title is string && data.title.size() <= 200
@@ -127,15 +132,15 @@ service cloud.firestore {
     // Dynamic and Secure Route Matching Rules
 
     match /leads/{leadId} {
-      allow read: if isAdmin();
-      allow create: if isAdmin()
+      allow read: if isStaff() || isAdmin();
+      allow create: if (isStaff() || isAdmin())
         && isValidId(leadId)
         && isValidLead(incoming())
         && incoming().createdAt is timestamp
         && incoming().createdAt <= request.time + duration.value(24, 'h')
         && incoming().updatedAt is timestamp
         && incoming().updatedAt <= request.time + duration.value(24, 'h');
-      allow update: if isAdmin()
+      allow update: if (isStaff() || isAdmin())
         && isValidLead(incoming())
         && incoming().createdAt == existing().createdAt
         && incoming().updatedAt is timestamp
@@ -144,59 +149,62 @@ service cloud.firestore {
     }
 
     match /listings/{listingId} {
-      allow read: if isSignedIn();
-      allow create: if isAdmin()
+      allow read: if true;
+      allow create: if (isStaff() || isAdmin())
         && isValidId(listingId)
         && isValidListing(incoming())
         && incoming().createdAt is timestamp
         && incoming().createdAt <= request.time + duration.value(24, 'h')
         && incoming().updatedAt is timestamp
         && incoming().updatedAt <= request.time + duration.value(24, 'h');
-      allow update: if isAdmin()
+      allow update: if (isStaff() || isAdmin())
         && isValidListing(incoming())
         && incoming().createdAt == existing().createdAt
         && incoming().updatedAt is timestamp
         && incoming().updatedAt <= request.time + duration.value(24, 'h');
-      allow delete: if isAdmin();
+      allow delete: if isStaff() || isAdmin();
     }
 
-    // Add properties collection matching since it's used by public site / admin
+    // Catalog Marketplace Collections
     match /properties/{propertyId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isStaff() || isAdmin();
     }
     match /units/{unitId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isStaff() || isAdmin();
     }
     match /projects/{projectId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isStaff() || isAdmin();
     }
     match /developers/{developerId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isStaff() || isAdmin();
     }
     match /mediaAssets/{id} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isStaff() || isAdmin();
     }
     match /media/{id} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isStaff() || isAdmin();
     }
     match /zones/{id} {
       allow read: if true;
-      allow write: if isAdmin();
-    }
-    match /users/{uid} {
-      allow read: if isSignedIn() && (request.auth.uid == uid || isAdmin());
-      allow write: if isAdmin();
+      allow write: if isStaff() || isAdmin();
     }
 
+    // Users Profiles
+    match /users/{uid} {
+      allow read: if isSignedIn() && (request.auth.uid == uid || isStaff() || isAdmin());
+      allow write: if isStaff() || isAdmin();
+    }
+
+    // Agents and Workflows Control
     match /agents/{agentId} {
-      allow read: if isAdmin();
-      allow create, update: if isAdmin()
+      allow read: if isStaff() || isAdmin();
+      allow create, update: if (isStaff() || isAdmin())
         && isValidId(agentId)
         && isValidAgent(incoming())
         && incoming().updatedAt is timestamp
@@ -205,8 +213,8 @@ service cloud.firestore {
     }
 
     match /workflows/{workflowId} {
-      allow read: if isAdmin();
-      allow create, update: if isAdmin()
+      allow read: if isStaff() || isAdmin();
+      allow create, update: if (isStaff() || isAdmin())
         && isValidId(workflowId)
         && isValidWorkflow(incoming())
         && incoming().updatedAt is timestamp
@@ -215,7 +223,7 @@ service cloud.firestore {
     }
 
     match /chats/{chatId} {
-      allow read, write: if isAdmin();
+      allow read, write: if isStaff() || isAdmin();
     }
 
     match /admins/{userId} {
@@ -229,16 +237,30 @@ service cloud.firestore {
     }
 
     match /notifications/{notificationId} {
-      allow read: if isAdmin();
-      allow create: if isAdmin()
+      allow read: if isStaff() || isAdmin();
+      allow create: if (isStaff() || isAdmin())
         && isValidId(notificationId)
         && isValidNotification(incoming())
         && incoming().createdAt is timestamp
         && incoming().createdAt <= request.time + duration.value(24, 'h');
-      allow update: if isAdmin()
+      allow update: if (isStaff() || isAdmin())
         && isValidNotification(incoming())
         && incoming().createdAt == existing().createdAt;
       allow delete: if isAdmin();
     }
+
+    // CRM, Deals, Proposals & Workflows collections - Staff Access Only
+    match /deals/{id} { allow read, write: if isStaff() || isAdmin(); }
+    match /sales/{id} { allow read, write: if isStaff() || isAdmin(); }
+    match /proposals/{id} { allow read, write: if isStaff() || isAdmin(); }
+    match /viewings/{id} { allow read, write: if isStaff() || isAdmin(); }
+    match /vouchers/{id} { allow read, write: if isStaff() || isAdmin(); }
+    match /activities/{id} { allow read, write: if isStaff() || isAdmin(); }
+    match /intelligence/{id} { allow read, write: if isStaff() || isAdmin(); }
+    match /concierge_selections/{id} { allow read, write: if isStaff() || isAdmin(); }
+    match /strategic_pipeline/{id} { allow read, write: if isStaff() || isAdmin(); }
+    match /partners/{id} { allow read, write: if isStaff() || isAdmin(); }
+    match /syncQueue/{id} { allow read, write: if isStaff() || isAdmin(); }
+    match /syncLog/{id} { allow read, write: if isStaff() || isAdmin(); }
   }
 }

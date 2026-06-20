@@ -1,5 +1,5 @@
 /**
- * SIERRA BLU — FIRESTORE DATA MODEL
+ * sierra estates — FIRESTORE DATA MODEL
  * Canonical type definitions for all collections.
  * This is the single source of truth for the database schema.
  */
@@ -562,7 +562,6 @@ export interface Activity extends BaseDocument {
 
 export const COLLECTIONS = {
   units: 'listings',        // keeping backward compat with existing 'listings' collection
-  portfolioAssets: 'portfolio_assets',
   projects: 'projects',
   developers: 'developers',
   mediaAssets: 'mediaAssets',
@@ -579,6 +578,5 @@ export const COLLECTIONS = {
   intelligence: 'intelligence', // Global Neural Memory
   conciergeSelections: 'concierge_selections', // S8 Curated Portfolios
   strategicPipeline: 'strategic_pipeline',      // S9 Deal Pipeline
-  agentStatus: 'agents',         // operational status reported by workers (n8n, whatsapp-scraper, etc.)
-  automationWorkflows: 'workflows', // admin-managed automation toggles, surfaced in /admin
+  portfolioAssets: 'portfolio_assets',
 } as const;

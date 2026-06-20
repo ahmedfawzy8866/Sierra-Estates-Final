@@ -96,7 +96,7 @@ function OnboardingIntent({ onSelect }: { onSelect: (intent: UserIntent) => void
           transition={{ duration: 0.6, ease: 'easeOut' }}
           className="font-display text-6xl italic text-[#F4F0E8] mb-4"
         >
-          Sierra Blu
+          sierra estates
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 12 }}

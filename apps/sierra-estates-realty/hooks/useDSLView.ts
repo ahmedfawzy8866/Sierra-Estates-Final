@@ -12,6 +12,7 @@
 //   const { grouped }                  = useDSLView(VIEW_CONFIGS.crm_kanban.dsl);
 
 import { useState, useEffect, useMemo, useCallback } from "react";
+import { logger } from '@/lib/logger';
 import {
   onSnapshot,
   DocumentData,
@@ -27,7 +28,6 @@ import {
   ParsedView,
   CompareClause,
 } from "@/lib/dsl/parser";
-import { logger } from "@/lib/logger";
 
 // ════════════════════════════════════════════════════════════════
 // TYPES
@@ -257,7 +257,7 @@ export default function CRMPage() {
 import { VIEW_CONFIGS }   from "@/config/views";
 import { useDSLView }     from "@/hooks/useDSLView";
 import CompoundROICard    from "@/components/CompoundROICard";
-
+import { logger } from '@/lib/logger';
 
 export default function InvestorPage() {
   const benchmarks = {

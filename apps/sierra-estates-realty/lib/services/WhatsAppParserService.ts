@@ -5,7 +5,6 @@ import { COLLECTIONS, type InboundAssetSignal } from "../models/schema";
 import { buildSierraCodeMetadata, type PropertyCodeInput } from "./coding-algorithm";
 import { StorageService } from "./StorageService";
 import { logger } from '@/lib/logger';
-import { triggerN8nWebhook } from '@/lib/server/n8n-client';
 
 /**
  * sierra estates WHATSAPP INTELLIGENCE SERVICE
@@ -299,12 +298,9 @@ export class WhatsAppParserService {
       processedCount += chunk.length;
       
       logger.info(`📤 Dispatching ${chunk.length} templates via Sender: ${senderPhone}`);
-
-      // Hand off to n8n for staggered, rate-limited sending.
-      await triggerN8nWebhook('bulk-owner-outreach', {
-        senderPhone,
-        owners: chunk,
-      });
+      
+      // Emit to internal webhook / n8n for staggered sending
+      // Example: await n8nWebhookClient.triggerBulkBatch(senderPhone, chunk);
     }
     
     return {

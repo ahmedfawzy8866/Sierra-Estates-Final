@@ -15,36 +15,60 @@ const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const axios  = require('axios');
 
-const API_URL = process.env.API_URL || 'http://localhost:3000/api/webhooks/whatsapp';
+const API_URL   = process.env.SE_API_URL      || 'http://localhost:3000';
+const SECRET    = process.env.X_SE_SECRET_KEY || '';
+const HEARTBEAT = parseInt(process.env.HEARTBEAT_INTERVAL_MS || '60000');
+
+// Groups to monitor (Arabic group names from New Cairo broker circles)
+const WATCHED_GROUPS = [
+  'مجموعة وسطاء التجمع',
+  'عقارات القاهرة الجديدة',
+  'وسطاء شرق القاهرة',
+  'وسطاء التجمع والحي',
+];
 
 const client = new Client({ authStrategy: new LocalAuth() });
 
-client.on('qr', (qr) => {
-  console.log('\n--- SCAN QR CODE WITH WHATSAPP ---');
+client.on('qr', qr => {
+  console.log('[WhatsApp Scraper] Scan this QR code:');
   qrcode.generate(qr, { small: true });
 });
 
 client.on('ready', () => {
-  console.log('✅ Sierra Estates WhatsApp Intelligence Bot: Online & Syncing.');
+  console.log('[WhatsApp Scraper] Ready. Monitoring groups:', WATCHED_GROUPS);
+  startHeartbeat();
+});
+
+client.on('auth_failure', msg => {
+  console.error('[WhatsApp Scraper] Auth failed:', msg);
+  process.exit(1);
 });
 
 client.on('message', async msg => {
-  const chat      = await msg.getChat();
-  const groupName = chat.isGroup ? chat.name : 'Direct Message';
+  const groupName = msg._data?.notifyName || msg.from || '';
+  const isWatched = WATCHED_GROUPS.some(g => msg.from.includes(g) || groupName.includes(g));
+
+  if (!isWatched) return;
 
   try {
-    await axios.post(API_URL, {
-      from:      msg.from,
-      Body:      msg.body,
-      groupName,
-      timestamp: msg.timestamp,
-    });
-  } catch (error) {
-    console.error('❌ Failed to forward message:', error.message);
-  }
-
-  if (msg.body === '!status') {
-    msg.reply('🤖 Sierra Estates Intelligence Bot: Online & Syncing.');
+    await axios.post(
+      `${API_URL}/api/whatsapp/webhook`,
+      {
+        message:     msg.body,
+        groupName:   msg.from,
+        senderPhone: msg.author || msg.from,
+        timestamp:   new Date().toISOString(),
+      },
+      {
+        headers: {
+          'x-se-secret-key': SECRET,
+          'Content-Type':    'application/json',
+        },
+        timeout: 10000,
+      }
+    );
+  } catch (err) {
+    console.error('[WhatsApp Scraper] Forward failed:', err.message);
   }
 });
 

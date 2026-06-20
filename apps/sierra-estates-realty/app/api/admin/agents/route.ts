@@ -4,6 +4,9 @@ import { adminDb } from '@/lib/server/firebase-admin';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { logger } from '@/lib/logger';
 
+// Force dynamic rendering — uses Firebase/auth at runtime
+export const dynamic = 'force-dynamic';
+
 const WHATSAPP_STATUS_TO_DISPLAY: Record<string, string> = {
   active: 'Online',
   syncing: 'Running',

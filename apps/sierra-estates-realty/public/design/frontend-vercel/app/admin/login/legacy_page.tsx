@@ -47,7 +47,7 @@ export default function AdminLoginPage() {
             </div>
             <h1 className="text-white text-2xl font-bold tracking-tight uppercase mb-1"
               style={{ fontFamily: 'var(--font-display)' }}>
-              Sierra Blu
+              sierra estates
             </h1>
             <p className="text-white/30 text-[9px] tracking-widest uppercase font-mono">
               Admin Nexus · Secure Access
@@ -67,7 +67,7 @@ export default function AdminLoginPage() {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 required
-                placeholder="admin@sierrablurealty.com"
+                placeholder="admin@sierraestatesrealty.com"
                 className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3
                            text-white text-sm placeholder:text-white/20
                            focus:outline-none focus:border-[#C9A84C]/50 focus:bg-white/8
@@ -117,7 +117,7 @@ export default function AdminLoginPage() {
           </form>
 
           <p className="text-center text-white/20 text-[9px] tracking-widest uppercase mt-10 font-mono">
-            Sierra Blu Realty · Digital Concierge V13.0
+            sierra estates Realty · Digital Concierge V13.0
           </p>
         </div>
       </div>

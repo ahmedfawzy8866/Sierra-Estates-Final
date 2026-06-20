@@ -37,7 +37,6 @@ export interface AdminNavItem {
 export const ADMIN_NAV: AdminNavItem[] = [
   // ── MAIN ───────────────────────────────────────────────────────────
   { href: '/admin/dashboard',      label: 'Intelligence OS',  icon: 'LayoutDashboard', section: 'Main',       roles: ['admin', 'manager', 'agent'] },
-  { href: '/admin/intelligence-os', label: 'Cognitive Console', icon: 'BrainCircuit',  section: 'Main',       roles: ['admin', 'manager'], badge: 'LIVE', badgeColor: 'green' },
   { href: '/admin/agents',         label: 'Agents & Bots',    icon: 'Bot',             section: 'Main',       roles: ['admin', 'manager'], badge: 'AI', badgeColor: 'green' },
   { href: '/admin/sync',           label: 'Workflows & Sync', icon: 'Zap',             section: 'Main',       roles: ['admin', 'manager'] },
   { href: '/admin/knowledge-base', label: 'Knowledge Base',   icon: 'BookOpen',        section: 'Main',       roles: ['admin', 'manager'] },
@@ -46,7 +45,6 @@ export const ADMIN_NAV: AdminNavItem[] = [
   { href: '/admin/crm',            label: 'CRM Board',        icon: 'Briefcase',       section: 'Operations', roles: ['admin', 'manager', 'agent'] },
   { href: '/admin/leads',          label: 'Leads Queue',      icon: 'ClipboardList',   section: 'Operations', roles: ['admin', 'manager', 'agent'] },
   { href: '/admin/easylisting',    label: 'EasyListing',      icon: 'Wand2',           section: 'Operations', roles: ['admin', 'manager', 'agent'] },
-  { href: '/admin/whatsapp-sender', label: 'WhatsApp Sender', icon: 'MessageSquare',  section: 'Operations', roles: ['admin', 'manager'] },
   { href: '/admin/units',          label: 'Listings Hub',     icon: 'Building2',       section: 'Operations', roles: ['admin', 'manager', 'agent'] },
   { href: '/admin/deals',          label: 'Deals · Closer',   icon: 'Handshake',       section: 'Operations', roles: ['admin', 'manager', 'agent'] },
   { href: '/admin/media',          label: 'Media Hub',        icon: 'ImageIcon',       section: 'Operations', roles: ['admin', 'manager', 'agent'] },

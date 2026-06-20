@@ -30,8 +30,8 @@ const THEMES = {
 const COPY = {
   en: {
     dir: 'ltr' as const,
-    brand: 'SIERRA BLU', sub: 'REALTY',
-    pageTitle: 'Contact Sierra Blu',
+    brand: 'sierra estates', sub: 'REALTY',
+    pageTitle: 'Contact sierra estates',
     heroH: 'Get in Touch',
     heroSub: 'Our advisory team responds within 4 seconds. Reach out via phone, email, or the form below.',
     formH: 'Start Your Conversation',
@@ -41,7 +41,7 @@ const COPY = {
     formMessage: 'Message',
     formSubmit: 'Send Message',
     contactH: 'Contact Information',
-    contactEmail: 'hello@sierrablurealty.com',
+    contactEmail: 'hello@sierraestatesrealty.com',
     contactPhone: '+20 123 456 7890',
     contactAddress: 'New Cairo, Egypt',
     footDesc: 'Beyond Brokerage. Intelligence-led real estate advisory for discerning investors in New Cairo and beyond.',
@@ -59,7 +59,7 @@ const COPY = {
     formMessage: 'الرسالة',
     formSubmit: 'إرسال الرسالة',
     contactH: 'معلومات التواصل',
-    contactEmail: 'hello@sierrablurealty.com',
+    contactEmail: 'hello@sierraestatesrealty.com',
     contactPhone: '+20 123 456 7890',
     contactAddress: 'القاهرة الجديدة، مصر',
     footDesc: 'أبعد من الوساطة. استشارات عقارية مدعومة بالذكاء الاصطناعي للمستثمرين في القاهرة الجديدة.',
@@ -168,7 +168,7 @@ export default function ContactPage() {
             </div>
           </div>
           <div className="flex justify-between items-center flex-wrap gap-3 pt-6" style={{ borderTop: '1px solid rgba(239,248,247,0.07)', flexDirection: isAr ? 'row-reverse' : 'row' }}>
-            <div style={{ fontSize: 11, fontWeight: 300, color: 'rgba(239,248,247,0.28)', fontFamily: isAr ? "'Cairo', sans-serif" : "'Jost', sans-serif" }}>© 2026 Sierra Blu Realty. All rights reserved.</div>
+            <div style={{ fontSize: 11, fontWeight: 300, color: 'rgba(239,248,247,0.28)', fontFamily: isAr ? "'Cairo', sans-serif" : "'Jost', sans-serif" }}>© 2026 sierra estates Realty. All rights reserved.</div>
           </div>
         </div>
       </footer>

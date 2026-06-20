@@ -1,5 +1,5 @@
 /**
- * SIERRA BLU — STAGE 7: SALES ENGINE
+ * sierra estates — STAGE 7: SALES ENGINE
  * Orchestrates Strategic Proposals (Options Packages) and Automated Incentives.
  */
 
@@ -65,7 +65,7 @@ export async function generateOptionsPackage(leadId: string): Promise<string> {
   const summary = await generateAIPackageSummary(lead, unitsData);
 
   // 4. Create Proposal
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sierrablu.luxury';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sierraestates.luxury';
   
   const proposalData: Partial<Proposal> = {
     leadId,
@@ -113,7 +113,7 @@ export async function generateConciergeSelection(leadId: string): Promise<string
   }
 
   // 2. Generate a unique selection URL
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sierrablu.luxury';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sierraestates.luxury';
   const selectionUrl = `${siteUrl}/select/${leadId}`;
 
   // 3. Mark selection as deployed
@@ -131,7 +131,7 @@ export async function generateConciergeSelection(leadId: string): Promise<string
  * Uses Gemini/GoogleAIService to write the strategic recommendation for the package.
  */
 async function generateAIPackageSummary(lead: Lead, units: Proposal['units']): Promise<string> {
-  const systemPrompt = `ROLE: You are "Sierra," the Lead Concierge for Sierra Blu Realty.
+  const systemPrompt = `ROLE: You are "Sierra," the Lead Concierge for sierra estates Realty.
 CORE COMPETENCIES:
 1. Editorial Luxury: You write with professional warmth and authority.
 2. Tone: Use "Editorial Luxury" — professional warmth, refined English, quiet authority. No regional dialect.

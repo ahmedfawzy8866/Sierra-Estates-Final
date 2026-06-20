@@ -3,15 +3,7 @@ import type { NextRequest } from 'next/server';
 import { corsHeaders } from '@/lib/server/cors';
 
 /**
- * Edge middleware. Three concerns, kept apart:
- *
- * 0. Admin / public split — the staff admin console (and the bot/agent trigger
- *    routes it calls) is isolated from the public marketing site by host. When
- *    `ADMIN_HOST` is set (e.g. "admin.sierra-estates.net"), any `/admin` request
- *    arriving on a different host is redirected to the admin host, so the public
- *    domain never serves the console. INERT until `ADMIN_HOST` is configured —
- *    i.e. nothing changes until the admin subdomain + its own Vercel project
- *    exist — so local dev and the current single-deployment setup are unaffected.
+ * Edge middleware for ALL `/api` routes. Two independent concerns, kept apart:
  *
  * 1. CORS — the Sierra Estates frontend is a separate origin (its own repo /
  *    deployment), so every `/api` response carries an allowlisted CORS header
@@ -28,23 +20,6 @@ import { corsHeaders } from '@/lib/server/cors';
  *    or we would 401 the public site and break inbound webhooks.
  */
 export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-
-  // 0) Admin / public host split (inert unless ADMIN_HOST is set).
-  if (pathname.startsWith('/admin')) {
-    const adminHost = process.env.ADMIN_HOST;
-    if (adminHost && request.headers.get('host') !== adminHost) {
-      const url = new URL(request.url);
-      url.hostname = adminHost;
-      url.protocol = 'https:';
-      url.port = '';
-      // 307 (temporary) keeps it easy to undo and avoids aggressive caching.
-      return NextResponse.redirect(url, 307);
-    }
-    // On the admin host (or single-deployment mode), serve the console as-is.
-    return NextResponse.next();
-  }
-
   const origin = request.headers.get('origin');
   const cors = corsHeaders(origin);
 
@@ -54,7 +29,7 @@ export function middleware(request: NextRequest) {
   }
 
   // 2) Shared-secret gate — internal automation route(s) only.
-  if (pathname.startsWith('/api/orchestrate')) {
+  if (request.nextUrl.pathname.startsWith('/api/orchestrate')) {
     const inboundSecretHeader = request.headers.get('X-SBR-SECRET-KEY');
     const systemSecureToken = process.env.SBR_SECRET_KEY;
 
@@ -73,7 +48,7 @@ export function middleware(request: NextRequest) {
   return res;
 }
 
-// Matches every /api route (CORS) and every /admin route (host split). The
-// secret gate inside the handler still restricts itself to /api/orchestrate —
-// do NOT move that check into the matcher, or public/cron/webhook routes break.
-export const config = { matcher: ['/api/:path*', '/admin/:path*'] };
+// Matches every /api route so CORS is applied uniformly. The secret gate inside
+// the handler still restricts itself to /api/orchestrate — do NOT move that
+// check into the matcher, or public/cron/webhook routes would be blocked.
+export const config = { matcher: ['/api/:path*'] };

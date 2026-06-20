@@ -4,6 +4,9 @@ import { adminDb } from '@/lib/server/firebase-admin';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { logger } from '@/lib/logger';
 
+// Force dynamic rendering — uses Firebase/auth at runtime
+export const dynamic = 'force-dynamic';
+
 /**
  * Lets the admin SPA confirm whether the signed-in Firebase user has admin access,
  * replacing its own getDoc(admins/{uid}) read against a separate Firestore project.
