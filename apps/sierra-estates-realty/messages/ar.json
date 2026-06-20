@@ -1,0 +1,68 @@
+{
+  "common": {
+    "loading": "جاري التحميل...",
+    "error": "خطأ",
+    "back": "رجوع",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "search": "بحث",
+    "filter": "تصفية",
+    "close": "إغلاق",
+    "submit": "إرسال",
+    "retry": "حاول مرة أخرى"
+  },
+  "nav": {
+    "home": "الرئيسية",
+    "listings": "القوائم",
+    "about": "من نحن",
+    "contact": "اتصل بنا",
+    "careers": "الوظائف",
+    "invest": "استثمر",
+    "concierge": "الكونسيرج",
+    "blog": "المدونة"
+  },
+  "dashboard": {
+    "title": "لوحة التحكم",
+    "overview": "نظرة عامة"
+  },
+  "listings": {
+    "title": "القوائم",
+    "browse": "تصفح العقارات",
+    "viewDetails": "عرض التفاصيل",
+    "beds": "{count, plural, =1{# غرفة نوم} other{# غرف نوم}}",
+    "baths": "{count, plural, =1{# حمام} other{# حمامات}}",
+    "requestViewing": "طلب معاينة",
+    "noResults": "لا توجد عقارات تطابق عوامل التصفية."
+  },
+  "crm": {
+    "title": "إدارة العلاقات",
+    "leads": "إدارة العملاء المحتملين",
+    "newLead": "عميل جديد",
+    "leadName": "الاسم",
+    "leadEmail": "البريد الإلكتروني",
+    "leadPhone": "الهاتف",
+    "leadStatus": "الحالة",
+    "flow": {
+      "addLead": "إضافة عميل"
+    }
+  },
+  "concierge": {
+    "title": "الكونسيرج",
+    "sendMessage": "إرسال رسالة",
+    "aiAnalysis": "تحليل الذكاء الاصطناعي"
+  },
+  "wealth": {
+    "title": "ذكاء الثروة",
+    "roi": "العائد على الاستثمار",
+    "portfolio": "المحفظة"
+  },
+  "errors": {
+    "validation": "فشل التحقق",
+    "rateLimited": "طلبات كثيرة جداً، يرجى المحاولة لاحقاً.",
+    "unauthorized": "غير مصرح",
+    "notFound": "غير موجود",
+    "server": "خطأ داخلي في الخادم"
+  }
+}
