@@ -8,7 +8,7 @@ export const GET = async (
   req: Request,
   { params }: { params: Promise<{ leadId: string }> }
 ) => {
-  const rateLimitResponse = applyRateLimit(req, publicEndpointLimiter);
+  const rateLimitResponse = await applyRateLimit(req, publicEndpointLimiter);
   if (rateLimitResponse) return rateLimitResponse;
 
   try {

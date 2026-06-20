@@ -25,3 +25,6 @@ __pycache__/
 .venv/
 .wwebjs_auth/
 .wwebjs_cache/
+
+# Local-only secrets inventory (copy of docs/secrets.md with real values)
+docs/secrets.local.md

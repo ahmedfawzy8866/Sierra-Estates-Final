@@ -11,7 +11,7 @@ import { logger } from '@/lib/logger';
  * and notifies all stakeholders via a.fawzy8866@gmail.com.
  */
 export async function POST(request: Request) {
-  const rateLimitResponse = applyRateLimit(request, publicEndpointLimiter);
+  const rateLimitResponse = await applyRateLimit(request, publicEndpointLimiter);
   if (rateLimitResponse) return rateLimitResponse;
 
   try {

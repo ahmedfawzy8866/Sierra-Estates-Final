@@ -4,7 +4,7 @@ import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
 import { logger } from '@/lib/logger';
 
 export async function GET(request: Request) {
-  const rateLimitResponse = applyRateLimit(request, publicEndpointLimiter);
+  const rateLimitResponse = await applyRateLimit(request, publicEndpointLimiter);
   if (rateLimitResponse) return rateLimitResponse;
 
   const { searchParams } = new URL(request.url);
