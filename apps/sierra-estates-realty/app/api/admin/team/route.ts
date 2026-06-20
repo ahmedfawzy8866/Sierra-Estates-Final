@@ -1,7 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAdminRequest } from '@/lib/server/auth-guard';
+import { verifyAdminRequest, AuthResult } from '@/lib/server/auth-guard';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { logger } from '@/lib/logger';
+
+/** Only superadmins (or trusted service/cron callers) may grant the superadmin role to someone else. */
+async function callerCanGrantSuperadmin(authResult: AuthResult): Promise<boolean> {
+  if (authResult.method === 'secret-key' || authResult.method === 'cron-secret') return true;
+  if (!authResult.uid) return false;
+  const callerDoc = await adminDb.collection('users').doc(authResult.uid).get();
+  return callerDoc.data()?.role === 'superadmin';
+}
 
 export async function GET(req: NextRequest) {
   // Verify admin authentication
@@ -35,25 +43,36 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { name, email, phone, role } = await req.json();
+    const { id, name, email, phone, role } = await req.json();
 
     if (!name || !email) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Create user in Firestore
-    const userRef = await adminDb.collection('users').add({
+    if (role === 'superadmin' && !(await callerCanGrantSuperadmin(authResult))) {
+      return NextResponse.json({ error: 'Only a superadmin can grant the superadmin role' }, { status: 403 });
+    }
+
+    const data = {
       name,
       email,
       phone: phone || '',
       role: role || 'agent',
       status: 'active',
       createdAt: new Date(),
-    });
+    };
+
+    // When `id` (a Firebase Auth UID) is given, write to users/{uid} directly —
+    // verifyAdminRequest looks up the caller's role by their UID, so granting
+    // admin access to a specific signed-in user requires a doc at that exact path.
+    const userId = id ? id : (await adminDb.collection('users').add(data)).id;
+    if (id) {
+      await adminDb.collection('users').doc(id).set(data, { merge: true });
+    }
 
     return NextResponse.json({
       success: true,
-      userId: userRef.id,
+      userId,
     });
   } catch (err) {
     logger.error('Error creating team member:', err);
@@ -76,6 +95,10 @@ export async function PUT(req: NextRequest) {
 
     if (!id) {
       return NextResponse.json({ error: 'Missing user ID' }, { status: 400 });
+    }
+
+    if (updateData.role === 'superadmin' && !(await callerCanGrantSuperadmin(authResult))) {
+      return NextResponse.json({ error: 'Only a superadmin can grant the superadmin role' }, { status: 403 });
     }
 
     await adminDb.collection('users').doc(id).update({

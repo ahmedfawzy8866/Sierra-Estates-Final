@@ -17,7 +17,6 @@ import {
 import { COLLECTIONS, type Lead, type Unit } from '../models/schema';
 import { GoogleAIService } from '../server/google-ai';
 import { analyzeAssetFinancials } from './roi-service';
-import { logger } from '@/lib/logger';
 
 export interface ConciergeUnit {
   id: string;

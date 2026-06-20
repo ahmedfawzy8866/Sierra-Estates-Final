@@ -12,7 +12,6 @@
 //   const { grouped }                  = useDSLView(VIEW_CONFIGS.crm_kanban.dsl);
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { logger } from '@/lib/logger';
 import {
   onSnapshot,
   DocumentData,
@@ -28,7 +27,7 @@ import {
   ParsedView,
   CompareClause,
 } from "@/lib/dsl/parser";
-
+import { logger } from "@/lib/logger";
 
 // ════════════════════════════════════════════════════════════════
 // TYPES

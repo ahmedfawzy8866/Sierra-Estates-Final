@@ -1,20 +1,20 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 // ─── Inline icon stubs (replaces lucide-react) ────────────────────────
 const _svg = (d: string|string[]) => ({ className = 'w-4 h-4' }: { className?: string }) =>
   React.createElement('svg', { xmlns:'http://www.w3.org/2000/svg', viewBox:'0 0 24 24', fill:'none', stroke:'currentColor', strokeWidth:'2', strokeLinecap:'round', strokeLinejoin:'round', className },
     ...(Array.isArray(d)?d:[d]).map((p,i) => React.createElement('path', { key:i, d:p })));
-const ChevronDown = _svg('m6 9 6 6 6-6');
+const _ChevronDown = _svg('m6 9 6 6 6-6');
 const MapPin     = _svg(['M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z','M12 7a3 3 0 1 0 0 6 3 3 0 0 0 0-6']);
 const Bed        = _svg(['M2 4v16','M2 8h18a2 2 0 0 1 2 2v10','M2 17h20','M6 8v9']);
 const Bath       = _svg(['M9 6 6.5 3.5a1.5 1.5 0 0 0-1-.5C4.683 3 4 3.683 4 4.5V17a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5','M9 6h8a1 1 0 0 1 1 1v5H9V6z']);
 const Square     = _svg('M3 3h18v18H3z');
 const Heart      = _svg('M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z');
-const Share2     = _svg(['M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8','M16 6l-4-4-4 4','M12 2v13']);
+const _Share2    = _svg(['M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8','M16 6l-4-4-4 4','M12 2v13']);
 const Phone      = _svg('M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12 19.79 19.79 0 0 1 1.07 3.4 2 2 0 0 1 3.05 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z');
 const Mail       = _svg(['M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z','M22 6l-10 7L2 6']);
-const AlertCircle= _svg(['M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z','M12 9v4','M12 17h.01']);
+const _AlertCircle = _svg(['M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z','M12 9v4','M12 17h.01']);
 const Check      = _svg('M20 6 9 17l-5-5');
 
 /**

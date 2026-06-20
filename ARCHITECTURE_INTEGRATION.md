@@ -1,0 +1,106 @@
+# Cross-System Integration: Backend ↔ Admin Panel ↔ Client Site
+
+How the three deployed systems are wired together, what triggers a redeploy of each,
+and the auth/CORS model that connects them. Written alongside PRs #9 (this repo) and
+emeraldestatesegypt-ops/-19-6-AI#1.
+
+## The three systems
+
+| Role | Repo | Deploys to | Stack |
+|---|---|---|---|
+| **Backend + client site** | `ahmedfawzy8866/Sierra-Estates-Final`, `apps/sierra-estates-realty` | Vercel project `sierra-2027` (sierra-2027.vercel.app; intended domain `sierra-estates.net`) | Next.js 16, Firestore |
+| **Admin panel** | `emeraldestatesegypt-ops/-19-6-AI` | Vercel project `sierra-estates-admin` (sierra-estates-admin.vercel.app) — repoint pending | Vite/React SPA |
+| **Public client app** | Base44 app "Sierra Estates (Copy)" | sierra-home-find.base44.app | Base44 (own DB) |
+
+`apps/admin-dashboard` in this monorepo and the old `sierra-estates-admin-portal` are both
+retired — see `CLAUDE.md`. The in-app `/admin` console under `apps/sierra-estates-realty`
+still exists and works, but the admin SPA above is now the intended primary admin surface;
+setting `ADMIN_HOST` (see below) redirects `/admin/*` requests to it with no code changes.
+
+## Auth model (canonical Firebase project: `sierra-blu-494404`)
+
+All three systems share one Firebase project — `sierra-blu-494404`, Firestore database
+`remixed-firestore-database-id`. This was originally the admin SPA's own project; the
+backend was repointed onto it rather than the other way around, since it already had live
+auth/data.
+
+- **Role storage**: `users/{uid}.role` ∈ `{admin, superadmin, agent, broker}`. This is the
+  single source of truth for "is this person an admin" — there is no separate `admins`
+  collection anymore.
+- **Server-side check**: `lib/server/auth-guard.ts` → `verifyAdminRequest()`. Accepts a
+  Firebase ID token (`Authorization: Bearer <token>`, checked against `users/{uid}.role`)
+  or a shared secret (`X-SBR-SECRET-KEY` header, or `Authorization: Bearer <SBR_SECRET_KEY>`)
+  for service/cron callers.
+- **Granting access**: `POST/PUT /api/admin/team` with `{ id: <firebase-uid>, name, email,
+  role }`. Passing `id` writes to `users/{id}` directly (instead of an auto-generated doc),
+  which is required for `verifyAdminRequest` to recognize that specific signed-in user.
+  Granting `role: 'superadmin'` specifically requires the caller to already be a superadmin
+  (or a trusted service/cron caller) — enforced in the route, not just client-side.
+- **Bootstrapping the first superadmin**: chicken-and-egg — nobody can grant `superadmin`
+  via the API until at least one `users/{uid}` doc with that role already exists. This one
+  doc has to be created directly in the Firebase console for `sierra-blu-494404` (see the
+  session notes / ask the person who set this up). After that, all further admin grants go
+  through Settings → Admin Control in the admin SPA.
+
+## New backend API surface (`apps/sierra-estates-realty/app/api/admin/`)
+
+| Endpoint | Methods | Backs |
+|---|---|---|
+| `leads`, `leads/[id]`, `leads/bulk` | GET/POST/PATCH/DELETE | LeadsPage, OverviewPage, ReportsPage |
+| `listings`, `listings/[id]` | GET/POST/PATCH/DELETE | ListingsHubPage |
+| `agents`, `agents/[id]` | GET/POST/PATCH | AgentsPage, LeadsPage's agent picker |
+| `workflows`, `workflows/[id]` | GET/POST/PATCH | WorkflowsPage |
+| `auth/verify` | GET | App.tsx's admin-status check |
+| `team` (pre-existing, extended) | GET/POST/PUT/DELETE | SettingsPage's admin management |
+
+`lib/server/admin-spa-mappers.ts` is the schema-adapter seam: it translates between the
+admin SPA's display shapes (stage labels like "Viewing Scheduled", status strings like
+"Active"/"Review"/"Sold") and this app's canonical schema (`PipelineStage`, `PropertyStatus`
+enums in `lib/models/schema.ts`). If you add a new mapped field, it goes here.
+
+**Deferred (not migrated)**: notifications, chats, system_logs, system_health, search
+analytics. The admin SPA still reads/writes these directly against Firestore. Migrate them
+the same way (new `/api/admin/*` route + mapper) when they're actually needed.
+
+## CORS
+
+`middleware.ts` + `lib/server/cors.ts` answer preflight and set
+`Access-Control-Allow-Origin` for any origin listed in the `ALLOWED_ORIGINS` env var
+(comma-separated), with credentials enabled. Set this on the `sierra-2027` Vercel project to
+include the admin SPA's deployed origin(s) and the Base44 app's origin
+(`https://sierra-home-find.base44.app`) — without it, browser requests from those origins
+fail CORS even though the API itself works fine via curl/Postman.
+
+## Public client integration (Base44)
+
+The Base44 app's frontend was wired (via its own AI builder, not this repo) to call:
+- `GET /api/listings` — public, no auth, returns `{ success, listings: [...] }`
+- `POST /api/leads` — public, rate-limited, no auth, body `{ name, email, phone?, message? }`
+
+Both already existed before this work; no backend changes were needed for the client side.
+
+## Deploy triggers — "when X changes, what redeploys"
+
+- **Push to `Sierra-Estates-Final` `main`** → `.github/workflows/deploy-vercel.yml` deploys
+  `apps/sierra-estates-realty` to the `sierra-2027` Vercel project automatically. This is the
+  *only* deploy path — Vercel's own git auto-deploy is disabled for this repo
+  (`git.deploymentEnabled: false`). A second, likely-stale workflow `deploy2.yml` also exists
+  and points at a different/older Vercel project — flagged as a follow-up cleanup, not
+  touched here.
+- **Push to `emeraldestatesegypt-ops/-19-6-AI` `main`** → once the `sierra-estates-admin`
+  Vercel project is repointed at this repo (pending, see below), Vercel's native git
+  auto-deploy handles it — no custom Action needed, since it's a single-app repo.
+- **Base44 app changes** → applied directly through Base44's own editor/AI builder; nothing
+  in this repo triggers it and nothing here needs to react to it.
+
+## Outstanding follow-ups (tracked, not done in this pass)
+
+1. Set `ALLOWED_ORIGINS` (and optionally `ADMIN_HOST`) on the `sierra-2027` Vercel project.
+2. Repoint the `sierra-estates-admin` Vercel project's source from `apps/admin-dashboard` to
+   `emeraldestatesegypt-ops/-19-6-AI`, and set `VITE_BACKEND_API_URL` + Firebase config there.
+3. Bootstrap the first `users/{uid}` doc with `role: 'superadmin'` in `sierra-blu-494404`.
+4. Migrate the deferred Firestore collections (notifications, chats, system logs/health,
+   search analytics) onto the backend API the same way leads/listings were.
+5. Remove `apps/admin-dashboard` and the admin SPA's dead `ClientHub.tsx`/`/client` route and
+   `AdminMatrixApp.tsx` once everyone's confirmed nothing still points at them.
+6. Disable the redundant `deploy2.yml` GitHub Action workflow.
