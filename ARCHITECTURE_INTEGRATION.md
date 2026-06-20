@@ -62,6 +62,25 @@ enums in `lib/models/schema.ts`). If you add a new mapped field, it goes here.
 analytics. The admin SPA still reads/writes these directly against Firestore. Migrate them
 the same way (new `/api/admin/*` route + mapper) when they're actually needed.
 
+## Real vs. placeholder worker status
+
+`/api/admin/agents` and `/api/admin/workflows` back the admin SPA's Agents/Workflows pages,
+but they're not equally "real":
+
+- **Agents**: `apps/agents/whatsapp-scraper` already POSTs to `/api/whatsapp/heartbeat`
+  every ~60s (see `WhatsAppStatusService`), writing live status to
+  `system_status/whatsapp_node`. `/api/admin/agents` GET merges that real doc into its
+  response alongside the manually-managed `agents` Firestore collection — so one entry
+  ("WhatsApp Scraper") is genuinely live, the rest are whatever's been manually added via
+  the admin UI. `apps/agents/stage-9-closer` has no heartbeat mechanism, so it isn't
+  surfaced at all (no fabricated status).
+- **Workflows**: entirely the manually-managed `workflows` Firestore collection.
+  `lib/server/n8n-client.ts` can only fire-and-forget *trigger* n8n webhooks — it has no
+  way to *list* n8n workflows or query their execution status, and building that requires
+  n8n's own management API + credentials (`N8N_BASE_URL` is only used for webhook
+  triggering today). Until that access exists, treat this page as a manual status board,
+  not a live n8n dashboard.
+
 ## CORS
 
 `middleware.ts` + `lib/server/cors.ts` answer preflight and set
