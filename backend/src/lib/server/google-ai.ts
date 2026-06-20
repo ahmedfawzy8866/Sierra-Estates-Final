@@ -4,17 +4,22 @@ const PRIMARY_MODEL  = 'gemini-1.5-pro-latest';
 const FALLBACK_MODEL = 'gemini-1.5-flash-latest';
 
 export class GoogleAIService {
-  private client: GoogleGenerativeAI;
+  private client: GoogleGenerativeAI | null = null;
 
-  constructor() {
+  private getClient(): GoogleGenerativeAI {
+    if (this.client) return this.client;
     const apiKey = process.env.GOOGLE_AI_API_KEY;
     if (!apiKey) throw new Error('GOOGLE_AI_API_KEY is not set');
     this.client = new GoogleGenerativeAI(apiKey);
+    return this.client;
   }
+
+  constructor() {}
 
   async generateContent(prompt: string, modelName = PRIMARY_MODEL): Promise<string> {
     try {
-      const model  = this.client.getGenerativeModel({ model: modelName });
+      const client = this.getClient();
+      const model  = client.getGenerativeModel({ model: modelName });
       const result = await model.generateContent(prompt);
       return result.response.text();
     } catch (err) {
@@ -31,7 +36,8 @@ export class GoogleAIService {
     modelName = PRIMARY_MODEL
   ): Promise<string> {
     try {
-      const model = this.client.getGenerativeModel({ model: modelName });
+      const client = this.getClient();
+      const model = client.getGenerativeModel({ model: modelName });
       const chat  = model.startChat({
         history: messages.slice(0, -1).map(m => ({
           role:  m.role,
