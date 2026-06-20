@@ -197,7 +197,7 @@ export default function Hero() {
         </h1>
         <p className="hero-sub" style={{ animation: "fadeUp .8s .2s both" }}>{t(`hero.${scene + 1}.sub`)}</p>
         <div className="hero-stats">
-          {[["26","hero.listings"],["19","hero.compounds"],["9.8","hero.aiScore"],["24h","hero.response"]].map(([v, lk], i) => (
+          {[["1,500+","hero.listings"],["19","hero.compounds"],["9.8","hero.aiScore"],["24h","hero.response"]].map(([v, lk], i) => (
             <div key={i} className="hero-stat" style={{ padding: "2px 8px" }}>
               <div className="hero-stat-v">{v}</div>
               <div className="hero-stat-l">{t(lk)}</div>
