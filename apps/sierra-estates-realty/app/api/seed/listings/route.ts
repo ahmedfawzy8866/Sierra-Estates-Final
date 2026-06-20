@@ -174,6 +174,34 @@ const SAMPLE_LISTINGS = [
       whatsappAdGenerated: false,
     },
   },
+  {
+    title: 'Garden Duplex in Mostakbal City',
+    propertyType: 'duplex',
+    category: 'residential',
+    status: 'available',
+    compound: 'Mostakbal City',
+    location: 'Mostakbal City',
+    city: 'Cairo',
+    area: 280,
+    bedrooms: 3,
+    bathrooms: 3,
+    price: 4750000,
+    pricePerSqm: 16964,
+    coordinates: { lat: 30.0512, lng: 31.6841 },
+    finishingType: 'fully-finished',
+    description: 'Placeholder listing — duplex with private garden in a growing New Cairo community. Replace with real details in the admin panel.',
+    featuredImage: 'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800',
+    images: [
+      'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800',
+    ],
+    ownerType: 'owner',
+    automation: {
+      isBranded: false,
+      isPublishedToPF: false,
+      isPublishedToFB: false,
+      whatsappAdGenerated: false,
+    },
+  },
 ];
 
 export async function POST(req: Request) {
