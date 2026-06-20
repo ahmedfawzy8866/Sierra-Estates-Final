@@ -1,6 +1,7 @@
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { ThemeProvider } from "next-themes";
 import Home from "@/pages/Home";
 
 const queryClient = new QueryClient();
@@ -34,11 +35,13 @@ function Router() {
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <LanguageProvider>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-          <Router />
-        </WouterRouter>
-      </LanguageProvider>
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+        <LanguageProvider>
+          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+            <Router />
+          </WouterRouter>
+        </LanguageProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

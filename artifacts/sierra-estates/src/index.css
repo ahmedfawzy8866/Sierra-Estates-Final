@@ -27,6 +27,20 @@
   --font-mono:  'JetBrains Mono', monospace;
 }
 
+.dark {
+  --navy:      #F7F4EE;
+  --navy2:     #F2EDD8;
+  --navy3:     #FFFFFF;
+  --ivory:     #0A1928;
+  --ivory-dk:  #002D62;
+  --white:     #173456;
+  --text:      #F7F4EE;
+  --text-m:    #A0AABF;
+  --text-f:    #7A869A;
+  --border:    rgba(211,167,71,.25);
+  --border-n:  rgba(0,0,0,.2);
+}
+
 [dir="rtl"] { font-family: 'Cairo', 'Inter', sans-serif; }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }

@@ -56,6 +56,10 @@ const EN: Record<string, string> = {
   "footer.copy": "© 2026 Sierra Estates. All rights reserved.",
   "chat.placeholder": "Ask Sierra anything…", "chat.online": "● Online · AI Assistant",
   "smart.name": "Name", "smart.wa": "WhatsApp Number",
+  "shield.eyebrow": "Security & Intelligence", "shield.title": "Unmatched Protection",
+  "shield.sub": "Our fortified platform ensures your investments and data are protected with enterprise-grade security and advanced AI analytics.",
+  "shield.f1.title": "Data Privacy", "shield.f1.desc": "Your information is securely encrypted.",
+  "shield.f2.title": "Market Integrity", "shield.f2.desc": "Vetted properties and verified owners.",
 };
 
 const AR: Record<string, string> = {
@@ -114,6 +118,10 @@ const AR: Record<string, string> = {
   "footer.copy": "© 2026 Sierra Estates. جميع الحقوق محفوظة.",
   "chat.placeholder": "اسأل سييرا…", "chat.online": "● متاح · مساعد ذكي",
   "smart.name": "الاسم", "smart.wa": "رقم واتساب",
+  "shield.eyebrow": "الأمن والذكاء", "shield.title": "حماية لا مثيل لها",
+  "shield.sub": "تضمن منصتنا المحصنة حماية استثماراتك وبياناتك من خلال أمان على مستوى المؤسسات وتحليلات ذكاء اصطناعي متقدمة.",
+  "shield.f1.title": "خصوصية البيانات", "shield.f1.desc": "معلوماتك مشفرة بأمان.",
+  "shield.f2.title": "نزاهة السوق", "shield.f2.desc": "عقارات معتمدة وملاك موثقون.",
 };
 
 type LangContextType = {

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useLang } from "@/contexts/LanguageContext";
+import { useTheme } from "next-themes";
 import { Menu, X, Sun, Moon } from "lucide-react";
 
 const ALL_COMPOUNDS = [
@@ -37,7 +38,7 @@ export default function Navbar({
   const [open, setOpen] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [cmpQ, setCmpQ] = useState("");
-  const [darkMode, setDarkMode] = useState(false);
+  const { theme, setTheme } = useTheme();
   const pillRef = useRef<HTMLDivElement>(null);
 
   const topOffset = annVisible ? 36 : 0;
@@ -173,8 +174,8 @@ export default function Navbar({
 
         {/* Right controls */}
         <div className="hdr-right">
-          <button className="hdr-icon" onClick={() => setDarkMode(d => !d)} title="Theme">
-            {darkMode ? <Sun size={14} /> : <Moon size={14} />}
+          <button className="hdr-icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} title="Theme">
+            {theme === "dark" ? <Sun size={14} /> : <Moon size={14} />}
           </button>
           <button className="hdr-icon" onClick={toggleLang} title="Language"
             style={{ fontSize: 11, fontFamily: "inherit", fontWeight: 700 }}>

@@ -13,6 +13,7 @@ import Testimonials from "@/components/Testimonials";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import AIChat from "@/components/AIChat";
+import SecurityShield from "@/components/SecurityShield";
 
 const ALL_CMP_COUNT = 19;
 
@@ -137,6 +138,16 @@ export default function Home() {
         <GoldOrbs />
         <div style={{ position: "relative", zIndex: 1 }}>
           <IntelligenceOS />
+        </div>
+      </div>
+
+      <GoldLine />
+
+      {/* ─ SECURITY SHIELD ───────────────────────────────────────────── */}
+      <div style={{ position: "relative" }}>
+        <GoldOrbs />
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <SecurityShield />
         </div>
       </div>
 
