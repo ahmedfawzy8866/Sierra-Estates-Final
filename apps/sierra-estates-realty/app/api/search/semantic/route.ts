@@ -31,6 +31,7 @@ import { NextResponse } from 'next/server';
 import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
 import { parseRequestBody, semanticSearchSchema } from '@/lib/server/schemas';
 import { semanticSearch } from '@/lib/server/search-service';
+import { adminDb } from '@/lib/server/firebase-admin';
 import { logger } from '@/lib/logger';
 
 export async function POST(req: Request) {
@@ -56,6 +57,24 @@ export async function POST(req: Request) {
       limit,
       offset,
     });
+
+    // Log the search query for analytics (fire-and-forget, non-blocking)
+    try {
+      const userAgent = req.headers.get('user-agent') ?? undefined;
+      adminDb.collection('search_queries').add({
+        query,
+        locale,
+        intent: result.intent,
+        extractionMethod: result.extractionMethod,
+        total: result.total,
+        timestamp: new Date(),
+        userAgent,
+      }).catch(() => {
+        // swallow — don't fail the search if logging fails
+      });
+    } catch {
+      // swallow — analytics are best-effort
+    }
 
     return NextResponse.json({
       success: true,
