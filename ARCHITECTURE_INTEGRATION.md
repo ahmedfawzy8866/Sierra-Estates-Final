@@ -1,5 +1,13 @@
 # Cross-System Integration: Backend ↔ Admin Panel ↔ Client Site
 
+> **STALE — superseded by `CLAUDE.md` and `DEPLOYMENT.md`.** This doc describes an
+> earlier architecture (separate admin SPA in `emeraldestatesegypt-ops/-19-6-AI`,
+> Firebase project `sierra-blu-494404`). The current, authoritative setup is: ONE
+> codebase (`apps/sierra-estates-realty`), ONE canonical admin at `/admin` (no second
+> admin UI), Firebase project `sierra-blu`, domain `sierra-estates.net` with
+> `admin.sierra-estates.net` as its admin subdomain. Kept for historical context only —
+> do not follow the deploy targets/IDs below.
+
 How the three deployed systems are wired together, what triggers a redeploy of each,
 and the auth/CORS model that connects them. Written alongside PRs #9 (this repo) and
 emeraldestatesegypt-ops/-19-6-AI#1.
