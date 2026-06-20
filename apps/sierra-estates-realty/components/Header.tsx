@@ -2,22 +2,64 @@
 
 import Link from 'next/link';
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { Languages } from 'lucide-react';
 import FilterBar from './FilterBar';
 
 interface NavItem { label: string; href: string; }
 
-const NAV_ITEMS: NavItem[] = [
+// Bilingual nav items — English is the default (foreigner-renter friendly).
+// "Rent" is listed FIRST because expats and diaspora are the primary renters
+// in the Egyptian market.
+const NAV_ITEMS_EN: NavItem[] = [
+  { label: 'Rent',         href: '/listings?purpose=rent' },
   { label: 'Buy',          href: '/listings?purpose=resale' },
   { label: 'New Projects', href: '/projects' },
   { label: 'Admin',        href: '/admin' },
   { label: 'Clients',      href: '/clients' },
 ];
 
+const NAV_ITEMS_AR: NavItem[] = [
+  { label: 'إيجار',        href: '/listings?purpose=rent' },
+  { label: 'شراء',         href: '/listings?purpose=resale' },
+  { label: 'مشروعات جديدة', href: '/projects' },
+  { label: 'الإدارة',       href: '/admin' },
+  { label: 'العملاء',       href: '/clients' },
+];
+
+const STORAGE_KEY = 'sierra-locale';
+
+function getInitialLocale(): 'en' | 'ar' {
+  if (typeof window === 'undefined') return 'en';
+  const stored = window.localStorage.getItem(STORAGE_KEY);
+  return stored === 'ar' ? 'ar' : 'en';
+}
+
 export default function Header() {
   const [scrolled, setScrolled]       = useState(false);
   const [menuOpen, setMenuOpen]       = useState(false);
   const [filterVisible, setFilterVisible] = useState(true);
+  const [locale, setLocale]           = useState<'en' | 'ar'>('en');
   const lastScrollY = useRef(0);
+
+  // Hydrate locale from localStorage on mount (default: English).
+  // English is the default because the primary renter audience is
+  // foreigners (expats, Gulf diaspora, international students) in Egypt.
+  useEffect(() => {
+    setLocale(getInitialLocale());
+  }, []);
+
+  const toggleLocale = useCallback(() => {
+    setLocale((prev) => {
+      const next = prev === 'en' ? 'ar' : 'en';
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem(STORAGE_KEY, next);
+        // Update <html lang> + dir for accessibility / RTL rendering.
+        document.documentElement.lang = next;
+        document.documentElement.dir = next === 'ar' ? 'rtl' : 'ltr';
+      }
+      return next;
+    });
+  }, []);
 
   const handleScroll = useCallback(() => {
     const y = window.scrollY;
@@ -32,6 +74,8 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [handleScroll]);
 
+  const NAV_ITEMS = locale === 'ar' ? NAV_ITEMS_AR : NAV_ITEMS_EN;
+
   return (
     <header
       id="site-header"
@@ -41,6 +85,7 @@ export default function Header() {
           : 'bg-transparent'
       }`}
       style={{ transition: 'background 0.4s var(--ease-silk), box-shadow 0.4s var(--ease-silk)' }}
+      dir={locale === 'ar' ? 'rtl' : 'ltr'}
     >
       {/* ── Top Nav Bar ─────────────────────────────────────────────── */}
       <div className="max-w-[var(--max-width)] mx-auto px-6 md:px-12">
@@ -100,20 +145,32 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* Auth Buttons */}
+          {/* Auth Buttons + Language Toggle */}
           <div className="flex-1 flex justify-end items-center gap-3">
+            {/* Language toggle — EN | AR (defaults to EN for foreigner renters) */}
+            <button
+              onClick={toggleLocale}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--navy-15)] hover:border-[var(--gold)] hover:bg-[var(--gold-05)] transition-all text-[11px] font-bold uppercase tracking-wider text-[var(--navy-80)]"
+              aria-label={locale === 'en' ? 'Switch to Arabic' : 'التبديل إلى الإنجليزية'}
+              title={locale === 'en' ? 'التبديل إلى العربية' : 'Switch to English'}
+            >
+              <Languages size={13} />
+              <span className={locale === 'en' ? 'text-[var(--gold)]' : 'text-[var(--navy-40)]'}>EN</span>
+              <span className="text-[var(--navy-30)]">|</span>
+              <span className={locale === 'ar' ? 'text-[var(--gold)]' : 'text-[var(--navy-40)]'}>ع</span>
+            </button>
             <Link
               href="/auth/login"
               className="hidden md:block text-[11px] uppercase tracking-[0.18em] font-semibold text-[var(--navy-60)] hover:text-[var(--navy)] transition-colors"
             >
-              Sign In
+              {locale === 'ar' ? 'تسجيل الدخول' : 'Sign In'}
             </Link>
             <Link
               href="/listings"
               id="header-cta"
               className="px-5 py-2.5 bg-[var(--navy)] hover:bg-[var(--gold)] hover:text-[var(--navy)] text-white rounded-[var(--radius-md)] text-[11px] font-bold uppercase tracking-[0.18em] transition-all duration-300 ease-silk shadow-sm"
             >
-              Browse
+              {locale === 'ar' ? 'تصفح' : 'Browse'}
             </Link>
             {/* Mobile menu toggle */}
             <button

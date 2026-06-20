@@ -9,7 +9,7 @@
 import React, { useState, useEffect } from 'react';
 import { Languages } from 'lucide-react';
 import { collection, onSnapshot, query, where, orderBy, DocumentData } from 'firebase/firestore';
-import { clientDb } from '@/lib/firebase/client';
+import { db as clientDb } from '@/lib/firebase';
 
 import PremiumHero from '@/components/UI/PremiumHero';
 import AIMatchingEngine from '@/components/UI/AIMatchingEngine';
@@ -18,6 +18,7 @@ import VirtualTour3D from '@/components/UI/VirtualTour3D';
 import ROICalculator from '@/components/UI/ROICalculator';
 import MobileBottomNav from '@/components/UI/MobileBottomNav';
 import InventoryShowcase from '@/components/Listings/InventoryShowcase';
+import AISearchBar from '@/components/Search/AISearchBar';
 
 // ─── TRANSLATION DICTIONARY ───────────────────────────────────────────────────
 const DICTIONARY = {
@@ -193,6 +194,29 @@ export default function UnifiedHomepage() {
               onSearch={handleSearch}
               isArabic={isAr}
             />
+
+            {/* AI Semantic Search — bilingual, rent-focused for foreigner market */}
+            <section className="py-12 px-6 md:px-12 bg-gradient-to-b from-transparent to-[#F4F0E8] dark:to-[#071422]">
+              <div className="max-w-5xl mx-auto text-center mb-6">
+                <h2 className="font-playfair text-2xl md:text-3xl font-bold text-[#071422] dark:text-white mb-2">
+                  {isAr ? 'ابحث بذكاء بالعربية أو الإنجليزية' : 'Search smart — in Arabic or English'}
+                </h2>
+                <p className="text-sm text-[#071422]/60 dark:text-white/60">
+                  {isAr
+                    ? 'صف ما تبحث عنه بالعربية أو الإنجليزية — الذكاء الاصطناعي يفهم ويرتب النتائج'
+                    : 'Describe what you need in plain language — AI understands and ranks the best matches'}
+                </p>
+              </div>
+              <AISearchBar
+                locale={isAr ? 'ar' : 'en'}
+                variant="hero"
+                onSelectResult={(result) => {
+                  if (typeof window !== 'undefined') {
+                    window.location.href = `/listings/${result.id}`;
+                  }
+                }}
+              />
+            </section>
 
             {/* Stats Bar */}
             <section className="py-12 px-6 bg-[#071422] dark:bg-[#050c14]">

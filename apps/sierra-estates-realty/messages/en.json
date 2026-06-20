@@ -36,6 +36,25 @@
     "requestViewing": "Request Viewing",
     "noResults": "No properties match your filters."
   },
+  "search": {
+    "title": "Search smart — in Arabic or English",
+    "subtitle": "Describe what you need in plain language — AI understands and ranks the best matches",
+    "placeholder": "Describe what you are looking for…",
+    "button": "Search",
+    "searching": "Searching…",
+    "results": "results",
+    "rental": "Rent",
+    "sale": "Sale",
+    "perMonth": "/mo",
+    "noResults": "No matches found. Try a different query.",
+    "error": "Search failed. Please try again.",
+    "examples": {
+      "rent1": "3 bedroom apartment for rent in New Cairo under 50k EGP",
+      "rent2": "furnished studio Tagamoa monthly 20k",
+      "sale1": "villa for sale Sheikh Zayed with pool",
+      "sale2": "penthouse New Capital ROI 8%"
+    }
+  },
   "crm": {
     "title": "CRM",
     "leads": "Manage Leads",
