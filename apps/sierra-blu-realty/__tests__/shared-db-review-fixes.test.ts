@@ -1,19 +1,11 @@
-import { getAuth } from 'firebase/auth';
-
 import { parseDSL, buildFirestoreQuery } from '../../../packages/db/lib/dsl/parser';
 import { pushListingToPF } from '../../../packages/db/lib/integrations/property-finder';
 import { VIEW_CONFIGS } from '../../../packages/db/lib/sierra-estates-view-configs';
 
-jest.mock('firebase/auth', () => ({
-  getAuth: jest.fn(),
-}));
-
 describe('shared db review fixes', () => {
-  const mockedGetAuth = getAuth as jest.MockedFunction<typeof getAuth>;
   const mockFetch = jest.fn();
 
   beforeEach(() => {
-    mockedGetAuth.mockReset();
     mockFetch.mockReset();
     global.fetch = mockFetch as typeof fetch;
     Object.defineProperty(globalThis, 'window', {
@@ -21,6 +13,8 @@ describe('shared db review fixes', () => {
       configurable: true,
       writable: true,
     });
+
+    (globalThis as any).__TEST_TOKEN__ = undefined;
   });
 
   it('keeps SHOW fields when a view starts with SBR_Code and preserves PRIMARY_ID', () => {
@@ -65,13 +59,13 @@ describe('shared db review fixes', () => {
 
     expect(result).toEqual({
       success: false,
-      error: 'Cannot publish listing: listing.id is required for Property Finder sync',
+      error: 'listing.id is required',
     });
     expect(mockFetch).not.toHaveBeenCalled();
   });
 
   it('fails fast when no Firebase token is available', async () => {
-    mockedGetAuth.mockReturnValue({ currentUser: null } as never);
+    (globalThis as any).__TEST_TOKEN__ = undefined;
 
     const result = await pushListingToPF({
       id: 'unit-1',
@@ -88,16 +82,12 @@ describe('shared db review fixes', () => {
       status: 'active',
     });
 
-    expect(result).toEqual({ success: false, error: 'Authentication required to publish listings' });
+    expect(result).toEqual({ success: false, error: 'Authentication required' });
     expect(mockFetch).not.toHaveBeenCalled();
   });
 
   it('sends the Firebase bearer token when publishing to Property Finder', async () => {
-    mockedGetAuth.mockReturnValue({
-      currentUser: {
-        getIdToken: jest.fn().mockResolvedValue('test-token'),
-      },
-    } as never);
+    (globalThis as any).__TEST_TOKEN__ = 'test-token';
     mockFetch.mockResolvedValue({
       ok: true,
       json: async () => ({ id: 'pf-1' }),
