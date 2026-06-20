@@ -4,6 +4,33 @@ import { adminDb } from '@/lib/server/firebase-admin';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { logger } from '@/lib/logger';
 
+const WHATSAPP_STATUS_TO_DISPLAY: Record<string, string> = {
+  active: 'Online',
+  syncing: 'Running',
+  error: 'Idle',
+};
+
+/** Real status of the whatsapp-scraper bot, which already POSTs to /api/whatsapp/heartbeat every ~60s. */
+async function getWhatsappScraperAgent() {
+  const doc = await adminDb.doc('system_status/whatsapp_node').get();
+  if (!doc.exists) return null;
+
+  const d = doc.data() || {};
+  return {
+    id: 'whatsapp-scraper',
+    name: 'WhatsApp Scraper',
+    desc: 'Live broker-group lead ingestion bot (apps/agents/whatsapp-scraper)',
+    emoji: '📲',
+    color: d.status === 'error' ? '#ef4444' : '#22c55e',
+    status: WHATSAPP_STATUS_TO_DISPLAY[d.status as string] || 'Idle',
+    load: d.status === 'syncing' ? 100 : 0,
+    tasks: 0,
+    lastPulse: d.lastPulse?.toDate?.() ?? null,
+    lastError: d.lastError ?? null,
+    updatedAt: d.lastPulse?.toDate?.() ?? null,
+  };
+}
+
 /** Operational status of background workers (n8n flows, whatsapp-scraper, etc), not in-process agent personas. */
 export async function GET(req: NextRequest) {
   const authResult = await verifyAdminRequest(req);
@@ -14,6 +41,9 @@ export async function GET(req: NextRequest) {
   try {
     const snap = await adminDb.collection(COLLECTIONS.agentStatus).get();
     const agents = snap.docs.map((doc: FirebaseFirestore.QueryDocumentSnapshot) => ({ id: doc.id, ...doc.data() }));
+
+    const whatsappAgent = await getWhatsappScraperAgent();
+    if (whatsappAgent) agents.unshift(whatsappAgent);
 
     return NextResponse.json({ success: true, agents });
   } catch (err) {
