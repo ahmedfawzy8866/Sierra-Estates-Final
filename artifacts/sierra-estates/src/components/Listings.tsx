@@ -1,72 +1,8 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useLang } from "@/contexts/LanguageContext";
 
-interface Property {
-  id: string;
-  title: string;
-  title_ar: string;
-  compound: string;
-  location: string;
-  location_ar: string;
-  purpose: string;
-  category: string;
-  price: number;
-  currency: string;
-  area: number;
-  bedrooms: number;
-  bathrooms: number;
-  ai_score: number;
-  ai_label: string;
-  delivery_year: number;
-  tags: string[];
-  images: string[];
-  source: string;
-}
-
-interface ApiResponse {
-  total: number;
-  page: number;
-  rows: number;
-  pages: number;
-  results: Property[];
-  source: string;
-}
-
-function useProperties(mode: string, selCmps: string[], rooms: number | null, sort: string) {
-  const [data, setData] = useState<Property[]>([]);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setLoading(true);
-    const params = new URLSearchParams({ rows: "12", page: "1" });
-    if (mode === "rent")   params.set("purpose", "for-rent");
-    if (mode === "resale") params.set("purpose", "for-sale");
-    if (rooms)             params.set("bedrooms", String(rooms));
-    if (selCmps.length === 1) params.set("compound", selCmps[0]);
-
-    fetch(`${import.meta.env.BASE_URL}api/properties?${params}`)
-      .then(r => r.json())
-      .then((json: ApiResponse) => {
-        let results = json.results ?? [];
-        // client-side multi-compound filter
-        if (selCmps.length > 1) {
-          results = results.filter(p => selCmps.some(c => p.compound.toLowerCase().includes(c.toLowerCase())));
-        }
-        // client-side sort
-        if (sort === "ai")        results.sort((a, b) => b.ai_score - a.ai_score);
-        else if (sort === "priceLow")  results.sort((a, b) => a.price - b.price);
-        else if (sort === "priceHigh") results.sort((a, b) => b.price - a.price);
-        else if (sort === "area")      results.sort((a, b) => b.area - a.area);
-        setData(results);
-        setTotal(json.total);
-      })
-      .catch(() => setData([]))
-      .finally(() => setLoading(false));
-  }, [mode, selCmps, rooms, sort]);
-
-  return { data, total, loading };
-}
+import { useProperties } from "../hooks/useListings";
+import type { Property } from "../hooks/useListings";
 
 interface Props {
   mode: string;
