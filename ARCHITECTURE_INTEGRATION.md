@@ -9,8 +9,13 @@ emeraldestatesegypt-ops/-19-6-AI#1.
 | Role | Repo | Deploys to | Stack |
 |---|---|---|---|
 | **Backend + client site** | `ahmedfawzy8866/Sierra-Estates-Final`, `apps/sierra-estates-realty` | Vercel project `sierra-2027` (sierra-2027.vercel.app; intended domain `sierra-estates.net`) | Next.js 16, Firestore |
-| **Admin panel** | `emeraldestatesegypt-ops/-19-6-AI` | Vercel project `sierra-estates-admin` (sierra-estates-admin.vercel.app) — repoint pending | Vite/React SPA |
-| **Public client app** | Base44 app "Sierra Estates (Copy)" | sierra-home-find.base44.app | Base44 (own DB) |
+| **Admin panel** | `emeraldestatesegypt-ops/-19-6-AI` (deploying via fork `ahmedfawzy8866/-19-6-AI`) | Vercel project `sierra-estates-admin` (sierra-estates-admin.vercel.app) | Vite/React SPA |
+
+A Base44 app was evaluated as an alternate public client site but dropped — too much
+back-and-forth to verify changes actually applied, not worth the cost relative to
+`apps/sierra-estates-realty`'s already-complete public pages. `apps/sierra-estates-realty`
+is the one public client site; its `ALLOWED_ORIGINS` env var still lists the Base44 origins
+from that experiment, which is harmless but can be cleaned up whenever.
 
 `apps/admin-dashboard` in this monorepo and the old `sierra-estates-admin-portal` are both
 retired — see `CLAUDE.md`. The in-app `/admin` console under `apps/sierra-estates-realty`
@@ -85,32 +90,23 @@ but they're not equally "real":
 
 `middleware.ts` + `lib/server/cors.ts` answer preflight and set
 `Access-Control-Allow-Origin` for any origin listed in the `ALLOWED_ORIGINS` env var
-(comma-separated), with credentials enabled. Set this on the `sierra-2027` Vercel project to
-include the admin SPA's deployed origin(s) and the Base44 app's origin
-(`https://sierra-home-find.base44.app`) — without it, browser requests from those origins
-fail CORS even though the API itself works fine via curl/Postman.
-
-## Public client integration (Base44)
-
-The Base44 app's frontend was wired (via its own AI builder, not this repo) to call:
-- `GET /api/listings` — public, no auth, returns `{ success, listings: [...] }`
-- `POST /api/leads` — public, rate-limited, no auth, body `{ name, email, phone?, message? }`
-
-Both already existed before this work; no backend changes were needed for the client side.
+(comma-separated), with credentials enabled. Set on the `sierra-2027` Vercel project to
+include the admin SPA's deployed origin(s) — without it, browser requests from those
+origins fail CORS even though the API itself works fine via curl/Postman.
 
 ## Deploy triggers — "when X changes, what redeploys"
 
 - **Push to `Sierra-Estates-Final` `main`** → `.github/workflows/deploy-vercel.yml` deploys
-  `apps/sierra-estates-realty` to the `sierra-2027` Vercel project automatically. This is the
-  *only* deploy path — Vercel's own git auto-deploy is disabled for this repo
-  (`git.deploymentEnabled: false`). A second, likely-stale workflow `deploy2.yml` also exists
-  and points at a different/older Vercel project — flagged as a follow-up cleanup, not
-  touched here.
-- **Push to `emeraldestatesegypt-ops/-19-6-AI` `main`** → once the `sierra-estates-admin`
-  Vercel project is repointed at this repo (pending, see below), Vercel's native git
-  auto-deploy handles it — no custom Action needed, since it's a single-app repo.
-- **Base44 app changes** → applied directly through Base44's own editor/AI builder; nothing
-  in this repo triggers it and nothing here needs to react to it.
+  `apps/sierra-estates-realty` (backend + public client site) to the `sierra-2027` Vercel
+  project automatically. This is the *only* deploy path — Vercel's own git auto-deploy is
+  disabled for this repo (`git.deploymentEnabled: false`). A second, likely-stale workflow
+  `deploy2.yml` also exists and points at a different/older Vercel project — flagged as a
+  follow-up cleanup, not touched here.
+- **Push to `ahmedfawzy8866/-19-6-AI`** (fork) **`main`** → `sierra-estates-admin` Vercel
+  project deploys via Vercel's native git auto-deploy (single-app repo, no custom Action
+  needed). The fork exists because the connected GitHub account has only read access to the
+  real upstream `emeraldestatesegypt-ops/-19-6-AI`; keep the fork's `main` synced with
+  upstream before relying on a deploy.
 
 ## Outstanding follow-ups (tracked, not done in this pass)
 
