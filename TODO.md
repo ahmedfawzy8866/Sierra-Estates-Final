@@ -92,6 +92,15 @@ Aligned with STATUS.md. Sorted by deployment-readiness (pre-deploy → post-depl
 - [ ] Build an admin UI page for owner negotiations (the API exists; no page
       surfaces it in `/admin` yet — out of scope for this pass).
 
+## 🧹 Repo Cleanup
+- [x] Divergent `firestore.rules` resolved: `firebase.json` now deploys the
+      staff-gated `apps/sierra-estates-realty/firestore.rules`
+      (`users/{uid}.role`); the legacy root `admins/{uid}` rules file is deleted.
+- [x] `apps/{admin-dashboard,sierra-blu-admin-portal,sierra-blu-realty}` excluded
+      from `pnpm-workspace.yaml` (stopped participating in CI; kept on disk).
+- [ ] `apps/frontend` is still a live (if trivial) workspace member and still
+      undeployed dead weight — wasn't covered by the exclusion above.
+
 ## 🐍 Python
 - [ ] Schedule analytics-report.py via GitHub Actions cron
 - [ ] Add unit tests for LeadScorer class
