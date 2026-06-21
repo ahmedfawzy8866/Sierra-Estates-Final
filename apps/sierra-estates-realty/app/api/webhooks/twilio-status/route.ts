@@ -2,12 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 import { COLLECTIONS } from '@/lib/models/schema';
+import { isValidTwilioSignature, getTwilioStatusCallbackUrl, twilioConfigured } from '@/lib/server/twilio-client';
 import { logger } from '@/lib/logger';
 
 /**
  * Twilio delivery/read status callback. Twilio POSTs form-encoded params
  * (MessageSid, MessageStatus, …) for each WhatsApp message we send with a
  * StatusCallback URL. We map the Twilio status onto the queued job's status.
+ *
+ * Validates X-Twilio-Signature so this can't be spoofed to forge delivery
+ * statuses. Skipped (with a warning) only when Twilio isn't configured at
+ * all — in that mode every send is already simulated, so there's no real
+ * Twilio traffic to authenticate.
  */
 
 const TWILIO_TO_JOB_STATUS: Record<string, string> = {
@@ -23,8 +29,24 @@ const TWILIO_TO_JOB_STATUS: Record<string, string> = {
 export async function POST(req: NextRequest) {
   try {
     const form = await req.formData();
-    const sid = String(form.get('MessageSid') || form.get('SmsSid') || '');
-    const twilioStatus = String(form.get('MessageStatus') || form.get('SmsStatus') || '');
+    const params: Record<string, string> = {};
+    for (const [key, value] of form.entries()) {
+      params[key] = String(value);
+    }
+
+    if (twilioConfigured) {
+      const callbackUrl = getTwilioStatusCallbackUrl();
+      const signature = req.headers.get('x-twilio-signature');
+      if (!callbackUrl || !isValidTwilioSignature(signature, callbackUrl, params)) {
+        logger.warn('[twilio-status] rejected request with invalid/missing X-Twilio-Signature');
+        return NextResponse.json({ error: 'Invalid signature' }, { status: 403 });
+      }
+    } else {
+      logger.warn('[twilio-status] TWILIO_AUTH_TOKEN not set — signature validation skipped');
+    }
+
+    const sid = params['MessageSid'] || params['SmsSid'] || '';
+    const twilioStatus = params['MessageStatus'] || params['SmsStatus'] || '';
 
     if (!sid) {
       return NextResponse.json({ error: 'Missing MessageSid' }, { status: 400 });

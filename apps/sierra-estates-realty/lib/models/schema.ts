@@ -625,13 +625,23 @@ export interface WhatsAppMessageJob extends BaseDocument {
 
 // ─── Owner Negotiations ──────────────────────────────────────────────
 
-export type OwnerNegotiationStatus = 'contacted' | 'negotiating' | 'agreed' | 'rejected' | 'stale';
+// Lifecycle: contacted ("Pending" in the admin UI) -> negotiating -> agreed
+// -> completed (terms finalized/converted), with rejected/stale as the other
+// two terminal outcomes. `completed` is distinct from `agreed`: agreed means
+// terms were settled in conversation; completed means the deal/paperwork is
+// actually done (set manually by staff once that happens elsewhere).
+export type OwnerNegotiationStatus = 'contacted' | 'negotiating' | 'agreed' | 'completed' | 'rejected' | 'stale';
 
 export interface OwnerNegotiation extends BaseDocument {
   unitId?: string;               // FK -> listings, once a canonical unit exists
   brokerListingId?: string;      // FK -> broker_listings (InboundAssetSignal), the raw source
   ownerName?: string;
   ownerPhone: string;
+
+  // The buyer/renter lead this negotiation is being conducted on behalf of,
+  // if any (e.g. negotiating with an owner because a specific client wants
+  // this unit). Optional — many negotiations are speculative/inventory-side.
+  interestedLeadId?: string;     // FK -> stakeholders
 
   askingPrice?: number;
   currentOfferPrice?: number;
@@ -658,6 +668,151 @@ export interface WhatsAppOutreachConfig {
   windowMinutes: number;         // 120
   dailyCapPerNumber: number;     // 120 (30 * 4 windows between 12pm-8pm)
   dailyCapTotal: number;         // 480 across all 4 numbers
+}
+
+// ─── Property Owners (CRM/PF sync) ───────────────────────────────────
+// Written by app/api/crm/property-finder on unit import. Keyed by phone
+// (cleanMobileId) as the doc ID — one owner doc per phone number.
+
+export interface Owner extends BaseDocument {
+  ownerName: string;
+  primaryMobile: string;        // doc ID
+  lastSyncAt: Timestamp;
+}
+
+// ─── Viewing Requests (inbound, pre-confirmation) ────────────────────
+// Distinct from `Viewing` (COLLECTIONS.viewings): this is the raw inbound
+// request from the public site (app/api/viewing-requests); once an agent
+// schedules it, a Viewing doc is created. lib/firebase-config.ts also
+// writes here directly from the client SDK.
+
+export type ViewingRequestStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed';
+
+export interface ViewingRequest extends BaseDocument {
+  propertyCode: string;
+  visitorName: string;
+  visitorEmail: string;
+  visitorPhone: string;
+  preferredDate: string;        // ISO date
+  preferredTime?: string;
+  numberOfPeople?: number;
+  message?: string;
+  status: ViewingRequestStatus;
+}
+
+// ─── Follow-ups (agent task management) ──────────────────────────────
+// app/api/admin/followups. Each agent sees their own; admins see all.
+
+export type FollowupType = 'call' | 'whatsapp' | 'email' | 'meeting' | 'viewing' | 'other';
+export type FollowupStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled' | 'overdue';
+export type FollowupPriority = 'low' | 'medium' | 'high' | 'urgent';
+
+export interface Followup extends BaseDocument {
+  leadId: string;                // FK -> stakeholders
+  agentId?: string;               // FK -> users (uid)
+  type: FollowupType;
+  title: string;
+  notes?: string;
+  dueAt: Timestamp;
+  completedAt?: Timestamp;
+  status: FollowupStatus;
+  priority: FollowupPriority;
+}
+
+// ─── Pages (public-site CMS) ─────────────────────────────────────────
+// app/api/admin/pages (write) + app/api/pages/[slug] (public read).
+// Lets admins edit public-site copy without a code deploy.
+
+export type PageSlug =
+  | 'home' | 'about' | 'listings' | 'contact' | 'invest'
+  | 'concierge' | 'careers' | 'pricing' | 'blog' | 'success-stories'
+  | 'roi' | 'virtual-tour' | 'dream-decision';
+
+export interface Page extends BaseDocument {
+  slug: PageSlug;
+  locale: 'en' | 'ar';
+  sections: Record<string, Record<string, unknown>>;
+  published: boolean;
+  updatedBy?: string;            // uid
+}
+
+// ─── Knowledge Base (AI agent reference notes) ───────────────────────
+// app/api/admin/knowledge-base. Falls back to scanning the Obsidian vault
+// locally when this collection is empty (dev mode).
+
+export interface KnowledgeBaseEntry extends BaseDocument {
+  title: string;
+  content: string;
+  tags?: string[];
+  lastModified?: Timestamp;
+  metadata?: Record<string, unknown>;
+}
+
+// ─── Bot Commands (operator control plane) ───────────────────────────
+// app/api/admin/bots. Bots (whatsapp-scraper, n8n, the orchestration
+// agents) poll/subscribe to this queue; their live status is a sibling
+// doc at system_status/{botId} (see SystemStatus below).
+
+export type BotCommandAction = 'start' | 'stop' | 'restart' | 'run_now';
+export type BotCommandStatus = 'pending' | 'acknowledged' | 'completed' | 'failed';
+
+export interface BotCommand extends BaseDocument {
+  botId: string;
+  command: BotCommandAction;
+  status: BotCommandStatus;
+  issuedBy: string;               // uid or 'system'
+  issuedAt: Timestamp;
+}
+
+// ─── System Status (per-bot heartbeat doc, NOT a collection) ─────────
+// Doc path: system_status/{botId} — written by WhatsAppStatusService,
+// the scraper heartbeat, and app/api/admin/bots. Not added to COLLECTIONS
+// since callers address it by doc path, not a queried collection.
+
+export interface SystemStatus {
+  status: 'active' | 'syncing' | 'error' | 'idle' | 'offline';
+  lastPulse: Timestamp;
+  lastError?: string;
+  lastCommand?: BotCommandAction;
+  lastCommandAt?: Timestamp;
+  config?: { interval?: number; enabled?: boolean };
+  stats?: { processedToday?: number; errorsToday?: number };
+}
+
+// ─── Failed Orchestrations (dead-letter queue) ───────────────────────
+// Written by OrchestratorService when a pipeline exhausts its retries.
+
+export interface FailedOrchestration {
+  docId: string;
+  collection: string;
+  stage: string;
+  error: string;
+  timestamp: Timestamp;
+}
+
+// ─── Search Queries (semantic-search analytics) ──────────────────────
+// Populated by app/api/search/semantic; aggregated by
+// app/api/admin/search-insights.
+
+export interface SearchQueryLog {
+  query: string;
+  locale?: string;
+  intent?: string;
+  extractionMethod?: string;
+  total?: number;
+  timestamp: Date | Timestamp;
+  userAgent?: string;
+}
+
+// ─── Stakeholder Messages (per-lead chat log SUBcollection) ──────────
+// Path: leads/{stakeholderId}/messages — NOT a top-level collection.
+// Written by OmnichannelChatService.logChatMessage.
+
+export interface StakeholderMessage {
+  sender: 'user' | 'sierra';
+  text: string;
+  platform: string;
+  timestamp: Timestamp;
 }
 
 // ─── Collection Names (Constants) ───────────────────────────────────
@@ -687,4 +842,12 @@ export const COLLECTIONS = {
   whatsappMessageQueue: 'whatsapp_message_queue',       // every outbound/inbound WhatsApp message
   ownerNegotiations: 'owner_negotiations',              // owner-side buy/sell negotiation threads
   systemConfig: 'system_config',                        // singleton config docs, e.g. system_config/whatsapp_outreach
+  owners: 'owners',                       // property owners (keyed by phone), from CRM/PF sync
+  viewingRequests: 'viewing_requests',     // inbound pre-confirmation viewing requests
+  followups: 'followups',                 // agent follow-up tasks
+  pages: 'pages',                         // public-site CMS content
+  knowledgeBase: 'knowledge_base',         // AI agent reference notes
+  botCommands: 'bot_commands',            // operator -> bot command queue
+  failedOrchestrations: 'failed_orchestrations', // orchestration dead-letter queue
+  searchQueries: 'search_queries',        // semantic-search analytics log
 } as const;

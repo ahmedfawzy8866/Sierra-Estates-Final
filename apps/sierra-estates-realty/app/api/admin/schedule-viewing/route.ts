@@ -1,7 +1,18 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { verifyAdminRequest, unauthorizedResponse } from '@/lib/server/auth-guard';
 import { logger } from '@/lib/logger';
 
-export async function POST(req: Request) {
+// NOTE: this route is currently a mock — it doesn't look up the lead/agent,
+// persist a Viewing doc, or actually notify anyone. The auth guard below
+// closes the unauthenticated-write gap; making the scheduling itself real
+// (Firestore Viewing record, Telegram alert, Calendar API) is separate,
+// larger follow-up work.
+export async function POST(req: NextRequest) {
+  const authResult = await verifyAdminRequest(req);
+  if (!authResult.authenticated) {
+    return unauthorizedResponse();
+  }
+
   try {
     const { leadId, units } = await req.json();
 

@@ -1,4 +1,5 @@
 import 'server-only';
+import { validateRequest } from 'twilio';
 import { logger } from '@/lib/logger';
 
 /**
@@ -14,6 +15,52 @@ const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
 const TWILIO_MESSAGING_SERVICE_SID = process.env.TWILIO_MESSAGING_SERVICE_SID;
 
 export const twilioConfigured = Boolean(TWILIO_ACCOUNT_SID && TWILIO_AUTH_TOKEN);
+
+function publicSiteBase(): string {
+  return (process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || '').replace(/\/+$/, '');
+}
+
+/**
+ * The exact URL handed to Twilio as StatusCallback when sending. The status
+ * webhook route validates X-Twilio-Signature against this SAME url — Twilio's
+ * signature covers the literal callback URL, so the two call sites must never
+ * drift apart. Centralized here for that reason; don't inline it elsewhere.
+ * Returns undefined when no public base URL is configured (e.g. local dev).
+ */
+export function getTwilioStatusCallbackUrl(): string | undefined {
+  const base = publicSiteBase();
+  return base.startsWith('http') ? `${base}/api/webhooks/twilio-status` : undefined;
+}
+
+/**
+ * The exact URL configured in the Twilio Console / Messaging Service as the
+ * inbound "incoming message" webhook for each of the 4 WABA senders. The
+ * twilio-inbound route validates X-Twilio-Signature against this SAME url —
+ * same drift hazard as the status callback above. Centralized for that reason.
+ */
+export function getTwilioInboundWebhookUrl(): string | undefined {
+  const base = publicSiteBase();
+  return base.startsWith('http') ? `${base}/api/webhooks/twilio-inbound` : undefined;
+}
+
+/**
+ * Validates Twilio's X-Twilio-Signature on an inbound webhook request.
+ * Delegates to the official `twilio` package's validateRequest — Twilio's own
+ * docs explicitly recommend against hand-rolling this HMAC check, and there's
+ * no published test vector to verify a homegrown implementation against.
+ * https://www.twilio.com/docs/usage/webhooks/webhooks-security
+ *
+ * @param url     The exact URL Twilio was given (getTwilioStatusCallbackUrl()),
+ *                NOT the request's own URL — proxies/rewrites can alter that.
+ */
+export function isValidTwilioSignature(
+  signatureHeader: string | null,
+  url: string,
+  params: Record<string, string>,
+): boolean {
+  if (!signatureHeader || !TWILIO_AUTH_TOKEN) return false;
+  return validateRequest(TWILIO_AUTH_TOKEN, signatureHeader, url, params);
+}
 
 export interface TwilioSendResult {
   sid: string;

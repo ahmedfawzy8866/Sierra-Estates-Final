@@ -10,6 +10,7 @@ import { COLLECTIONS, type InvestmentStakeholder } from '../models/schema';
 import { processAgentCommand } from './antigravity-agent';
 import { WhatsAppParserService } from './WhatsAppParserService';
 import { WhatsAppStatusService } from './WhatsAppStatusService';
+import { findActiveOwnerNegotiationByPhone, appendOwnerNegotiationMessage } from '@/lib/server/whatsapp-queue';
 import { logger } from '@/lib/logger';
 
 export interface IncomingMessagePayload {
@@ -35,6 +36,22 @@ export class OmnichannelChatService {
   static async handleIncomingMessage(payload: IncomingMessagePayload): Promise<ChatResponse> {
     const { platform, senderId, senderName, text, groupName, media } = payload;
     logger.info(`📥 [Omnichannel] Received message from ${senderName} via ${platform}: "${text.substring(0, 60)}"`);
+
+    // 0. Owner negotiations take priority: an owner mid-negotiation is NOT a
+    // buyer/renter lead, and we must not create a duplicate stakeholder for
+    // them. Route the reply onto the negotiation thread and stop.
+    if (platform === 'whatsapp') {
+      const negotiation = await findActiveOwnerNegotiationByPhone(senderId);
+      if (negotiation) {
+        logger.info(`🤝 [Omnichannel] Message from ${senderId} matched active owner negotiation ${negotiation.id}.`);
+        await appendOwnerNegotiationMessage(negotiation.id, { direction: 'inbound', message: text });
+        return {
+          success: true,
+          replyText: '',
+          actionTaken: 'owner_negotiation_reply',
+        };
+      }
+    }
 
     // 1. If WhatsApp message contains property markers and is from a group, route to parsing engine immediately
     if (platform === 'whatsapp' && groupName && groupName !== 'Direct Message') {

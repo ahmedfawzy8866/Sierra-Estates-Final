@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 import { COLLECTIONS } from '@/lib/models/schema';
-import { sendWhatsApp } from '@/lib/server/twilio-client';
+import { sendWhatsApp, getTwilioStatusCallbackUrl } from '@/lib/server/twilio-client';
 import {
   getOutreachConfig,
   isWithinOperatingHours,
@@ -36,8 +36,7 @@ export async function GET(req: NextRequest) {
 
     await ensureNumbersSeeded(config);
 
-    const base = (process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || '').replace(/\/+$/, '');
-    const statusCallback = base.startsWith('http') ? `${base}/api/webhooks/twilio-status` : undefined;
+    const statusCallback = getTwilioStatusCallbackUrl();
 
     const queued = await adminDb
       .collection(COLLECTIONS.whatsappMessageQueue)
