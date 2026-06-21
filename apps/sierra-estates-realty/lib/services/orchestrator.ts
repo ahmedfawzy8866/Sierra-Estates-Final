@@ -103,7 +103,10 @@ export class OrchestratorService {
             attempts++;
             logger.warn(`[ORCHESTRATOR] Attempt ${attempts} failed for ${docId}: ${innerError.message}`);
             if (attempts >= maxAttempts) throw innerError;
-            await new Promise(resolve => setTimeout(resolve, 2000 * attempts)); // Exponential backoff
+            // Exponential backoff with jitter to avoid a synchronized retry
+            // thundering-herd when a shared dependency (Gemini/Firestore) blips.
+            const backoff = 2000 * attempts + Math.floor(Math.random() * 1000);
+            await new Promise(resolve => setTimeout(resolve, backoff));
           }
         }
 
@@ -123,7 +126,12 @@ export class OrchestratorService {
             timestamp: Timestamp.now(),
           });
         } catch (dlqErr) {
+          // DLQ itself is broken — don't let the failure vanish; escalate loudly.
           logger.error('[ORCHESTRATOR] DLQ write failed:', dlqErr);
+          notifyTelegram(
+            `🆘 <b>DLQ write FAILED</b> for <code>${docId}</code> (${collection}) — ` +
+            `original error: <code>${error.message}</code>`,
+          ).catch(() => {});
         }
 
         // Alert admin via Telegram

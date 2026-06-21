@@ -50,6 +50,38 @@ Aligned with STATUS.md. Sorted by deployment-readiness (pre-deploy → post-depl
 - [ ] Keep STATUS.md + TODO.md in sync with actual state
 - [ ] Archive closed issues/PRs if their TODO/STATUS refs become confusing
 
+## 📱 WhatsApp Outreach (Twilio) — schema landed, sending still stubbed
+- [x] Firestore schema for quota-tracked outreach added: `WhatsAppNumber`, `WhatsAppMessageJob`,
+      `OwnerNegotiation`, `WhatsAppOutreachConfig` in `lib/models/schema.ts` (collections:
+      `whatsapp_numbers`, `whatsapp_message_queue`, `owner_negotiations`, `system_config`)
+- [ ] Replace `WhatsAppParserService.dispatchBulkOwnerOutreach`'s fire-and-forget
+      `triggerN8nWebhook('bulk-owner-outreach', ...)` call (no matching n8n template exists)
+      with: write `WhatsAppMessageJob` docs → a queue worker that claims an eligible
+      `whatsapp_numbers` doc (window/daily quota not exhausted, within 12pm-8pm
+      `Africa/Cairo`) → sends via Twilio WhatsApp API → updates job + number counters
+- [ ] Wire Twilio: `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, 4 WhatsApp-enabled sender
+      numbers (or one Messaging Service with 4 senders); register `/api/webhooks/twilio-status`
+      for delivery/read callbacks → updates `WhatsAppMessageJob.twilioStatus`
+- [ ] Replace the WhatsApp Sender admin page's fake quota math
+      (`contactedTodayCount * 12` in `app/admin/whatsapp-sender/page.tsx`) with a live
+      read of the 4 `whatsapp_numbers` docs
+- [ ] Decide fate of the inbound generic-gateway webhook (`app/api/whatsapp/webhook`,
+      Ultramsg/Wati-shaped) now that sending is Twilio — keep for inbound parsing only,
+      or also move inbound to Twilio's webhook format
+- [ ] `sendPortfolioViaWhatsApp` (client buy/rent recommendations, single-send) should also
+      route through the new `whatsapp_message_queue` so it's subject to the same
+      number/quota accounting as bulk owner outreach, not a separate untracked path
+
+## 🧹 Repo Cleanup (found during WhatsApp/Firebase analysis)
+- [ ] Two divergent `firestore.rules`: deployed root one models staff via a legacy
+      `admins/{uid}` collection; the newer `apps/sierra-estates-realty/firestore.rules`
+      (staff via `users/{uid}.role`, matches `CLAUDE.md`'s documented auth model) is not
+      referenced by any `firebase.json` and has never been deployed. Pick one model and
+      deploy it — see `NEXT_STEPS.md` "URGENT — deploy security rules".
+- [ ] `apps/{admin-dashboard,sierra-blu-admin-portal,sierra-blu-realty,frontend}` are
+      undeployed duplicates of `apps/sierra-estates-realty` — same dead-weight call as
+      `RECOMMENDATIONS.md` item 7, now confirmed during this pass.
+
 ## 🐍 Python
 - [ ] Schedule analytics-report.py via GitHub Actions cron
 - [ ] Add unit tests for LeadScorer class
