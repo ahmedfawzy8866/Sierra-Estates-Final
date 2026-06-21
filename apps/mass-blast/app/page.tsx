@@ -2,9 +2,9 @@
 
 import React, { useState, useMemo, useCallback, useRef } from 'react';
 import {
-  MessageSquare, Upload, Phone, Send, Trash2, Download, Copy,
-  Check, X, AlertCircle, Users, FileText, Settings, Zap, Clock,
-  CheckCircle, Loader2, ChevronRight, Globe, Plus
+  MessageSquare, Upload, Send, Trash2, Download, Copy,
+  X, Users, FileText, Settings, Zap,
+  CheckCircle, Loader2, ChevronRight, Plus
 } from 'lucide-react';
 import {
   parseNumbers, parseCSV, generateLinks, exportToCSV,
