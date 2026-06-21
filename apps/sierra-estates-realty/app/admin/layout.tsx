@@ -9,7 +9,7 @@ import { useAuth } from '@/lib/AuthContext';
 import {
   LayoutDashboard, Building2, RefreshCw, ImageIcon, Settings, LogOut,
   Menu, X, Shield, Bot, BookOpen, ClipboardList, Zap, Handshake,
-  BarChart3, Database, Wand2, Briefcase, MessageSquare, BrainCircuit,
+  BarChart3, Database, Wand2, Briefcase, MessageSquare, BrainCircuit, Users,
   type LucideIcon,
 } from 'lucide-react';
 import {
@@ -20,7 +20,7 @@ import {
 const ICONS: Record<string, LucideIcon> = {
   LayoutDashboard, Building2, RefreshCw, ImageIcon, Settings, Bot,
   BookOpen, ClipboardList, Zap, Handshake, BarChart3, Database,
-  Wand2, Briefcase, MessageSquare, BrainCircuit,
+  Wand2, Briefcase, MessageSquare, BrainCircuit, Users,
 };
 
 const BADGE_STYLES: Record<string, string> = {

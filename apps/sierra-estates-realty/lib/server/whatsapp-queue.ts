@@ -273,6 +273,7 @@ export async function startOrContinueOwnerNegotiation(params: {
   ownerName?: string;
   unitId?: string;
   brokerListingId?: string;
+  interestedLeadId?: string;
   askingPrice?: number;
   offerPrice?: number;
   body: string;
@@ -285,6 +286,7 @@ export async function startOrContinueOwnerNegotiation(params: {
     negotiationId = existing.id;
     const patch: Record<string, any> = { updatedAt: Timestamp.now() };
     if (params.offerPrice !== undefined) patch.currentOfferPrice = params.offerPrice;
+    if (params.interestedLeadId !== undefined) patch.interestedLeadId = params.interestedLeadId;
     await col.doc(negotiationId).update(patch);
   } else {
     const doc: Omit<OwnerNegotiation, 'id'> = {
@@ -296,6 +298,7 @@ export async function startOrContinueOwnerNegotiation(params: {
       ...(params.ownerName ? { ownerName: params.ownerName } : {}),
       ...(params.unitId ? { unitId: params.unitId } : {}),
       ...(params.brokerListingId ? { brokerListingId: params.brokerListingId } : {}),
+      ...(params.interestedLeadId ? { interestedLeadId: params.interestedLeadId } : {}),
       ...(params.askingPrice !== undefined ? { askingPrice: params.askingPrice } : {}),
       ...(params.offerPrice !== undefined ? { currentOfferPrice: params.offerPrice } : {}),
     };
@@ -318,4 +321,41 @@ export async function startOrContinueOwnerNegotiation(params: {
   });
 
   return { negotiationId, jobId };
+}
+
+/**
+ * Sends a follow-up message on an EXISTING negotiation thread, identified by
+ * id (not phone — the admin UI operates on a thread it already has open).
+ * Appends the outbound history entry and enqueues the real send.
+ */
+export async function sendOwnerNegotiationMessage(
+  negotiationId: string,
+  params: { body: string; price?: number },
+): Promise<{ jobId: string }> {
+  const ref = adminDb.collection(COLLECTIONS.ownerNegotiations).doc(negotiationId);
+  const snap = await ref.get();
+  if (!snap.exists) {
+    throw new Error(`Owner negotiation ${negotiationId} not found`);
+  }
+  const negotiation = snap.data() as OwnerNegotiation;
+
+  if (params.price !== undefined) {
+    await ref.update({ currentOfferPrice: params.price, updatedAt: Timestamp.now() });
+  }
+
+  await appendOwnerNegotiationMessage(negotiationId, {
+    direction: 'outbound',
+    message: params.body,
+    ...(params.price !== undefined ? { price: params.price } : {}),
+  });
+
+  const jobId = await enqueueWhatsAppJob({
+    purpose: 'owner-negotiation',
+    toPhone: negotiation.ownerPhone,
+    body: params.body,
+    ownerNegotiationId: negotiationId,
+    ...(negotiation.unitId ? { unitId: negotiation.unitId } : {}),
+  });
+
+  return { jobId };
 }

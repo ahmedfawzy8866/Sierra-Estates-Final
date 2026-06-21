@@ -625,13 +625,23 @@ export interface WhatsAppMessageJob extends BaseDocument {
 
 // ─── Owner Negotiations ──────────────────────────────────────────────
 
-export type OwnerNegotiationStatus = 'contacted' | 'negotiating' | 'agreed' | 'rejected' | 'stale';
+// Lifecycle: contacted ("Pending" in the admin UI) -> negotiating -> agreed
+// -> completed (terms finalized/converted), with rejected/stale as the other
+// two terminal outcomes. `completed` is distinct from `agreed`: agreed means
+// terms were settled in conversation; completed means the deal/paperwork is
+// actually done (set manually by staff once that happens elsewhere).
+export type OwnerNegotiationStatus = 'contacted' | 'negotiating' | 'agreed' | 'completed' | 'rejected' | 'stale';
 
 export interface OwnerNegotiation extends BaseDocument {
   unitId?: string;               // FK -> listings, once a canonical unit exists
   brokerListingId?: string;      // FK -> broker_listings (InboundAssetSignal), the raw source
   ownerName?: string;
   ownerPhone: string;
+
+  // The buyer/renter lead this negotiation is being conducted on behalf of,
+  // if any (e.g. negotiating with an owner because a specific client wants
+  // this unit). Optional — many negotiations are speculative/inventory-side.
+  interestedLeadId?: string;     // FK -> stakeholders
 
   askingPrice?: number;
   currentOfferPrice?: number;

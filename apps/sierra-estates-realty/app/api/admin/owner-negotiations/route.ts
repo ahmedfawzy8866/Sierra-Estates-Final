@@ -20,6 +20,7 @@ const initiateSchema = z.object({
   ownerName: z.string().max(200).optional(),
   unitId: z.string().max(128).optional(),
   brokerListingId: z.string().max(128).optional(),
+  interestedLeadId: z.string().max(128).optional(),
   askingPrice: z.number().min(0).optional(),
   offerPrice: z.number().min(0).optional(),
 });
