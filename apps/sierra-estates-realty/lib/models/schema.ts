@@ -558,6 +558,108 @@ export interface Activity extends BaseDocument {
   metadata?: Record<string, unknown>;
 }
 
+// ─── WhatsApp Outreach (Twilio, 4 dedicated numbers) ─────────────────
+//
+// Replaces the stubbed quota math in WhatsAppParserService.dispatchBulkOwnerOutreach
+// with real, Firestore-backed per-number rate tracking. One `whatsapp_numbers` doc
+// per Twilio WhatsApp sender; every outbound send is a `whatsapp_message_queue` doc
+// so retries, delivery status (via Twilio status callbacks), and the 12pm-8pm /
+// 30-per-2hr / 480-per-day caps are all auditable instead of in-memory.
+
+export type WhatsAppNumberStatus = 'active' | 'paused' | 'suspended';
+
+export interface WhatsAppNumber extends BaseDocument {
+  label: string;                       // e.g. "Sender 1"
+  e164Phone: string;                   // +201234567890
+  twilioMessagingServiceSid?: string;  // or a single Sender SID if not using a Messaging Service
+  status: WhatsAppNumberStatus;
+
+  // Rolling 2-hour window (resets every 2hrs within operating hours)
+  windowSentCount: number;
+  windowResetAt: Timestamp;
+
+  // Calendar-day counter (resets at local midnight)
+  dailySentCount: number;
+  dailyResetAt: Timestamp;
+
+  lastSentAt?: Timestamp;
+  lastError?: string;
+}
+
+export type WhatsAppMessagePurpose = 'owner-negotiation' | 'client-recommendation' | 'general-outreach';
+export type WhatsAppMessageDirection = 'outbound' | 'inbound';
+export type WhatsAppMessageQueueStatus =
+  | 'queued'          // accepted, waiting for an eligible number + operating window
+  | 'sending'         // claimed by a number, Twilio call in flight
+  | 'sent'            // Twilio accepted (message SID assigned)
+  | 'delivered'       // Twilio status callback confirmed delivery
+  | 'read'            // Twilio status callback confirmed read receipt
+  | 'failed'          // Twilio rejected or callback reported failure
+  | 'skipped-quota'   // no number had remaining window/daily quota
+  | 'skipped-hours';  // outside the 12pm-8pm operating window
+
+export interface WhatsAppMessageJob extends BaseDocument {
+  direction: WhatsAppMessageDirection;
+  purpose: WhatsAppMessagePurpose;
+
+  // Relations (one of leadId/ownerNegotiationId is expected depending on purpose)
+  leadId?: string;              // FK -> leads, for client-recommendation
+  unitId?: string;               // FK -> listings, the unit being recommended/negotiated
+  ownerNegotiationId?: string;  // FK -> owner_negotiations, for owner-negotiation
+
+  toPhone: string;              // E.164
+  body: string;
+  templateName?: string;        // Twilio WhatsApp template (approved HSM) name, if used
+  templateParams?: Record<string, string>;
+
+  assignedNumberId?: string;    // FK -> whatsapp_numbers, set once claimed
+  status: WhatsAppMessageQueueStatus;
+  scheduledFor?: Timestamp;     // earliest send time; used to defer outside operating hours
+  sentAt?: Timestamp;
+
+  twilioMessageSid?: string;
+  twilioStatus?: string;        // raw status string from Twilio's callback
+  errorMessage?: string;
+  attempts: number;
+}
+
+// ─── Owner Negotiations ──────────────────────────────────────────────
+
+export type OwnerNegotiationStatus = 'contacted' | 'negotiating' | 'agreed' | 'rejected' | 'stale';
+
+export interface OwnerNegotiation extends BaseDocument {
+  unitId?: string;               // FK -> listings, once a canonical unit exists
+  brokerListingId?: string;      // FK -> broker_listings (InboundAssetSignal), the raw source
+  ownerName?: string;
+  ownerPhone: string;
+
+  askingPrice?: number;
+  currentOfferPrice?: number;
+  status: OwnerNegotiationStatus;
+
+  history: Array<{
+    direction: WhatsAppMessageDirection;
+    message: string;
+    price?: number;
+    timestamp: Timestamp | FieldValue;
+  }>;
+
+  assignedAgentId?: string;     // FK -> users
+  lastContactAt?: Timestamp;
+}
+
+// ─── Outreach Operating Config (singleton doc) ───────────────────────
+
+export interface WhatsAppOutreachConfig {
+  operatingHourStart: number;    // 12 (24hr, local timezone)
+  operatingHourEnd: number;      // 20
+  timezone: string;              // 'Africa/Cairo'
+  batchSizePerNumber: number;    // 30
+  windowMinutes: number;         // 120
+  dailyCapPerNumber: number;     // 120 (30 * 4 windows between 12pm-8pm)
+  dailyCapTotal: number;         // 480 across all 4 numbers
+}
+
 // ─── Collection Names (Constants) ───────────────────────────────────
 
 export const COLLECTIONS = {
@@ -581,4 +683,8 @@ export const COLLECTIONS = {
   strategicPipeline: 'strategic_pipeline',      // S9 Deal Pipeline
   agentStatus: 'agents',         // operational status reported by workers (n8n, whatsapp-scraper, etc.)
   automationWorkflows: 'workflows', // admin-managed automation toggles, surfaced in /admin
+  whatsappNumbers: 'whatsapp_numbers',                 // 4 Twilio senders + their quota state
+  whatsappMessageQueue: 'whatsapp_message_queue',       // every outbound/inbound WhatsApp message
+  ownerNegotiations: 'owner_negotiations',              // owner-side buy/sell negotiation threads
+  systemConfig: 'system_config',                        // singleton config docs, e.g. system_config/whatsapp_outreach
 } as const;
