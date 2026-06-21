@@ -82,10 +82,18 @@ export default function PremiumHero({ onSearch, isArabic = false }: PremiumHeroP
   const startPos = useRef(0);
 
   const roomImages: Record<string, string> = {
-    'Living Room': 'https://images.unsplash.com/photo-1600210492493-0946911123ea?w=2400&q=80',
-    'Master Suite': 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=2400&q=80',
-    'Kitchen': 'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=2400&q=80',
-    'Terrace': 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=2400&q=80',
+    'Living Room': '/interiors/living-room-luxury.jpg',
+    'Master Suite': '/interiors/master-bedroom.jpg',
+    'Kitchen': '/interiors/kitchen-luxury.jpg',
+    'Terrace': '/interiors/terrace-outdoor.jpg',
+  };
+
+  // Arabic labels for the room tabs
+  const roomLabelsAr: Record<string, string> = {
+    'Living Room': 'غرفة المعيشة',
+    'Master Suite': 'الجناح الرئيسي',
+    'Kitchen': 'المطبخ',
+    'Terrace': 'التراس',
   };
 
   const propertyTypes = isArabic ? PROPERTY_TYPES_AR : PROPERTY_TYPES_EN;
@@ -239,7 +247,7 @@ export default function PremiumHero({ onSearch, isArabic = false }: PremiumHeroP
               {/* Glowing Overlays */}
               <div className="absolute top-4 left-4 z-10 flex items-center gap-2 bg-[#071422]/80 backdrop-blur-md border border-[#C9A84C]/30 px-3 py-1.5 rounded-xl text-[9px] font-mono font-semibold text-white uppercase tracking-wider">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>360° · {isArabic ? 'معاينة حية' : currentRoom}</span>
+                <span>360° · {isArabic ? (roomLabelsAr[currentRoom] || currentRoom) : currentRoom}</span>
               </div>
 
               <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10 pointer-events-none flex items-center gap-2 bg-[#071422]/75 backdrop-blur-sm text-white text-[11px] font-medium tracking-wide px-4 py-2 rounded-full shadow-lg">
@@ -260,11 +268,7 @@ export default function PremiumHero({ onSearch, isArabic = false }: PremiumHeroP
                       : 'bg-white/60 dark:bg-[#0d2035]/30 hover:bg-white dark:hover:bg-[#0d2035]/50 text-[#071422] dark:text-white/80 border-[#071422]/10 dark:border-white/10'
                   }`}
                 >
-                  {isArabic ? (
-                    room === 'Living Room' ? 'غرفة المعيشة' :
-                    room === 'Master Suite' ? 'الجناح الرئيسي' :
-                    room === 'Kitchen' ? 'المطبخ' : 'التراس الخارجي'
-                  ) : room}
+                  {isArabic ? (roomLabelsAr[room] || room) : room}
                 </button>
               ))}
             </div>

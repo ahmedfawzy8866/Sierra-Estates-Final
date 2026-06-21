@@ -88,28 +88,28 @@ export default function LightLandingScreen({ onEnterPortal }: { onEnterPortal: (
   // Static Fallbacks incase backend is empty or loading
   const fallbackProperties = [
     {
-      image: "/estate.png",
+      image: "/villas/katameya-golf-palace.jpg",
       location: "New Cairo | District 5",
       title: "The Glass Pavilion",
       price: "EGP 42,500,000"
     },
     {
-      image: "/villa.png",
+      image: "/villas/mivida-grand-lakefront.jpg",
       location: "New Cairo | Katameya Heights",
       title: "Azure Shore Villa",
       price: "EGP 68,000,000"
     },
     {
-      image: "/penthouse.png",
+      image: "/villas/eastown-sky-penthouse.jpg",
       location: "New Cairo | Mivida",
       title: "The Minimalist Estate",
       price: "EGP 31,200,000"
     }
   ];
 
-  const displayProperties = (properties.length > 0 && !loading) 
+  const displayProperties = (properties.length > 0 && !loading)
     ? properties.slice(0, 3).map(p => ({
-        image: p.featuredImage || p.images?.[0] || "/penthouse.png",
+        image: p.featuredImage || p.images?.[0] || "/villas/mivida-grand-lakefront.jpg",
         location: `New Cairo | ${p.compound || p.location || 'Premium Location'}`,
         title: p.title || 'Luxury Estate',
         price: `EGP ${p.price?.toLocaleString() || 'Contact for Price'}`
