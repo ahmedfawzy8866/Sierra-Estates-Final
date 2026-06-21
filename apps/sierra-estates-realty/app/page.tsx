@@ -45,8 +45,12 @@ const DICTIONARY = {
     contactTitle: 'Direct Advisory Lines',
     contactSubtitle: 'Request immediate callback or live telemetry walk.',
     inputName: 'Full Name',
+    inputEmail: 'Email Address',
     inputPhone: 'WhatsApp Contact Line',
     btnSubmit: 'Request Golden Hour Call',
+    btnSubmitting: 'Dispatching…',
+    successMsg: 'Lead qualified. Our advisory team will reach out shortly.',
+    errorMsg: 'Something went wrong. Please try again or message us on WhatsApp.',
   },
   ar: {
     navTitle: 'سييرا إستيتس',
@@ -71,8 +75,12 @@ const DICTIONARY = {
     contactTitle: 'قنوات الاتصال المباشرة',
     contactSubtitle: 'اطلب إعادة الاتصال الفوري أو جولة بث افتراضية حية.',
     inputName: 'الاسم بالكامل',
+    inputEmail: 'البريد الإلكتروني',
     inputPhone: 'رقم الواتساب للتواصل المباشر',
     btnSubmit: 'اطلب مكالمة الساعة الذهبية',
+    btnSubmitting: 'جارٍ الإرسال…',
+    successMsg: 'تم تأهيل طلبك. سيتواصل معك فريق الاستشارات قريباً.',
+    errorMsg: 'حدث خطأ ما. يرجى المحاولة مرة أخرى أو مراسلتنا عبر واتساب.',
   },
 };
 
@@ -99,6 +107,7 @@ export default function UnifiedHomepage() {
     budget: '',
   });
   const [properties, setProperties] = useState<Property[]>([]);
+  const [leadStatus, setLeadStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
 
   const t = isAr ? DICTIONARY.ar : DICTIONARY.en;
 
@@ -125,6 +134,31 @@ export default function UnifiedHomepage() {
     setFilters(f);
     const el = document.getElementById('inventory');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleLeadSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    setLeadStatus('submitting');
+    try {
+      const res = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: (data.get('name') as string)?.trim(),
+          email: data.get('email'),
+          phone: data.get('phone') || undefined,
+          message: 'Golden Hour callback request (homepage)',
+          locale: isAr ? 'ar' : 'en',
+        }),
+      });
+      if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+      setLeadStatus('success');
+      form.reset();
+    } catch {
+      setLeadStatus('error');
+    }
   };
 
   const resetFilters = () => {
@@ -168,7 +202,7 @@ export default function UnifiedHomepage() {
             {/* Design Previews Link */}
             <a
               href="/design-previews"
-              className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono text-white/50 hover:text-[#C9A84C] transition-colors"
+              className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono text-[#071422]/50 dark:text-white/50 hover:text-[#C9A84C] dark:hover:text-[#C9A84C] transition-colors"
             >
               Design Archive
             </a>
@@ -364,13 +398,7 @@ export default function UnifiedHomepage() {
           </p>
         </div>
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            alert(isAr ? 'تم الإرسال! سنتواصل معك قريباً.' : 'Lead qualified. Dispatching advisory team...');
-          }}
-          className="space-y-6"
-        >
+        <form onSubmit={handleLeadSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-[10px] uppercase tracking-wider text-[#071422]/60 dark:text-white/60 mb-2 font-mono">
@@ -378,28 +406,53 @@ export default function UnifiedHomepage() {
               </label>
               <input
                 type="text"
+                name="name"
                 required
                 className="w-full px-5 py-4 rounded-xl bg-white dark:bg-[#071422] border border-[#071422]/15 dark:border-white/10 focus:border-[#C9A84C] outline-none transition-colors text-sm"
               />
             </div>
             <div>
               <label className="block text-[10px] uppercase tracking-wider text-[#071422]/60 dark:text-white/60 mb-2 font-mono">
-                {t.inputPhone}
+                {t.inputEmail}
               </label>
               <input
-                type="tel"
+                type="email"
+                name="email"
                 required
-                placeholder="+20 1..."
+                placeholder="you@example.com"
                 className="w-full px-5 py-4 rounded-xl bg-white dark:bg-[#071422] border border-[#071422]/15 dark:border-white/10 focus:border-[#C9A84C] outline-none transition-colors text-sm"
               />
             </div>
           </div>
+          <div>
+            <label className="block text-[10px] uppercase tracking-wider text-[#071422]/60 dark:text-white/60 mb-2 font-mono">
+              {t.inputPhone}
+            </label>
+            <input
+              type="tel"
+              name="phone"
+              required
+              placeholder="+20 1..."
+              className="w-full px-5 py-4 rounded-xl bg-white dark:bg-[#071422] border border-[#071422]/15 dark:border-white/10 focus:border-[#C9A84C] outline-none transition-colors text-sm"
+            />
+          </div>
           <button
             type="submit"
-            className="w-full py-4 bg-[#071422] text-white dark:bg-gradient-to-r dark:from-[#C9A84C] dark:to-[#E9C176] dark:text-[#071422] font-semibold text-xs rounded-xl shadow-lg hover:shadow-2xl transition-all uppercase tracking-widest font-mono"
+            disabled={leadStatus === 'submitting'}
+            className="w-full py-4 bg-[#071422] text-white dark:bg-gradient-to-r dark:from-[#C9A84C] dark:to-[#E9C176] dark:text-[#071422] font-semibold text-xs rounded-xl shadow-lg hover:shadow-2xl transition-all uppercase tracking-widest font-mono disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {t.btnSubmit}
+            {leadStatus === 'submitting' ? t.btnSubmitting : t.btnSubmit}
           </button>
+          {leadStatus === 'success' && (
+            <p role="status" className="text-center text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+              {t.successMsg}
+            </p>
+          )}
+          {leadStatus === 'error' && (
+            <p role="alert" className="text-center text-sm font-semibold text-red-600 dark:text-red-400">
+              {t.errorMsg}
+            </p>
+          )}
         </form>
       </section>
 
