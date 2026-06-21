@@ -54,17 +54,12 @@ service cloud.firestore {
     }
 
     function isValidListing(data) {
-      return data.keys().hasAll(['code', 'cmp', 'type', 'beds', 'area', 'price', 'ai', 'status', 'img', 'createdAt', 'updatedAt'])
-        && data.keys().size() == 11
-        && data.code is string && data.code.size() <= 50
-        && data.cmp is string && data.cmp.size() <= 100
-        && data.type is string && data.type.size() <= 50
-        && data.beds is int && data.beds >= 0
-        && data.area is int && data.area >= 0
-        && data.price is string && data.price.size() <= 50
-        && (data.ai is int || data.ai is float) && data.ai >= 0.0 && data.ai <= 10.0
-        && data.status is string && data.status in ['Active', 'Review', 'Sold']
-        && data.img is int;
+      return data.keys().hasAll(['title', 'propertyType', 'price', 'area', 'status'])
+        && data.title is string && data.title.size() > 0 && data.title.size() <= 300
+        && data.propertyType is string && data.propertyType.size() <= 50
+        && data.price is number && data.price >= 0
+        && data.area is number && data.area >= 0
+        && data.status is string;
     }
 
     // Custom properties / components support (from Sierra-Estates details)
@@ -144,7 +139,7 @@ service cloud.firestore {
     }
 
     match /listings/{listingId} {
-      allow read: if isSignedIn();
+      allow read: if true;
       allow create: if isAdmin()
         && isValidId(listingId)
         && isValidListing(incoming())
