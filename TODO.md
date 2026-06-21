@@ -50,6 +50,48 @@ Aligned with STATUS.md. Sorted by deployment-readiness (pre-deploy → post-depl
 - [ ] Keep STATUS.md + TODO.md in sync with actual state
 - [ ] Archive closed issues/PRs if their TODO/STATUS refs become confusing
 
+## 📱 WhatsApp Outreach — 4 real Twilio numbers provisioned (Egypt)
+- [x] Service layer wired: `lib/server/whatsapp-queue.ts` (load-balanced
+      per-number claim, 30/2hr window + 120/day/number + 480/day total,
+      12pm-8pm Africa/Cairo gate), `lib/server/twilio-client.ts` (REST send +
+      official `validateRequest` signature check), `app/api/cron/whatsapp-dispatch`
+      (drain worker), `app/api/webhooks/twilio-status` (delivery/read receipts).
+- [x] Owner negotiations wired end-to-end: `startOrContinueOwnerNegotiation` /
+      `findActiveOwnerNegotiationByPhone` / `appendOwnerNegotiationMessage` in
+      whatsapp-queue.ts; `OmnichannelChatService.handleIncomingMessage` routes
+      an inbound reply to the negotiation thread BEFORE generic lead handling;
+      minimal entry point at `app/api/admin/owner-negotiations` (GET list /
+      POST initiate).
+- [x] New `app/api/webhooks/twilio-inbound` route: the *only* inbound route
+      that correctly parses Twilio's `application/x-www-form-urlencoded`
+      payload (the older `webhooks/whatsapp` and `ingest/whatsapp` routes call
+      `req.json()` unconditionally and would 500 on real Twilio traffic — left
+      those alone since they're the scraper bot's/other gateways' targets, not
+      Twilio's).
+- [x] Tests: `__tests__/whatsapp-queue.test.ts` (load-balancing across the 4
+      senders, daily-cap-skip, stale-window-reset, all 4 operating-hour
+      boundaries), `__tests__/omnichannel-routing.test.ts` (negotiation-first
+      routing priority).
+- [ ] **Ops — set in Vercel** (the 4 real numbers + Twilio creds are in a
+      local-only `.env.local`, never committed): `WABA_NUMBER_1..4`,
+      `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, optionally
+      `TWILIO_MESSAGING_SERVICE_SID` (only set this if NOT registering the 4
+      numbers as individual senders — using a Messaging Service makes Twilio
+      pick the sender, which breaks the per-number 30/2hr accounting above).
+- [ ] **Ops — Twilio Console**: complete WhatsApp Business sender
+      registration for the 4 numbers; set each sender's (or the Messaging
+      Service's) inbound webhook to `${NEXT_PUBLIC_SITE_URL}/api/webhooks/twilio-inbound`
+      and the status callback is set automatically per-send (no console config
+      needed for that one).
+- [ ] **Ops — cron tier**: `*/10` dispatch schedule in `vercel.json` needs
+      Vercel Pro (Hobby = daily-only cron); alternative is calling
+      `/api/cron/whatsapp-dispatch` from an external scheduler with
+      `Authorization: Bearer $CRON_SECRET`.
+- [ ] Deploy `firestore.indexes.json` (now includes 2 new `owner_negotiations`
+      composite indexes) — `firebase deploy --only firestore:indexes`.
+- [ ] Build an admin UI page for owner negotiations (the API exists; no page
+      surfaces it in `/admin` yet — out of scope for this pass).
+
 ## 🐍 Python
 - [ ] Schedule analytics-report.py via GitHub Actions cron
 - [ ] Add unit tests for LeadScorer class

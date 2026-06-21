@@ -16,6 +16,10 @@ const TWILIO_MESSAGING_SERVICE_SID = process.env.TWILIO_MESSAGING_SERVICE_SID;
 
 export const twilioConfigured = Boolean(TWILIO_ACCOUNT_SID && TWILIO_AUTH_TOKEN);
 
+function publicSiteBase(): string {
+  return (process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || '').replace(/\/+$/, '');
+}
+
 /**
  * The exact URL handed to Twilio as StatusCallback when sending. The status
  * webhook route validates X-Twilio-Signature against this SAME url — Twilio's
@@ -24,8 +28,19 @@ export const twilioConfigured = Boolean(TWILIO_ACCOUNT_SID && TWILIO_AUTH_TOKEN)
  * Returns undefined when no public base URL is configured (e.g. local dev).
  */
 export function getTwilioStatusCallbackUrl(): string | undefined {
-  const base = (process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || '').replace(/\/+$/, '');
+  const base = publicSiteBase();
   return base.startsWith('http') ? `${base}/api/webhooks/twilio-status` : undefined;
+}
+
+/**
+ * The exact URL configured in the Twilio Console / Messaging Service as the
+ * inbound "incoming message" webhook for each of the 4 WABA senders. The
+ * twilio-inbound route validates X-Twilio-Signature against this SAME url —
+ * same drift hazard as the status callback above. Centralized for that reason.
+ */
+export function getTwilioInboundWebhookUrl(): string | undefined {
+  const base = publicSiteBase();
+  return base.startsWith('http') ? `${base}/api/webhooks/twilio-inbound` : undefined;
 }
 
 /**
