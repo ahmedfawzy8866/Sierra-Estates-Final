@@ -1,12 +1,14 @@
 # Cross-System Integration: Backend ↔ Admin Panel ↔ Client Site
 
-> **STALE — superseded by `CLAUDE.md` and `DEPLOYMENT.md`.** This doc describes an
-> earlier architecture (separate admin SPA in `emeraldestatesegypt-ops/-19-6-AI`,
-> Firebase project `sierra-blu-494404`). The current, authoritative setup is: ONE
-> codebase (`apps/sierra-estates-realty`), ONE canonical admin at `/admin` (no second
-> admin UI), Firebase project `sierra-blu`, domain `sierra-estates.net` with
-> `admin.sierra-estates.net` as its admin subdomain. Kept for historical context only —
-> do not follow the deploy targets/IDs below.
+> **Update (2026-06) — canonical admin decision.** The **in-app Next.js `/admin`
+> console** inside `apps/sierra-estates-realty` is now the **canonical** admin
+> surface (it calls `/api/admin/*` → `users/{uid}.role` auth + `admin-spa-mappers`).
+> The standalone Vite SPA (`emeraldestatesegypt-ops/-19-6-AI`) is being **retired**:
+> it talked directly to Firestore under the legacy `admins/{uid}` rules, which are
+> now removed. Firestore deploys the staff-gated `users/{uid}.role` rules
+> (`apps/sierra-estates-realty/firestore.rules`). Point the SPA's Vercel/Firebase
+> Hosting project at a redirect to the Vercel `/admin` (via `ADMIN_HOST`). The
+> sections below predate this decision and describe the old SPA-primary topology.
 
 How the three deployed systems are wired together, what triggers a redeploy of each,
 and the auth/CORS model that connects them. Written alongside PRs #9 (this repo) and
