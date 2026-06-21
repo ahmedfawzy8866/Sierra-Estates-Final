@@ -46,7 +46,10 @@ const COPY = {
         { val: 'other', label: 'Other' }
       ],
       message: 'Message',
-      submitBtn: 'Send Message'
+      submitBtn: 'Send Message',
+      submitting: 'Sending…',
+      success: "Message sent! We'll respond within 24 hours.",
+      error: 'Something went wrong. Please try again or reach us on WhatsApp.'
     }
   },
   ar: {
@@ -91,14 +94,20 @@ const COPY = {
         { val: 'other', label: 'أخرى' }
       ],
       message: 'الرسالة',
-      submitBtn: 'إرسال الرسالة'
+      submitBtn: 'إرسال الرسالة',
+      submitting: 'جارٍ الإرسال…',
+      success: 'تم إرسال رسالتك! سنرد عليك خلال ٢٤ ساعة.',
+      error: 'حدث خطأ ما. يرجى المحاولة مرة أخرى أو التواصل عبر واتساب.'
     }
   }
 };
 
+type SubmitStatus = 'idle' | 'submitting' | 'success' | 'error';
+
 export default function ContactPage() {
   const { locale } = useI18n();
   const [mounted, setMounted] = useState(false);
+  const [status, setStatus] = useState<SubmitStatus>('idle');
 
   useEffect(() => setMounted(true), []);
 
@@ -107,9 +116,35 @@ export default function ContactPage() {
 
   if (!mounted) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    alert("Message sent! We'll respond within 24 hours.");
+    const form = e.currentTarget;
+    const data = new FormData(form);
+
+    const fname = (data.get('fname') as string)?.trim() ?? '';
+    const lname = (data.get('lname') as string)?.trim() ?? '';
+    const topic = (data.get('topic') as string)?.trim() ?? '';
+    const message = (data.get('message') as string)?.trim() ?? '';
+
+    setStatus('submitting');
+    try {
+      const res = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: [fname, lname].filter(Boolean).join(' '),
+          email: data.get('email'),
+          phone: data.get('phone') || undefined,
+          message: topic ? `[${topic}] ${message}` : message,
+          locale: lang,
+        }),
+      });
+      if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+      setStatus('success');
+      form.reset();
+    } catch {
+      setStatus('error');
+    }
   };
 
   return (
@@ -187,27 +222,27 @@ export default function ContactPage() {
               <div className="grid grid-cols-2 gap-4 mb-5">
                 <div className="flex flex-col">
                   <label htmlFor="fname" className="text-[12px] font-semibold text-[var(--navy)] uppercase tracking-[0.06em] mb-2">{T.form.fname}</label>
-                  <input type="text" id="fname" required className="p-3 border border-[rgba(13,32,53,0.1)] rounded-lg font-se-ui text-[13px] text-[var(--navy)] bg-[rgba(247,244,236,0.4)] focus:outline-none focus:border-[var(--gold)] focus:bg-white focus:ring-2 focus:ring-[rgba(200,150,26,0.08)] transition-all" />
+                  <input type="text" id="fname" name="fname" required className="p-3 border border-[rgba(13,32,53,0.1)] rounded-lg font-se-ui text-[13px] text-[var(--navy)] bg-[rgba(247,244,236,0.4)] focus:outline-none focus:border-[var(--gold)] focus:bg-white focus:ring-2 focus:ring-[rgba(200,150,26,0.08)] transition-all" />
                 </div>
                 <div className="flex flex-col">
                   <label htmlFor="lname" className="text-[12px] font-semibold text-[var(--navy)] uppercase tracking-[0.06em] mb-2">{T.form.lname}</label>
-                  <input type="text" id="lname" required className="p-3 border border-[rgba(13,32,53,0.1)] rounded-lg font-se-ui text-[13px] text-[var(--navy)] bg-[rgba(247,244,236,0.4)] focus:outline-none focus:border-[var(--gold)] focus:bg-white focus:ring-2 focus:ring-[rgba(200,150,26,0.08)] transition-all" />
+                  <input type="text" id="lname" name="lname" required className="p-3 border border-[rgba(13,32,53,0.1)] rounded-lg font-se-ui text-[13px] text-[var(--navy)] bg-[rgba(247,244,236,0.4)] focus:outline-none focus:border-[var(--gold)] focus:bg-white focus:ring-2 focus:ring-[rgba(200,150,26,0.08)] transition-all" />
                 </div>
               </div>
 
               <div className="flex flex-col mb-5">
                 <label htmlFor="email" className="text-[12px] font-semibold text-[var(--navy)] uppercase tracking-[0.06em] mb-2">{T.form.email}</label>
-                <input type="email" id="email" required className="p-3 border border-[rgba(13,32,53,0.1)] rounded-lg font-se-ui text-[13px] text-[var(--navy)] bg-[rgba(247,244,236,0.4)] focus:outline-none focus:border-[var(--gold)] focus:bg-white focus:ring-2 focus:ring-[rgba(200,150,26,0.08)] transition-all" />
+                <input type="email" id="email" name="email" required className="p-3 border border-[rgba(13,32,53,0.1)] rounded-lg font-se-ui text-[13px] text-[var(--navy)] bg-[rgba(247,244,236,0.4)] focus:outline-none focus:border-[var(--gold)] focus:bg-white focus:ring-2 focus:ring-[rgba(200,150,26,0.08)] transition-all" />
               </div>
 
               <div className="flex flex-col mb-5">
                 <label htmlFor="phone" className="text-[12px] font-semibold text-[var(--navy)] uppercase tracking-[0.06em] mb-2">{T.form.phone}</label>
-                <input type="tel" id="phone" className="p-3 border border-[rgba(13,32,53,0.1)] rounded-lg font-se-ui text-[13px] text-[var(--navy)] bg-[rgba(247,244,236,0.4)] focus:outline-none focus:border-[var(--gold)] focus:bg-white focus:ring-2 focus:ring-[rgba(200,150,26,0.08)] transition-all" />
+                <input type="tel" id="phone" name="phone" className="p-3 border border-[rgba(13,32,53,0.1)] rounded-lg font-se-ui text-[13px] text-[var(--navy)] bg-[rgba(247,244,236,0.4)] focus:outline-none focus:border-[var(--gold)] focus:bg-white focus:ring-2 focus:ring-[rgba(200,150,26,0.08)] transition-all" />
               </div>
 
               <div className="flex flex-col mb-5">
                 <label htmlFor="topic" className="text-[12px] font-semibold text-[var(--navy)] uppercase tracking-[0.06em] mb-2">{T.form.topic}</label>
-                <select id="topic" required className="p-3 border border-[rgba(13,32,53,0.1)] rounded-lg font-se-ui text-[13px] text-[var(--navy)] bg-[rgba(247,244,236,0.4)] focus:outline-none focus:border-[var(--gold)] focus:bg-white focus:ring-2 focus:ring-[rgba(200,150,26,0.08)] transition-all">
+                <select id="topic" name="topic" required className="p-3 border border-[rgba(13,32,53,0.1)] rounded-lg font-se-ui text-[13px] text-[var(--navy)] bg-[rgba(247,244,236,0.4)] focus:outline-none focus:border-[var(--gold)] focus:bg-white focus:ring-2 focus:ring-[rgba(200,150,26,0.08)] transition-all">
                   {T.form.topicOpts.map((opt, i) => (
                     <option key={i} value={opt.val}>{opt.label}</option>
                   ))}
@@ -216,12 +251,23 @@ export default function ContactPage() {
 
               <div className="flex flex-col mb-5">
                 <label htmlFor="message" className="text-[12px] font-semibold text-[var(--navy)] uppercase tracking-[0.06em] mb-2">{T.form.message}</label>
-                <textarea id="message" required className="min-h-[120px] p-3 border border-[rgba(13,32,53,0.1)] rounded-lg font-se-ui text-[13px] text-[var(--navy)] bg-[rgba(247,244,236,0.4)] focus:outline-none focus:border-[var(--gold)] focus:bg-white focus:ring-2 focus:ring-[rgba(200,150,26,0.08)] transition-all resize-y"></textarea>
+                <textarea id="message" name="message" required className="min-h-[120px] p-3 border border-[rgba(13,32,53,0.1)] rounded-lg font-se-ui text-[13px] text-[var(--navy)] bg-[rgba(247,244,236,0.4)] focus:outline-none focus:border-[var(--gold)] focus:bg-white focus:ring-2 focus:ring-[rgba(200,150,26,0.08)] transition-all resize-y"></textarea>
               </div>
 
-              <button type="submit" className="w-full inline-flex items-center justify-center py-3.5 px-8 border-none rounded-[10px] cursor-pointer font-se-ui text-[11px] font-bold tracking-[0.12em] uppercase text-white bg-gradient-to-br from-[var(--gold-lt)] to-[var(--gold)] shadow-[0_6px_18px_rgba(200,150,26,0.28)] transition-all duration-300 hover:-translate-y-[2px] hover:shadow-[0_10px_28px_rgba(200,150,26,0.4)]">
-                {T.form.submitBtn}
+              <button type="submit" disabled={status === 'submitting'} className="w-full inline-flex items-center justify-center py-3.5 px-8 border-none rounded-[10px] cursor-pointer font-se-ui text-[11px] font-bold tracking-[0.12em] uppercase text-white bg-gradient-to-br from-[var(--gold-lt)] to-[var(--gold)] shadow-[0_6px_18px_rgba(200,150,26,0.28)] transition-all duration-300 hover:-translate-y-[2px] hover:shadow-[0_10px_28px_rgba(200,150,26,0.4)] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0">
+                {status === 'submitting' ? T.form.submitting : T.form.submitBtn}
               </button>
+
+              {status === 'success' && (
+                <p role="status" className="mt-4 text-[13px] font-semibold text-emerald-600 text-center">
+                  {T.form.success}
+                </p>
+              )}
+              {status === 'error' && (
+                <p role="alert" className="mt-4 text-[13px] font-semibold text-red-600 text-center">
+                  {T.form.error}
+                </p>
+              )}
             </form>
           </div>
         </div>
