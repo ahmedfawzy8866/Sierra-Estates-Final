@@ -19,11 +19,11 @@ const NAV_ITEMS_EN: NavItem[] = [
 ];
 
 const NAV_ITEMS_AR: NavItem[] = [
-  { label: 'إيجار',        href: '/listings?purpose=rent' },
-  { label: 'شراء',         href: '/listings?purpose=resale' },
-  { label: 'مشروعات جديدة', href: '/projects' },
-  { label: 'الإدارة',       href: '/admin' },
-  { label: 'العملاء',       href: '/clients' },
+  { label: 'إيجار',         href: '/listings?purpose=rent' },
+  { label: 'شراء',          href: '/listings?purpose=resale' },
+  { label: 'مشروعات جديدة',  href: '/projects' },
+  { label: 'الإدارة',        href: '/admin' },
+  { label: 'العملاء',        href: '/clients' },
 ];
 
 const STORAGE_KEY = 'sierra-locale';

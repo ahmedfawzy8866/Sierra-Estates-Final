@@ -199,12 +199,12 @@ export default function UnifiedHomepage() {
             <section className="py-12 px-6 md:px-12 bg-gradient-to-b from-transparent to-[#F4F0E8] dark:to-[#071422]">
               <div className="max-w-5xl mx-auto text-center mb-6">
                 <h2 className="font-playfair text-2xl md:text-3xl font-bold text-[#071422] dark:text-white mb-2">
-                  {isAr ? 'ابحث بذكاء بالعربية أو الإنجليزية' : 'Search smart — in Arabic or English'}
+                  {isAr ? 'ابحث بذكاءً — بالعربية أو الإنجليزية' : 'Search smarter — in Arabic or English'}
                 </h2>
                 <p className="text-sm text-[#071422]/60 dark:text-white/60">
                   {isAr
-                    ? 'صف ما تبحث عنه بالعربية أو الإنجليزية — الذكاء الاصطناعي يفهم ويرتب النتائج'
-                    : 'Describe what you need in plain language — AI understands and ranks the best matches'}
+                    ? 'صف ما تبحث عنه بلغتك — يفهم الذكاء الاصطناعي طلبك ويرتّب أفضل النتائج'
+                    : 'Describe what you need in plain language — AI understands your intent and ranks the best matches'}
                 </p>
               </div>
               <AISearchBar
