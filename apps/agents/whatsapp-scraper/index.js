@@ -5,8 +5,9 @@
  *
  * Usage: node index.js
  * Env vars:
- *   - SE_API_URL: Backend API URL (default: http://localhost:3000)
- *   - X_SE_SECRET_KEY: Service auth key
+ *   - SE_API_URL: Backend base URL (default: http://localhost:3000)
+ *   - SBR_SECRET_KEY: Service auth key (sent as x-sbr-secret-key)
+ *   - HEARTBEAT_INTERVAL: Heartbeat period in ms (default: 60000)
  */
 
 require('dotenv').config();
@@ -15,7 +16,16 @@ const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const axios  = require('axios');
 
-const API_URL = process.env.API_URL || 'http://localhost:3000/api/webhooks/whatsapp';
+// Base URL of the backend; endpoint paths are derived from it so they can't
+// drift (the old code hardcoded the webhook path then appended the heartbeat
+// path to it, producing a doubled, non-existent URL).
+const API_BASE = (process.env.SE_API_URL || process.env.API_URL || 'http://localhost:3000').replace(/\/+$/, '');
+const INGEST_URL = `${API_BASE}/api/webhooks/whatsapp`;
+const HEARTBEAT_URL = `${API_BASE}/api/whatsapp/heartbeat`;
+const SECRET = process.env.SBR_SECRET_KEY || '';
+const HEARTBEAT_INTERVAL = Number(process.env.HEARTBEAT_INTERVAL || 60000);
+
+const authHeaders = SECRET ? { 'x-sbr-secret-key': SECRET } : {};
 
 const client = new Client({ authStrategy: new LocalAuth() });
 
@@ -26,6 +36,7 @@ client.on('qr', (qr) => {
 
 client.on('ready', () => {
   console.log('✅ Sierra Estates WhatsApp Intelligence Bot: Online & Syncing.');
+  startHeartbeat();
 });
 
 client.on('message', async msg => {
@@ -33,12 +44,16 @@ client.on('message', async msg => {
   const groupName = chat.isGroup ? chat.name : 'Direct Message';
 
   try {
-    await axios.post(API_URL, {
-      from:      msg.from,
-      Body:      msg.body,
-      groupName,
-      timestamp: msg.timestamp,
-    });
+    await axios.post(
+      INGEST_URL,
+      {
+        from:      msg.from,
+        Body:      msg.body,
+        groupName,
+        timestamp: msg.timestamp,
+      },
+      { headers: authHeaders, timeout: 10000 }
+    );
   } catch (error) {
     console.error('❌ Failed to forward message:', error.message);
   }
@@ -52,14 +67,14 @@ function startHeartbeat() {
   setInterval(async () => {
     try {
       await axios.post(
-        `${API_URL}/api/whatsapp/heartbeat`,
+        HEARTBEAT_URL,
         { status: 'alive', timestamp: new Date().toISOString() },
-        { headers: { 'x-se-secret-key': SECRET }, timeout: 5000 }
+        { headers: authHeaders, timeout: 5000 }
       );
     } catch {
       // Heartbeat failures are non-critical
     }
-  }, HEARTBEAT);
+  }, HEARTBEAT_INTERVAL);
 }
 
 client.initialize();
