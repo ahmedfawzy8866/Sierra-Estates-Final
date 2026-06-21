@@ -195,19 +195,12 @@ Write ONLY the message. No extra text.`;
 }
 
 /**
- * Send a Concierge Portfolio to the client via WhatsApp.
- *
- * Outbound send is a logged placeholder, not a real WhatsApp Business API
- * call — no such integration exists in this codebase. Restoring this as a
- * no-op-with-logging preserves the original behavior rather than inventing
- * a fake integration.
+ * Builds the WhatsApp portfolio message body (pure — safe to import from client
+ * or server). The actual outbound send is enqueued server-side via
+ * lib/server/whatsapp-queue in app/api/concierge/send-whatsapp.
  */
-export async function sendPortfolioViaWhatsApp(
-  leadId: string,
-  portfolio: ConciergeSelection,
-  phoneNumber: string
-): Promise<void> {
-  const message = `
+export function buildPortfolioMessage(portfolio: ConciergeSelection): string {
+  return `
 👋 *${portfolio.leadName}*, Laila here!
 
 I've curated ${portfolio.units.length} exclusive properties just for you:
@@ -230,9 +223,17 @@ ${portfolio.personalNote}
 
 Ready to explore? Reply "VIEWING" or click the gallery link above! ✨
 `;
+}
 
-  console.log(`📱 Sending WhatsApp to ${phoneNumber}:\n${message}`);
-
+/**
+ * Marks a lead's portfolio as sent (client SDK). The real WhatsApp dispatch is
+ * enqueued by the API route; this only records the send on the lead document.
+ */
+export async function sendPortfolioViaWhatsApp(
+  leadId: string,
+  _portfolio: ConciergeSelection,
+  _phoneNumber: string
+): Promise<void> {
   await updateDoc(doc(db, COLLECTIONS.stakeholders, leadId), {
     conciergePortfolioSentAt: serverTimestamp(),
     conciergePortfolioSentVia: 'whatsapp',

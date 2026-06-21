@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createHash } from 'crypto';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 import type { BrokerListing } from '@/lib/models/schema';
@@ -128,6 +129,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'No valid message content found.' }, { status: 400 });
     }
 
+    // Idempotency: webhook providers retry on timeout, which would otherwise
+    // create duplicate broker_listings and re-run the pipeline. Short-circuit
+    // on an exact (sender + message) repeat before spending an AI parse call.
+    const dedupeHash = createHash('sha1').update(`${sender}|${rawMessage}`).digest('hex');
+    const existing = await adminDb
+      .collection(COLLECTIONS.brokerListings)
+      .where('dedupeHash', '==', dedupeHash)
+      .limit(1)
+      .get();
+    if (!existing.empty) {
+      return NextResponse.json({
+        success: true,
+        deduped: true,
+        id: existing.docs[0].id,
+        orchestration: 'Duplicate ignored',
+      });
+    }
+
     const parsed = await WhatsAppParserService.parseMessage(rawMessage);
     
     let leilaReply = null;
@@ -152,7 +171,7 @@ export async function POST(req: NextRequest) {
     }
 
     const listing = buildListingDocument(rawMessage, sender, group, parsed);
-    const docRef = await adminDb.collection(COLLECTIONS.brokerListings).add(listing);
+    const docRef = await adminDb.collection(COLLECTIONS.brokerListings).add({ ...listing, dedupeHash });
 
     // Dual-Ingestion: Also append to Google Sheets Master Log
     try {
