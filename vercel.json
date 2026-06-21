@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "buildCommand": "pnpm run build",
-  "devCommand": "pnpm run dev",
+  "buildCommand": "pnpm turbo build --filter=sierra-estates-realty...",
+  "devCommand": "pnpm --filter sierra-estates-realty dev",
   "installCommand": "pnpm install",
   "framework": "nextjs",
   "git": {
     "deploymentEnabled": false
   },
-  "regions": ["iad1"],
+  "regions": ["fra1"],
   "crons": [
     {
       "path": "/api/cron/sync-leads",

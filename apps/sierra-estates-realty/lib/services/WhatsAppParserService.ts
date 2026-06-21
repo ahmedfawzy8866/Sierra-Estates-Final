@@ -5,7 +5,7 @@ import { COLLECTIONS, type InboundAssetSignal } from "../models/schema";
 import { buildSierraCodeMetadata, type PropertyCodeInput } from "./coding-algorithm";
 import { StorageService } from "./StorageService";
 import { logger } from '@/lib/logger';
-import { triggerN8nWebhook } from '@/lib/server/n8n-client';
+import { enqueueWhatsAppJob } from '@/lib/server/whatsapp-queue';
 
 /**
  * sierra estates WHATSAPP INTELLIGENCE SERVICE
@@ -265,53 +265,51 @@ export class WhatsAppParserService {
   }
 
   /**
-   * BULK OWNER OUTREACH (Staggered Sender)
-   * Executes the 3-workflow bulk outreach system using 4 WhatsApp numbers.
-   * Batch sends 30 messages per number every 2 hours (12:00 PM to 8:00 PM).
-   * Total daily capacity: 480 messages.
+   * BULK OUTREACH — enqueues one WhatsApp job per recipient onto the
+   * whatsapp_message_queue. The dispatch worker (app/api/cron/whatsapp-dispatch)
+   * drains it under the real constraints: 4 numbers, 30 msgs/number per 2-hour
+   * window, 12pm–8pm Africa/Cairo, 480/day. This replaces the previous
+   * fire-and-forget n8n webhook ('bulk-owner-outreach') that had no template.
    */
-  static async dispatchBulkOwnerOutreach(ownerList: any[]) {
-    logger.info(`🚀 Initiating Bulk Owner Outreach for ${ownerList.length} owners...`);
-    const WABA_NUMBERS = [
-      process.env.WABA_NUMBER_1,
-      process.env.WABA_NUMBER_2,
-      process.env.WABA_NUMBER_3,
-      process.env.WABA_NUMBER_4
-    ].filter(Boolean);
-
-    if (WABA_NUMBERS.length === 0) {
-      logger.warn("⚠️ No WABA numbers configured. Using fallback simulation for bulk sender.");
-      WABA_NUMBERS.push("SIMULATOR_1", "SIMULATOR_2", "SIMULATOR_3", "SIMULATOR_4");
-    }
-
-    const BATCH_SIZE_PER_NUMBER = 30;
+  static async dispatchBulkOwnerOutreach(
+    recipients: Array<{ id?: string; phone?: string; whatsapp?: string; customMessage?: string; name?: string; compound?: string; price?: number; bedrooms?: number }>,
+  ) {
+    logger.info(`🚀 Queuing bulk WhatsApp outreach for ${recipients.length} recipients...`);
     const MAX_DAILY_LIMIT = 480;
-    
-    // Restrict processing queue to daily limit
-    const queueToProcess = ownerList.slice(0, Math.min(ownerList.length, MAX_DAILY_LIMIT));
-    
-    let processedCount = 0;
-    
-    for (const senderPhone of WABA_NUMBERS) {
-      if (processedCount >= queueToProcess.length) break;
-      
-      const chunk = queueToProcess.slice(processedCount, processedCount + BATCH_SIZE_PER_NUMBER);
-      processedCount += chunk.length;
-      
-      logger.info(`📤 Dispatching ${chunk.length} templates via Sender: ${senderPhone}`);
 
-      // Hand off to n8n for staggered, rate-limited sending.
-      await triggerN8nWebhook('bulk-owner-outreach', {
-        senderPhone,
-        owners: chunk,
+    const queueToProcess = recipients.slice(0, Math.min(recipients.length, MAX_DAILY_LIMIT));
+
+    let queued = 0;
+    let skippedNoPhone = 0;
+
+    for (const r of queueToProcess) {
+      const toPhone = r.phone || r.whatsapp;
+      if (!toPhone) {
+        skippedNoPhone++;
+        continue;
+      }
+      const body =
+        r.customMessage ||
+        this.formatWhatsAppMessage({
+          compound: r.compound || '',
+          price: r.price || 0,
+          bedrooms: r.bedrooms || 0,
+        });
+
+      await enqueueWhatsAppJob({
+        purpose: 'general-outreach',
+        toPhone,
+        body,
+        leadId: r.id,
       });
+      queued++;
     }
-    
+
     return {
       status: 'queued',
-      dispatchedBatches: Math.ceil(processedCount / BATCH_SIZE_PER_NUMBER),
-      totalDispatched: processedCount,
-      remainingInQueue: Math.max(0, ownerList.length - processedCount)
+      totalDispatched: queued,
+      skippedNoPhone,
+      remainingInQueue: Math.max(0, recipients.length - queueToProcess.length),
     };
   }
 }

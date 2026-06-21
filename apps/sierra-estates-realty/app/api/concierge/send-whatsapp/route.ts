@@ -1,4 +1,5 @@
-import { sendPortfolioViaWhatsApp } from '@/lib/services/portfolio-engine';
+import { buildPortfolioMessage } from '@/lib/services/portfolio-engine';
+import { enqueueWhatsAppJob } from '@/lib/server/whatsapp-queue';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 import { COLLECTIONS } from '@/lib/models/schema';
@@ -66,8 +67,14 @@ export const POST = async (req: NextRequest) => {
 
     const portfolio = { id: portfolioSnap2.id, ...portfolioSnap2.data() } as any;
 
-    // Send via WhatsApp
-    await sendPortfolioViaWhatsApp(leadId, portfolio, phone);
+    // Enqueue the real WhatsApp send (drained by the dispatch worker under
+    // operating-hours + per-number quota).
+    const jobId = await enqueueWhatsAppJob({
+      purpose: 'client-recommendation',
+      toPhone: phone,
+      body: buildPortfolioMessage(portfolio),
+      leadId,
+    });
 
     // Update lead record
     await adminDb.collection(COLLECTIONS.stakeholders).doc(leadId).update({
@@ -77,7 +84,8 @@ export const POST = async (req: NextRequest) => {
 
     return NextResponse.json({
       success: true,
-      message: `Portfolio sent to ${phone}`,
+      jobId,
+      message: `Portfolio queued for ${phone}`,
     });
   } catch (error) {
     logger.error('Error sending portfolio:', error);
