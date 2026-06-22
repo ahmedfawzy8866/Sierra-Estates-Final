@@ -1,8 +1,13 @@
 import { adminDb } from '@/lib/server/firebase-admin';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
 import { logger } from '@/lib/logger';
+
+const conciergeParamsSchema = z.object({
+  leadId: z.string().min(1, 'Lead ID is required'),
+});
 
 export const GET = async (
   req: Request,
@@ -12,14 +17,16 @@ export const GET = async (
   if (rateLimitResponse) return rateLimitResponse;
 
   try {
-    const { leadId } = await params;
+    const parseResult = conciergeParamsSchema.safeParse(await params);
 
-    if (!leadId) {
+    if (!parseResult.success) {
       return NextResponse.json(
-        { error: 'Lead ID is required' },
+        { error: 'Validation failed', details: parseResult.error.errors },
         { status: 400 }
       );
     }
+
+    const { leadId } = parseResult.data;
 
     // Query Firestore for the concierge portfolio
     const snapshot = await adminDb.collection(COLLECTIONS.conciergeSelections)

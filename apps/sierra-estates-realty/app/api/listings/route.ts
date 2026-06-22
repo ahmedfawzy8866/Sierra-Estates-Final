@@ -1,7 +1,18 @@
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
 import { logger } from '@/lib/logger';
+
+const listingsQuerySchema = z.object({
+  id: z.string().min(1, 'id must not be empty').optional(),
+  limit: z.coerce
+    .number()
+    .int('limit must be an integer')
+    .positive('limit must be positive')
+    .max(100, 'limit must not exceed 100')
+    .optional(),
+});
 
 const API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? '';
 const PROJECT_ID = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'sierra-estates';
@@ -117,7 +128,20 @@ export async function GET(request: Request) {
 
   try {
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
+
+    const parseResult = listingsQuerySchema.safeParse({
+      id: searchParams.get('id') ?? undefined,
+      limit: searchParams.get('limit') ?? undefined,
+    });
+
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { success: false, error: 'Validation failed', details: parseResult.error.errors },
+        { status: 400 }
+      );
+    }
+
+    const { id, limit } = parseResult.data;
 
     if (id) {
       const result = await queryFirestoreRest(COLLECTIONS.units, undefined, id);
@@ -128,7 +152,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: true, listing });
     }
 
-    const limitParam = parseInt(searchParams.get('limit') || '12', 10);
+    const limitParam = limit ?? 12;
     const result = await queryFirestoreRest(COLLECTIONS.units, limitParam);
 
     if (!result) {
