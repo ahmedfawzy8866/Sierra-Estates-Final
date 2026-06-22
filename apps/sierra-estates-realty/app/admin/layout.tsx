@@ -9,7 +9,7 @@ import { useAuth } from '@/lib/AuthContext';
 import {
   LayoutDashboard, Building2, RefreshCw, ImageIcon, Settings, LogOut,
   Menu, X, Shield, Bot, BookOpen, ClipboardList, Zap, Handshake,
-  BarChart3, Database, Wand2, Briefcase, MessageSquare, BrainCircuit,
+  BarChart3, Database, Wand2, Briefcase, MessageSquare, BrainCircuit, Users,
   type LucideIcon,
 } from 'lucide-react';
 import {
@@ -20,7 +20,7 @@ import {
 const ICONS: Record<string, LucideIcon> = {
   LayoutDashboard, Building2, RefreshCw, ImageIcon, Settings, Bot,
   BookOpen, ClipboardList, Zap, Handshake, BarChart3, Database,
-  Wand2, Briefcase, MessageSquare, BrainCircuit,
+  Wand2, Briefcase, MessageSquare, BrainCircuit, Users,
 };
 
 const BADGE_STYLES: Record<string, string> = {
@@ -216,7 +216,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-6 md:p-10">
+        <main className="flex-1 p-6 md:p-10 pb-24 lg:pb-10">
           {children}
         </main>
       </div>

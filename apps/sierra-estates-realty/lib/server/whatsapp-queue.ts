@@ -1,11 +1,13 @@
 import 'server-only';
 import { adminDb } from '@/lib/server/firebase-admin';
-import { Timestamp, type Transaction, type DocumentReference, type QueryDocumentSnapshot } from 'firebase-admin/firestore';
+import { Timestamp, FieldValue, type Transaction, type DocumentReference, type QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import {
   COLLECTIONS,
   type WhatsAppMessageJob,
   type WhatsAppMessagePurpose,
+  type WhatsAppMessageDirection,
   type WhatsAppOutreachConfig,
+  type OwnerNegotiation,
 } from '@/lib/models/schema';
 import { logger } from '@/lib/logger';
 
@@ -128,13 +130,40 @@ export interface ClaimedNumber {
 }
 
 /**
+ * Picks the claim order across active numbers: lowest windowSentCount first,
+ * tie-broken by lowest dailySentCount, then doc id for determinism. This is
+ * what gives the 4 senders real load balancing — each call prefers whichever
+ * number has sent the LEAST so far, rather than always trying number 1 first
+ * and only falling through to 2/3/4 once 1 is exhausted (which would just be
+ * "fill number 1, then 2, then 3, then 4", not balanced load). The read here
+ * is a heuristic ordering only; claimEligibleNumber's transaction is still
+ * the source of truth for eligibility, so a stale ordering (e.g. a window
+ * that expired since this read) only affects preference, never correctness.
+ */
+function orderByLoad(docs: QueryDocumentSnapshot[]): string[] {
+  return [...docs]
+    .sort((a, b) => {
+      const da = a.data() as Record<string, any>;
+      const db = b.data() as Record<string, any>;
+      const windowDiff = (da.windowSentCount ?? 0) - (db.windowSentCount ?? 0);
+      if (windowDiff !== 0) return windowDiff;
+      const dailyDiff = (da.dailySentCount ?? 0) - (db.dailySentCount ?? 0);
+      if (dailyDiff !== 0) return dailyDiff;
+      return a.id.localeCompare(b.id);
+    })
+    .map((d) => d.id);
+}
+
+/**
  * Transactionally claims one sender number that still has window + daily quota,
  * resetting elapsed windows first. Increments the claimed number's counters so a
  * concurrent claim can't oversend. Returns null when every number is exhausted.
+ * Tries the least-loaded number first (see orderByLoad) for even distribution
+ * across all 4 senders.
  */
 export async function claimEligibleNumber(config: WhatsAppOutreachConfig): Promise<ClaimedNumber | null> {
   const snap = await adminDb.collection(COLLECTIONS.whatsappNumbers).where('status', '==', 'active').get();
-  const ids: string[] = snap.docs.map((d: QueryDocumentSnapshot): string => d.id);
+  const ids: string[] = orderByLoad(snap.docs as QueryDocumentSnapshot[]);
 
   for (const id of ids) {
     const ref: DocumentReference = adminDb.collection(COLLECTIONS.whatsappNumbers).doc(id);
@@ -178,4 +207,155 @@ export async function claimEligibleNumber(config: WhatsAppOutreachConfig): Promi
     if (claimed) return claimed;
   }
   return null;
+}
+
+// ─── Owner Negotiations ───────────────────────────────────────────────
+// Property owners we're negotiating to list/acquire from — distinct from
+// stakeholders (buyer/renter leads). Each negotiation tracks a two-way
+// history; outbound entries are added when we enqueue a message, inbound
+// entries when OmnichannelChatService routes a reply here (see
+// findActiveOwnerNegotiationByPhone).
+
+const ACTIVE_NEGOTIATION_STATUSES = ['contacted', 'negotiating'] as const;
+
+/**
+ * Finds an owner negotiation that's still "live" (not agreed/rejected/stale)
+ * for the given phone, so an inbound reply gets routed to the right thread
+ * instead of being treated as a generic lead/listing message.
+ */
+export async function findActiveOwnerNegotiationByPhone(
+  ownerPhone: string,
+): Promise<{ id: string; data: OwnerNegotiation } | null> {
+  const snap = await adminDb
+    .collection(COLLECTIONS.ownerNegotiations)
+    .where('ownerPhone', '==', ownerPhone)
+    .where('status', 'in', ACTIVE_NEGOTIATION_STATUSES)
+    .limit(1)
+    .get();
+
+  if (snap.empty) return null;
+  const doc = snap.docs[0];
+  return { id: doc.id, data: doc.data() as OwnerNegotiation };
+}
+
+/**
+ * Appends one entry to a negotiation's history (atomic arrayUnion) and bumps
+ * lastContactAt. Used for both outbound (we sent) and inbound (they replied)
+ * messages so the thread stays in one place.
+ */
+export async function appendOwnerNegotiationMessage(
+  negotiationId: string,
+  entry: { direction: WhatsAppMessageDirection; message: string; price?: number },
+): Promise<void> {
+  const ref = adminDb.collection(COLLECTIONS.ownerNegotiations).doc(negotiationId);
+  const historyEntry: Record<string, any> = {
+    direction: entry.direction,
+    message: entry.message,
+    timestamp: Timestamp.now(),
+  };
+  if (entry.price !== undefined) historyEntry.price = entry.price;
+
+  await ref.update({
+    history: FieldValue.arrayUnion(historyEntry),
+    lastContactAt: Timestamp.now(),
+    updatedAt: Timestamp.now(),
+    ...(entry.direction === 'inbound' ? { status: 'negotiating' } : {}),
+  });
+}
+
+/**
+ * Finds-or-creates the negotiation thread for an owner, appends the outbound
+ * message to its history, and enqueues the real WhatsApp send. This is the
+ * single entry point for starting or continuing an owner negotiation.
+ */
+export async function startOrContinueOwnerNegotiation(params: {
+  ownerPhone: string;
+  ownerName?: string;
+  unitId?: string;
+  brokerListingId?: string;
+  interestedLeadId?: string;
+  askingPrice?: number;
+  offerPrice?: number;
+  body: string;
+}): Promise<{ negotiationId: string; jobId: string }> {
+  const col = adminDb.collection(COLLECTIONS.ownerNegotiations);
+  const existing = await findActiveOwnerNegotiationByPhone(params.ownerPhone);
+
+  let negotiationId: string;
+  if (existing) {
+    negotiationId = existing.id;
+    const patch: Record<string, any> = { updatedAt: Timestamp.now() };
+    if (params.offerPrice !== undefined) patch.currentOfferPrice = params.offerPrice;
+    if (params.interestedLeadId !== undefined) patch.interestedLeadId = params.interestedLeadId;
+    await col.doc(negotiationId).update(patch);
+  } else {
+    const doc: Omit<OwnerNegotiation, 'id'> = {
+      ownerPhone: params.ownerPhone,
+      status: 'contacted',
+      history: [],
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
+      ...(params.ownerName ? { ownerName: params.ownerName } : {}),
+      ...(params.unitId ? { unitId: params.unitId } : {}),
+      ...(params.brokerListingId ? { brokerListingId: params.brokerListingId } : {}),
+      ...(params.interestedLeadId ? { interestedLeadId: params.interestedLeadId } : {}),
+      ...(params.askingPrice !== undefined ? { askingPrice: params.askingPrice } : {}),
+      ...(params.offerPrice !== undefined ? { currentOfferPrice: params.offerPrice } : {}),
+    };
+    const ref = await col.add(doc);
+    negotiationId = ref.id;
+  }
+
+  await appendOwnerNegotiationMessage(negotiationId, {
+    direction: 'outbound',
+    message: params.body,
+    ...(params.offerPrice !== undefined ? { price: params.offerPrice } : {}),
+  });
+
+  const jobId = await enqueueWhatsAppJob({
+    purpose: 'owner-negotiation',
+    toPhone: params.ownerPhone,
+    body: params.body,
+    ownerNegotiationId: negotiationId,
+    ...(params.unitId ? { unitId: params.unitId } : {}),
+  });
+
+  return { negotiationId, jobId };
+}
+
+/**
+ * Sends a follow-up message on an EXISTING negotiation thread, identified by
+ * id (not phone — the admin UI operates on a thread it already has open).
+ * Appends the outbound history entry and enqueues the real send.
+ */
+export async function sendOwnerNegotiationMessage(
+  negotiationId: string,
+  params: { body: string; price?: number },
+): Promise<{ jobId: string }> {
+  const ref = adminDb.collection(COLLECTIONS.ownerNegotiations).doc(negotiationId);
+  const snap = await ref.get();
+  if (!snap.exists) {
+    throw new Error(`Owner negotiation ${negotiationId} not found`);
+  }
+  const negotiation = snap.data() as OwnerNegotiation;
+
+  if (params.price !== undefined) {
+    await ref.update({ currentOfferPrice: params.price, updatedAt: Timestamp.now() });
+  }
+
+  await appendOwnerNegotiationMessage(negotiationId, {
+    direction: 'outbound',
+    message: params.body,
+    ...(params.price !== undefined ? { price: params.price } : {}),
+  });
+
+  const jobId = await enqueueWhatsAppJob({
+    purpose: 'owner-negotiation',
+    toPhone: negotiation.ownerPhone,
+    body: params.body,
+    ownerNegotiationId: negotiationId,
+    ...(negotiation.unitId ? { unitId: negotiation.unitId } : {}),
+  });
+
+  return { jobId };
 }
