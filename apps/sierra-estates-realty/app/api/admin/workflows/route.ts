@@ -1,8 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { verifyAdminRequest } from '@/lib/server/auth-guard';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { logger } from '@/lib/logger';
+
+const workflowCreateSchema = z.object({
+  name: z.string().min(1).max(200),
+  nameAr: z.string().max(200).optional(),
+  desc: z.string().max(1000).optional(),
+  descAr: z.string().max(1000).optional(),
+  color: z.string().max(32).optional(),
+});
 
 export async function GET(req: NextRequest) {
   const authResult = await verifyAdminRequest(req);
@@ -31,10 +40,11 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { name, nameAr, desc, descAr, color } = await req.json();
-    if (!name) {
-      return NextResponse.json({ error: 'name is required' }, { status: 400 });
+    const parsed = workflowCreateSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Invalid workflow payload', details: parsed.error.flatten() }, { status: 400 });
     }
+    const { name, nameAr, desc, descAr, color } = parsed.data;
 
     const ref = await adminDb.collection(COLLECTIONS.automationWorkflows).add({
       name,
