@@ -2,7 +2,7 @@ import 'server-only';
 import { adminDb } from '../server/firebase-admin';
 import { COLLECTIONS } from '../models/schema';
 import { OrchestrationStage } from '../services/orchestrator';
-import { Timestamp, FieldValue, type Transaction, type DocumentReference } from 'firebase-admin/firestore';
+import { Timestamp, type Transaction, type DocumentReference } from 'firebase-admin/firestore';
 
 // Linear stage order, used to make stage advances monotonic (forward-only) so
 // two concurrent agents can't double-advance or regress the pipeline.
@@ -146,6 +146,10 @@ export class StateManager {
 
   /**
    * Add to orchestration history.
+   *
+   * Written to an `orchestrationHistory` SUBCOLLECTION (one doc per entry) rather
+   * than an array field on the parent — an unbounded `arrayUnion` would eventually
+   * blow the 1 MB document-size limit after enough stage transitions.
    */
   static async addHistoryEntry(
     docId: string,
@@ -163,8 +167,6 @@ export class StateManager {
       ...details,
     };
 
-    await docRef.update({
-      orchestrationHistory: FieldValue.arrayUnion(historyEntry),
-    });
+    await docRef.collection('orchestrationHistory').add(historyEntry);
   }
 }
