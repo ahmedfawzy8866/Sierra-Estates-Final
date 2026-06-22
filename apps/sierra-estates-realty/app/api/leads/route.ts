@@ -17,7 +17,7 @@ const leadSchema = z.object({
 });
 
 export async function POST(req: Request) {
-  const rateLimitResponse = applyRateLimit(req, publicEndpointLimiter);
+  const rateLimitResponse = await applyRateLimit(req, publicEndpointLimiter);
   if (rateLimitResponse) return rateLimitResponse;
 
   try {

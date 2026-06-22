@@ -112,7 +112,7 @@ export async function GET(request: Request) {
       { status: 503 }
     );
   }
-  const rateLimitResponse = applyRateLimit(request, publicEndpointLimiter);
+  const rateLimitResponse = await applyRateLimit(request, publicEndpointLimiter);
   if (rateLimitResponse) return rateLimitResponse;
 
   try {
