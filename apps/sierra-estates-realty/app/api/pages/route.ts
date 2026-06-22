@@ -13,7 +13,7 @@ import { adminDb } from '@/lib/server/firebase-admin';
 import { logger } from '@/lib/logger';
 
 export async function GET(req: Request) {
-  const rateLimitResponse = applyRateLimit(req, publicEndpointLimiter);
+  const rateLimitResponse = await applyRateLimit(req, publicEndpointLimiter);
   if (rateLimitResponse) return rateLimitResponse;
 
   try {
