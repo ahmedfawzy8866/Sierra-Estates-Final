@@ -1,7 +1,7 @@
 {
   "projects": {
-    "default": "sierra-estates",
-    "production": "sierra-estates"
+    "default": "sierra-blu",
+    "production": "sierra-blu"
   },
   "etags": {}
 }

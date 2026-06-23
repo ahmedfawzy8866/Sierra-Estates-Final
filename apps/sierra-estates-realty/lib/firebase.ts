@@ -78,15 +78,17 @@ const unavailableClientService = <T>(serviceName: string): T =>
     }
   ) as T;
 
-export const auth: Auth = hasValidFirebaseConfig
+const isBuildTime = typeof window === 'undefined' && process.env.NEXT_PHASE === 'phase-production-build';
+
+export const auth: Auth = hasValidFirebaseConfig && !isBuildTime
   ? getAuth(app)
   : createMockAuth();
 
-export const db: Firestore = hasValidFirebaseConfig
+export const db: Firestore = hasValidFirebaseConfig && !isBuildTime
   ? getFirestore(app)
   : unavailableClientService<Firestore>('firestore');
 
-export const storage: FirebaseStorage = hasValidFirebaseConfig
+export const storage: FirebaseStorage = hasValidFirebaseConfig && !isBuildTime
   ? getStorage(app)
   : unavailableClientService<FirebaseStorage>('storage');
 

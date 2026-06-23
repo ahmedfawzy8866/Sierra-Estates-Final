@@ -2,7 +2,9 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "."
+    "rootDir": ".",
+    "types": ["node"],
+    "lib": ["esnext", "dom"]
   },
   "include": ["exchange-client.ts"],
   "exclude": ["node_modules", "dist"]
