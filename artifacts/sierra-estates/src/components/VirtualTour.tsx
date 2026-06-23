@@ -321,7 +321,7 @@ export default function VirtualTour() {
                 { label: autoPlay ? "⏹ Auto" : "▶ Auto", act: () => setAutoPlay(a => !a), on: autoPlay },
                 { label: fullscreen ? "⛶ Exit" : "⛶ Full", act: toggleFS, on: fullscreen },
               ].map((b, i) => (
-                <button key={i} onClick={b.act} style={{ background: b.on ? "linear-gradient(135deg,var(--gold),var(--gold-lt))" : "rgba(255,255,255,.09)", border: `1px solid ${b.on ? "var(--gold)" : "rgba(255,255,255,.13)"}`, color: b.on ? "var(--navy)" : "rgba(240,237,229,.8)", padding: "5px 14px", borderRadius: 20, cursor: "pointer", fontSize: 10.5, fontWeight: 600, transition: "all .2s", fontFamily: "inherit" }}>
+                <button key={i} onClick={b.act} style={{ background: b.on ? "linear-gradient(135deg,var(--gold),var(--gold-lt))" : "rgba(255,255,255,.09)", border: `1px solid ${b.on ? "var(--gold)" : "rgba(255,255,255,.13)"}`, color: b.on ? "var(--brand-dark)" : "rgba(240,237,229,.8)", padding: "5px 14px", borderRadius: 20, cursor: "pointer", fontSize: 10.5, fontWeight: 600, transition: "all .2s", fontFamily: "inherit" }}>
                   {b.label}
                 </button>
               ))}
@@ -368,7 +368,7 @@ export default function VirtualTour() {
               </div>
               <div style={{ fontFamily: "var(--font-mono)", fontSize: 15, fontWeight: 700, color: "var(--gold)", marginBottom: 8 }}>EGP 35,000,000</div>
               <div style={{ fontSize: 9.5, color: "rgba(240,237,229,.42)", marginBottom: 12, lineHeight: 1.6 }}>AI Match 97% · Recommended for Gulf investors seeking capital growth</div>
-              <button style={{ width: "100%", padding: "10px", borderRadius: 10, background: "linear-gradient(135deg,var(--gold),var(--gold-lt))", color: "var(--navy)", border: "none", cursor: "pointer", fontWeight: 700, fontSize: 10.5, fontFamily: "inherit" }}>
+              <button style={{ width: "100%", padding: "10px", borderRadius: 10, background: "linear-gradient(135deg,var(--gold),var(--gold-lt))", color: "var(--brand-dark)", border: "none", cursor: "pointer", fontWeight: 700, fontSize: 10.5, fontFamily: "inherit" }}>
                 Request Viewing
               </button>
             </div>

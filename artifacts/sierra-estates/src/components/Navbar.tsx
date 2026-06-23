@@ -217,7 +217,7 @@ export default function Navbar({
               {t("nav.lang")}
             </button>
             <button onClick={() => { setLocation("/request"); setMenuOpen(false); }}
-              style={{ padding: "10px 24px", borderRadius: 9, background: "linear-gradient(135deg,var(--gold),var(--gold-lt))", color: "var(--navy)", fontSize: 11, fontWeight: 800, letterSpacing: ".1em", textTransform: "uppercase", border: "none", cursor: "pointer", fontFamily: "inherit" }}>
+              style={{ padding: "10px 24px", borderRadius: 9, background: "linear-gradient(135deg,var(--gold),var(--gold-lt))", color: "var(--brand-dark)", fontSize: 11, fontWeight: 800, letterSpacing: ".1em", textTransform: "uppercase", border: "none", cursor: "pointer", fontFamily: "inherit" }}>
               {t("nav.cta")}
             </button>
           </div>

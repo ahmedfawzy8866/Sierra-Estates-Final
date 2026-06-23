@@ -154,7 +154,9 @@ function mapToClientListing(id: string, data: any) {
   const priceNum = parsePrice(data.price);
   const typeLower = (data.type || "Apartment").toLowerCase();
   let imgIndex = typeof data.img === 'number' ? data.img : 0;
-  const image = ESTATE_IMAGES[imgIndex % ESTATE_IMAGES.length];
+  const fallbackImage = ESTATE_IMAGES[imgIndex % ESTATE_IMAGES.length];
+  const image = data.image || data.coverPhoto || fallbackImage;
+  const images = data.images && data.images.length > 0 ? data.images : [image];
 
   return {
     id,
@@ -166,7 +168,7 @@ function mapToClientListing(id: string, data: any) {
     baths: data.baths || data.bathrooms || Math.max(1, (data.beds || 1) - 1),
     area: data.area || 0,
     image,
-    images: [image],
+    images,
     description: data.description || `Premium luxury ${typeLower} situated in the prestigious gated community of ${data.cmp || "Sierra Estates"}.`,
     propertyType: typeLower,
     status: data.status || "Active",

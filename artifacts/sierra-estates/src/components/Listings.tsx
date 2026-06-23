@@ -164,7 +164,7 @@ function ListingCard({
           </div>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
             <div className="lc-price">{priceStr}</div>
-            <button style={{ padding: "8px 18px", borderRadius: 8, background: "var(--navy)", color: "#fff", fontSize: 9.5, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", border: "none", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
+            <button style={{ padding: "8px 18px", borderRadius: 8, background: "var(--btn-bg, var(--navy))", color: "var(--btn-text, #fff)", fontSize: 9.5, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", border: "none", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
               💬 Inquire
             </button>
           </div>
@@ -221,9 +221,9 @@ function ListingCard({
 
         <div className="lc-price">{priceStr}</div>
 
-        <button style={{ width: "100%", marginTop: 10, padding: "10px", borderRadius: 9, background: "var(--navy)", color: "#fff", fontSize: 9.5, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", border: "none", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, transition: "all .25s" }}
-          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "linear-gradient(135deg,var(--gold),var(--gold-lt))"; (e.currentTarget as HTMLButtonElement).style.color = "var(--navy)"; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "var(--navy)"; (e.currentTarget as HTMLButtonElement).style.color = "#fff"; }}>
+        <button style={{ width: "100%", marginTop: 10, padding: "10px", borderRadius: 9, background: "var(--btn-bg, var(--navy))", color: "var(--btn-text, #fff)", fontSize: 9.5, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", border: "none", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, transition: "all .25s" }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "linear-gradient(135deg,var(--gold),var(--gold-lt))"; (e.currentTarget as HTMLButtonElement).style.color = "var(--brand-dark)"; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "var(--btn-bg, var(--navy))"; (e.currentTarget as HTMLButtonElement).style.color = "var(--btn-text, #fff)"; }}>
           <span style={{ fontSize: 14 }}>💬</span> Request Info
         </button>
       </div>
