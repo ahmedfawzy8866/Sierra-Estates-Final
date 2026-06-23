@@ -1,3 +1,4 @@
+import { applyRateLimit, publicEndpointLimiter } from "@/lib/server/rate-limit";
 import { NextRequest, NextResponse } from 'next/server';
 import { OmnichannelChatService } from '@/lib/services/OmnichannelChatService';
 
@@ -6,6 +7,8 @@ import { OmnichannelChatService } from '@/lib/services/OmnichannelChatService';
  * Serves as the dynamic gateway between the web-based LeilaConcierge widget and OmnichannelChatService.
  */
 export async function POST(req: NextRequest) {
+  const limited = applyRateLimit(req, publicEndpointLimiter);
+  if (limited) return limited;
   try {
     const { sessionId, message, name } = await req.json();
 
