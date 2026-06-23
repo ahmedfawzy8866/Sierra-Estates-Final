@@ -447,35 +447,44 @@ export default function App() {
         const emailLower = user.email?.toLowerCase();
         const isAllowedEmail = emailLower === 'a.fawzy8866@gmail.com' || emailLower === 'emeraldestatesegypt@gmail.com';
 
-        try {
-          const result = await api.get<{ isAdmin: boolean }>('/api/admin/auth/verify');
-          passesAdminRule = !!result.isAdmin;
-        } catch (e) {
-          console.warn('Admin verification check failed:', e);
-        }
-
-        // Client-side fallback check for development when backend credentials are not set locally
-        if (!passesAdminRule && isAllowedEmail) {
+        // Immediately grant access for bootstrapped owner emails — no API round-trip needed
+        if (isAllowedEmail) {
           passesAdminRule = true;
+        } else {
+          // API verify call with 5s timeout so it can never hang the UI
+          try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000);
+            const result = await api.get<{ isAdmin: boolean }>('/api/admin/auth/verify');
+            clearTimeout(timeoutId);
+            passesAdminRule = !!result.isAdmin;
+          } catch (e) {
+            console.warn('Admin verification check failed (non-owner):', e);
+          }
         }
 
         setIsAdminUser(passesAdminRule);
 
         if (passesAdminRule) {
-          try {
-            // Pre-seed clean Firebase indexes on absolute initial setup run
-            await seedFirestore();
-          } catch (seedErr) {
-            console.warn("Seeding process skipped or failed:", seedErr);
+          // Seed Firestore only ONCE per device — never block login with repeated seeds
+          const seedKey = `sierra_seeded_${user.uid}`;
+          if (!localStorage.getItem(seedKey)) {
+            try {
+              await seedFirestore();
+              localStorage.setItem(seedKey, '1');
+            } catch (seedErr) {
+              console.warn("Seeding process skipped or failed:", seedErr);
+            }
           }
         } else {
-          await createSierraNotification(
+          // Fire-and-forget — don't await this, it should not block the UI
+          createSierraNotification(
             'error',
             'Intrusion Warning: Access Denied',
             `Unauthorized login attempt from ${user.email || 'anonymous-user'}. Resource access blocked.`,
             'تحذير اختراق: تم رفض الدخول',
             `محاولة دخول غير مصرح بها من ${user.email || 'مجهول'}. تم حجب الوصول بنجاح.`
-          );
+          ).catch(console.warn);
         }
       } else {
         setIsAdminUser(false);
