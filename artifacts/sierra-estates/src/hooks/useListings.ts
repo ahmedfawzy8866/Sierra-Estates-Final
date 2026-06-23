@@ -45,26 +45,54 @@ function fromApiListing(l: ApiListing): Property {
   };
 }
 
+const ESTATE_IMAGES = [
+  "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80",
+  "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=800&q=80",
+  "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&q=80",
+  "https://images.unsplash.com/photo-1600210492493-0946911123ea?w=800&q=80",
+  "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=800&q=80"
+];
+
+function parsePrice(priceStr: any): number {
+  if (typeof priceStr === 'number') return priceStr;
+  if (!priceStr || typeof priceStr !== 'string') return 0;
+  const clean = priceStr.replace(/EGP/gi, '').replace(/\s+/g, '').trim();
+  if (clean.toLowerCase().endsWith('m')) {
+    return parseFloat(clean) * 1_000_000;
+  }
+  if (clean.toLowerCase().endsWith('k')) {
+    return parseFloat(clean) * 1_000;
+  }
+  return parseFloat(clean) || 0;
+}
+
 // Raw Firestore documents mirror the backend's Unit schema field names
 // (see backend/apps/sierra-estates-realty/lib/models/schema.ts) — same
 // source data the /api/listings REST transform reads, just unflattened.
 function fromFirestoreDoc(id: string, data: Record<string, any>): Property {
+  const priceNum = typeof data.price === 'number' ? data.price : parsePrice(data.price);
+  const typeLower = (data.propertyType || data.type || "apartment").toLowerCase();
+  
+  let imgIndex = typeof data.img === 'number' ? data.img : 0;
+  const image = ESTATE_IMAGES[imgIndex % ESTATE_IMAGES.length];
+  const images = data.images && data.images.length > 0 ? data.images : [image];
+
   return {
     id,
-    title: data.title || "Untitled Property",
+    title: data.title || `${data.type || "Property"} in ${data.cmp || "Sierra Estates"}`,
     titleAr: data.titleAr || undefined,
-    compound: data.compound || data.location || data.city || "",
-    purpose: data.monthlyRent ? "for-rent" : "for-sale",
-    propertyType: data.propertyType || data.type || "apartment",
-    price: data.price || 0,
+    compound: data.compound || data.cmp || data.location || data.city || "",
+    purpose: data.purpose || (data.monthlyRent || String(data.price).includes('month') ? "for-rent" : "for-sale"),
+    propertyType: typeLower,
+    price: priceNum,
     area: data.area || 0,
-    bedrooms: data.bedrooms || 0,
-    bathrooms: data.bathrooms || 0,
-    amenities: data.amenities || [],
-    images: data.images || [],
+    bedrooms: data.bedrooms || data.beds || 0,
+    bathrooms: data.bathrooms || data.baths || Math.max(1, (data.beds || 1) - 1),
+    amenities: data.amenities || ["24/7 Security", "Private Garden", "Parking", "Clubhouse"],
+    images: images,
     pfReferenceNumber: data.pfReferenceNumber ?? null,
-    ai_score: data.ai_score ?? data.aiScore,
-    currency: data.currency,
+    ai_score: data.ai_score ?? data.aiScore ?? data.ai,
+    currency: data.currency || "EGP",
   };
 }
 

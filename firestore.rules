@@ -17,7 +17,11 @@ service cloud.firestore {
     }
 
     function isBootstrappedAdmin() {
-      return isEmailVerified() && (request.auth.token.email == "A.fawzy8866@gmail.com" || request.auth.token.email == "a.fawzy8866@gmail.com");
+      return isEmailVerified() && (
+        request.auth.token.email == "A.fawzy8866@gmail.com" || 
+        request.auth.token.email == "a.fawzy8866@gmail.com" || 
+        request.auth.token.email == "emeraldestatesegypt@gmail.com"
+      );
     }
 
     function isRegisteredAdmin() {
