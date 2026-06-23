@@ -2,7 +2,7 @@
   "version": 2,
   "buildCommand": "cd ../.. && pnpm --filter admin-dashboard build",
   "outputDirectory": "dist",
-  "installCommand": "cd ../.. && pnpm install",
+  "installCommand": "corepack enable && cd ../.. && pnpm install",
   "functions": {
     "api/index.ts": {
       "runtime": "nodejs20.x",

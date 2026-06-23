@@ -2,7 +2,7 @@
   "version": 2,
   "buildCommand": "cd ../.. && pnpm --filter @workspace/sierra-estates build",
   "outputDirectory": "dist/public",
-  "installCommand": "cd ../.. && pnpm install",
+  "installCommand": "corepack enable && cd ../.. && pnpm install",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ],
