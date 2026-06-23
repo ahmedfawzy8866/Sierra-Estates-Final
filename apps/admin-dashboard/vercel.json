@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "buildCommand": "cd ../.. && pnpm --filter admin-dashboard build",
+  "buildCommand": "npm run build:server",
   "outputDirectory": "dist",
-  "installCommand": "npm install --prefix ../../ --legacy-peer-deps",
+  "installCommand": "npm install",
   "functions": {
     "api/server.js": {
       "maxDuration": 30,
