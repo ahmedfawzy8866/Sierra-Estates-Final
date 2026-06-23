@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npx cross-env NODE_OPTIONS=--max-old-space-size=4096 next build",
+    "build": "cross-env NODE_OPTIONS=--max-old-space-size=4096 next build",
     "start": "next start",
     "lint": "eslint . --max-warnings 0 && node scripts/validate-configs.mjs",
     "type-check": "tsc --noEmit",
@@ -83,6 +83,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/three": "^0.184.1",
+    "cross-env": "^7.0.3",
     "esbuild": "^0.24.0",
     "eslint": "^9",
     "eslint-config-next": "^16.2.4",
