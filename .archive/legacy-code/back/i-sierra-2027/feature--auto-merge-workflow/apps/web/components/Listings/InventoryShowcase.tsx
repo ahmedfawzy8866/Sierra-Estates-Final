@@ -1,19 +1,19 @@
 'use client';
 
 /**
- * SIERRA BLU — INVENTORY SHOWCASE
- * Demonstrates how to use the useSierraBlu hook for data fetching
+ * sierra estates — INVENTORY SHOWCASE
+ * Demonstrates how to use the usesierraestates hook for data fetching
  * Component: High-fidelity grid of available properties with live data
  */
 
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { useSierraBlu } from '@/hooks/useSierraBlu';
+import { usesierraestates } from '@/hooks/usesierraestates';
 import { LuxuryCard, EditorialHeading, SectionBadge } from '@/components/UI/LuxurySkeleton';
 import { MapPin, ArrowRight } from 'lucide-react';
 
 export default function InventoryShowcase() {
-  const { units, loading, error } = useSierraBlu();
+  const { units, loading, error } = usesierraestates();
 
   // Sort and limit units for showcase (top 6)
   const featuredUnits = useMemo(() => {

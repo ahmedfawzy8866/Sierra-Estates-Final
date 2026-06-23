@@ -1,4 +1,4 @@
-// sierra-blue/lib/integrations/portfolio-asset-registry.ts
+// sierra-estates/lib/integrations/portfolio-asset-registry.ts
 // Portfolio Asset Registry (Property Finder Egypt) API V3 — Full Bidirectional Integration
 // Covers: Portfolio Assets push, image CDN sync, Investment Stakeholder webhook ingestion, valuation updates
 import { createHmac } from "node:crypto";

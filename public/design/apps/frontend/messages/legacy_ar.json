@@ -517,7 +517,7 @@
       "identifier": "معرف المسؤول",
       "securityKey": "مفتاح الأمان",
       "initialize": "بدأ التجاوز",
-      "identifierPlaceholder": "admin.access@sierrablurealty.com",
+      "identifierPlaceholder": "admin.access@sierraestatesrealty.com",
       "keyPlaceholder": "••••••••••••",
       "encrypted": "نفق مشفر نشط",
       "mfa": "تم التحقق من MFA للأجهزة",

@@ -1,6 +1,6 @@
 "use client";
 /**
- * SIERRA BLU REALTY — PUBLIC LANDING PAGE V2
+ * sierra estates REALTY — PUBLIC LANDING PAGE V2
  * ─────────────────────────────────────────────────────────────────
  * Route:  /landing   (customer-facing, no login required)
  * Portal: /          (advisor dashboard, login required)
@@ -459,7 +459,7 @@ function LandingContent() {
         <a href="#" className="sb-logo">
           <ShieldLogo size={36} dark={dark} />
           <div className="sb-logo-text">
-            <span className="sb-logo-name">Sierra Blu</span>
+            <span className="sb-logo-name">sierra estates</span>
             <span className="sb-logo-sub">Beyond Brokerage</span>
           </div>
         </a>
@@ -496,7 +496,7 @@ function LandingContent() {
           <p className="sb-hero-sub reveal">
             {ar
               ? "سييرا بلو — أبعد من مجرد وساطة. نجمع بين أفضل العقارات في التجمع الخامس مع ذكاء اصطناعي يجد لك ما يناسبك بدقة."
-              : "Sierra Blu Realty — curating the finest properties across New Cairo's top compounds, powered by AI that understands exactly what you're looking for."}
+              : "sierra estates Realty — curating the finest properties across New Cairo's top compounds, powered by AI that understands exactly what you're looking for."}
           </p>
           <div className="sb-hero-btns reveal">
             <button className="sb-btn-primary" onClick={() => document.getElementById("listings")?.scrollIntoView({ behavior: "smooth" })}>
@@ -652,7 +652,7 @@ function LandingContent() {
                 ? "سييرا مستشارتك الذكية على تيليجرام. تفهم احتياجاتك، تحلل السوق، وتجيبك بخيارات مخصصة لك في ثوان."
                 : "Sierra is your AI advisor on Telegram. She understands your needs, analyzes the market, and delivers personalized recommendations in seconds."}
             </p>
-            <a href="https://t.me/SierraBluBot" target="_blank" rel="noopener noreferrer" className="sb-ai-btn reveal">
+            <a href="https://t.me/sierraestatesBot" target="_blank" rel="noopener noreferrer" className="sb-ai-btn reveal">
               📲 {ar ? "ابدأ مع سييرا على تيليجرام" : "Start with Sierra on Telegram"}
             </a>
           </div>
@@ -661,7 +661,7 @@ function LandingContent() {
               <div>
                 <div className="sb-chat-name">Sierra · سييرا 🤖</div>
                 <div className="sb-chat-bubble sb-chat-bot">
-                  {ar ? "أهلاً! أنا سييرا 👋\nمساعدتك الذكية في سييرا بلو. حضرتك عايز/ة إيه؟" : "Hello! I'm Sierra 👋\nYour AI real estate advisor at Sierra Blu. What are you looking for?"}
+                  {ar ? "أهلاً! أنا سييرا 👋\nمساعدتك الذكية في سييرا بلو. حضرتك عايز/ة إيه؟" : "Hello! I'm Sierra 👋\nYour AI real estate advisor at sierra estates. What are you looking for?"}
                 </div>
               </div>
               <div className="sb-chat-bubble sb-chat-user">{ar ? "عايز فيلا في ميفيدا، ٣ غرف، حوالي ١٥ مليون" : "Looking for a 3BR villa in Mivida, around 15M EGP"}</div>
@@ -717,7 +717,7 @@ function LandingContent() {
             <div className="sb-footer-logo-row">
               <ShieldLogo size={32} dark={dark} />
               <div>
-                <div className="sb-footer-brand-name">Sierra Blu</div>
+                <div className="sb-footer-brand-name">sierra estates</div>
                 <div className="sb-footer-brand-sub">Beyond Brokerage</div>
               </div>
             </div>
@@ -729,7 +729,7 @@ function LandingContent() {
           {[
             { title: ar ? "استكشاف" : "Discovery", links: [{ en: "All Listings", ar: "كل العقارات" }, { en: "Intelligence", ar: "ذكاء السوق" }, { en: "New Cairo Map", ar: "خريطة التجمع" }] },
             { title: ar ? "الشركة" : "Company", links: [{ en: "About Us", ar: "عن الشركة" }, { en: "Advisors", ar: "المستشارون" }, { en: "Careers", ar: "وظائف" }] },
-            { title: ar ? "تواصل" : "Contact", links: [{ en: "+20 100 123 4567", ar: "+20 100 123 4567" }, { en: "hello@sierrablurealty.com", ar: "hello@sierrablurealty.com" }, { en: "New Cairo, Egypt", ar: "التجمع الخامس، مصر" }] },
+            { title: ar ? "تواصل" : "Contact", links: [{ en: "+20 100 123 4567", ar: "+20 100 123 4567" }, { en: "hello@sierraestatesrealty.com", ar: "hello@sierraestatesrealty.com" }, { en: "New Cairo, Egypt", ar: "التجمع الخامس، مصر" }] },
           ].map((col) => (
             <div key={col.title}>
               <div className="sb-footer-col-title">{col.title}</div>
@@ -741,7 +741,7 @@ function LandingContent() {
         </div>
 
         <div className="sb-footer-bottom">
-          <span className="sb-footer-copy">© 2026 Sierra Blu Realty. All Rights Reserved.</span>
+          <span className="sb-footer-copy">© 2026 sierra estates Realty. All Rights Reserved.</span>
           <div className="sb-footer-bottom-row">
             <div className="sb-pf-badge"><span className="sb-pf-dot" />PF Synced</div>
             <a href="#" className="sb-footer-link">Privacy</a>

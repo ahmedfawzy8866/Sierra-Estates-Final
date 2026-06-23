@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { OrchestratorService } from '@/lib/services/orchestrator';
 import { COLLECTIONS } from '@/lib/models/schema';
-import { logger } from '@/lib/logger';
 
 /**
  * Trigger Sierra Estates Orchestration Pipeline
@@ -28,8 +27,8 @@ export async function POST(req: NextRequest) {
     // Run the pipeline asynchronously
     // In a production environment, this might be handled by a message queue
     OrchestratorService.runPipeline(docId, collection as keyof typeof COLLECTIONS)
-      .then(() => logger.info(`Pipeline execution finished for ${docId}`))
-      .catch((err) => logger.error(`Pipeline execution failed for ${docId}`, err));
+      .then(() => console.log('Pipeline execution finished', { docId }))
+      .catch((err) => console.error('Pipeline execution failed', { docId, error: err }));
 
     return NextResponse.json({ 
       message: 'Orchestration pipeline triggered',

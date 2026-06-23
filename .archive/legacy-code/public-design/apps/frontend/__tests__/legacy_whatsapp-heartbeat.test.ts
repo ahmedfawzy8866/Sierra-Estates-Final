@@ -14,7 +14,8 @@ describe('/api/whatsapp/heartbeat route', () => {
   });
 
   test('GET returns endpoint status payload', async () => {
-    const res = await GET();
+    const mockReq = new Request('http://localhost', { headers: new Headers() });
+    const res = await GET(mockReq as any);
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -24,7 +25,8 @@ describe('/api/whatsapp/heartbeat route', () => {
   test('POST records active heartbeat and returns ok payload', async () => {
     recordHeartbeatMock.mockResolvedValue(undefined);
 
-    const res = await POST();
+    const mockReq = new Request('http://localhost', { headers: new Headers() });
+    const res = await POST(mockReq as any);
     const body = await res.json();
 
     expect(res.status).toBe(200);

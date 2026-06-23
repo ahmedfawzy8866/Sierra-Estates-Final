@@ -1,7 +1,6 @@
 import { adminDb } from '../server/firebase-admin';
 import { COLLECTIONS, Unit } from '../models/schema';
 import { mapRowToUnit } from './listing-normalize';
-import { logger } from '@/lib/logger';
 
 /**
  * AIRTABLE INTEGRATION
@@ -100,7 +99,7 @@ export class AirtableIntegrationService {
     table: string,
   ): Promise<AirtableSyncResult> {
     try {
-      logger.info(`[AirtableIntegrationService] Syncing table "${table}"...`);
+      console.log(`[AirtableIntegrationService] Syncing table "${table}"...`);
       const records = await this.fetchTableRecords(cfg, table);
       const ownerType = this.ownerTypeForTable(table);
 
@@ -133,7 +132,7 @@ export class AirtableIntegrationService {
       }
 
       await batch.commit();
-      logger.info(`[AirtableIntegrationService] "${table}": synced ${syncedCount}, errors ${errorCount}.`);
+      console.log(`[AirtableIntegrationService] "${table}": synced ${syncedCount}, errors ${errorCount}.`);
 
       return {
         success: true,
@@ -145,7 +144,7 @@ export class AirtableIntegrationService {
       };
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
-      logger.error(`[AirtableIntegrationService] Sync failed for "${table}":`, message);
+      console.error(`[AirtableIntegrationService] Sync failed for "${table}":`, message);
       return { success: false, table, error: message };
     }
   }

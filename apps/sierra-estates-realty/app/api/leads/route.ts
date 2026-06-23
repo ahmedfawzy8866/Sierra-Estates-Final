@@ -4,6 +4,7 @@ import { Timestamp } from 'firebase-admin/firestore';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { sendTelegramMessage } from '@/lib/telegram';
 import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
+import { enqueueWhatsAppJob } from '@/lib/server/whatsapp-queue';
 
 import { z } from 'zod';
 import { logger } from '@/lib/logger';
@@ -17,7 +18,7 @@ const leadSchema = z.object({
 });
 
 export async function POST(req: Request) {
-  const rateLimitResponse = applyRateLimit(req, publicEndpointLimiter);
+  const rateLimitResponse = await applyRateLimit(req, publicEndpointLimiter);
   if (rateLimitResponse) return rateLimitResponse;
 
   try {
@@ -70,6 +71,21 @@ export async function POST(req: Request) {
     `.trim();
 
     await sendTelegramMessage(text);
+
+    // 3. Notify the agency owner via WhatsApp (queued, drained by the existing dispatch cron)
+    const notifyNumber = process.env.LEAD_NOTIFY_WHATSAPP_NUMBER;
+    if (notifyNumber) {
+      try {
+        await enqueueWhatsAppJob({
+          purpose: 'general-outreach',
+          toPhone: notifyNumber,
+          body: `New lead from sierra-estates.net\nName: ${name}\nEmail: ${email}\nPhone: ${phone ?? 'n/a'}\nMessage: ${message ?? 'n/a'}`,
+          leadId: leadRef.id,
+        });
+      } catch (error) {
+        logger.error('Failed to enqueue lead WhatsApp notification:', error);
+      }
+    }
 
     return NextResponse.json({ success: true, id: leadRef.id });
   } catch (error) {

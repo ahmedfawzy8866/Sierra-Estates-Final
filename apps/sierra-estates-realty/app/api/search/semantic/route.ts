@@ -35,7 +35,7 @@ import { adminDb } from '@/lib/server/firebase-admin';
 import { logger } from '@/lib/logger';
 
 export async function POST(req: Request) {
-  const rateLimitResponse = applyRateLimit(req, publicEndpointLimiter);
+  const rateLimitResponse = await applyRateLimit(req, publicEndpointLimiter);
   if (rateLimitResponse) return rateLimitResponse;
 
   try {
@@ -95,7 +95,7 @@ export async function POST(req: Request) {
 
 /** GET /api/search/semantic — return API metadata (handy for health checks). */
 export async function GET(req: Request) {
-  const rateLimitResponse = applyRateLimit(req, publicEndpointLimiter);
+  const rateLimitResponse = await applyRateLimit(req, publicEndpointLimiter);
   if (rateLimitResponse) return rateLimitResponse;
 
   return NextResponse.json({

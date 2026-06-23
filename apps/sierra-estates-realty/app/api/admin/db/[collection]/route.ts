@@ -35,7 +35,7 @@ const BLOCKED_COLLECTIONS = new Set([
 ]);
 
 async function callerIsSuperadmin(authResult: AuthResult): Promise<boolean> {
-  if (authResult.method === 'secret-key' || authResult.method === 'cron-secret') return true;
+  if (authResult.method === 'secret-key') return true;
   if (!authResult.uid) return false;
   const callerDoc = await adminDb.collection('users').doc(authResult.uid).get();
   return callerDoc.data()?.role === 'superadmin';

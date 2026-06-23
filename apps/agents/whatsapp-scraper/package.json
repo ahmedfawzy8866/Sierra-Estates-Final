@@ -1,8 +1,11 @@
 {
-  "name": "sierra-estates-whatsapp-scraper",
+  "name": "whatsapp-scraper",
   "version": "1.0.0",
+  "private": true,
   "main": "index.js",
-  "type": "commonjs",
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
     "whatsapp-web.js": "^1.26.0",
     "qrcode-terminal": "^0.12.0",

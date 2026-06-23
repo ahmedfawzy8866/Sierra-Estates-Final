@@ -12,7 +12,6 @@
  */
 
 import { db } from '@/lib/firebase';
-import { logger } from '@/lib/logger';
 import {
   collection,
   getDocs,
@@ -362,7 +361,7 @@ export async function createMigrationAuditTrail(
       createdAt: serverTimestamp(),
     });
   } catch (error) {
-    logger.error('Failed to create migration audit trail:', error);
+    console.error('Failed to create migration audit trail:', error);
   }
 }
 
@@ -376,52 +375,52 @@ export async function runMigrations(dryRun = false): Promise<{
   validation: { valid: boolean; issues: string[] };
   executedAt: Date;
 }> {
-  logger.info(`Starting admin data migrations (dry-run: ${dryRun})...`);
+  console.log(`Starting admin data migrations (dry-run: ${dryRun})...`);
 
   const results: MigrationResult[] = [];
 
   try {
     // Step 1: Migrate team members
-    logger.info('Migrating team members...');
+    console.log('Migrating team members...');
     const teamResult = await migrateTeamMembers();
     results.push(teamResult);
     if (teamResult.success) {
-      logger.info(`✓ Migrated ${teamResult.recordsMigrated} team members`);
+      console.log(`✓ Migrated ${teamResult.recordsMigrated} team members`);
     }
 
     // Step 2: Migrate deals
-    logger.info('Migrating deals...');
+    console.log('Migrating deals...');
     const dealsResult = await migrateDealStructure();
     results.push(dealsResult);
     if (dealsResult.success) {
-      logger.info(`✓ Migrated ${dealsResult.recordsMigrated} deals`);
+      console.log(`✓ Migrated ${dealsResult.recordsMigrated} deals`);
     }
 
     // Step 3: Migrate listings
-    logger.info('Migrating listings...');
+    console.log('Migrating listings...');
     const listingsResult = await migrateListings();
     results.push(listingsResult);
     if (listingsResult.success) {
-      logger.info(`✓ Migrated ${listingsResult.recordsMigrated} listings`);
+      console.log(`✓ Migrated ${listingsResult.recordsMigrated} listings`);
     }
 
     // Step 4: Validate
-    logger.info('Validating migrated data...');
+    console.log('Validating migrated data...');
     const validation = await validateMigration();
     if (validation.valid) {
-      logger.info('✓ All data validation checks passed');
+      console.log('✓ All data validation checks passed');
     } else {
-      logger.warn('⚠ Validation issues found:', validation.issues);
+      console.warn('⚠ Validation issues found:', validation.issues);
     }
 
     // Step 5: Create audit trail (only if not dry-run)
     if (!dryRun) {
-      logger.info('Creating audit trail...');
+      console.log('Creating audit trail...');
       await createMigrationAuditTrail('system_migration', results);
-      logger.info('✓ Audit trail created');
+      console.log('✓ Audit trail created');
     }
 
-    logger.info('✓ All migrations completed successfully');
+    console.log('✓ All migrations completed successfully');
 
     return {
       success: true,
@@ -430,7 +429,7 @@ export async function runMigrations(dryRun = false): Promise<{
       executedAt: new Date(),
     };
   } catch (error) {
-    logger.error('✗ Migration failed:', error);
+    console.error('✗ Migration failed:', error);
     return {
       success: false,
       results,

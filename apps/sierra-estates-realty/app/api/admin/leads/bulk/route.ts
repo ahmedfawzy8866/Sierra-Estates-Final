@@ -6,6 +6,9 @@ import { mapSpaToLeadPatch } from '@/lib/server/admin-spa-mappers';
 import { Timestamp } from 'firebase-admin/firestore';
 import { logger } from '@/lib/logger';
 
+// Force dynamic rendering — uses Firebase/auth at runtime
+export const dynamic = 'force-dynamic';
+
 /** Mirrors the SPA's writeBatch usage for multi-select actions in LeadsPage. */
 export async function POST(req: NextRequest) {
   const authResult = await verifyAdminRequest(req);

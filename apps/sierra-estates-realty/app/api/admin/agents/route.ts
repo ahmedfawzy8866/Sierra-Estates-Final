@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { verifyAdminRequest } from '@/lib/server/auth-guard';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { logger } from '@/lib/logger';
+
+const agentCreateSchema = z.object({
+  name: z.string().min(1).max(200),
+  desc: z.string().max(1000).optional(),
+  emoji: z.string().max(16).optional(),
+  color: z.string().max(32).optional(),
+});
 
 const WHATSAPP_STATUS_TO_DISPLAY: Record<string, string> = {
   active: 'Online',
@@ -62,10 +70,11 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { name, desc, emoji, color } = await req.json();
-    if (!name) {
-      return NextResponse.json({ error: 'name is required' }, { status: 400 });
+    const parsed = agentCreateSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Invalid agent payload', details: parsed.error.flatten() }, { status: 400 });
     }
+    const { name, desc, emoji, color } = parsed.data;
 
     const ref = await adminDb.collection(COLLECTIONS.agentStatus).add({
       name,

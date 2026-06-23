@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * SIERRA BLU — PREMIUM HERO SECTION (CINEMATIC)
+ * sierra estates — PREMIUM HERO SECTION (CINEMATIC)
  * Cinematic parallax hero with luxury villa imagery
  * Design: Quiet Luxury (Navy/Gold/Ivory)
  */

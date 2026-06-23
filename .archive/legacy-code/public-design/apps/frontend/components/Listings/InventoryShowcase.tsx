@@ -2,18 +2,18 @@
 
 /**
  * SIERRA ESTATES — INVENTORY SHOWCASE
- * Demonstrates how to use the useSierraBlu hook for data fetching
+ * Demonstrates how to use the usesierraestates hook for data fetching
  * Component: High-fidelity grid of available properties with live data
  */
 
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { useSierraBlu } from '@/hooks/useSierraBlu';
+import { usesierraestates } from '@/hooks/usesierraestates';
 import { LuxuryCard, EditorialHeading, SectionBadge } from '@/components/UI/LuxurySkeleton';
 import { MapPin, TrendingUp, ArrowRight } from 'lucide-react';
 
 export default function InventoryShowcase() {
-  const { units, loading, error } = useSierraBlu();
+  const { units, loading, error } = usesierraestates();
   const normalizedFilters = useMemo(
     () => ({
       purposeFilter: filters?.purpose?.trim() ?? '',

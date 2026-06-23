@@ -1,5 +1,5 @@
 /**
- * SIERRA BLU — FIREBASE CLIENT SINGLETON
+ * sierra estates — FIREBASE CLIENT SINGLETON
  * Central Firebase initialization for the frontend.
  * Admin SDK (service-account.json) is for server/scripts only.
  */
@@ -56,7 +56,7 @@ try {
 
 export const isFirebaseClientConfigured = hasValidFirebaseConfig;
 
-const _createMockAuth = (): Auth => {
+const createMockAuth = (): Auth => {
   return new Proxy({} as any, {
     get(target, prop) {
       if (prop === '_isProxy') return true;
@@ -66,7 +66,7 @@ const _createMockAuth = (): Auth => {
   });
 };
 
-const _unavailableClientService = <T>(serviceName: string): T =>
+const unavailableClientService = <T>(serviceName: string): T =>
   new Proxy(
     {},
     {
@@ -78,11 +78,17 @@ const _unavailableClientService = <T>(serviceName: string): T =>
     }
   ) as T;
 
-export const auth: Auth = getAuth(app);
+export const auth: Auth = hasValidFirebaseConfig
+  ? getAuth(app)
+  : createMockAuth();
 
-export const db: Firestore = getFirestore(app);
+export const db: Firestore = hasValidFirebaseConfig
+  ? getFirestore(app)
+  : unavailableClientService<Firestore>('firestore');
 
-export const storage: FirebaseStorage = getStorage(app);
+export const storage: FirebaseStorage = hasValidFirebaseConfig
+  ? getStorage(app)
+  : unavailableClientService<FirebaseStorage>('storage');
 
 export async function getAnalyticsInstance() {
   if (typeof window === 'undefined') return null;
@@ -93,20 +99,6 @@ export async function getAnalyticsInstance() {
   } catch {
     return null;
   }
-}
-
-import { DocumentData } from 'firebase/firestore';
-export interface Property extends DocumentData {
-  id: string;
-  title: string;
-  compound: string;
-  priceLabel: string;
-  img: string;
-  beds: number;
-  baths: number;
-  area: string;
-  aiScore: number;
-  netCapitalRoi?: number;
 }
 
 export default app;

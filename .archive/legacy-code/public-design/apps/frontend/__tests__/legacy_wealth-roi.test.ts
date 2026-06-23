@@ -11,6 +11,11 @@ jest.mock('@/lib/services/roi-service', () => ({
   analyzeAssetFinancials: (...args: unknown[]) => analyzeAssetFinancialsMock(...args),
 }));
 
+jest.mock('@/lib/server/auth-guard', () => ({
+  verifyAdminRequest: jest.fn().mockResolvedValue({ authenticated: true, uid: 'test-user' }),
+  unauthorizedResponse: jest.fn(),
+}));
+
 import { POST } from '@/app/api/wealth/roi/route';
 
 describe('POST /api/wealth/roi', () => {

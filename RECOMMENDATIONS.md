@@ -28,7 +28,7 @@
   - Fixed Next.js Vercel output resolution bugs and successfully deployed the unified monorepo to production.
   - Linked `admin.sierra-estates.net` domain and set `ADMIN_HOST` variable on Vercel to isolate admin compute.
   - Converted Type-check and Build CI pipelines into hard gates to prevent broken code merging to `main`.
-  - Replaced remaining legacy `sierra-blu-realty` Firebase project IDs with the unified `sierra-blu` configuration.
+  - Replaced remaining legacy `sierra-estates-realty` Firebase project IDs with the unified `sierra-estates` configuration.
   - Swept documentation to replace all old repository names (`i-sierra-2027`, `sf1`, `Sierra-2027`) with `Sierra-Estates-Final`.
 
 ## 3. Prioritized roadmap

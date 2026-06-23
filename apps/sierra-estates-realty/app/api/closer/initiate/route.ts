@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
-import { logger } from '@/lib/logger';
 
 /**
  * API: INITIATE CLOSING (STAGE 9)
@@ -11,7 +10,7 @@ import { logger } from '@/lib/logger';
  * and notifies all stakeholders via a.fawzy8866@gmail.com.
  */
 export async function POST(request: Request) {
-  const rateLimitResponse = applyRateLimit(request, publicEndpointLimiter);
+  const rateLimitResponse = await applyRateLimit(request, publicEndpointLimiter);
   if (rateLimitResponse) return rateLimitResponse;
 
   try {
@@ -92,7 +91,7 @@ Sierra Estates Intelligence OS
     });
 
   } catch (error) {
-    logger.error('[API Closer] Initiation Error:', error);
+    console.error('[API Closer] Initiation Error:', error);
     return NextResponse.json({ 
       error: 'Failed to synchronize with the Closer Agent.',
       details: (error as Error).message 

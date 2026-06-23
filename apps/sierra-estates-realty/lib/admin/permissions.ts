@@ -47,6 +47,7 @@ export const ADMIN_NAV: AdminNavItem[] = [
   { href: '/admin/leads',          label: 'Leads Queue',      icon: 'ClipboardList',   section: 'Operations', roles: ['admin', 'manager', 'agent'] },
   { href: '/admin/easylisting',    label: 'EasyListing',      icon: 'Wand2',           section: 'Operations', roles: ['admin', 'manager', 'agent'] },
   { href: '/admin/whatsapp-sender', label: 'WhatsApp Sender', icon: 'MessageSquare',  section: 'Operations', roles: ['admin', 'manager'] },
+  { href: '/admin/owner-negotiations', label: 'Owner Negotiations', icon: 'Users', section: 'Operations', roles: ['admin', 'manager'] },
   { href: '/admin/units',          label: 'Listings Hub',     icon: 'Building2',       section: 'Operations', roles: ['admin', 'manager', 'agent'] },
   { href: '/admin/deals',          label: 'Deals · Closer',   icon: 'Handshake',       section: 'Operations', roles: ['admin', 'manager', 'agent'] },
   { href: '/admin/media',          label: 'Media Hub',        icon: 'ImageIcon',       section: 'Operations', roles: ['admin', 'manager', 'agent'] },

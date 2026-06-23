@@ -47,7 +47,7 @@ const COPY = {
   en: {
     dir: 'ltr' as const,
     brand: 'SIERRA ESTATES', sub: 'REALTY',
-    tagline: 'SIERRA-BLU REALTY | BEYOND BROKERAGE',
+    tagline: 'sierra-estates REALTY | BEYOND BROKERAGE',
     nav: ['Properties', 'Intelligence', 'About', 'Contact'],
     cta: 'Enter Portal',
     heroTag: 'Beyond Brokerage',

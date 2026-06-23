@@ -1,76 +1,95 @@
-import { adminDb } from '../../web/src/lib/server/firebase-admin';
-import { getTemplate } from './messaging/templates';
+/**
+ * Stage 9 Closer Agent
+ * Handles the final stages of a deal: viewing follow-up, proposal finalization,
+ * signing initiation, and deal completion.
+ */
+
 import * as admin from 'firebase-admin';
 
-/**
- * Sierra Estates — THE CLOSER (AGENT 04)
- * Manages Stage 9 & 10 of the Intelligence Pipeline.
- * Responsible for Deal Orchestration, E-Signatures, and Closing.
- */
+if (!admin.apps.length) {
+  admin.initializeApp();
+}
+
+const db = admin.firestore();
+
 export class CloserAgent {
   private static instance: CloserAgent;
-  private constructor() {}
 
-  public static getInstance(): CloserAgent {
-    if (!CloserAgent.instance) CloserAgent.instance = new CloserAgent();
+  static getInstance(): CloserAgent {
+    if (!CloserAgent.instance) {
+      CloserAgent.instance = new CloserAgent();
+    }
     return CloserAgent.instance;
   }
 
-  async handleViewingRequest(leadId: string, propertyCode: string) {
-    try {
-      const leadSnap     = await adminDb.collection('stakeholders').doc(leadId).get();
-      const leadName     = leadSnap.data()?.name || 'Valued Investor';
-      const propertySnap = await adminDb.collection('units').doc(propertyCode).get();
-      const propertyTitle = propertySnap.exists ? (propertySnap.data()?.title || propertyCode) : propertyCode;
+  async handleViewingRequest(viewingId: string): Promise<void> {
+    const doc = await db.collection('viewingRequests').doc(viewingId).get();
+    if (!doc.exists) throw new Error(`Viewing not found: ${viewingId}`);
 
-      const dealData = {
-        leadId, propertyCode, clientName: leadName, propertyTitle,
-        status: 'draft',
-        orchestration: { currentStage: 9.0, nextAction: 'generate_proposal', leilaPersonaInformed: true },
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      };
-
-      const dealRef = await adminDb.collection('deals').add(dealData);
-      const introMessage = getTemplate('viewingFollowUp', 'en')
-        .replace('{propertyName}', propertyTitle)
-        .replace('{leadName}', leadName);
-
-      return { success: true, dealId: dealRef.id, introMessage, meta: { leadName, propertyTitle } };
-    } catch (error) {
-      console.error('[CloserAgent] S9 Initiation Failed:', error);
-      throw error;
-    }
+    await db.collection('viewingRequests').doc(viewingId).update({
+      stage: 'S9_viewing_initiated',
+      updatedAt: new Date().toISOString(),
+    });
   }
 
-  async finalizeProposal(dealId: string, terms: Record<string, unknown>) {
-    await adminDb.collection('deals').doc(dealId).update({
-      status: 'offered', terms,
-      'orchestration.currentStage': 9.1,
-      'orchestration.nextAction': 'initiate_signing',
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+  async finalizeProposal(dealId: string, proposalData: Record<string, unknown>): Promise<string> {
+    const proposalRef = await db.collection('proposals').add({
+      dealId,
+      ...proposalData,
+      status: 'finalized',
+      stage: 'S9_proposal_finalized',
+      createdAt: new Date().toISOString(),
     });
-    return { success: true };
+
+    await db.collection('deals').doc(dealId).update({
+      proposalId: proposalRef.id,
+      stage: 'S9_proposal_ready',
+      updatedAt: new Date().toISOString(),
+    });
+
+    return proposalRef.id;
   }
 
-  async initiateSigning(dealId: string, _leadEmail: string) {
-    const signingUrl = `https://sign.sierraestates.ae?deal=${dealId}`;
-    await adminDb.collection('deals').doc(dealId).update({
-      status: 'signing', 'signing.status': 'sent',
-      'orchestration.currentStage': 9.2,
-      'orchestration.nextAction': 'wait_for_signature',
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+  async initiateSigning(dealId: string): Promise<{ envelopeId: string }> {
+    const envelopeId = `ENV-${dealId}-${Date.now()}`;
+
+    await db.collection('deals').doc(dealId).update({
+      signingEnvelope: {
+        envelopeId,
+        status: 'created',
+        createdAt: new Date().toISOString(),
+      },
+      stage: 'S9_signing_initiated',
+      updatedAt: new Date().toISOString(),
     });
-    return { success: true, signingUrl };
+
+    return { envelopeId };
   }
 
-  async completeClosing(dealId: string) {
-    await adminDb.collection('deals').doc(dealId).update({
-      status: 'closed',
-      'orchestration.currentStage': 9.3,
-      'orchestration.nextAction': 'trigger_s10_feedback',
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+  async completeClosing(dealId: string): Promise<void> {
+    const doc = await db.collection('deals').doc(dealId).get();
+    if (!doc.exists) throw new Error(`Deal not found: ${dealId}`);
+
+    const data = doc.data()!;
+
+    // Create sale record
+    await db.collection('sales').add({
+      dealId,
+      assetId: data.assetId,
+      leadId: data.stakeholderId,
+      salePriceEGP: data.negotiatedPrice || 0,
+      commissionRate: data.commissionRate || 2.5,
+      commissionEGP: data.commissionEGP || 0,
+      closeDate: new Date().toISOString(),
+      paymentStatus: 'pending',
+      createdAt: new Date().toISOString(),
     });
-    return { success: true, message: getTemplate('signingComplete', 'en') };
+
+    await db.collection('deals').doc(dealId).update({
+      stage: 'S10_complete',
+      status: 'closed_won',
+      closedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
   }
 }
