@@ -29,6 +29,137 @@ export interface Property {
 
 const LISTINGS_QUERY_KEY = ["listings"] as const;
 
+/**
+ * Sample luxury properties for New Cairo compounds.
+ * Used as fallback when the REST API and Firestore are both unavailable
+ * (e.g. during local dev without backend, or before Firebase is seeded).
+ * Images are high-quality 4K photos from Unsplash (free commercial use).
+ */
+function getSampleProperties(): Property[] {
+  return [
+    {
+      id: "sample-01",
+      title: "Grand Lakefront Villa",
+      titleAr: "فيلا على البحيرة",
+      compound: "Mivida",
+      purpose: "for-sale",
+      propertyType: "villa",
+      price: 28500000,
+      area: 720,
+      bedrooms: 5,
+      bathrooms: 6,
+      amenities: ["Private Pool", "Garden", "Smart Home", "24/7 Security", "Garage"],
+      images: ["https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1200&q=85&auto=format&fit=crop"],
+      ai_score: 92,
+      currency: "EGP",
+      description: "Contemporary 5BR lakefront villa with private infinity pool, floor-to-ceiling glass, and panoramic sunset views over Mivida's central lagoon.",
+      location: "New Cairo",
+      city: "Cairo",
+      referenceNumber: "SE-V-MIV-001",
+    },
+    {
+      id: "sample-02",
+      title: "Golf-View Palace Estate",
+      titleAr: "قصر على ملاعب الجولف",
+      compound: "Katameya Heights",
+      purpose: "for-sale",
+      propertyType: "villa",
+      price: 42000000,
+      area: 1100,
+      bedrooms: 6,
+      bathrooms: 8,
+      amenities: ["Pool", "Home Theater", "Wine Cellar", "Garden", "Staff Quarters", "Garage"],
+      images: ["https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&q=85&auto=format&fit=crop"],
+      ai_score: 95,
+      currency: "EGP",
+      description: "Six-bedroom palace overlooking the 9th fairway of Katameya Heights. Marble foyer, double-height ceilings, private home theater, and landscaped gardens.",
+      location: "New Cairo",
+      city: "Cairo",
+      referenceNumber: "SE-V-KH-002",
+    },
+    {
+      id: "sample-03",
+      title: "Modern Palm Hills Villa",
+      titleAr: "فيلا عصرية بالم هيلز",
+      compound: "Palm Hills",
+      purpose: "for-sale",
+      propertyType: "villa",
+      price: 33500000,
+      area: 850,
+      bedrooms: 5,
+      bathrooms: 6,
+      amenities: ["Lap Pool", "Smart Home", "Garden", "Clubhouse Access", "Garage"],
+      images: ["https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1200&q=85&auto=format&fit=crop"],
+      ai_score: 90,
+      currency: "EGP",
+      description: "Architect-designed 5BR villa with clean lines, smart-home automation, and a 25-meter lap pool. Walking distance to Palm Hills clubhouse.",
+      location: "New Cairo",
+      city: "Cairo",
+      referenceNumber: "SE-V-PH-003",
+    },
+    {
+      id: "sample-04",
+      title: "Furnished Apartment for Rent",
+      titleAr: "شقة مفروشة للإيجار",
+      compound: "Zed East",
+      purpose: "for-rent",
+      propertyType: "apartment",
+      price: 28000,
+      area: 165,
+      bedrooms: 2,
+      bathrooms: 2,
+      amenities: ["Furnished", "Balcony", "Gym Access", "Pool Access", "Parking"],
+      images: ["https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200&q=85&auto=format&fit=crop"],
+      ai_score: 85,
+      currency: "EGP",
+      description: "Move-in ready 2BR apartment with Italian kitchen, marble bathrooms, and balcony overlooking Zed East's central park. Monthly rent.",
+      location: "New Cairo",
+      city: "Cairo",
+      referenceNumber: "SE-A-ZE-004",
+    },
+    {
+      id: "sample-05",
+      title: "Sky Penthouse Collection",
+      titleAr: "بنتهاوس سكاي",
+      compound: "Eastown",
+      purpose: "for-sale",
+      propertyType: "penthouse",
+      price: 14750000,
+      area: 380,
+      bedrooms: 4,
+      bathrooms: 4,
+      amenities: ["Rooftop Pool", "Panoramic View", "Terrace", "Smart Home", "Parking"],
+      images: ["https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&q=85&auto=format&fit=crop"],
+      ai_score: 88,
+      currency: "EGP",
+      description: "Duplex penthouse with 360° panoramic views of New Cairo, private rooftop with plunge pool, and double-height living room with skylight.",
+      location: "New Cairo",
+      city: "Cairo",
+      referenceNumber: "SE-P-ET-005",
+    },
+    {
+      id: "sample-06",
+      title: "Garden Duplex Residence",
+      titleAr: "دوبلكس بحديقة",
+      compound: "Hyde Park",
+      purpose: "for-rent",
+      propertyType: "duplex",
+      price: 38000,
+      area: 290,
+      bedrooms: 3,
+      bathrooms: 3,
+      amenities: ["Garden", "Furnished", "Lake View", "Parking", "24/7 Security"],
+      images: ["https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=1200&q=85&auto=format&fit=crop"],
+      ai_score: 83,
+      currency: "EGP",
+      description: "Spacious 3BR duplex with direct garden access, modern kitchen, and master suite with walk-in closet. Overlooking Hyde Park's central lake.",
+      location: "New Cairo",
+      city: "Cairo",
+      referenceNumber: "SE-D-HP-006",
+    },
+  ];
+}
+
 function fromApiListing(l: ApiListing): Property {
   return {
     id: l.id,
@@ -113,17 +244,21 @@ export function useProperties(
 ) {
   const queryClient = useQueryClient();
 
-  // Initial data load — tries REST API, falls back gracefully to empty array
-  // so the Firestore real-time listener below can fill in the data.
-  const { data: rawListings, isLoading } = useQuery({
+  // Initial data load — tries REST API, falls back to sample data so the
+  // UI always shows listings even if the backend is down or not configured.
+  const { data: rawListings, isLoading } = useQuery<Property[]>({
     queryKey: LISTINGS_QUERY_KEY,
     queryFn: async () => {
       try {
         const res = await fetchListings({ limit: 200 });
-        return res.listings.map(fromApiListing);
+        if (res.listings && res.listings.length > 0) {
+          return res.listings.map(fromApiListing);
+        }
+        // API returned empty — use sample data so the UI isn't blank
+        return getSampleProperties();
       } catch (err) {
-        console.warn("REST API unavailable — Firestore listener will provide data:", err);
-        return [] as Property[];
+        console.warn("REST API unavailable — using sample data:", err);
+        return getSampleProperties();
       }
     },
     refetchInterval: 120_000,
@@ -133,7 +268,12 @@ export function useProperties(
   // Real-time Firestore listener — this is the PRIMARY data source.
   // Firestore has `allow read: if true` on /listings so no auth needed.
   // When the snapshot fires, it overwrites the REST cache with live data.
+  // If Firebase isn't configured or the collection is empty, the REST API
+  // or sample data fallback below handles it.
   useEffect(() => {
+    // Guard: skip if Firebase isn't configured (avoids console errors in dev)
+    if (!import.meta.env.VITE_FIREBASE_API_KEY) return;
+
     const unsubscribe = onSnapshot(
       collection(db, "listings"),
       (snapshot) => {
@@ -174,5 +314,6 @@ export function useProperties(
     return { data: results, total: results.length };
   }, [rawListings, mode, selCmps, rooms, sort]);
 
-  return { data, total, loading: isLoading && !rawListings?.length };
+  const hasData = rawListings != null && rawListings.length > 0;
+  return { data, total, loading: isLoading && !hasData };
 }
