@@ -27,8 +27,8 @@ export async function POST(req: NextRequest) {
     // Run the pipeline asynchronously
     // In a production environment, this might be handled by a message queue
     OrchestratorService.runPipeline(docId, collection as keyof typeof COLLECTIONS)
-      .then(() => console.log(`Pipeline execution finished for ${docId}`))
-      .catch((err) => console.error('Pipeline execution failed for %s', docId, err));
+      .then(() => console.log('Pipeline execution finished', { docId }))
+      .catch((err) => console.error('Pipeline execution failed', { docId, error: err }));
 
     return NextResponse.json({ 
       message: 'Orchestration pipeline triggered',
