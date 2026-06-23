@@ -4,21 +4,18 @@ import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
-// PORT/BASE_PATH are only needed to run the dev/preview server (Replit-style
-// hosting); a plain `vite build` (e.g. on Vercel) must work without them.
+// PORT is only needed for dev server — Vercel build runs `vite build` with no PORT set.
 const isServe = !process.argv.includes("build");
-
 const rawPort = process.env.PORT;
 
+// Only throw for missing PORT when actually serving (not building)
 if (isServe && !rawPort) {
-  throw new Error(
-    "PORT environment variable is required but was not provided.",
-  );
+  throw new Error("PORT environment variable is required for dev server.");
 }
 
 const port = rawPort ? Number(rawPort) : 5173;
 
-if (Number.isNaN(port) || port <= 0) {
+if (rawPort && (Number.isNaN(port) || port <= 0)) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
 
