@@ -102,6 +102,7 @@ function transformToListing(doc: FirestoreDocument): any {
   return {
     id,
     title: extractValue(fields.title) || 'Untitled Property',
+    titleAr: extractValue(fields.titleAr) || undefined,
     price: extractValue(fields.price) || 0,
     compound: extractValue(fields.compound) || extractValue(fields.location) || extractValue(fields.city) || '',
     beds: extractValue(fields.bedrooms) || 0,
@@ -112,6 +113,8 @@ function transformToListing(doc: FirestoreDocument): any {
     description: extractValue(fields.description) || undefined,
     propertyType: extractValue(fields.propertyType) || extractValue(fields.type) || 'apartment',
     status: extractValue(fields.status) || 'available',
+    amenities: extractValue(fields.amenities) || [],
+    purpose: extractValue(fields.monthlyRent) ? 'for-rent' : 'for-sale',
     pfReferenceNumber: extractValue(fields.pfReferenceNumber) || null,
   };
 }
