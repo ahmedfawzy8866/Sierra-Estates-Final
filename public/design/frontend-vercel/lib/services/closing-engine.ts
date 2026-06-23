@@ -45,7 +45,7 @@ export async function initiateClosing(
   const docRef = await addDoc(collection(db, COLLECTIONS.sales), saleData);
 
   // Generate Contract Preview URL (Simulated)
-  const contractUrl = `https://sierrablu.luxury/contracts/preview/${docRef.id}`;
+  const contractUrl = `https://sierraestates.luxury/contracts/preview/${docRef.id}`;
 
   // Update unit status to 'reserved' 
   await updateDoc(doc(db, COLLECTIONS.units, unitId), {

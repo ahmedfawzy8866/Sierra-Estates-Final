@@ -16,7 +16,7 @@ export async function GET(
   req: Request,
   { params }: { params: Promise<{ slug: string }> }
 ) {
-  const rateLimitResponse = applyRateLimit(req, publicEndpointLimiter);
+  const rateLimitResponse = await applyRateLimit(req, publicEndpointLimiter);
   if (rateLimitResponse) return rateLimitResponse;
 
   try {

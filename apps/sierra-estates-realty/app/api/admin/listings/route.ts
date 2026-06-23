@@ -1,10 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { verifyAdminRequest } from '@/lib/server/auth-guard';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { mapListingToSpa, mapSpaToListingPatch } from '@/lib/server/admin-spa-mappers';
 import { Timestamp } from 'firebase-admin/firestore';
 import { logger } from '@/lib/logger';
+
+// Validates the SPA listing shape; passthrough keeps extra fields the mapper reads.
+const listingCreateSchema = z
+  .object({
+    cmp: z.string().min(1).max(100),
+    type: z.string().min(1).max(50),
+    code: z.string().max(50).optional(),
+    beds: z.number().int().min(0).optional(),
+    area: z.number().min(0).optional(),
+    price: z.union([z.string(), z.number()]).optional(),
+    ai: z.number().optional(),
+    status: z.string().max(50).optional(),
+    img: z.number().int().optional(),
+  })
+  .passthrough();
 
 /** Admin-scoped listings CRUD via the Admin SDK — unlike the public /api/listings (read-only REST key). */
 export async function GET(req: NextRequest) {
@@ -35,8 +51,11 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const body = await req.json();
-    const patch = mapSpaToListingPatch(body);
+    const parsed = listingCreateSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Invalid listing payload', details: parsed.error.flatten() }, { status: 400 });
+    }
+    const patch = mapSpaToListingPatch(parsed.data);
 
     if (!patch.compound || !patch.propertyType) {
       return NextResponse.json({ error: 'cmp and type are required' }, { status: 400 });

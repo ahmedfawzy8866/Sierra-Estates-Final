@@ -1,5 +1,4 @@
 import 'server-only'; // gRPC dependency — server only
-import * as admin from 'firebase-admin';
 import { adminDb } from '../server/firebase-admin';
 import { COLLECTIONS } from '../models/schema';
 import { instrumentAgent } from '../arize';
@@ -193,7 +192,10 @@ export class OrchestratorService {
         engineVersion: '12.0.0-quiet-luxury',
         error: errorMessage || null
       },
-      orchestrationHistory: admin.firestore.FieldValue.arrayUnion(historyEntry)
     }, { merge: true });
+
+    // History is an unbounded append log → subcollection, not a parent-doc array
+    // (an arrayUnion would eventually exceed the 1 MB document-size limit).
+    await docRef.collection('orchestrationHistory').add(historyEntry);
   }
 }

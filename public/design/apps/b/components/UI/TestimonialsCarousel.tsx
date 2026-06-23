@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Quote } from 'lucide-react';
 
 /**
- * SIERRA BLU — TESTIMONIALS CAROUSEL
+ * sierra estates — TESTIMONIALS CAROUSEL
  * A luxury, smooth-transition carousel for client testimonials
  */
 

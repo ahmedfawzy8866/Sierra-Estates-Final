@@ -60,12 +60,20 @@ jobs:
 
       - name: Pin project Root Directory to the web app (monorepo)
         run: |
-          curl -fsS -X PATCH \
+          # Best-effort self-heal of the Vercel project Root Directory. The deploy
+          # steps below work regardless of this PATCH, so a non-2xx response (e.g.
+          # a VERCEL_TOKEN without project-write scope returning 403) must NOT
+          # abort the deploy — otherwise production never ships.
+          code=$(curl -sS -o /dev/null -w '%{http_code}' -X PATCH \
             "https://api.vercel.com/v9/projects/${VERCEL_PROJECT_ID}?teamId=${VERCEL_ORG_ID}" \
             -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
             -H "Content-Type: application/json" \
-            -d '{"rootDirectory":"apps/sierra-estates-realty"}' > /dev/null
-          echo "Root Directory pinned to apps/sierra-estates-realty"
+            -d '{"rootDirectory":"apps/sierra-estates-realty"}' || echo "000")
+          if [ "$code" = "200" ] || [ "$code" = "204" ]; then
+            echo "Root Directory pinned to apps/sierra-estates-realty (HTTP $code)"
+          else
+            echo "::warning::Could not re-pin Vercel Root Directory (HTTP $code). Continuing deploy — verify VERCEL_TOKEN has project-write scope and that the dashboard Root Directory is apps/sierra-estates-realty."
+          fi
 
       - name: Install Vercel CLI
         run: npm install --global vercel@latest

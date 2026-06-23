@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateOptionsPackage } from '@/lib/services/sales-engine';
 import { verifyAdminRequest, unauthorizedResponse } from '@/lib/server/auth-guard';
-import { logger } from '@/lib/logger';
 
 export async function POST(req: NextRequest) {
   const auth = await verifyAdminRequest(req);
@@ -23,7 +22,7 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error: any) {
-    logger.error('[PROPOSAL_API_ERROR]', error);
+    console.error('[PROPOSAL_API_ERROR]', error);
     return NextResponse.json({ 
       success: false, 
       error: error.message 

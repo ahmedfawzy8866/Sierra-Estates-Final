@@ -4,6 +4,8 @@ import { verifyAdminRequest } from '@/lib/server/auth-guard';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { logger } from '@/lib/logger';
+// Force dynamic rendering — uses Firebase/auth at runtime
+export const dynamic = 'force-dynamic';
 
 // PATCH accepts a partial of the agent display shape; unknown keys are stripped
 // so callers can't write arbitrary fields onto the document.

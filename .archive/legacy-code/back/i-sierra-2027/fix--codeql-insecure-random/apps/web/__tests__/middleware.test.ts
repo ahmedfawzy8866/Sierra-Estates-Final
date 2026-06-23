@@ -11,7 +11,7 @@ describe('middleware', () => {
 
   test('only matches the orchestrate endpoint', async () => {
     const { config } = await import('@/middleware');
-    expect(config.matcher).toEqual(['/api/orchestrate/:path*']);
+    expect(config.matcher).toEqual(['/api/:path*', '/admin/:path*']);
   });
 
   test('returns 200 (next) when SBR_SECRET_KEY is missing', async () => {

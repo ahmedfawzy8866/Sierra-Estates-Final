@@ -1,4 +1,4 @@
-# 👨‍💼 SIERRA BLU ADMIN PORTAL REVIEW
+# 👨‍💼 sierra estates ADMIN PORTAL REVIEW
 ## Specialized Vite + React SPA
 
 ---
@@ -271,7 +271,7 @@ Firestore CRUD Operations
 ## 🎨 VISUAL HIERARCHY
 
 **Typography**:
-- Brand: "SIERRA BLU" (large, bold)
+- Brand: "sierra estates" (large, bold)
 - Headings: H1–H3 with clear weight
 - Body: Clear sans-serif (readable)
 - Accents: Amber gold for highlights

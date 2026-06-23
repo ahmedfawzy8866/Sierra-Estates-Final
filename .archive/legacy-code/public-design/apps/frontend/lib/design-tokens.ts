@@ -18,7 +18,7 @@ export const TOKENS = {
   // ── NAVY (الأزرق الملكي) ─────────────────────────────────────
   // Light mode → Sierra Estatese (فاتح ومشرق)
   // Dark mode  → Royal/Pepsi blue (ملكي غامق)
-  sierraBlue:  "#1B6CA8",   // Medium bright — light mode primary
+  sierraestatese:  "#1B6CA8",   // Medium bright — light mode primary
   royalBlue:   "#003087",   // Pepsi/Royal — dark mode primary
   midNavy:     "#0D2D6B",   // Mid — transitions
   deepNavy:    "#071422",   // Darkest — DESIGN.md base

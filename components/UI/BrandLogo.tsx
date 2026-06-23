@@ -10,15 +10,15 @@ interface BrandLogoProps {
 }
 
 /**
- * BRAND LOGO — Sierra Blu Realty
+ * BRAND LOGO — sierra estates Realty
  *
  * variant="wordmark" (default):
- *   Strategic Double-Panel Crop. Source image (/sierra-blu-logo.jpg) contains two
+ *   Strategic Double-Panel Crop. Source image (/sierra-estates-logo.jpg) contains two
  *   logo variants side-by-side. Left 50% = dark variant, Right 50% = light variant.
  *   We clip via overflow-hidden and slide the image to reveal the correct half.
  *
  * variant="emblem":
- *   Gold shield crest (/sierra-blu-emblem.svg). Scales uniformly.
+ *   Gold shield crest (/sierra-estates-emblem.svg). Scales uniformly.
  *   Ideal for: favicons, chat widget headers, loading screens, app icons.
  */
 export default function BrandLogo({

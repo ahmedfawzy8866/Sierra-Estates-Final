@@ -1,21 +1,29 @@
-/**
- * LEILA'S MESSAGE TEMPLATES (STAGE 9)
- * High-fidelity, warm, professional responses for deal closing.
- */
 export const leilaTemplates = {
   viewingFollowUp: {
-    en: "I hope you enjoyed the viewing of {propertyName}, {leadName}. It's a truly exceptional property. I've prepared a detailed investment proposal for your review.",
-    ar: "أتمنى أن تكون قد استمتعت بمعاينة {propertyName}، يا {leadName}. لقد قمت بإعداد عرض استثماري مفصّل."
+    en: (name: string, property: string) =>
+      `Dear ${name}, thank you for viewing ${property}. We'd love to share our exclusive investment analysis. Shall we schedule a follow-up call?`,
+    ar: (name: string, property: string) =>
+      `عزيزنا ${name}، شكراً لزيارتك لـ${property}. نودّ مشاركتك تحليلنا الاستثماري الحصري. هل نحدد موعد للمتابعة؟`,
   },
+
   proposalReady: {
-    en: "The proposal for {propertyName} is ready for your signature, {leadName}. Review and sign digitally here: {link}",
-    ar: "العرض ل— {propertyName} جاهز لتوقيعك، يا {leadName}. راجع ووقّع هنا: {link}"
+    en: (name: string, proposalUrl: string) =>
+      `Dear ${name}, your exclusive investment proposal is ready. View it here: ${proposalUrl}`,
+    ar: (name: string, proposalUrl: string) =>
+      `عزيزنا ${name}، عرضك الاستثماري الحصري جاهز. شاهده هنا: ${proposalUrl}`,
   },
+
+  paymentReminder: {
+    en: (name: string, amount: number, dueDate: string) =>
+      `Dear ${name}, a friendly reminder that your payment of ${amount.toLocaleString()} EGP is due on ${dueDate}.`,
+    ar: (name: string, amount: number, dueDate: string) =>
+      `عزيزنا ${name}، تذكير ودي بأن دفعتك البالغة ${amount.toLocaleString()} جنيه مستحقة في ${dueDate}.`,
+  },
+
   signingComplete: {
-    en: "Excellent news, {leadName}! The documents for {propertyName} are now fully signed. Moving to final closing phase.",
-    ar: "أخبار رائعة يا {leadName}! المستندات موقّعة بالكامل."
+    en: (name: string, property: string) =>
+      `Congratulations ${name}! The contract for ${property} has been signed. Welcome to the Sierra Estates family!`,
+    ar: (name: string, property: string) =>
+      `مبروك ${name}! تم توقيع عقد ${property}. أهلاً وسهلاً في عائلة Sierra Estates!`,
   },
 };
-
-export const getTemplate = (key: keyof typeof leilaTemplates, locale: 'en' | 'ar' = 'en') =>
-  leilaTemplates[key][locale];

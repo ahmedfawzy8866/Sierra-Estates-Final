@@ -12,7 +12,7 @@ The Sierra Estates frontend is a **Next.js 16 + React 19** application with **Fr
 ### Key Principles
 - **Cinematic**: Smooth parallax, buttery animations
 - **Editorial**: Playfair Display for headlines, Inter for body
-- **Data-Driven**: All UI components pull from `useSierraBlu()` hook
+- **Data-Driven**: All UI components pull from `usesierraestates()` hook
 - **Mobile-First**: Responsive across all devices
 - **Accessible**: ARIA labels, semantic HTML, keyboard navigation
 
@@ -36,9 +36,9 @@ components/
 ├── Proposals/
 │   └── ConciergeGallery.tsx # S8 portfolio display
 ├── Listings/
-│   └── InventoryShowcase.tsx # Demo of useSierraBlu hook
+│   └── InventoryShowcase.tsx # Demo of usesierraestates hook
 hooks/
-└── useSierraBlu.ts         # 🌉 Master data hook
+└── usesierraestates.ts         # 🌉 Master data hook
 lib/
 ├── firebase/               # Firebase SDK config
 ├── services/
@@ -50,9 +50,9 @@ lib/
 
 ---
 
-## 🔌 The Master Hook: `useSierraBlu()`
+## 🔌 The Master Hook: `usesierraestates()`
 
-**Location**: [hooks/useSierraBlu.ts](hooks/useSierraBlu.ts)
+**Location**: [hooks/usesierraestates.ts](hooks/usesierraestates.ts)
 
 This is the **single source of truth** for data. All components use this hook instead of direct Firebase calls.
 
@@ -65,17 +65,17 @@ const {
   error,              // string | null
   getLeadData,        // (leadId: string) => Promise<Lead>
   triggerAgent        // (agent, action, payload) => Promise<any>
-} = useSierraBlu();
+} = usesierraestates();
 ```
 
 ### Usage Example
 
 ```typescript
 'use client';
-import { useSierraBlu } from '@/hooks/useSierraBlu';
+import { usesierraestates } from '@/hooks/usesierraestates';
 
 export default function MyComponent() {
-  const { units, loading } = useSierraBlu();
+  const { units, loading } = usesierraestates();
 
   if (loading) return <div>Loading...</div>;
 
@@ -238,10 +238,10 @@ export default function MyFeature() {
 
 ```typescript
 'use client';
-import { useSierraBlu } from '@/hooks/useSierraBlu';
+import { usesierraestates } from '@/hooks/usesierraestates';
 
 export default function PropertyList() {
-  const { units, loading } = useSierraBlu();
+  const { units, loading } = usesierraestates();
 
   return (
     <div>
@@ -306,7 +306,7 @@ Before shipping a component:
 - [ ] **Responsive**: Works on mobile, tablet, desktop
 - [ ] **Accessible**: ARIA labels, semantic HTML, keyboard nav
 - [ ] **Performant**: Lazy loading, image optimization, code splitting
-- [ ] **Data-Ready**: Uses `useSierraBlu()` for real data
+- [ ] **Data-Ready**: Uses `usesierraestates()` for real data
 - [ ] **Animated**: Framer Motion transitions (not jarring)
 - [ ] **Consistent**: Follows Quiet Luxury palette & typography
 - [ ] **Tested**: Works in Chrome, Safari, Firefox
@@ -317,7 +317,7 @@ Before shipping a component:
 
 | File | Purpose |
 |------|---------|
-| [hooks/useSierraBlu.ts](hooks/useSierraBlu.ts) | Master data hook |
+| [hooks/usesierraestates.ts](hooks/usesierraestates.ts) | Master data hook |
 | [components/UI/LuxurySkeleton.tsx](components/UI/LuxurySkeleton.tsx) | UI components |
 | [components/UI/PremiumHero.tsx](components/UI/PremiumHero.tsx) | Parallax hero |
 | [app/landing/page.tsx](app/landing/page.tsx) | Landing page |

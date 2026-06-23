@@ -32,9 +32,9 @@ retired — see `CLAUDE.md`. The in-app `/admin` console under `apps/sierra-esta
 still exists and works, but the admin SPA above is now the intended primary admin surface;
 setting `ADMIN_HOST` (see below) redirects `/admin/*` requests to it with no code changes.
 
-## Auth model (canonical Firebase project: `sierra-blu-494404`)
+## Auth model (canonical Firebase project: `sierra-estates-494404`)
 
-All three systems share one Firebase project — `sierra-blu-494404`, Firestore database
+All three systems share one Firebase project — `sierra-estates-494404`, Firestore database
 `remixed-firestore-database-id`. This was originally the admin SPA's own project; the
 backend was repointed onto it rather than the other way around, since it already had live
 auth/data.
@@ -53,7 +53,7 @@ auth/data.
   (or a trusted service/cron caller) — enforced in the route, not just client-side.
 - **Bootstrapping the first superadmin**: chicken-and-egg — nobody can grant `superadmin`
   via the API until at least one `users/{uid}` doc with that role already exists. This one
-  doc has to be created directly in the Firebase console for `sierra-blu-494404` (see the
+  doc has to be created directly in the Firebase console for `sierra-estates-494404` (see the
   session notes / ask the person who set this up). After that, all further admin grants go
   through Settings → Admin Control in the admin SPA.
 
@@ -123,7 +123,7 @@ origins fail CORS even though the API itself works fine via curl/Postman.
 1. Set `ALLOWED_ORIGINS` (and optionally `ADMIN_HOST`) on the `sierra-2027` Vercel project.
 2. Repoint the `sierra-estates-admin` Vercel project's source from `apps/admin-dashboard` to
    `emeraldestatesegypt-ops/-19-6-AI`, and set `VITE_BACKEND_API_URL` + Firebase config there.
-3. Bootstrap the first `users/{uid}` doc with `role: 'superadmin'` in `sierra-blu-494404`.
+3. Bootstrap the first `users/{uid}` doc with `role: 'superadmin'` in `sierra-estates-494404`.
 4. Migrate the deferred Firestore collections (notifications, chats, system logs/health,
    search analytics) onto the backend API the same way leads/listings were.
 5. Remove `apps/admin-dashboard` and the admin SPA's dead `ClientHub.tsx`/`/client` route and

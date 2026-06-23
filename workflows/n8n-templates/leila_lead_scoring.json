@@ -1,8 +1,12 @@
 {
-  "name": "Leila Agent — Lead Scoring & Agent Alert",
+  "name": "💬 Leila Agent — Lead Scoring & Agent Alert",
   "nodes": [
     {
-      "parameters": { "httpMethod": "POST", "path": "leila-lead-webhook" },
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "leila-lead-webhook",
+        "options": {}
+      },
       "id": "219e0758-c0b8-4d57-b08e-17482811a001",
       "name": "Leila Webhook Ingestion",
       "type": "n8n-nodes-base.webhook",
@@ -101,7 +105,46 @@
       }
     }
   ],
-  "connections": {},
+  "connections": {
+    "Leila Webhook Ingestion": {
+      "main": [
+        [
+          {
+            "node": "Gemini/OpenAI Lead Parser",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini/OpenAI Lead Parser": {
+      "main": [
+        [
+          {
+            "node": "CRM Lead Scorer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CRM Lead Scorer": {
+      "main": [
+        [
+          {
+            "node": "Create Lead in Firestore CRM",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Telegram Alert to Agent Channel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
   "active": false,
   "settings": {}
 }

@@ -10,7 +10,7 @@ name: Deploy · Firebase (Admin Nexus)
 # Required repo secret:
 #   FIREBASE_SERVICE_ACCOUNT_SIERRA_BLU — JSON key for a service account with
 #   Firebase Hosting Admin + Cloud Run Admin + Service Account User roles on
-#   the sierra-blu Firebase project.
+#   the sierra-estates Firebase project.
 # Optional repo secrets (public Firebase web config — safe to omit short-term,
 # but the deployed app's client-side Firebase init will fail without them):
 #   NEXT_PUBLIC_FIREBASE_API_KEY, NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -51,4 +51,4 @@ jobs:
           NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
           NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
           NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
-        run: npx firebase-tools@latest deploy --only hosting:sierra-estates-admin --project sierra-blu --non-interactive
+        run: npx firebase-tools@latest deploy --only hosting:sierra-estates-admin --project sierra-estates --non-interactive

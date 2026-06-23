@@ -1,5 +1,5 @@
 /**
- * SIERRA BLU — FIRESTORE DATA MODEL
+ * sierra estates — FIRESTORE DATA MODEL
  * Canonical type definitions for all collections.
  * This is the single source of truth for the database schema.
  */

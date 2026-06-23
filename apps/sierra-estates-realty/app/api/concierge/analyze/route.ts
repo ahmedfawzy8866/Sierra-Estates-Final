@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { getOpenClawGatewayConfig } from '@/lib/server/openclaw';
-import { logger } from '@/lib/logger';
 
 export async function POST(req: Request) {
   try {
@@ -18,7 +17,7 @@ export async function POST(req: Request) {
         'Authorization': `Bearer ${gateway.token}` 
       },
       body: JSON.stringify({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-1.5-flash',
         messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: text }],
         temperature: 0
       })
@@ -31,7 +30,7 @@ export async function POST(req: Request) {
     const json = JSON.parse(content.match(/\{[\s\S]*\}/)?.[0] || '{}');
     return NextResponse.json(json);
   } catch (err: any) {
-    logger.error("AI Analysis API error:", err);
+    console.error("AI Analysis API error:", err);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

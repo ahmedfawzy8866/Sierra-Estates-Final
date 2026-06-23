@@ -2,20 +2,55 @@
   "name": "📊 Sierra Estates — Daily Market Report Sync",
   "nodes": [
     {
-      "parameters": { "triggerTimes": { "item": [{ "mode": "everyDay", "hour": 20 }] } },
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "mode": "everyDay",
+              "hour": 20
+            }
+          ]
+        }
+      },
       "id": "119e0758-c0b8-4d57-b08e-17482811a001",
       "name": "Cron Daily 8 PM Trigger",
       "type": "n8n-nodes-base.cron",
       "typeVersion": 1,
-      "position": [180, 300]
+      "position": [
+        180,
+        300
+      ]
     },
     {
       "parameters": {
         "url": "https://api.propertyfinder.com.eg/v3/properties",
         "sendHeaders": true,
-        "headerParameters": { "parameters": [{ "name": "Authorization", "value": "=Bearer {{ $env.PROPERTY_FINDER_JWT_TOKEN }}" }] },
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.PROPERTY_FINDER_JWT_TOKEN }}"
+            }
+          ]
+        },
         "sendQueryParameters": true,
-        "queryParameters": { "parameters": [{ "name": "location_id", "value": "cairo-new-cairo" }, { "name": "limit", "value": "100" }] }
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "location_id",
+              "value": "cairo-new-cairo"
+            },
+            {
+              "name": "limit",
+              "value": "100"
+            },
+            {
+              "name": "sort_by",
+              "value": "date"
+            }
+          ]
+        },
+        "options": {}
       },
       "id": "219e0758-c0b8-4d57-b08e-17482811a002",
       "name": "Pull PropertyFinder Listings",
@@ -95,7 +130,44 @@
     }
   ],
   "connections": {
-    "Cron Daily 8 PM Trigger": { "main": [[{ "node": "Pull PropertyFinder Listings", "type": "main", "index": 0 }]] }
+    "Cron Daily 8 PM Trigger": {
+      "main": [
+        [
+          {
+            "node": "Pull PropertyFinder Listings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pull PropertyFinder Listings": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Stats Logic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Stats Logic": {
+      "main": [
+        [
+          {
+            "node": "Update Firestore Database",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Report to Admin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
   },
   "active": false,
   "settings": {}

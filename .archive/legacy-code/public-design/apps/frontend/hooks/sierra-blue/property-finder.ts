@@ -1,7 +1,7 @@
 /**
- * SIERRA BLU — Property Finder Hook Bridge
+ * sierra estates — Property Finder Hook Bridge
  * Re-exports PF types and client from the canonical lib location.
- * This shim exists so that hooks/sierra-blue/pf.ts can import
+ * This shim exists so that hooks/sierra-estates/pf.ts can import
  * property-finder types without a deep relative path.
  */
 

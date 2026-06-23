@@ -9,7 +9,7 @@ export function Navbar() {
           <span className="text-sierra-ivory font-bold text-lg tracking-tighter">SB</span>
         </div>
         <span className="text-sierra-navy font-bold text-2xl tracking-tight uppercase">
-          Sierra-Blu
+          sierra-estates
         </span>
       </div>
       

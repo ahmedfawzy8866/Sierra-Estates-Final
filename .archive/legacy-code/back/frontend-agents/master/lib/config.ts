@@ -1,13 +1,13 @@
 /**
- * SIERRA BLU — GLOBAL CONFIGURATION
+ * sierra estates — GLOBAL CONFIGURATION
  * Centralized source of truth for contact info, social links, and site metadata.
  * Part of the "Cleanup & Unify" initiative.
  */
 
 export const SiteConfig = {
   branding: {
-    name: "Sierra Blu Realty",
-    legalName: "Sierra Blu Real Estate Investment",
+    name: "sierra estates Realty",
+    legalName: "sierra estates Real Estate Investment",
     tagline: "Ultra-Cinematic Asset Intelligence",
     foundedIn: "2026",
   },
@@ -18,7 +18,7 @@ export const SiteConfig = {
     // Will update as soon as they provide the new data.
     phone: "+20 10 61399688", 
     email: "EmeraldEstatesegypt@gmail.com",
-    telegramBot: "https://t.me/Sierrablurealtybot",
+    telegramBot: "https://t.me/sierraestatesrealtybot",
   },
   contact: {
     whatsapp: "https://wa.me/201061399688",
@@ -34,7 +34,7 @@ export const SiteConfig = {
  * OS V4.0 Intelligence Thresholds
  * Used by Matching and Ranking engines.
  */
-export const SierraBluOS = {
+export const sierraestatesOS = {
   version: "4.0.0",
   thresholds: {
     matchingScore: 0.75,       // Minimum score to suggest a match

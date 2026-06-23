@@ -1,4 +1,4 @@
-# Project Status — Sierra Blu (as of 2026-06-01)
+# Project Status — sierra estates (as of 2026-06-01)
 
 ## ✅ Complete
 - **Security**: Firestore/Storage rules deployed with staff-gating via `users/{uid}.role` (admin|manager|agent)

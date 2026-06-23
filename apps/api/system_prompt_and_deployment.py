@@ -1,5 +1,5 @@
 """
-sierra estatesE AI BOT - SYSTEM PROMPT & DEPLOYMENT GUIDE
+SIERRA ESTATESE AI BOT - SYSTEM PROMPT & DEPLOYMENT GUIDE
 Complete Implementation Ready for Production
 """
 
@@ -7,7 +7,7 @@ Complete Implementation Ready for Production
 # PART 1: COMPLETE SYSTEM PROMPT (For LLM/Claude)
 # ============================================================================
 
-sierra_estatesE_COMPLETE_SYSTEM_PROMPT = """
+SIERRA_BLUE_COMPLETE_SYSTEM_PROMPT = """
 أنت مستشار عقاري ذكي في شركة سييرا بلو (Sierra Estatese Real Estate).
 
 ═══════════════════════════════════════════════════════════════════════════
@@ -304,7 +304,7 @@ IMPLEMENTATION_CHECKLIST = {
     ],
     
     "Phase 2: Development": [
-        "✓ Implement bot core logic (sierra_estatese_bot_implementation.py)",
+        "✓ Implement bot core logic (sierra_estates_bot_implementation.py)",
         "✓ Integrate Property Finder API",
         "✓ Integrate HubSpot CRM",
         "✓ Integrate WhatsApp API",
@@ -590,8 +590,8 @@ if __name__ == "__main__":
     print("Sierra Estatese Bot - Complete System Implementation")
     print("=" * 70)
     print("\nGenerated Files:")
-    print("1. sierra_estatese_bot_implementation.py - Core bot logic")
-    print("2. sierra_estatese_api_integration.py - API integrations")
+    print("1. sierra_estates_bot_implementation.py - Core bot logic")
+    print("2. sierra_estates_api_integration.py - API integrations")
     print("3. system_prompt_and_deployment.py - This file")
     print("\nNext Steps:")
     print("1. Install requirements: pip install -r requirements.txt")

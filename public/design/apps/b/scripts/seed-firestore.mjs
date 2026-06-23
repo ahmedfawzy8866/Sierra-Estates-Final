@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * SIERRA BLU FIRESTORE DATA SEEDING SCRIPT
+ * sierra estates FIRESTORE DATA SEEDING SCRIPT
  * Populates Firestore with sample properties, users, and leads for development/testing
  *
  * Usage: node scripts/seed-firestore.mjs
@@ -176,7 +176,7 @@ const SAMPLE_LEADS = [
 const SAMPLE_USERS = [
   {
     uid: 'user-admin-001',
-    email: 'admin@sierrablurealty.com',
+    email: 'admin@sierraestatesrealty.com',
     displayName: 'Sierra Admin',
     role: 'admin',
     photoURL: 'https://api.dicebear.com/7.x/avataaars/svg?seed=admin',
@@ -184,7 +184,7 @@ const SAMPLE_USERS = [
   },
   {
     uid: 'user-advisor-001',
-    email: 'advisor@sierrablurealty.com',
+    email: 'advisor@sierraestatesrealty.com',
     displayName: 'Ahmed Fawzy',
     role: 'advisor',
     photoURL: 'https://api.dicebear.com/7.x/avataaars/svg?seed=advisor',
@@ -268,7 +268,7 @@ async function seedUsers(db) {
 }
 
 async function main() {
-  console.log('🌱 Sierra Blu Firestore Data Seeding Script\n');
+  console.log('🌱 sierra estates Firestore Data Seeding Script\n');
   console.log('═══════════════════════════════════════════\n');
 
   try {
