@@ -283,7 +283,6 @@ export default function VirtualTour() {
             onTouchStart={e => startDrag(e.touches[0].clientX, e.touches[0].clientY)}
             onTouchMove={e => { e.preventDefault(); moveDrag(e.touches[0].clientX, e.touches[0].clientY); }}
             onTouchEnd={endDrag}
-            onWheel={e => { e.preventDefault(); e.deltaY > 0 ? zoomOut() : zoomIn(); }}
           />
 
           {/* Loading overlay */}
@@ -300,7 +299,7 @@ export default function VirtualTour() {
           {/* Drag hint */}
           {!loading && (
             <div style={{ position: "absolute", bottom: 86, left: "50%", transform: "translateX(-50%)", zIndex: 20, background: "rgba(7,17,30,.78)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,.1)", borderRadius: 20, padding: "7px 18px", fontSize: 11, color: "rgba(240,237,229,.65)", display: "flex", alignItems: "center", gap: 7, animation: "fadeUp .8s .6s both", whiteSpace: "nowrap" }}>
-              ↔↕ Drag to pan · Scroll to zoom · Arrow keys to look around
+              ↔↕ Drag to pan · Use +/− to zoom · Arrow keys to look around
             </div>
           )}
 
@@ -322,7 +321,7 @@ export default function VirtualTour() {
                 { label: fullscreen ? "⛶ Exit" : "⛶ Full", act: toggleFS, on: fullscreen },
               ].map((b, i) => (
                 <button key={i} onClick={b.act} style={{ background: b.on ? "linear-gradient(135deg,var(--gold),var(--gold-lt))" : "rgba(255,255,255,.09)", border: `1px solid ${b.on ? "var(--gold)" : "rgba(255,255,255,.13)"}`, color: b.on ? "var(--brand-dark)" : "rgba(240,237,229,.8)", padding: "5px 14px", borderRadius: 20, cursor: "pointer", fontSize: 10.5, fontWeight: 600, transition: "all .2s", fontFamily: "inherit" }}>
-                  {b.label}
+                   {b.label}
                 </button>
               ))}
             </div>
@@ -396,7 +395,7 @@ export default function VirtualTour() {
 
           {/* Keyboard hint */}
           <div style={{ position: "absolute", left: 14, bottom: 24, zIndex: 20, fontFamily: "var(--font-mono)", fontSize: 7.5, color: "rgba(200,150,26,.35)", letterSpacing: ".05em", lineHeight: 2 }}>
-            ← → ↑ ↓ arrow keys · scroll = zoom
+            ← → ↑ ↓ arrow keys · + / − to zoom
           </div>
         </div>
       </div>
