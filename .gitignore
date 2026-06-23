@@ -1,15 +1,19 @@
-# See https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
-
 # compiled output
-dist
-tmp
-out-tsc
+dist/
+tmp/
+out-tsc/
 *.tsbuildinfo
-.expo
-.expo-shared
+.expo/
+.expo-shared/
+.next/
+out/
+build/
+.turbo/
 
 # dependencies
-node_modules
+node_modules/
+.pnp
+.pnp.js
 
 # IDEs and editors
 /.idea
@@ -19,23 +23,35 @@ node_modules
 *.launch
 .settings/
 *.sublime-workspace
-
-# IDE - VSCode
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
 
+# environment variables and secrets
+.env
+.env.local
+.env.*.local
+.env.production
+*.pem
+docs/secrets.local.md
+
 # misc
 /.sass-cache
 /connect.lock
-/coverage
+/coverage/
 /libpeerconnection.log
 npm-debug.log
 yarn-error.log
 testem.log
 /typings
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+.wwebjs_auth/
+.wwebjs_cache/
 
 # System Files
 .DS_Store
@@ -52,6 +68,10 @@ Thumbs.db
 .agents/
 skills-lock.json
 
-# Firebase cache
+# Firebase cache & logs
 .firebase/
+firebase-debug.log
+firestore-debug.log
 
+# Vercel
+.vercel

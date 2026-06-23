@@ -35,10 +35,19 @@ minimumReleaseAgeExclude:
   - stripe-replit-sync
 
 packages:
-  - artifacts/*
-  - lib/*
-  - lib/integrations/*
-  - scripts
+  - "apps/*"
+  # Legacy/deprecated apps excluded from the workspace so they no longer
+  # participate in `turbo run build/lint/type-check` (one pins TS ~6.0.2 and
+  # reddened CI). Kept on disk for now; physical removal is a follow-up.
+  - "!apps/admin-dashboard"
+  - "!apps/sierra-blu-admin-portal"
+  - "!apps/sierra-blu-realty"
+  - "packages/*"
+  - "functions"
+  - "artifacts/*"
+  - "lib/*"
+  - "lib/integrations/*"
+  - "scripts"
 
 catalog:
   '@replit/vite-plugin-cartographer': ^0.5.21
