@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { createSierraNotification } from '../firebase';
+import { auth, createSierraNotification } from '../firebase';
 import { api } from '../lib/apiClient';
 import { Lead } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
