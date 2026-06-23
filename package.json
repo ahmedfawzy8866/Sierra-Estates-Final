@@ -15,9 +15,7 @@
     "type-check": "turbo run type-check",
     "test:ci": "turbo run test:ci",
     "clean": "turbo run clean && rm -rf node_modules",
-    "link:vercel": "vercel link",
-    "deploy:preview": "vercel --build-env NEXT_PUBLIC_APP_ENV=preview",
-    "deploy:prod": "vercel --prod",
+    "deploy:client": "pnpm --filter @workspace/sierra-estates build && firebase deploy --only hosting --config artifacts/sierra-estates/firebase.json",
     "deploy:firebase": "firebase deploy --only firestore:rules,storage,functions"
   },
   "devDependencies": {

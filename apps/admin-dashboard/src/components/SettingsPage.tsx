@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { collection, onSnapshot, setDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
-import { db, handleFirestoreError, OperationType, createSierraNotification } from '../firebase';
+import { createSierraNotification } from '../firebase';
+import { api } from '../lib/apiClient';
 import { AdminUser } from '../types';
+
+const ROLE_TO_BACKEND: Record<'Admin' | 'Superadmin', string> = { Admin: 'admin', Superadmin: 'superadmin' };
+const BACKEND_TO_ROLE: Record<string, 'Admin' | 'Superadmin'> = { admin: 'Admin', superadmin: 'Superadmin' };
 
 interface SettingsPageProps {
   T: (key: string) => string;
@@ -11,47 +14,54 @@ interface SettingsPageProps {
 
 export default function SettingsPage({ T, isAr = false, currentUser }: SettingsPageProps) {
   const [saved, setSaved] = useState(false);
-  const [projectId, setProjectId] = useState('sierra-estates');
+  const [projectId, setProjectId] = useState('sierra-blu-realty');
   const [geminiKey, setGeminiKey] = useState('AIza••••••••••••••');
   const [whatsappToken, setWhatsappToken] = useState('EAAx••••••••••');
-  const [webhookUrl, setWebhookUrl] = useState('https://n8n.sierra-estates.com/webhook');
+  const [webhookUrl, setWebhookUrl] = useState('https://n8n.sierra-blu.com/webhook');
   const [telegramToken, setTelegramToken] = useState('6847••••••:AAH•••••');
 
   // Real-time admins list
   const [admins, setAdmins] = useState<AdminUser[]>([]);
   const [loadingAdmins, setLoadingAdmins] = useState(true);
+  const [activeSubTab, setActiveSubTab] = useState<'config' | 'adminControl'>('adminControl');
 
   // New admin form input fields
   const [newUid, setNewUid] = useState('');
+  const [newName, setNewName] = useState('');
   const [newEmail, setNewEmail] = useState('');
   const [newRole, setNewRole] = useState<'Admin' | 'Superadmin'>('Admin');
   const [actionLoading, setActionLoading] = useState(false);
 
-  useEffect(() => {
-    // Listen to real-time updates in the 'admins' directory
-    const unsub = onSnapshot(
-      collection(db, 'admins'),
-      (snap) => {
-        const list: AdminUser[] = [];
-        snap.forEach((doc) => {
-          const d = doc.data();
-          list.push({
-            id: doc.id,
-            email: d.email || '',
-            role: d.role || 'Admin',
-            createdAt: d.createdAt?.toDate ? d.createdAt.toDate() : new Date(),
-          });
-        });
-        setAdmins(list);
-        setLoadingAdmins(false);
-      },
-      (err) => {
-        console.error("Admins subscription security limits encountered:", err);
-        setLoadingAdmins(false);
-      }
-    );
+  // No self-service "pending" request queue in the unified backend model — an existing
+  // admin must add new operators directly via this form (see ARCHITECTURE_INTEGRATION.md).
+  const approvedAdmins = admins;
+  const pendingRequests: AdminUser[] = [];
 
-    return () => unsub();
+  const refreshAdmins = async () => {
+    try {
+      const { team } = await api.get<{ team: any[] }>('/api/admin/team');
+      setAdmins(
+        team
+          .filter((u) => u.role === 'admin' || u.role === 'superadmin')
+          .map((u) => ({
+            id: u.id,
+            email: u.email || '',
+            role: BACKEND_TO_ROLE[u.role] || 'Admin',
+            status: 'approved',
+            createdAt: u.createdAt ? new Date(u.createdAt) : new Date(),
+          }))
+      );
+    } catch (err) {
+      console.error('Failed to fetch admin team:', err);
+    } finally {
+      setLoadingAdmins(false);
+    }
+  };
+
+  useEffect(() => {
+    refreshAdmins();
+    const interval = setInterval(refreshAdmins, 20000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleSave = () => {
@@ -75,11 +85,13 @@ export default function SettingsPage({ T, isAr = false, currentUser }: SettingsP
 
     setActionLoading(true);
     try {
-      await setDoc(doc(db, 'admins', newUid.trim()), {
+      await api.post('/api/admin/team', {
+        id: newUid.trim(),
+        name: newName.trim() || newEmail.trim(),
         email: newEmail.trim().toLowerCase(),
-        role: newRole,
-        createdAt: serverTimestamp(),
+        role: ROLE_TO_BACKEND[newRole],
       });
+      await refreshAdmins();
 
       await createSierraNotification(
         'system',
@@ -91,29 +103,33 @@ export default function SettingsPage({ T, isAr = false, currentUser }: SettingsP
 
       // Clear form inputs
       setNewUid('');
+      setNewName('');
       setNewEmail('');
       setNewRole('Admin');
     } catch (err) {
-      handleFirestoreError(err, OperationType.UPDATE, `admins/${newUid}`);
+      console.error('Failed to register admin:', err);
+      alert(err instanceof Error ? err.message : 'Failed to register admin.');
     } finally {
       setActionLoading(false);
     }
   };
 
   const handleRevokeAdmin = async (id: string, email: string) => {
-    if (email.toLowerCase() === 'a.fawzy8866@gmail.com') {
+    const emailLower = email.toLowerCase();
+    if (emailLower === 'a.fawzy8866@gmail.com' || emailLower === 'emeraldestatesegypt@gmail.com') {
       alert(isAr ? 'لا يمكن إلغاء صلاحيات حساب الإدارة الرئيسي المستنسخ!' : 'Cannot revoke pre-bootstrapped primary Superadmin authorization!');
       return;
     }
 
-    const confirmMsg = isAr 
-      ? `هل أنت متأكد من رغبتك في إلغاء صلاحيات المشرف بالبريد الإلكتروني ${email}؟` 
+    const confirmMsg = isAr
+      ? `هل أنت متأكد من رغبتك في إلغاء صلاحيات المشرف بالبريد الإلكتروني ${email}؟`
       : `Are you sure you want to revoke admin credentials for ${email}?`;
-    
+
     if (!confirm(confirmMsg)) return;
 
     try {
-      await deleteDoc(doc(db, 'admins', id));
+      await api.delete(`/api/admin/team?id=${encodeURIComponent(id)}`);
+      await refreshAdmins();
 
       await createSierraNotification(
         'system',
@@ -123,12 +139,45 @@ export default function SettingsPage({ T, isAr = false, currentUser }: SettingsP
         `تم بنجاح سحب صلاحيات لوحة المشرفين عن الحساب ذو البريد ${email}.`
       );
     } catch (err) {
-      handleFirestoreError(err, OperationType.DELETE, `admins/${id}`);
+      console.error(`Failed to revoke admin ${id}:`, err);
     }
   };
 
   return (
-    <div className="space-y-6 max-w-4xl animate-fade-in-up">
+    <div className="space-y-6 max-w-4xl animate-fade-in-up font-sans">
+      {/* Settings Sub-page Tabs */}
+      <div className="flex border border-slate-800 p-1 bg-slate-950/60 rounded-xl gap-2 font-mono">
+        <button
+          onClick={() => setActiveSubTab('config')}
+          className={`flex-1 py-2.5 px-4 rounded-lg text-xs font-semibold tracking-wider uppercase transition-all duration-150 cursor-pointer text-center ${
+            activeSubTab === 'config'
+              ? 'bg-cyan-500 text-black shadow-[0_0_15px_rgba(6,182,212,0.3)] font-bold'
+              : 'text-slate-400 hover:text-white hover:bg-white/5'
+          }`}
+          id="tab-settings-config"
+        >
+          🔧 {isAr ? 'إعدادات النظام والمفاتيح' : 'Keys & Server Config'}
+        </button>
+        <button
+          onClick={() => setActiveSubTab('adminControl')}
+          className={`flex-1 py-2.5 px-4 rounded-lg text-xs font-semibold tracking-wider uppercase transition-all duration-150 cursor-pointer text-center relative flex justify-center items-center gap-2 ${
+            activeSubTab === 'adminControl'
+              ? 'bg-cyan-500 text-black shadow-[0_0_15px_rgba(6,182,212,0.3)] font-bold'
+              : 'text-slate-400 hover:text-white hover:bg-white/5'
+          }`}
+          id="tab-settings-admin-control"
+        >
+          <span>🔑 {isAr ? 'لوحة التحكم بالمشرفين' : 'Admin Control'}</span>
+          {pendingRequests.length > 0 && (
+            <span className="bg-amber-500 text-black font-extrabold text-[10px] px-2 py-0.5 rounded-full animate-bounce shadow">
+              {pendingRequests.length}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {activeSubTab === 'adminControl' && (
+        <div className="space-y-6 animate-fade-in">
       {/* 3-Layers Security Information Board */}
       <div className="bg-[#0a0f1d] border border-slate-800 rounded-xl overflow-hidden shadow-xl">
         <div className="px-5 py-4 border-b border-slate-800 bg-slate-900/40 flex items-center gap-2">
@@ -202,21 +251,37 @@ export default function SettingsPage({ T, isAr = false, currentUser }: SettingsP
                 👥 {isAr ? 'سجل المستخدمين والمشرفين النشطين (طبقة 2)' : 'Registered System Operators (Layer 2)'}
               </span>
               <span className="px-2 py-0.5 text-[9px] rounded-full font-mono bg-cyan-950 text-cyan-400 font-bold border border-cyan-800/20">
-                {admins.length + 1} {isAr ? 'مشرفين' : 'Authorized'}
+                {approvedAdmins.length + 2} {isAr ? 'مشرفين معتمدين' : 'Authorized'}
               </span>
             </div>
 
             <div className="p-5 space-y-3">
               {/* Primary Master Admin row is hardcoded since it is bootstrapped */}
               <div className="flex items-center justify-between p-3 bg-cyan-950/10 border border-cyan-500/20 rounded-lg">
-                <div className="min-w-0">
+                <div className="min-w-0 font-sans">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-cyan-500 animate-pulse" />
                     <span className="font-bold text-xs text-white">A.fawzy8866@gmail.com</span>
                   </div>
-                  <p className="font-mono text-[10px] text-slate-500 mt-1 select-all">UID: Pre-bootstrapped Master System Entry</p>
+                  <p className="font-mono text-[9px] text-slate-500 mt-1 select-all">UID: Pre-bootstrapped Master System Entry</p>
                 </div>
-                <div className="shrink-0">
+                <div className="shrink-0 font-sans">
+                  <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-cyan-500 text-black uppercase tracking-wide">
+                    {isAr ? 'المدير العام' : 'Superadmin'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Secondary Master Admin row is hardcoded since it is bootstrapped */}
+              <div className="flex items-center justify-between p-3 bg-cyan-950/10 border border-cyan-500/20 rounded-lg">
+                <div className="min-w-0 font-sans">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-cyan-500 animate-pulse" />
+                    <span className="font-bold text-xs text-white">emeraldestatesegypt@gmail.com</span>
+                  </div>
+                  <p className="font-mono text-[9px] text-slate-500 mt-1 select-all">UID: Pre-bootstrapped Master System Entry</p>
+                </div>
+                <div className="shrink-0 font-sans">
                   <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-cyan-500 text-black uppercase tracking-wide">
                     {isAr ? 'المدير العام' : 'Superadmin'}
                   </span>
@@ -228,15 +293,15 @@ export default function SettingsPage({ T, isAr = false, currentUser }: SettingsP
                   <div className="w-5 h-5 rounded-full border border-cyan-500/20 border-t-cyan-500 animate-spin" />
                   <p className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Querying database directory...</p>
                 </div>
-              ) : admins.length === 0 ? (
+              ) : approvedAdmins.length === 0 ? (
                 <div className="p-4 border border-dashed border-slate-850 rounded-lg text-center text-xs text-slate-500 font-mono">
-                  {isAr ? 'لا يوجد مشرفين ثانويين مسجلين بعد.' : 'No secondary workspace operators enrolled yet.'}
+                  {isAr ? 'لا يوجد مشرفين ثانويين معتمدين بعد.' : 'No secondary workspace operators approved yet.'}
                 </div>
               ) : (
                 <div className="space-y-2 max-h-[280px] overflow-y-auto pr-1 custom-scrollbar">
-                  {admins.map((adm) => (
+                  {approvedAdmins.map((adm) => (
                     <div key={adm.id} className="flex items-center justify-between p-3 bg-slate-950 border border-slate-850 rounded-lg hover:border-slate-800 transition">
-                      <div className="min-w-0 pr-2">
+                      <div className="min-w-0 pr-2 font-sans">
                         <div className="flex items-center gap-2">
                           <span className="w-2 h-2 rounded bg-emerald-500" />
                           <span className="font-semibold text-xs text-white truncate">{adm.email}</span>
@@ -244,7 +309,7 @@ export default function SettingsPage({ T, isAr = false, currentUser }: SettingsP
                         <p className="font-mono text-[9px] text-slate-500 mt-1 truncate select-all">UID: {adm.id}</p>
                       </div>
 
-                      <div className="flex items-center gap-2 shrink-0">
+                      <div className="flex items-center gap-2 shrink-0 font-sans">
                         <span className={`px-1.5 py-0.5 rounded text-[9px] font-mono font-bold uppercase tracking-wide ${
                           adm.role === 'Superadmin' ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' : 'bg-slate-900 text-slate-400 border border-slate-800'
                         }`}>
@@ -307,6 +372,21 @@ export default function SettingsPage({ T, isAr = false, currentUser }: SettingsP
 
               <div>
                 <label className="block text-[8.5px] font-mono uppercase tracking-widest text-cyan-400 mb-1.5 select-none">
+                  {isAr ? 'الاسم' : 'Name'}
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  placeholder="e.g. Mona Hassan"
+                  className="w-full bg-slate-950 border border-slate-850 focus:border-cyan-500/50 rounded px-4 py-2 text-xs text-white font-mono placeholder:text-slate-700 outline-none transition duration-150"
+                  id="admin-new-name-input"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[8.5px] font-mono uppercase tracking-widest text-cyan-400 mb-1.5 select-none">
                   {isAr ? 'البريد الإلكتروني المعتمد بالكامل' : 'Registered Google Admin Email'}
                 </label>
                 <input
@@ -356,8 +436,12 @@ export default function SettingsPage({ T, isAr = false, currentUser }: SettingsP
           </div>
         </div>
       </div>
+        </div>
+      )}
 
-      <div className="bg-[#0a0f1d] border border-slate-800 rounded-xl overflow-hidden shadow-xl">
+      {activeSubTab === 'config' && (
+        <div className="space-y-6 animate-fade-in font-sans">
+          <div className="bg-[#0a0f1d] border border-slate-800 rounded-xl overflow-hidden shadow-xl">
         <div className="px-5 py-4 border-b border-slate-800 bg-slate-900/40">
           <span className="font-mono text-[10px] uppercase tracking-wider text-cyan-400 font-bold select-none">
             🔧 {T('settings')} · Server Config Keys
@@ -430,6 +514,8 @@ export default function SettingsPage({ T, isAr = false, currentUser }: SettingsP
           </div>
         </div>
       </div>
+        </div>
+      )}
     </div>
   );
 }

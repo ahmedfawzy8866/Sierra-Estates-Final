@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { collection, onSnapshot, addDoc, serverTimestamp, deleteDoc, doc, writeBatch, updateDoc } from 'firebase/firestore';
-import { db, handleFirestoreError, OperationType, createSierraNotification } from '../firebase';
+import { createSierraNotification } from '../firebase';
+import { api } from '../lib/apiClient';
 import { Lead } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
+import HighlightText from './HighlightText';
+import { recordAccess, getRelevanceScore } from '../utils/relevance';
 
 interface LeadsPageProps {
   T: (key: string) => string;
@@ -35,6 +37,16 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
   const [onlyHot, setOnlyHot] = useState<boolean>(false);
   const [showArchived, setShowArchived] = useState<boolean>(false);
   const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([]);
+  const [sortByRelevance, setSortByRelevance] = useState<boolean>(true);
+  const [accessUpdateTrigger, setAccessUpdateTrigger] = useState<number>(0);
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setAccessUpdateTrigger(prev => prev + 1);
+    };
+    window.addEventListener('sierra_access_updated', handleUpdate);
+    return () => window.removeEventListener('sierra_access_updated', handleUpdate);
+  }, []);
   
   // Modals state
   const [showAddModal, setShowAddModal] = useState(false);
@@ -57,64 +69,43 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
   const [importSuccessMsg, setImportSuccessMsg] = useState<string | null>(null);
   const [importErrorMsg, setImportErrorMsg] = useState<string | null>(null);
 
+  const refreshAgents = async () => {
+    try {
+      const { agents: loaded } = await api.get<{ agents: any[] }>('/api/admin/agents');
+      setAgents(loaded);
+    } catch (err) {
+      console.error('Failed to fetch agents:', err);
+    }
+  };
+
+  const refreshLeads = async () => {
+    try {
+      const { leads: loaded } = await api.get<{ leads: any[] }>('/api/admin/leads');
+      setLeads(
+        loaded.map((d) => ({
+          ...d,
+          createdAt: d.createdAt ? new Date(d.createdAt) : new Date(),
+          updatedAt: d.updatedAt ? new Date(d.updatedAt) : new Date(),
+        }))
+      );
+    } catch (err) {
+      console.error('Failed to fetch leads:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Backend-polled lists (replaces Firestore onSnapshot — see ARCHITECTURE_INTEGRATION.md).
   useEffect(() => {
-    // Subscribe to agents collection
-    const unsubAgents = onSnapshot(
-      collection(db, 'agents'),
-      (snap) => {
-        const loaded: any[] = [];
-        snap.forEach((doc) => {
-          const d = doc.data();
-          loaded.push({
-            id: doc.id,
-            name: d.name,
-            emoji: d.emoji || '👤',
-            color: d.color || '#06b6d4',
-            status: d.status || 'Offline',
-            load: d.load || 0,
-            tasks: d.tasks || 0
-          });
-        });
-        setAgents(loaded);
-      },
-      (err) => {
-        console.error("Agents subscription failed: ", err);
-      }
-    );
-    return () => unsubAgents();
+    refreshAgents();
+    const interval = setInterval(refreshAgents, 20000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
-    // Standard real-time listener conforming to "Secure List Queries"
-    const unsub = onSnapshot(
-      collection(db, 'leads'),
-      (snap) => {
-        const loaded: Lead[] = [];
-        snap.forEach((doc) => {
-          const d = doc.data();
-          loaded.push({
-            id: doc.id,
-            name: d.name,
-            phone: d.phone,
-            interest: d.interest,
-            stage: d.stage,
-            color: d.color || '#C8961A',
-            hot: d.hot,
-            archived: !!d.archived,
-            ownerId: d.ownerId || '',
-            createdAt: d.createdAt?.toDate ? d.createdAt.toDate() : new Date(),
-            updatedAt: d.updatedAt?.toDate ? d.updatedAt.toDate() : new Date(),
-          });
-        });
-        setLeads(loaded);
-        setLoading(false);
-      },
-      (err) => {
-        handleFirestoreError(err, OperationType.LIST, 'leads');
-      }
-    );
-
-    return () => unsub();
+    refreshLeads();
+    const interval = setInterval(refreshLeads, 15000);
+    return () => clearInterval(interval);
   }, []);
 
   // Compute most available agent ID (fewest active assigned leads)
@@ -167,7 +158,7 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
   }, [leads]);
 
   const filtered = useMemo(() => {
-    return leads.filter((l) => {
+    const res = leads.filter((l) => {
       // archived filter
       const matchesArchive = showArchived ? !!l.archived : !l.archived;
 
@@ -192,7 +183,21 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
 
       return matchesArchive && matchesQ && matchesStage && matchesHot;
     });
-  }, [q, selectedStage, onlyHot, showArchived, leads]);
+
+    if (sortByRelevance && q.trim()) {
+      return [...res].sort((a, b) => {
+        const scoreA = getRelevanceScore(a.id);
+        const scoreB = getRelevanceScore(b.id);
+        if (scoreB !== scoreA) {
+          return scoreB - scoreA;
+        }
+        // secondary sort by newest first
+        return b.updatedAt.getTime() - a.updatedAt.getTime();
+      });
+    }
+
+    return res;
+  }, [q, selectedStage, onlyHot, showArchived, leads, sortByRelevance, accessUpdateTrigger]);
 
   const handleAddLead = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -216,7 +221,7 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
     }
 
     try {
-      await addDoc(collection(db, 'leads'), {
+      await api.post('/api/admin/leads', {
         name: name.trim(),
         phone: phone.trim(),
         interest: interest.trim(),
@@ -224,9 +229,8 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
         hot,
         color: randomColor,
         ownerId: finalOwnerId,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
       });
+      await refreshLeads();
 
       let assignedText = 'unassigned';
       let assignedTextAr = 'غير معين';
@@ -255,19 +259,21 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
       setOwnerId('auto');
       setShowAddModal(false);
     } catch (err) {
-      handleFirestoreError(err, OperationType.CREATE, 'leads');
+      console.error('Failed to create lead:', err);
+      setFormError(err instanceof Error ? err.message : 'Failed to create lead.');
     }
   };
 
   const handleDeleteLead = async (id: string, name: string) => {
     if (!confirm(`Are you sure you want to delete lead ${name}?`)) return;
     try {
-      await deleteDoc(doc(db, 'leads', id));
+      await api.delete(`/api/admin/leads/${id}`);
+      await refreshLeads();
       if (selectedLeadIds.includes(id)) {
         setSelectedLeadIds(prev => prev.filter(x => x !== id));
       }
     } catch (err) {
-      handleFirestoreError(err, OperationType.DELETE, `leads/${id}`);
+      console.error('Failed to delete lead:', err);
     }
   };
 
@@ -275,11 +281,8 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
     if (selectedLeadIds.length === 0) return;
     if (!confirm(`Are you sure you want to permanently delete these ${selectedLeadIds.length} leads?`)) return;
     try {
-      const batch = writeBatch(db);
-      selectedLeadIds.forEach((id) => {
-        batch.delete(doc(db, 'leads', id));
-      });
-      await batch.commit();
+      await api.post('/api/admin/leads/bulk', { ids: selectedLeadIds, action: 'delete' });
+      await refreshLeads();
 
       await createSierraNotification(
         'system',
@@ -291,18 +294,15 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
 
       setSelectedLeadIds([]);
     } catch (err) {
-      handleFirestoreError(err, OperationType.DELETE, 'leads/bulk');
+      console.error('Failed to bulk-delete leads:', err);
     }
   };
 
   const handleBulkArchive = async (archiveState: boolean) => {
     if (selectedLeadIds.length === 0) return;
     try {
-      const batch = writeBatch(db);
-      selectedLeadIds.forEach((id) => {
-        batch.update(doc(db, 'leads', id), { archived: archiveState, updatedAt: serverTimestamp() });
-      });
-      await batch.commit();
+      await api.post('/api/admin/leads/bulk', { ids: selectedLeadIds, action: 'update', patch: { archived: archiveState } });
+      await refreshLeads();
 
       await createSierraNotification(
         'system',
@@ -316,18 +316,15 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
 
       setSelectedLeadIds([]);
     } catch (err) {
-      handleFirestoreError(err, OperationType.UPDATE, 'leads/bulk-archive');
+      console.error('Failed to bulk-archive leads:', err);
     }
   };
 
   const handleBulkReassign = async (newStage: Lead['stage']) => {
     if (selectedLeadIds.length === 0) return;
     try {
-      const batch = writeBatch(db);
-      selectedLeadIds.forEach((id) => {
-        batch.update(doc(db, 'leads', id), { stage: newStage, updatedAt: serverTimestamp() });
-      });
-      await batch.commit();
+      await api.post('/api/admin/leads/bulk', { ids: selectedLeadIds, action: 'update', patch: { stage: newStage } });
+      await refreshLeads();
 
       await createSierraNotification(
         'system',
@@ -339,16 +336,15 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
 
       setSelectedLeadIds([]);
     } catch (err) {
-      handleFirestoreError(err, OperationType.UPDATE, 'leads/bulk-reassign');
+      console.error('Failed to bulk-reassign leads:', err);
     }
   };
 
   const handleBulkAutoAssign = async () => {
     if (selectedLeadIds.length === 0 || agents.length === 0) return;
     try {
-      const batch = writeBatch(db);
-
-      // Create a local count tracker to distribute leads evenly in a single batch operation!
+      // Each lead can go to a different agent, so this can't use the uniform bulk-patch endpoint —
+      // patch one lead at a time, tracking running counts locally same as before.
       const runningCounts: Record<string, number> = {};
       agents.forEach(a => {
         runningCounts[a.id] = 0;
@@ -360,8 +356,7 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
         }
       });
 
-      selectedLeadIds.forEach((id) => {
-        // Find the agent with the lowest running lead count
+      for (const id of selectedLeadIds) {
         let minCount = Infinity;
         let selectedAgentId = '';
 
@@ -374,14 +369,12 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
         });
 
         if (selectedAgentId) {
-          // Assign lead to this agent
-          batch.update(doc(db, 'leads', id), { ownerId: selectedAgentId, updatedAt: serverTimestamp() });
-          // Increment count in our local tracker so the next lead in the batch goes to the next available agent!
+          await api.patch(`/api/admin/leads/${id}`, { ownerId: selectedAgentId });
           runningCounts[selectedAgentId]++;
         }
-      });
+      }
 
-      await batch.commit();
+      await refreshLeads();
 
       await createSierraNotification(
         'system',
@@ -393,7 +386,7 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
 
       setSelectedLeadIds([]);
     } catch (err) {
-      handleFirestoreError(err, OperationType.UPDATE, 'leads/bulk-auto-assign');
+      console.error('Failed to bulk-auto-assign leads:', err);
     }
   };
 
@@ -548,7 +541,7 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
             runningCounts[selectedAgentId]++;
           }
 
-          await addDoc(collection(db, 'leads'), {
+          await api.post('/api/admin/leads', {
             name: lName,
             phone: lPhone,
             interest: lInterest,
@@ -556,12 +549,12 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
             hot: lHot,
             color: randomColor,
             ownerId: selectedAgentId,
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
           });
 
           importedCount++;
         }
+
+        await refreshLeads();
 
         await createSierraNotification(
           'lead',
@@ -652,6 +645,22 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
               <span>📁</span>
               <span>{isAr ? 'عرض الأرشيف' : 'Show Archived'}</span>
             </button>
+
+            {/* 🎯 Relevance toggle pill */}
+            {q && (
+              <button
+                onClick={() => setSortByRelevance(!sortByRelevance)}
+                className={`px-3.5 py-2.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer border ${
+                  sortByRelevance
+                    ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.15)]'
+                    : 'bg-[#05080f]/40 text-slate-400 border-slate-800 hover:text-slate-200'
+                }`}
+                id="btn-relevance-sort-toggle"
+              >
+                <span>🎯</span>
+                <span>{isAr ? 'ترتيب حسب الأهمية' : 'Sort by Relevance'}</span>
+              </button>
+            )}
 
             {/* Register lead CTA */}
             <button
@@ -786,13 +795,18 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
                 {filtered.map((l) => {
                   const isSelected = selectedLeadIds.includes(l.id);
                   return (
-                    <tr
+                    <motion.tr
+                      layout
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.2 }}
                       key={l.id}
-                      className={`hover:bg-white/5 transition duration-100 border-b border-slate-800/50 ${
+                      className={`hover:bg-white/5 transition duration-100 border-b border-slate-800/50 cursor-pointer ${
                         isSelected ? 'bg-cyan-500/5 hover:bg-cyan-500/10' : ''
                       }`}
+                      onClick={() => recordAccess(l.id, 'leads')}
                     >
-                      <td className="p-4 text-center select-none w-10">
+                      <td className="p-4 text-center select-none w-10" onClick={(e) => e.stopPropagation()}>
                         <input
                           type="checkbox"
                           checked={isSelected}
@@ -814,19 +828,26 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
                           </div>
                           <div className="min-w-0">
                             <span className="font-semibold text-white inline-flex items-center gap-1.5 uppercase tracking-wide">
-                              {l.name}
+                              <HighlightText text={l.name} highlight={searchQuery} />
                               {l.hot && <span className="text-[10px] animate-bounce shrink-0">🔥</span>}
+                              {getRelevanceScore(l.id) > 0 && (
+                                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-cyan-950/60 border border-cyan-800/40 text-[9px] font-mono text-cyan-400 font-medium cursor-help" title={`Relevance Score: ${getRelevanceScore(l.id)}`} onClick={(e) => { e.stopPropagation(); }}>
+                                  🎯 {getRelevanceScore(l.id)}
+                                </span>
+                              )}
                             </span>
                           </div>
                         </div>
                       </td>
                       <td className="p-4 font-mono text-slate-400 hover:text-white transition duration-150 select-text">
-                        {l.phone}
+                        <HighlightText text={l.phone} highlight={searchQuery} />
                       </td>
-                      <td className="p-4 text-slate-300 max-w-[240px] truncate">{l.interest}</td>
+                      <td className="p-4 text-slate-300 max-w-[240px] truncate">
+                        <HighlightText text={l.interest} highlight={searchQuery} />
+                      </td>
                       <td className="p-4">
                         <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full uppercase tracking-wide shrink-0 ${stageChipClass(l.stage)}`}>
-                          {l.stage}
+                          <HighlightText text={isAr ? T(getStageTranslationKey(l.stage)) : l.stage} highlight={searchQuery} />
                         </span>
                       </td>
                       <td className="p-4">
@@ -835,10 +856,8 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
                           onChange={async (e) => {
                             const newOwnerId = e.target.value === 'unassigned' ? '' : e.target.value;
                             try {
-                              await updateDoc(doc(db, 'leads', l.id), {
-                                ownerId: newOwnerId,
-                                updatedAt: serverTimestamp()
-                              });
+                              await api.patch(`/api/admin/leads/${l.id}`, { ownerId: newOwnerId });
+                              await refreshLeads();
                               if (newOwnerId) {
                                 const targetAg = agents.find(ag => ag.id === newOwnerId);
                                 await createSierraNotification(
@@ -850,7 +869,7 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
                                 );
                               }
                             } catch (err) {
-                              handleFirestoreError(err, OperationType.UPDATE, `leads/${l.id}`);
+                              console.error(`Failed to reassign lead ${l.id}:`, err);
                             }
                           }}
                           className="bg-slate-950/60 border border-slate-850 hover:border-cyan-500/30 text-white rounded px-2 py-1 text-[10px] font-mono outline-none transition duration-150 cursor-pointer focus:border-cyan-500/50"
@@ -881,7 +900,7 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
                           </button>
                         </div>
                       </td>
-                    </tr>
+                    </motion.tr>
                   );
                 })}
               </tbody>

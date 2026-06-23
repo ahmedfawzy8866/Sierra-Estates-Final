@@ -1,4 +1,4 @@
-import { collection, getDocs, writeBatch, doc } from 'firebase/firestore';
+import { collection, getDocs, writeBatch, doc, setDoc } from 'firebase/firestore';
 import { db, OperationType, handleFirestoreError } from './firebase';
 
 const INITIAL_LEADS = [
@@ -17,6 +17,9 @@ const INITIAL_AGENTS = [
   {name:'WhatsApp Scraper',desc:'Monitors Property Finder, OLX & WhatsApp groups.',emoji:'🕵️',color:'#7C3AED',status:'Running',load:55,tasks:2847},
   {name:'The Scribe',desc:'S1-S2 ingestion — parses raw listing data & normalizes to Sierra schema.',emoji:'✍️',color:'#E63946',status:'Idle',load:12,tasks:4821},
   {name:'The Curator',desc:'S3-S5 inventory management — deduplication, quality scoring & AVM pricing.',emoji:'🎨',color:'#E9C176',status:'Online',load:68,tasks:3102},
+  {name:'Marketing Oracle',desc:'Auto-generates ad copy and configures Facebook/Instagram targeted campaigns.',emoji:'📈',color:'#f43f5e',status:'Idle',load:18,tasks:412},
+  {name:'Data Enricher',desc:'Cross-references property data with external APIs for comprehensive details.',emoji:'🧠',color:'#6366f1',status:'Running',load:82,tasks:1980},
+  {name:'Social Publisher',desc:'Schedules and formats automated social media posting across networks.',emoji:'📱',color:'#0ea5e9',status:'Online',load:45,tasks:754},
 ];
 
 const INITIAL_WORKFLOWS = [
@@ -131,9 +134,9 @@ const INITIAL_LISTINGS = [
   {code:'SE-KTH-VLA-0026',cmp:'Katameya Heights',type:'Villa',beds:5,area:450,price:'EGP 38M',ai:9.5,status:'Active',img:0},
 ];
 
-export async function seedFirestore() {
+  export async function seedFirestore() {
+  // 1. Leads
   try {
-    // 1. Leads
     const leadsSnap = await getDocs(collection(db, 'leads'));
     if (leadsSnap.empty) {
       console.log('Seeding leads...');
@@ -148,23 +151,36 @@ export async function seedFirestore() {
       });
       await batch.commit();
     }
-
-    // 2. Agents
-    const agentsSnap = await getDocs(collection(db, 'agents'));
-    if (agentsSnap.empty) {
-      console.log('Seeding agents...');
-      const batch = writeBatch(db);
-      INITIAL_AGENTS.forEach((agent, i) => {
-        const docRef = doc(db, 'agents', `agent-${i + 1}`);
-        batch.set(docRef, {
-          ...agent,
-          updatedAt: new Date()
-        });
-      });
-      await batch.commit();
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("permission")) {
+      handleFirestoreError(error, OperationType.LIST, 'leads');
+    } else {
+      handleFirestoreError(error, OperationType.WRITE, 'leads');
     }
+    // Continue
+  }
 
-    // 3. Workflows
+
+  // 2. Agents
+  try {
+    const agentsSnap = await getDocs(collection(db, 'agents'));
+    console.log('Seeding agents...');
+    const batch = writeBatch(db);
+    INITIAL_AGENTS.forEach((agent, i) => {
+      const docRef = doc(db, 'agents', `agent-${i + 1}`);
+      batch.set(docRef, {
+        ...agent,
+        updatedAt: new Date()
+      });
+    });
+    await batch.commit();
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, 'agents');
+    // Continue
+  }
+
+  // 3. Workflows
+  try {
     const workflowsSnap = await getDocs(collection(db, 'workflows'));
     if (workflowsSnap.empty) {
       console.log('Seeding workflows...');
@@ -178,8 +194,13 @@ export async function seedFirestore() {
       });
       await batch.commit();
     }
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, 'workflows');
+    return;
+  }
 
-    // 4. Listings
+  // 4. Listings
+  try {
     const listingsSnap = await getDocs(collection(db, 'listings'));
     if (listingsSnap.empty) {
       console.log('Seeding listings...');
@@ -196,6 +217,49 @@ export async function seedFirestore() {
       await batch.commit();
     }
   } catch (error) {
-    handleFirestoreError(error, OperationType.WRITE, 'seed');
+    handleFirestoreError(error, OperationType.WRITE, 'listings');
+  }
+
+  // 5. System Logs
+  try {
+    const logsSnap = await getDocs(collection(db, 'system_logs'));
+    if (logsSnap.empty) {
+      console.log('Seeding system logs...');
+      const batch = writeBatch(db);
+      
+      const logs = [
+        { action: "Lead Ahmed Al-Rashid assigned to Sierra Bot", category: "lead", operator: "Sierra Bot", timestamp: new Date(Date.now() - 5 * 60000) },
+        { action: "New listing added: 3-Bed Lakeview Townhouse, Hyde Park", category: "listing", operator: "The Curator", timestamp: new Date(Date.now() - 15 * 60000) },
+        { action: "Workflow WhatsApp Scraper Cron (30m) completed successfully", category: "workflow", operator: "System Daemon", timestamp: new Date(Date.now() - 28 * 60000) },
+        { action: "AI Matched Sara Mohamed to 3-Bed Mivida Rental", category: "lead", operator: "Leila / Lola", timestamp: new Date(Date.now() - 45 * 60000) },
+        { action: "AVM pricing update for Mountain View Compound initiated", category: "system", operator: "The Scribe", timestamp: new Date(Date.now() - 120 * 60000) },
+        { action: "User emeraldestatesegypt@gmail.com signed in to Sierra Core Panel", category: "system", operator: "Security Service", timestamp: new Date(Date.now() - 240 * 60000) }
+      ];
+
+      logs.forEach((log, i) => {
+        const docRef = doc(db, 'system_logs', `log-${i + 1}`);
+        batch.set(docRef, log);
+      });
+      await batch.commit();
+    }
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, 'system_logs');
+  }
+
+  // 6. System Health
+  try {
+    const healthSnap = await getDocs(collection(db, 'system_health'));
+    if (healthSnap.empty) {
+      console.log('Seeding system health...');
+      const docRef = doc(db, 'system_health', 'current_status');
+      await setDoc(docRef, {
+        dbLatency: 12,
+        authUptime: 99.98,
+        storageQuota: 24,
+        updatedAt: new Date()
+      });
+    }
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, 'system_health');
   }
 }

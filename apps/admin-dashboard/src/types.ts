@@ -67,6 +67,7 @@ export interface AdminUser {
   id: string;
   email: string;
   role: "Admin" | "Superadmin";
+  status?: "approved" | "pending";
   createdAt: Date;
 }
 
@@ -79,4 +80,13 @@ export interface SierraNotification {
   messageAr?: string;
   read: boolean;
   createdAt: Date;
+}
+
+export interface SearchLog {
+  id: string;
+  query: string;
+  scope: 'all' | 'leads' | 'listings' | 'agents' | 'workflows';
+  timestamp: Date;
+  userId?: string;
+  isVoice?: boolean;
 }
