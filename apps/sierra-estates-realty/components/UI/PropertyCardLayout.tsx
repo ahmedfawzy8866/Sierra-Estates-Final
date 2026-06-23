@@ -3,7 +3,7 @@
 import React, { useRef } from 'react';
 import Image from 'next/image';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { Property } from '@/lib/firebase';
+import { Property } from '@/lib/models/schema';
 import { MapPin, BedDouble, Bath, Square } from 'lucide-react';
 
 interface PropertyCardLayoutProps {
@@ -58,16 +58,16 @@ export function PropertyCardLayout({ property }: PropertyCardLayoutProps) {
         style={{ transform: "translateZ(30px)" }}
       >
         <Image 
-          src={property.img_url || "/placeholder.jpg"} 
-          alt={property.compound_name}
+          src={property.featuredImage || "/placeholder.jpg"} 
+          alt={property.compound || "Sierra Estates Property"}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
         />
         <div className="absolute top-4 left-4 bg-sierra-estates text-white px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase shadow-sm">
-          {property.purpose}
+          {property.monthlyRent ? "Rent" : "Buy"}
         </div>
         <div className="absolute top-4 right-4 bg-sierra-gold text-white px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase shadow-sm">
-          {property.unit_code}
+          {property.code || "SB-UNIT"}
         </div>
       </div>
 
@@ -77,10 +77,10 @@ export function PropertyCardLayout({ property }: PropertyCardLayoutProps) {
       >
         <div className="flex items-start justify-between mb-2">
           <div>
-            <h3 className="text-xl font-bold text-sierra-navy tracking-tight">{property.compound_name}</h3>
+            <h3 className="text-xl font-bold text-sierra-navy tracking-tight">{property.compound || "Sierra Property"}</h3>
             <div className="flex items-center text-sierra-navy/60 text-sm mt-1">
               <MapPin className="w-3.5 h-3.5 mr-1" />
-              <span>Unit {property.unit_code}</span>
+              <span>Unit {property.code || "SB-UNIT"}</span>
             </div>
           </div>
         </div>
@@ -88,15 +88,15 @@ export function PropertyCardLayout({ property }: PropertyCardLayoutProps) {
         <div className="flex items-center space-x-4 my-4 py-4 border-y border-sierra-navy/10 text-sierra-navy/80 text-sm font-medium">
           <div className="flex items-center">
             <BedDouble className="w-4 h-4 mr-1.5 text-sierra-estates" />
-            <span>{property.beds || 0}</span>
+            <span>{property.bedrooms || 0}</span>
           </div>
           <div className="flex items-center">
             <Bath className="w-4 h-4 mr-1.5 text-sierra-estates" />
-            <span>{property.baths || 0}</span>
+            <span>{property.bathrooms || 0}</span>
           </div>
           <div className="flex items-center">
             <Square className="w-4 h-4 mr-1.5 text-sierra-estates" />
-            <span>{property.bua_m2 || 0} sqm</span>
+            <span>{property.area || 0} sqm</span>
           </div>
         </div>
 

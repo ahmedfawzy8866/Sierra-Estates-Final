@@ -4,8 +4,9 @@ import { verifyAdminRequest } from '@/lib/server/auth-guard';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { logger } from '@/lib/logger';
+// Force dynamic rendering — uses Firebase/auth at runtime
+export const dynamic = 'force-dynamic';
 
-<<<<<<< HEAD
 // PATCH accepts a partial of the workflow display shape; unknown keys are
 // stripped so callers can't write arbitrary fields onto the document.
 const workflowPatchSchema = z
@@ -18,10 +19,6 @@ const workflowPatchSchema = z
   })
   .partial()
   .strict();
-=======
-// Force dynamic rendering — uses Firebase/auth at runtime
-export const dynamic = 'force-dynamic';
->>>>>>> origin/pr-12
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const authResult = await verifyAdminRequest(req);
