@@ -23,10 +23,13 @@ function NotFound() {
   );
 }
 
+import ClientRequest from "@/pages/ClientRequest";
+
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/request" component={ClientRequest} />
       <Route component={NotFound} />
     </Switch>
   );

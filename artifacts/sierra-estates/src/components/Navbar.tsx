@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { useLang } from "@/contexts/LanguageContext";
 import { useTheme } from "next-themes";
 import { Menu, X, Sun, Moon } from "lucide-react";
+import { useLocation } from "wouter";
 
 const ALL_COMPOUNDS = [
   'Hyde Park','Mountain View iCity','Mountain View Hyde Park',
@@ -39,6 +40,7 @@ export default function Navbar({
   const [menuOpen, setMenuOpen] = useState(false);
   const [cmpQ, setCmpQ] = useState("");
   const { theme, setTheme } = useTheme();
+  const [, setLocation] = useLocation();
   const pillRef = useRef<HTMLDivElement>(null);
 
   const topOffset = annVisible ? 36 : 0;
@@ -166,7 +168,7 @@ export default function Navbar({
               )}
             </div>
 
-            <button className="hdr-cta" onClick={() => { setOpen(null); onSmartRequest(); }}>
+            <button className="hdr-cta" onClick={() => { setOpen(null); setLocation("/request"); }}>
               {t("nav.cta")}
             </button>
           </div>
@@ -214,7 +216,7 @@ export default function Navbar({
               style={{ padding: "8px 20px", borderRadius: 8, border: "1px solid rgba(211,167,71,.4)", background: "none", color: "var(--gold-lt)", fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
               {t("nav.lang")}
             </button>
-            <button onClick={() => { onSmartRequest(); setMenuOpen(false); }}
+            <button onClick={() => { setLocation("/request"); setMenuOpen(false); }}
               style={{ padding: "10px 24px", borderRadius: 9, background: "linear-gradient(135deg,var(--gold),var(--gold-lt))", color: "var(--navy)", fontSize: 11, fontWeight: 800, letterSpacing: ".1em", textTransform: "uppercase", border: "none", cursor: "pointer", fontFamily: "inherit" }}>
               {t("nav.cta")}
             </button>
