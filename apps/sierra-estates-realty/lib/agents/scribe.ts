@@ -70,7 +70,7 @@ Output ONLY a JSON object.`;
           'baths': normalized.bathrooms || doc?.baths || 0,
         });
       } catch (error) {
-        console.error(`[SCRIBE] S2 Error for ${docId}:`, error);
+        console.error('[SCRIBE] S2 Error', { docId, error });
         await StateManager.failStage(
           docId,
           collection,

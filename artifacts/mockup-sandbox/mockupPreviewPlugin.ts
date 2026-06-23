@@ -51,8 +51,14 @@ export function mockupPreviewPlugin(): Plugin {
     }));
   }
 
+  function isValidImportPath(importPath: string): boolean {
+    // Prevent path traversal and absolute paths
+    return !importPath.includes("..") && !path.isAbsolute(importPath);
+  }
+
   function generateSource(components: Array<DiscoveredComponent>): string {
     const entries = components
+      .filter((c) => isValidImportPath(c.importPath))
       .map(
         (c) =>
           `  ${JSON.stringify(c.globKey)}: () => import(${JSON.stringify(c.importPath)})`,
