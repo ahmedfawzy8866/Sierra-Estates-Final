@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { pfClient } from '@/lib/property-finder-client';
 import { verifyAdminRequest, unauthorizedResponse } from '@/lib/server/auth-guard';
-import { logger } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   const auth = await verifyAdminRequest(request);
@@ -47,7 +46,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: 'Unknown action. Use: search-listings, search-locations, fetch-leads, users, credit-balance, webhooks' }, { status: 400 });
     }
   } catch (error: any) {
-    logger.error('[PF API GET]', error.message);
+    console.error('[PF API GET]', error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
@@ -84,7 +83,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Unknown action. Use: create-listing, publish, unpublish, subscribe-webhook' }, { status: 400 });
     }
   } catch (error: any) {
-    logger.error('[PF API POST]', error.message);
+    console.error('[PF API POST]', error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
@@ -102,7 +101,7 @@ export async function PUT(request: NextRequest) {
     const result = await pfClient.updateListing(parseInt(id), body);
     return NextResponse.json(result);
   } catch (error: any) {
-    logger.error('[PF API PUT]', error.message);
+    console.error('[PF API PUT]', error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
@@ -118,7 +117,7 @@ export async function DELETE(request: NextRequest) {
     await pfClient.deleteListing(parseInt(id));
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    logger.error('[PF API DELETE]', error.message);
+    console.error('[PF API DELETE]', error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

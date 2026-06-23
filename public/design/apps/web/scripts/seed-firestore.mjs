@@ -176,7 +176,7 @@ const SAMPLE_LEADS = [
 const SAMPLE_USERS = [
   {
     uid: 'user-admin-001',
-    email: 'admin@sierrablurealty.com',
+    email: 'admin@sierraestatesrealty.com',
     displayName: 'Sierra Admin',
     role: 'admin',
     photoURL: 'https://api.dicebear.com/7.x/avataaars/svg?seed=admin',
@@ -184,7 +184,7 @@ const SAMPLE_USERS = [
   },
   {
     uid: 'user-advisor-001',
-    email: 'advisor@sierrablurealty.com',
+    email: 'advisor@sierraestatesrealty.com',
     displayName: 'Ahmed Fawzy',
     role: 'advisor',
     photoURL: 'https://api.dicebear.com/7.x/avataaars/svg?seed=advisor',

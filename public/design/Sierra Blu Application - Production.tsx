@@ -540,7 +540,7 @@ function CoBuyerHub() {
 
 // ─── MAIN APP ────────────────────────────────────────────────────────────
 
-export default function SierraBluApp() {
+export default function sierraestatesApp() {
   const [intent, setIntent] = useState<UserIntent>(null);
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(MOCK_PROPERTIES[0].id);
   const selectedProperty = MOCK_PROPERTIES.find(p => p.id === selectedPropertyId) || MOCK_PROPERTIES[0];
@@ -605,7 +605,7 @@ export default function SierraBluApp() {
               <p className="text-[#C9A84C] text-xs uppercase tracking-widest font-semibold mb-4">Contact</p>
               <ul className="space-y-2 text-sm text-[#F4F0E8]/70">
                 <li className="flex items-center gap-2"><Phone className="w-4 h-4" /> +971 50 123 4567</li>
-                <li className="flex items-center gap-2"><Mail className="w-4 h-4" /> hello@sierrablu.ae</li>
+                <li className="flex items-center gap-2"><Mail className="w-4 h-4" /> hello@sierraestates.ae</li>
               </ul>
             </div>
           </div>

@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { generateCloserHandoff } from '@/lib/services/handoff-service';
-import { logger } from '@/lib/logger';
 
 export async function POST(req: Request) {
   try {
@@ -30,7 +29,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, summary });
   } catch (error: any) {
-    logger.error("Handoff API error:", error);
+    console.error("Handoff API error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

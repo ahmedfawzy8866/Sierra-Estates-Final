@@ -4,7 +4,6 @@ import { instrumentAgent } from '../arize';
 import { OrchestrationStage } from '../services/orchestrator';
 import { initiateFeedbackLoop } from '../services/feedback-engine';
 import { StateManager } from '../orchestration/StateManager';
-import { logger } from '@/lib/logger';
 
 /**
  * THE CLOSER: "The Architect of Success"
@@ -19,14 +18,14 @@ export const runCloser = async (
 ) => {
   return instrumentAgent('closer', stage, docId, async () => {
     if (stage === 'S9') {
-      logger.info(`[CLOSER] S9: Asset Finalization for ${docId}`);
+      console.log(`[CLOSER] S9: Asset Finalization for ${docId}`);
       await StateManager.completeStage(docId, collection, 'S10', {
         'status': 'published',
       });
     }
 
     if (stage === 'S10') {
-      logger.info(`[CLOSER] S10: Optimization Feedback for ${docId}`);
+      console.log(`[CLOSER] S10: Optimization Feedback for ${docId}`);
 
       if (collection === 'stakeholders') {
         const leadData = await StateManager.getDocument(docId, collection);

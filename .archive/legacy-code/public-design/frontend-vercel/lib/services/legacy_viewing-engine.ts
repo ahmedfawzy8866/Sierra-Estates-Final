@@ -1,5 +1,5 @@
 /**
- * SIERRA BLU — STAGE 8: VIEWING ENGINE
+ * sierra estates — STAGE 8: VIEWING ENGINE
  * Automates the scheduling and reminding for site inspections.
  */
 

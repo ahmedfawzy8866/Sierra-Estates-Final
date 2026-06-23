@@ -11,10 +11,10 @@ interface SettingsPageProps {
 
 export default function SettingsPage({ T, isAr = false, currentUser }: SettingsPageProps) {
   const [saved, setSaved] = useState(false);
-  const [projectId, setProjectId] = useState('sierra-blu');
+  const [projectId, setProjectId] = useState('sierra-estates');
   const [geminiKey, setGeminiKey] = useState('AIza••••••••••••••');
   const [whatsappToken, setWhatsappToken] = useState('EAAx••••••••••');
-  const [webhookUrl, setWebhookUrl] = useState('https://n8n.sierra-blu.com/webhook');
+  const [webhookUrl, setWebhookUrl] = useState('https://n8n.sierra-estates.com/webhook');
   const [telegramToken, setTelegramToken] = useState('6847••••••:AAH•••••');
 
   // Real-time admins list

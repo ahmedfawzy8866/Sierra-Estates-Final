@@ -6,6 +6,9 @@ import { mapListingToSpa, mapSpaToListingPatch } from '@/lib/server/admin-spa-ma
 import { Timestamp } from 'firebase-admin/firestore';
 import { logger } from '@/lib/logger';
 
+// Force dynamic rendering — uses Firebase/auth at runtime
+export const dynamic = 'force-dynamic';
+
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const authResult = await verifyAdminRequest(req);
   if (!authResult.authenticated) {

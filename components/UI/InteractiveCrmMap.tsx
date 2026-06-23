@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, TrendingUp, Info } from 'lucide-react';
-import { useSierraBlu } from '@/hooks/useSierraBlu';
+import { usesierraestates } from '@/hooks/usesierraestates';
 
 // Leaflet imports (only loaded on client)
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
@@ -75,7 +75,7 @@ export default function InteractiveCrmMap({
   filters, 
   onSelectCompound 
 }: InteractiveCrmMapProps) {
-  const { units } = useSierraBlu();
+  const { units } = usesierraestates();
   const [selectedCompoundKey, setSelectedCompoundKey] = useState<string | null>(null);
   const [isUnlocked, setIsUnlocked] = useState(false);
 
