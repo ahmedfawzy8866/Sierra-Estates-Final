@@ -4,15 +4,14 @@
   "outputDirectory": "dist",
   "installCommand": "npm install",
   "functions": {
-    "api/server.js": {
-      "maxDuration": 30,
-      "memory": 1024
+    "api/server.cjs": {
+      "maxDuration": 30
     }
   },
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/api/server.js"
+      "destination": "/api/server.cjs"
     },
     {
       "source": "/(.*)",
