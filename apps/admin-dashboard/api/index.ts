@@ -21,29 +21,73 @@ app.use((req, res, next) => {
 });
 
 
-// Initialize firebase-admin
+// ─── Firebase Admin Init ─────────────────────────────────────────────────────
+// In production (Vercel), set FIREBASE_SERVICE_ACCOUNT env var to the full
+// JSON string of your Firebase service account key.
+// Without it, listing reads fall back to the public Firestore REST API.
+let db: admin.firestore.Firestore | null = null;
+const FIREBASE_PROJECT = "sierra-blu";
+
 if (!admin.apps.length) {
   if (process.env.FIREBASE_SERVICE_ACCOUNT) {
     try {
       const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
-        projectId: "sierra-blu"
+        projectId: FIREBASE_PROJECT,
       });
+      db = admin.firestore();
+      console.log('Firebase Admin initialized with service account.');
     } catch (err) {
-      console.error('Failed to parse FIREBASE_SERVICE_ACCOUNT env var, using default config:', err);
-      admin.initializeApp({
-        projectId: "sierra-blu"
-      });
+      console.error('Failed to parse FIREBASE_SERVICE_ACCOUNT:', err);
     }
   } else {
-    admin.initializeApp({
-      projectId: "sierra-blu"
-    });
+    console.warn('FIREBASE_SERVICE_ACCOUNT not set — listing reads will use public Firestore REST API.');
   }
 }
 
-const db = admin.firestore();
+// ─── Firestore REST API fallback (no auth required — listings are public) ────
+async function fetchListingsFromFirestoreREST(limit = 200): Promise<any[]> {
+  const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT}/databases/(default)/documents/listings?pageSize=${limit}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Firestore REST API error: ${res.status} ${await res.text()}`);
+  const json = await res.json();
+  return (json.documents || []).map((doc: any) => {
+    const id = doc.name.split('/').pop();
+    const fields = doc.fields || {};
+    const get = (f: string) => {
+      const v = fields[f];
+      if (!v) return undefined;
+      return v.stringValue ?? v.integerValue ?? v.doubleValue ?? v.booleanValue ??
+        (v.arrayValue?.values?.map((x: any) => x.stringValue || x.integerValue || x.doubleValue) || undefined) ??
+        (v.mapValue ? v.mapValue : undefined);
+    };
+    return {
+      id,
+      title: get('title'),
+      titleAr: get('titleAr'),
+      type: get('propertyType') || get('type'),
+      compound: get('compound') || get('cmp'),
+      cmp: get('cmp') || get('compound'),
+      beds: Number(get('bedrooms') || get('beds') || 0),
+      baths: Number(get('bathrooms') || get('baths') || 0),
+      area: Number(get('area') || 0),
+      price: get('price'),
+      status: get('status') || 'available',
+      purpose: get('purpose') || 'for-sale',
+      description: get('description'),
+      image: get('featuredImage') || get('image'),
+      images: get('images') || [],
+      amenities: get('amenities') || [],
+      ai: Number(get('ai_score') || get('ai') || 9.0),
+      pfReferenceNumber: get('pfReferenceNumber') || get('referenceNumber'),
+      currency: get('currency') || 'EGP',
+      source: get('syncSource') || 'manual',
+    };
+  });
+}
+
+
 
 // ─── Twilio Client ───────────────────────────────────────────────────────────
 // Uses first account by default; second account as fallback
@@ -195,26 +239,39 @@ function mapToClientListing(id: string, data: any) {
 app.get("/api/listings", async (req, res) => {
   try {
     const { id, limit: limitParam } = req.query;
-    if (id) {
-      const docSnap = await db.collection("listings").doc(id as string).get();
-      if (!docSnap.exists) {
-        res.status(404).json({ success: false, error: "Listing not found" });
+    const parsedLimit = limitParam ? parseInt(limitParam as string, 10) : 200;
+
+    // ── Path A: Firebase Admin SDK available (service account set) ──
+    if (db) {
+      if (id) {
+        const docSnap = await db.collection("listings").doc(id as string).get();
+        if (!docSnap.exists) {
+          res.status(404).json({ success: false, error: "Listing not found" });
+          return;
+        }
+        res.json({ success: true, listing: mapToClientListing(docSnap.id, docSnap.data()) });
         return;
       }
-      res.json({ success: true, listing: mapToClientListing(docSnap.id, docSnap.data()) });
+      let query: admin.firestore.Query = db.collection("listings");
+      if (!isNaN(parsedLimit)) query = query.limit(parsedLimit);
+      const snapshot = await query.get();
+      const listings = snapshot.docs.map(doc => mapToClientListing(doc.id, doc.data()));
+      res.json({ success: true, listings, count: listings.length });
       return;
     }
 
-    let query: admin.firestore.Query = db.collection("listings");
-    if (limitParam) {
-      const parsedLimit = parseInt(limitParam as string, 10);
-      if (!isNaN(parsedLimit)) {
-        query = query.limit(parsedLimit);
+    // ── Path B: No service account — use public Firestore REST API ──
+    const rawDocs = await fetchListingsFromFirestoreREST(isNaN(parsedLimit) ? 200 : parsedLimit);
+    if (id) {
+      const found = rawDocs.find(d => d.id === id);
+      if (!found) {
+        res.status(404).json({ success: false, error: "Listing not found" });
+        return;
       }
+      res.json({ success: true, listing: mapToClientListing(found.id, found) });
+      return;
     }
-
-    const snapshot = await query.get();
-    const listings = snapshot.docs.map(doc => mapToClientListing(doc.id, doc.data()));
+    const listings = rawDocs.map(d => mapToClientListing(d.id, d));
     res.json({ success: true, listings, count: listings.length });
   } catch (e: any) {
     console.error('Fetch Listings Error:', e);
@@ -231,23 +288,47 @@ app.post("/api/leads", async (req, res) => {
       return;
     }
 
-    const docRef = await db.collection("leads").add({
-      name,
-      email,
-      phone: phone || "",
-      interest: message || "",
-      stage: "Initial Contact",
-      hot: false,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
-
-    res.status(201).json({ success: true, id: docRef.id });
+    if (db) {
+      const docRef = await db.collection("leads").add({
+        name,
+        email,
+        phone: phone || "",
+        interest: message || "",
+        stage: "Initial Contact",
+        hot: false,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      res.status(201).json({ success: true, id: docRef.id });
+    } else {
+      // Firestore REST API write
+      const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT}/databases/(default)/documents/leads`;
+      const body = {
+        fields: {
+          name: { stringValue: name },
+          email: { stringValue: email },
+          phone: { stringValue: phone || "" },
+          interest: { stringValue: message || "" },
+          stage: { stringValue: "Initial Contact" },
+          hot: { booleanValue: false },
+        }
+      };
+      const postRes = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (!postRes.ok) throw new Error(`Firestore REST write failed: ${postRes.status}`);
+      const data = await postRes.json();
+      const id = data.name?.split('/').pop() || 'unknown';
+      res.status(201).json({ success: true, id });
+    }
   } catch (e: any) {
     console.error('Create Lead Error:', e);
     res.status(500).json({ error: e.message });
   }
 });
+
 
 // GET /api/pf/leads — proxy raw leads from PropertyFinder
 app.get("/api/pf/leads", async (req, res) => {
