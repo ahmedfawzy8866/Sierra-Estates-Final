@@ -8,7 +8,7 @@ import { adminDb } from '../server/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 import { Unit, Lead, COLLECTIONS } from '../models/schema';
 import { PFPropertyType } from '../property-finder/types';
-import { logger } from '@/lib/logger';
+import { triggerNewListingNotification } from '../server/n8n';
 
 export interface PFLeadSyncSummary {
   created: number;
@@ -69,7 +69,7 @@ export class PFIntegrationService {
     let updated = 0;
 
     const pfResult = await pfClient.searchListings({ perPage: '100' });
-    logger.info('[PF API] Found listings count:', pfResult.data?.length || 0);
+    console.log('[PF API] Found listings count:', pfResult.data?.length || 0);
 
     const listings = pfResult.data || [];
 
@@ -109,8 +109,16 @@ export class PFIntegrationService {
       };
 
       if (existing.empty) {
-        await adminDb.collection(COLLECTIONS.units).add({ ...payload, createdAt: Timestamp.now() });
+        const newDocRef = await adminDb.collection(COLLECTIONS.units).add({ ...payload, createdAt: Timestamp.now() });
         imported++;
+
+        // Trigger n8n webhook for new listing matching
+        await triggerNewListingNotification({
+          id: newDocRef.id,
+          title: payload.title || '',
+          price: payload.price || 0,
+          compound: payload.compound || payload.location || payload.city || ''
+        });
       } else {
         await existing.docs[0].ref.update(payload);
         updated++;

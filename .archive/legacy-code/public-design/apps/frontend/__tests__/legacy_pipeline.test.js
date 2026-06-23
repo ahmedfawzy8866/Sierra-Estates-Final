@@ -63,9 +63,9 @@ jest.mock('firebase-functions', () => ({
 // Import the functions under test
 // --------------------------------------------------------------------------
  
-const { collectData } = require('../functions/collectData');
+const { collectData } = require('../../../../../../../functions/collectData');
  
-const { processDataForApp } = require('../functions/processData');
+const { processDataForApp } = require('../../../../../../../functions/processData');
 
 // --------------------------------------------------------------------------
 // Helper: build a minimal Express-like req/res pair

@@ -38,7 +38,7 @@
                 │ Admin SDK / REST              │ typed trigger calls
                 ▼                                ▼
 ┌───────────────────────────────┐   ┌───────────────────────────────────────────┐
-│  Firebase  (project: sierra-blu)│   │  Workers — where heavy work actually runs │
+│  Firebase  (project: sierra-estates)│   │  Workers — where heavy work actually runs │
 │   Firestore  (rules-gated)     │   │   n8n            Docker/VPS :5678           │
 │   Storage    (rules-gated)     │   │     WhatsApp scraping + automation         │
 │   Auth                         │   │   apps/api       Cloud Run (FastAPI :8000) │
@@ -62,8 +62,8 @@ serverless model can't host anyway.
 | Component | Path | Runtime / Host | How it deploys | Domain / endpoint |
 |---|---|---|---|---|
 | **Public site + Admin + API** | `apps/sierra-estates-realty` | Vercel (Next.js) | **Auto on push to `main`** → `.github/workflows/deploy-vercel.yml` | `sierra-estates.net` (+ `admin.sierra-estates.net`) |
-| **Backend infra** | `firestore.rules`, `storage.rules`, `functions/` | Firebase · project `sierra-blu` | Manual → `deploy-firebase.yml` or `firebase deploy --only firestore:rules,storage,functions` | n/a (Firestore/Storage/Auth) |
-| **Legacy-admin redirect** | `firebase.json` hosting `sierra-estates-admin` | Firebase Hosting site `admin-sierra-blu` | Manual → `deploy-firebase.yml` | 302 → `sierra-estates.net/admin` |
+| **Backend infra** | `firestore.rules`, `storage.rules`, `functions/` | Firebase · project `sierra-estates` | Manual → `deploy-firebase.yml` or `firebase deploy --only firestore:rules,storage,functions` | n/a (Firestore/Storage/Auth) |
+| **Legacy-admin redirect** | `firebase.json` hosting `sierra-estates-admin` | Firebase Hosting site `admin-sierra-estates` | Manual → `deploy-firebase.yml` | 302 → `sierra-estates.net/admin` |
 | **Python API + bots** | `apps/api` | Cloud Run (FastAPI, :8000) | `gcloud run deploy` (own pipeline) | gated by `PYTHON_API_BASE_URL` |
 | **Intelligence OS** | external (Remix) | Cloud Run · europe-west2 | `gcloud run deploy` (own pipeline) | `NEXT_PUBLIC_INTELLIGENCE_OS_URL` |
 | **WhatsApp scraper + automation** | `workflows/`, n8n templates | n8n · Docker/VPS :5678 | imported into n8n; triggered by `N8N_BASE_URL` webhooks | internal |
@@ -73,8 +73,8 @@ serverless model can't host anyway.
 
 > Identifiers (non-secret, committed): Vercel team `team_k2jaWfzeatcYG6Qpl0ooCxQh`,
 > project `prj_4jwnJjtZtmjtNZTr5oKAmC9vOrv3` (root dir pinned to
-> `apps/sierra-estates-realty`). Firebase project `sierra-blu`, hosting target
-> `sierra-estates-admin` → site `admin-sierra-blu`.
+> `apps/sierra-estates-realty`). Firebase project `sierra-estates`, hosting target
+> `sierra-estates-admin` → site `admin-sierra-estates`.
 
 ---
 
@@ -144,7 +144,7 @@ feature branch  ──PR──▶  CI (lint hard-gate)  ──review──▶  s
 1. Branch from `main` (never commit to `main`).
 2. Open a **draft PR**; let CI run; mark **ready**; **squash-merge** when green.
 3. Merge to `main` → `deploy-vercel.yml` builds + deploys **production** automatically.
-4. **Backend** changes (rules/functions): run **`deploy-firebase.yml`** (Actions tab) or `firebase deploy --only firestore:rules,storage,functions --project sierra-blu`.
+4. **Backend** changes (rules/functions): run **`deploy-firebase.yml`** (Actions tab) or `firebase deploy --only firestore:rules,storage,functions --project sierra-estates`.
 5. **Cloud Run** apps (`apps/api`, Intelligence OS): deploy via their own `gcloud run deploy`.
 6. **n8n** workflows: import/update in the n8n UI.
 
@@ -198,7 +198,7 @@ Before a new thing ships, classify it and follow its lane:
 ## 10. Current gaps to reach the target state
 
 - [x] Promote **type-check** and **build** to hard CI gates — done in `ci.yml`; verified both pass against current `main`.
-- [x] Pin the **one** Firebase project ID (`sierra-blu`) across `.firebaserc`, app env, and the admin applet config — stray `sierra-blu-realty` in `apps/admin-dashboard` fixed.
+- [x] Pin the **one** Firebase project ID (`sierra-estates`) across `.firebaserc`, app env, and the admin applet config — stray `sierra-estates-realty` in `apps/admin-dashboard` fixed.
 - [x] Add `admin.sierra-estates.net` to Vercel + DNS, then set `ADMIN_HOST` — reported done (see `RECOMMENDATIONS.md`); confirm `https://admin.sierra-estates.net/admin/login` loads in a browser, since this sandbox couldn't independently verify it.
 - [x] **`deploy-vercel.yml` was broken on every run** (all 30+ runs on `main` failed) — `actions/setup-node`'s `cache: npm` had no `package-lock.json` to key on (repo is pnpm-only), so the job died at step 3 before ever reaching the Vercel CLI steps. Fixed: added `pnpm/action-setup@v4`, switched to `cache: pnpm` + `pnpm install --frozen-lockfile`. Also added the missing `id: target` step — `steps.target.outputs.name`/`.flag` were referenced but never produced, so every deploy would have silently run as **preview**, never production, even once the install step worked.
 - [x] **`apps/sierra-estates-realty/vercel.json` did not exist**, despite Vercel's Root Directory being pinned to that folder (`deploy-vercel.yml`'s PATCH step) and both `CLAUDE.md` and this file documenting it as present. Vercel only reads `vercel.json` from the configured root directory, so the root-level crons/headers/rewrites/redirects were never actually applied in production. Fixed: created `apps/sierra-estates-realty/vercel.json` mirroring the root file's crons/headers/rewrites/redirects.

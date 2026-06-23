@@ -18,7 +18,7 @@ export const SiteConfig = {
     // Will update as soon as they provide the new data.
     phone: "+20 10 61399688", 
     email: "EmeraldEstatesegypt@gmail.com",
-    telegramBot: "https://t.me/Sierrablurealtybot",
+    telegramBot: "https://t.me/sierraestatesrealtybot",
   },
   contact: {
     whatsapp: "https://wa.me/201061399688",
@@ -34,7 +34,7 @@ export const SiteConfig = {
  * OS V4.0 Intelligence Thresholds
  * Used by Matching and Ranking engines.
  */
-export const SierraBluOS = {
+export const sierraestatesOS = {
   version: "4.0.0",
   thresholds: {
     matchingScore: 0.75,       // Minimum score to suggest a match

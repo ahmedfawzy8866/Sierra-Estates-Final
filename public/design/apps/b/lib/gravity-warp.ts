@@ -1,7 +1,7 @@
 import { animate } from 'animejs';
 
 /**
- * SIERRA BLU — GRAVITY WARP (CINEMATIC FX)
+ * sierra estates — GRAVITY WARP (CINEMATIC FX)
  * Handles the "Gravity Warp" visual transitions for premium aesthetics.
  * Optimized for Next.js Client Components.
  */

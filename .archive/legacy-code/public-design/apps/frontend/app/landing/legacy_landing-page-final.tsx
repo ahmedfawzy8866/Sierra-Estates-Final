@@ -48,7 +48,7 @@ const THEMES = {
 const COPY = {
   en: {
     dir: 'ltr',
-    brand: 'SIERRA BLU',
+    brand: 'sierra estates',
     sub: 'REALTY',
     tagline: 'AI-POWERED REAL ESTATE INTELLIGENCE',
     nav: ['Properties', 'Intelligence', 'About', 'Contact'],
@@ -73,8 +73,8 @@ const COPY = {
     viewAll: 'View All →',
     beds: 'bed',
     baths: 'bath',
-    secWhy: 'Why Sierra Blu',
-    h2Why: 'The Sierra Blu Difference',
+    secWhy: 'Why sierra estates',
+    h2Why: 'The sierra estates Difference',
     why: [
       {
         icon: '◆',
@@ -102,7 +102,7 @@ const COPY = {
     formPhone: 'Phone Number',
     formSubmit: 'Get Started',
     formSuccess: 'Thank you! We\'ll be in touch shortly.',
-    copyright: '© 2026 Sierra Blu Realty. All rights reserved.',
+    copyright: '© 2026 sierra estates Realty. All rights reserved.',
     footerLinks: ['About', 'Contact', 'Privacy', 'Terms'],
   },
   ar: {

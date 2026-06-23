@@ -68,7 +68,7 @@ export default function AdminLoginPage() {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 required
-                placeholder="admin@sierrablurealty.com"
+                placeholder="admin@sierraestatesrealty.com"
                 className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3
                            text-white text-sm placeholder:text-white/20
                            focus:outline-none focus:border-[#C9A84C]/50 focus:bg-white/8

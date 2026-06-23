@@ -14,10 +14,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.version = void 0;
-exports.version = '1.0.0';
-__exportStar(require("./base-agent"), exports);
+__exportStar(require("./registry"), exports);
 __exportStar(require("./orchestrator"), exports);
-// Personas
-__exportStar(require("./personas/property-matcher"), exports);
+__exportStar(require("./workflows"), exports);
 //# sourceMappingURL=index.js.map

@@ -4,7 +4,7 @@ import { useEffect, useState, use } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import ConciergeGallery from '@/components/Proposals/ConciergeGallery';
 import type { ConciergeSelection, ConciergeUnit } from '@/lib/services/portfolio-engine';
-import { useSierraBlu } from '@/hooks/useSierraBlu';
+import { usesierraestates } from '@/hooks/usesierraestates';
 import { LuxuryCard, EditorialHeading } from '@/components/UI/LuxurySkeleton';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -15,7 +15,7 @@ export default function ConciergePage({ params }: { params: Promise<{ leadId: st
   const searchParams = useSearchParams();
   const galleryMode = searchParams.get('gallery') === 'true';
 
-  const { getLeadData, loading: hookLoading, error: hookError } = useSierraBlu();
+  const { getLeadData, loading: hookLoading, error: hookError } = usesierraestates();
   const [portfolio, setPortfolio] = useState<ConciergeSelection | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -95,13 +95,13 @@ export default function ConciergePage({ params }: { params: Promise<{ leadId: st
   };
 
   const handleShare = async (unit: ConciergeUnit) => {
-    const shareText = `Explore this curated Sierra Blu property: ${unit.title} - ${(unit.price / 1_000_000).toFixed(1)}M EGP. ROI: ${unit.estimatedROI.toFixed(1)}%`;
+    const shareText = `Explore this curated sierra estates property: ${unit.title} - ${(unit.price / 1_000_000).toFixed(1)}M EGP. ROI: ${unit.estimatedROI.toFixed(1)}%`;
     const shareUrl = window.location.href;
 
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Sierra Blu Realty Selection',
+          title: 'sierra estates Realty Selection',
           text: shareText,
           url: shareUrl,
         });
@@ -143,11 +143,11 @@ export default function ConciergePage({ params }: { params: Promise<{ leadId: st
             {error || 'Selection Unavailable'}
           </EditorialHeading>
           <p className="text-[#0A1628]/70 font-inter text-sm leading-relaxed mb-8">
-            This personalized selection link has expired or is invalid. Please contact your Sierra Blu advisor for a fresh curation.
+            This personalized selection link has expired or is invalid. Please contact your sierra estates advisor for a fresh curation.
           </p>
           <div className="w-full h-[1px] bg-[#C9A84C]/20 mb-8" />
           <p className="text-[#0A1628]/50 text-[10px] uppercase tracking-widest">
-            Sierra Blu Realty • Private Office
+            sierra estates Realty • Private Office
           </p>
         </LuxuryCard>
       </div>

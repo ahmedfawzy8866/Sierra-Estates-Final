@@ -2,7 +2,11 @@
   "name": "🏠 Sierra Estates — New Listing Auto-Notify",
   "nodes": [
     {
-      "parameters": { "httpMethod": "POST", "path": "new-listing-trigger" },
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "new-listing-trigger",
+        "options": {}
+      },
       "id": "119e0758-c0b8-4d57-b08e-17482811a001",
       "name": "Webhook Trigger",
       "type": "n8n-nodes-base.webhook",
@@ -124,7 +128,46 @@
       }
     }
   ],
-  "connections": {},
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch Matched Buyers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Matched Buyers": {
+      "main": [
+        [
+          {
+            "node": "Match Ranking Logic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Match Ranking Logic": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp Notification",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Email Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
   "active": false,
   "settings": {}
 }
