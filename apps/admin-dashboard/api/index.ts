@@ -1,8 +1,13 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import admin from 'firebase-admin';
+import twilio from 'twilio';
 
 const app = express();
 app.use(express.json());
+
 
 // Initialize firebase-admin
 if (!admin.apps.length) {
@@ -28,22 +33,28 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 
+// ─── Twilio Client ───────────────────────────────────────────────────────────
+// Uses first account by default; second account as fallback
+function getTwilioClient() {
+  const sid = process.env.TWILIO_ACCOUNT_SID;
+  const token = process.env.TWILIO_AUTH_TOKEN;
+  if (!sid || !token) throw new Error('TWILIO_ACCOUNT_SID / TWILIO_AUTH_TOKEN not set');
+  return twilio(sid, token);
+}
+
+const TWILIO_FROM_NUMBER = process.env.TWILIO_PHONE_NUMBER || '+17017867675';
+
+// ─── PropertyFinder Token Cache ──────────────────────────────────────────────
+
 let pfToken: string | null = null;
 let pfTokenExpiresAt: number = 0;
 
 async function getPFToken(): Promise<string> {
-  if (pfToken && Date.now() < pfTokenExpiresAt) {
-    return pfToken;
-  }
+  if (pfToken && Date.now() < pfTokenExpiresAt) return pfToken;
 
   const apiKey = process.env.PF_API_KEY;
   const apiSecret = process.env.PF_API_SECRET;
-
-  if (!apiKey || !apiSecret) {
-    throw new Error('PF_API_KEY and PF_API_SECRET are not set.');
-  }
-
-  const reqBody = { apiKey, apiSecret };
+  if (!apiKey || !apiSecret) throw new Error('PF_API_KEY and PF_API_SECRET are not set.');
 
   const res = await fetch('https://atlas.propertyfinder.com/v1/auth/token', {
     method: 'POST',
@@ -51,22 +62,67 @@ async function getPFToken(): Promise<string> {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     },
-    body: JSON.stringify(reqBody)
+    body: JSON.stringify({ apiKey, apiSecret })
   });
 
   if (!res.ok) {
     const txt = await res.text();
     console.error('PF Token failure:', txt);
-    throw new Error(`Failed to get Property Finder token. Status: ${res.status}`);
+    throw new Error(`PF auth failed: ${res.status} — ${txt}`);
   }
 
   const data = await res.json();
   pfToken = data.accessToken;
-  // Expire 1 minute early to be safe
   pfTokenExpiresAt = Date.now() + ((data.expiresIn - 60) * 1000);
-  
   return pfToken as string;
 }
+
+// Map PF listing → Firestore schema
+function mapPFListing(pf: any) {
+  return {
+    pfId: String(pf.id || pf.referenceNumber || ''),
+    pfReferenceNumber: pf.referenceNumber || pf.id || '',
+    code: `PF-${pf.referenceNumber || pf.id || Date.now()}`,
+    title: pf.title?.en || pf.title || '',
+    titleAr: pf.title?.ar || '',
+    type: pf.type || pf.propertyType || 'Apartment',
+    cmp: pf.community?.name || pf.location?.community || pf.projectName || '',
+    beds: pf.bedrooms ?? pf.beds ?? 0,
+    baths: pf.bathrooms ?? pf.baths ?? 0,
+    area: pf.area ?? pf.size ?? 0,
+    price: pf.price ? String(pf.price) : '0',
+    status: pf.status === 'published' ? 'Active' : (pf.status || 'Active'),
+    purpose: pf.purpose || 'for-sale',
+    description: pf.description?.en || pf.description || '',
+    image: pf.photos?.[0]?.url || pf.coverPhoto || '',
+    images: (pf.photos || []).map((p: any) => p.url || p).filter(Boolean),
+    amenities: pf.amenities || [],
+    ai: 9.0,
+    source: 'propertyfinder',
+    syncedAt: admin.firestore.FieldValue.serverTimestamp(),
+    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+  };
+}
+
+// Map PF lead → Firestore schema
+function mapPFLead(pf: any) {
+  return {
+    pfId: String(pf.id || ''),
+    name: pf.name || (pf.firstName ? `${pf.firstName} ${pf.lastName || ''}`.trim() : 'Unknown'),
+    email: pf.email || '',
+    phone: pf.phone || pf.mobile || '',
+    interest: pf.message || pf.note || pf.propertyTitle || '',
+    stage: 'Initial Contact',
+    hot: false,
+    source: 'propertyfinder',
+    pfListingId: String(pf.listingId || pf.propertyId || ''),
+    syncedAt: admin.firestore.FieldValue.serverTimestamp(),
+    createdAt: pf.createdAt ? new Date(pf.createdAt) : admin.firestore.FieldValue.serverTimestamp(),
+    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+  };
+}
+
+
 
 // API Health Check
 app.get("/api/health", (req, res) => {
@@ -179,47 +235,215 @@ app.post("/api/leads", async (req, res) => {
   }
 });
 
-// Example proxy for getting leads from Property Finder
+// GET /api/pf/leads — proxy raw leads from PropertyFinder
 app.get("/api/pf/leads", async (req, res) => {
   try {
     const token = await getPFToken();
     const qParams = new URLSearchParams(req.query as Record<string, string>);
-    
     const upstreamRes = await fetch(`https://atlas.propertyfinder.com/v1/leads?${qParams.toString()}`, {
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
+      headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` }
     });
-    
     const data = await upstreamRes.json();
     res.status(upstreamRes.status).json(data);
   } catch (e: any) {
-    console.error('PF Leads Error:', e);
+    console.error('PF Leads Proxy Error:', e);
     res.status(500).json({ error: e.message });
   }
 });
 
-// Proxy for listings
+// GET /api/pf/listings — proxy raw listings from PropertyFinder
 app.get("/api/pf/listings", async (req, res) => {
   try {
     const token = await getPFToken();
     const qParams = new URLSearchParams(req.query as Record<string, string>);
-    
     const upstreamRes = await fetch(`https://atlas.propertyfinder.com/v1/listings?${qParams.toString()}`, {
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
+      headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` }
     });
-    
     const data = await upstreamRes.json();
     res.status(upstreamRes.status).json(data);
   } catch (e: any) {
-    console.error('PF Listings Error:', e);
+    console.error('PF Listings Proxy Error:', e);
     res.status(500).json({ error: e.message });
   }
 });
+
+// POST /api/pf/sync/listings — fetch from PF and upsert into Firestore
+app.post("/api/pf/sync/listings", async (req, res) => {
+  try {
+    const token = await getPFToken();
+    const page = req.query.page || 1;
+    const pageSize = req.query.pageSize || 50;
+
+    const upstreamRes = await fetch(
+      `https://atlas.propertyfinder.com/v1/listings?page=${page}&pageSize=${pageSize}`,
+      { headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` } }
+    );
+
+    if (!upstreamRes.ok) {
+      const txt = await upstreamRes.text();
+      res.status(upstreamRes.status).json({ error: `PF error: ${txt}` });
+      return;
+    }
+
+    const data = await upstreamRes.json();
+    const pfListings: any[] = data.data || data.listings || data.results || data || [];
+
+    let synced = 0;
+    let errors = 0;
+    const batch = db.batch();
+
+    for (const pfl of pfListings) {
+      try {
+        const mapped = mapPFListing(pfl);
+        // Use pfId as doc ID to avoid duplicates on re-sync
+        const docId = `pf-${mapped.pfId || mapped.code}`;
+        const docRef = db.collection('listings').doc(docId);
+        batch.set(docRef, mapped, { merge: true });
+        synced++;
+      } catch (e) {
+        errors++;
+      }
+    }
+
+    await batch.commit();
+
+    res.json({
+      success: true,
+      synced,
+      errors,
+      total: pfListings.length,
+      message: `Synced ${synced} listings from PropertyFinder into Firestore`
+    });
+  } catch (e: any) {
+    console.error('PF Sync Listings Error:', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// POST /api/pf/sync/leads — fetch from PF and upsert into Firestore
+app.post("/api/pf/sync/leads", async (req, res) => {
+  try {
+    const token = await getPFToken();
+    const page = req.query.page || 1;
+    const pageSize = req.query.pageSize || 50;
+
+    const upstreamRes = await fetch(
+      `https://atlas.propertyfinder.com/v1/leads?page=${page}&pageSize=${pageSize}`,
+      { headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` } }
+    );
+
+    if (!upstreamRes.ok) {
+      const txt = await upstreamRes.text();
+      res.status(upstreamRes.status).json({ error: `PF error: ${txt}` });
+      return;
+    }
+
+    const data = await upstreamRes.json();
+    const pfLeads: any[] = data.data || data.leads || data.results || data || [];
+
+    let synced = 0;
+    let errors = 0;
+    const batch = db.batch();
+
+    for (const pfl of pfLeads) {
+      try {
+        const mapped = mapPFLead(pfl);
+        const docId = `pf-lead-${mapped.pfId || Date.now()}`;
+        const docRef = db.collection('leads').doc(docId);
+        // Only set if not already existing (don't overwrite agent notes/stage updates)
+        const existing = await docRef.get();
+        if (!existing.exists) {
+          batch.set(docRef, mapped);
+          synced++;
+        }
+      } catch (e) {
+        errors++;
+      }
+    }
+
+    await batch.commit();
+
+    res.json({
+      success: true,
+      synced,
+      errors,
+      total: pfLeads.length,
+      message: `Imported ${synced} new leads from PropertyFinder`
+    });
+  } catch (e: any) {
+    console.error('PF Sync Leads Error:', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ─── Twilio SMS & WhatsApp ────────────────────────────────────────────────────
+
+// POST /api/twilio/sms — send an SMS to a lead
+app.post("/api/twilio/sms", async (req, res) => {
+  try {
+    const { to, body } = req.body;
+    if (!to || !body) {
+      res.status(400).json({ error: 'to and body are required' });
+      return;
+    }
+    const client = getTwilioClient();
+    const msg = await client.messages.create({
+      from: TWILIO_FROM_NUMBER,
+      to,
+      body
+    });
+    res.json({ success: true, sid: msg.sid, status: msg.status });
+  } catch (e: any) {
+    console.error('Twilio SMS Error:', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// POST /api/twilio/whatsapp — send a WhatsApp message to a lead
+app.post("/api/twilio/whatsapp", async (req, res) => {
+  try {
+    const { to, body } = req.body;
+    if (!to || !body) {
+      res.status(400).json({ error: 'to and body are required' });
+      return;
+    }
+    const client = getTwilioClient();
+    // Twilio WhatsApp requires 'whatsapp:' prefix on both from and to
+    const fromWA = `whatsapp:${TWILIO_FROM_NUMBER}`;
+    const toWA = to.startsWith('whatsapp:') ? to : `whatsapp:${to}`;
+    const msg = await client.messages.create({
+      from: fromWA,
+      to: toWA,
+      body
+    });
+    res.json({ success: true, sid: msg.sid, status: msg.status });
+  } catch (e: any) {
+    console.error('Twilio WhatsApp Error:', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// POST /api/twilio/call-note — log a call note to Firestore lead doc
+app.post("/api/twilio/call-note", async (req, res) => {
+  try {
+    const { leadId, note, agentEmail } = req.body;
+    if (!leadId || !note) {
+      res.status(400).json({ error: 'leadId and note are required' });
+      return;
+    }
+    await db.collection('leads').doc(leadId).set({
+      lastNote: note,
+      lastNoteAt: admin.firestore.FieldValue.serverTimestamp(),
+      lastNoteBy: agentEmail || 'unknown',
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+    res.json({ success: true });
+  } catch (e: any) {
+    console.error('Call Note Error:', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
 
 // ============================================================================
 // ADMIN CONSOLE API ENDPOINTS
