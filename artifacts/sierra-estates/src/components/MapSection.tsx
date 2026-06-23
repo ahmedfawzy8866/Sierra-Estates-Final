@@ -248,7 +248,7 @@ export default function MapSection() {
                     {activeCompoundListings.map(unit => (
                       <div key={unit.id} style={{ background: "rgba(0,45,98,.02)", border: "1px solid rgba(0,0,0,.05)", borderRadius: 10, padding: 12, cursor: "pointer", transition: "all .2s" }} onMouseEnter={e => e.currentTarget.style.borderColor = "var(--gold)"} onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(0,0,0,.05)"}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
-                          <div style={{ fontSize: 12, fontWeight: 600, color: "var(--navy)", lineHeight: 1.2 }}>{(isAr ? unit.title_ar : unit.title) || 'Unit'}</div>
+                          <div style={{ fontSize: 12, fontWeight: 600, color: "var(--navy)", lineHeight: 1.2 }}>{(isAr ? unit.titleAr : unit.title) || 'Unit'}</div>
                           <div style={{ fontSize: 11, fontWeight: 700, color: "var(--gold-dk)", whiteSpace: "nowrap" }}>{formatPrice(unit.price, unit.currency)}</div>
                         </div>
                         <div style={{ display: "flex", gap: 12, fontSize: 10, color: "var(--text-f)" }}>

@@ -19,6 +19,8 @@ export interface Property {
   amenities: string[];
   images: string[];
   pfReferenceNumber?: string | null;
+  ai_score?: number;
+  currency?: string;
 }
 
 const LISTINGS_QUERY_KEY = ["listings"] as const;
@@ -38,6 +40,8 @@ function fromApiListing(l: ApiListing): Property {
     amenities: l.amenities,
     images: l.images?.length ? l.images : l.image ? [l.image] : [],
     pfReferenceNumber: l.pfReferenceNumber,
+    ai_score: (l as any).ai_score ?? (l as any).aiScore,
+    currency: (l as any).currency,
   };
 }
 
@@ -59,6 +63,8 @@ function fromFirestoreDoc(id: string, data: Record<string, any>): Property {
     amenities: data.amenities || [],
     images: data.images || [],
     pfReferenceNumber: data.pfReferenceNumber ?? null,
+    ai_score: data.ai_score ?? data.aiScore,
+    currency: data.currency,
   };
 }
 
