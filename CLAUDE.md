@@ -51,7 +51,6 @@ now redirects to the Vercel `/admin`. (The older `sierra-estates-admin-portal` w
 June 2026.)
 
 ## Config files
-
 - `vercel.json` (root) — Vercel config when root dir = repo root (buildCommand points to the realty app)
 - `apps/sierra-estates-realty/vercel.json` — Vercel config when root dir = `apps/sierra-estates-realty` in Vercel dashboard
 - `firebase.json` — Functions + Firestore rules + Storage rules + emulators + Hosting (the `admin-sierra-blu` site is a 302 redirect to the Vercel `/admin`, not a real web host)
