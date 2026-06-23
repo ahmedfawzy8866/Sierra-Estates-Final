@@ -1,4 +1,3 @@
-import type { BaseAgent } from './base-agent';
 export interface OrchestratorConfig {
     apiKey?: string;
     defaultModel?: string;
@@ -39,14 +38,5 @@ export declare class AgentOrchestrator {
         agentName: string;
         taskDescription: string;
     }>, initialContext?: string): Promise<TaskResult[]>;
-}
-export declare class Orchestrator {
-    private activeLocks;
-    private unsubscribeFn?;
-    private registeredAgents;
-    constructor(agents: BaseAgent[]);
-    start(): void;
-    stop(): void;
-    private processRecord;
 }
 //# sourceMappingURL=orchestrator.d.ts.map
