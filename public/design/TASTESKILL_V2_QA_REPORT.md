@@ -168,7 +168,7 @@
 
 ### Immediate (Frontend Integration)
 1. Convert to Next.js `app/page.tsx` (use `'use client'` directive)
-2. Replace `MOCK_PROPERTIES` with Firestore `useSierraBlu()` hook
+2. Replace `MOCK_PROPERTIES` with Firestore `usesierraestates()` hook
 3. Integrate Mapbox GL JS on Section 2 (map layer)
 4. Add GSAP ScrollTrigger to animate section reveals
 

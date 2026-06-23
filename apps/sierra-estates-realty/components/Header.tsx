@@ -93,7 +93,7 @@ export default function Header() {
 
           {/* Logo — centered on desktop */}
           <div className="flex-1 flex items-start">
-            <Link href="/" aria-label="Sierra Blu Home">
+            <Link href="/" aria-label="sierra estates Home">
               <div className="flex items-center gap-3 group">
                 {/* Logo mark */}
                 <div className="relative">
@@ -119,7 +119,7 @@ export default function Header() {
                     className="font-serif text-[17px] font-semibold tracking-[0.18em] text-[var(--navy)] leading-none"
                     style={{ fontFamily: 'var(--font-serif)' }}
                   >
-                    SIERRA BLU
+                    sierra estates
                   </p>
                   <p
                     className="text-[8px] uppercase tracking-[0.42em] text-[var(--red)] font-bold leading-none mt-0.5"

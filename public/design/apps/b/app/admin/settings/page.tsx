@@ -5,9 +5,9 @@ import { Settings, Key, Shield, Bell, Globe, Save, Check } from 'lucide-react';
 
 export default function AdminSettingsPage() {
   const [settings, setSettings] = useState({
-    companyName: 'Sierra Blu',
-    supportEmail: 'support@sierrabluteg.com',
-    webhookUrl: 'https://api.sierrabluteg.com/webhooks',
+    companyName: 'sierra estates',
+    supportEmail: 'support@sierraestatesteg.com',
+    webhookUrl: 'https://api.sierraestatesteg.com/webhooks',
     pfApiKey: '••••••••••••••••',
     notificationsEnabled: true,
     maintenanceMode: false,

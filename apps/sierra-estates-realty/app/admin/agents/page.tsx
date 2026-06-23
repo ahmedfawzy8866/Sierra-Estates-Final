@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   Shield, BrainCircuit, Users, Activity, RefreshCw,
-  PenLine, Palette, Handshake, AlertTriangle, type LucideIcon,
+  PenLine, Palette, Handshake, AlertTriangle, Play, Pause, Plus, type LucideIcon,
 } from 'lucide-react';
 import { SectionHeader, EmptyState } from '@/components/Admin';
 import { auth } from '@/lib/firebase';
@@ -27,6 +27,16 @@ const PERSONAS: Persona[] = [
   { id: 'curator',      name: 'The Curator',     role: 'Inventory deduplication & pricing',     icon: Palette,      tint: '#E9C176' },
   { id: 'closer',       name: 'Stage-9 Closer',  role: 'Deal drafting & closing',               icon: Handshake,    tint: '#34D399' },
   { id: 'sentinel',     name: 'System Sentinel', role: 'Infrastructure & reliability',          icon: Shield,       tint: '#64748b' },
+];
+
+// Default admin-managed automation flows, mapped to the real workers in
+// DEPLOYMENT.md. Seeded on demand via POST /api/admin/workflows (status: paused).
+const DEFAULT_WORKFLOWS = [
+  { name: 'WhatsApp Lead Sync',      nameAr: 'مزامنة عملاء واتساب',    desc: 'n8n broker-group scraping → lead ingestion',        descAr: '', color: '#C9A84C' },
+  { name: 'PropertyFinder Sync',     nameAr: 'مزامنة بروبرتي فايندر',   desc: 'Python API listing import + dedupe',                 descAr: '', color: '#1E88D9' },
+  { name: 'Nightly Data Enrichment', nameAr: 'إثراء البيانات الليلي',    desc: 'GitHub Actions external data-sync pipeline',          descAr: '', color: '#7C3AED' },
+  { name: 'Owner Negotiation Follow-ups', nameAr: 'متابعة تفاوض الملاك', desc: 'Scheduled WhatsApp follow-ups for stale negotiations', descAr: '', color: '#34D399' },
+  { name: 'Lead Qualification',      nameAr: 'تأهيل العملاء',           desc: 'Leila concierge — qualify & route new leads',        descAr: '', color: '#E63946' },
 ];
 
 const PIPELINE_STAGES = [
@@ -125,6 +135,58 @@ export default function AgentControlCenter() {
   }, []);
 
   useEffect(() => { void load(); }, [load]);
+
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [seeding, setSeeding] = useState(false);
+
+  const authHeaders = useCallback(async () => {
+    const token = await auth.currentUser?.getIdToken();
+    if (!token) throw new Error('Not authenticated');
+    return { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
+  }, []);
+
+  // Pause / activate an automation flow via PATCH /api/admin/workflows/[id].
+  const toggleWorkflow = useCallback(async (id: string, current?: string) => {
+    const next = (current ?? '').toLowerCase() === 'active' ? 'paused' : 'active';
+    setBusyId(id);
+    try {
+      const res = await fetch(`/api/admin/workflows/${id}`, {
+        method: 'PATCH',
+        headers: await authHeaders(),
+        body: JSON.stringify({ status: next }),
+      });
+      if (!res.ok) throw new Error(`Update failed (${res.status})`);
+      setWorkflows((prev) => prev.map((w) => (w.id === id ? { ...w, status: next } : w)));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update workflow');
+    } finally {
+      setBusyId(null);
+    }
+  }, [authHeaders]);
+
+  // One-click seed of the default admin-managed automation flows (mapped to the
+  // real workers in DEPLOYMENT.md). Posts through the authed create route so it
+  // works in production with the signed-in admin's token.
+  const seedWorkflows = useCallback(async () => {
+    setSeeding(true);
+    setError(null);
+    try {
+      const headers = await authHeaders();
+      for (const wf of DEFAULT_WORKFLOWS) {
+        const res = await fetch('/api/admin/workflows', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(wf),
+        });
+        if (!res.ok) throw new Error(`Seed failed (${res.status})`);
+      }
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to seed workflows');
+    } finally {
+      setSeeding(false);
+    }
+  }, [authHeaders, load]);
 
   const onlineCount = workers.filter((w) => statusTone(w.status) === 'ok').length;
   const activeFlows = workflows.filter((w) => (w.status ?? '').toLowerCase() === 'active').length;
@@ -258,13 +320,27 @@ export default function AgentControlCenter() {
             <EmptyState
               icon={RefreshCw}
               title={loading ? 'Loading workflows…' : 'No automation workflows defined'}
-              description="Admin-managed automation flows (n8n triggers, scheduled syncs) are surfaced here. Create one to begin tracking its runs."
+              description="Admin-managed automation flows (n8n triggers, scheduled syncs) are surfaced here."
+              action={
+                !loading ? (
+                  <button
+                    onClick={() => void seedWorkflows()}
+                    disabled={seeding}
+                    className="flex items-center gap-2 px-4 py-2 bg-[#031632] text-white rounded-xl font-semibold text-sm hover:bg-[#031632]/90 transition shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {seeding ? <RefreshCw size={15} className="animate-spin" /> : <Plus size={15} />}
+                    {seeding ? 'Seeding…' : 'Seed default workflows'}
+                  </button>
+                ) : undefined
+              }
             />
           </div>
         ) : (
           <div className="bg-white rounded-2xl border border-black/[0.03] shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] overflow-hidden divide-y divide-[#f3f4f5]">
             {workflows.map((f) => {
               const tone = statusTone(f.status);
+              const isActive = (f.status ?? '').toLowerCase() === 'active';
+              const busy = busyId === f.id;
               return (
                 <div key={f.id} className="flex items-center gap-4 px-6 py-4">
                   <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: f.color ?? '#6366f1' }} />
@@ -279,6 +355,15 @@ export default function AgentControlCenter() {
                   <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border shrink-0 ${TONE_STYLES[tone]}`}>
                     {f.status ?? 'paused'}
                   </span>
+                  <button
+                    onClick={() => void toggleWorkflow(f.id, f.status)}
+                    disabled={busy}
+                    title={isActive ? 'Pause workflow' : 'Activate workflow'}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-black/[0.06] text-[11px] font-semibold text-[#3a5570] hover:text-[#031632] hover:border-[#C9A84C]/40 transition shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {busy ? <RefreshCw size={12} className="animate-spin" /> : isActive ? <Pause size={12} /> : <Play size={12} />}
+                    {isActive ? 'Pause' : 'Activate'}
+                  </button>
                 </div>
               );
             })}

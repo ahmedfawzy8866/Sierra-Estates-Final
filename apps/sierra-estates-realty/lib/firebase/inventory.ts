@@ -13,8 +13,7 @@ import {
   Timestamp,
   serverTimestamp 
 } from 'firebase/firestore';
-import { db } from './index';
-import { logger } from '@/lib/logger';
+import { db } from '@/lib/firebase';
 
 // --- Types ---
 
@@ -175,7 +174,7 @@ export async function addProperty(property: Omit<Property, 'id' | 'created_at' |
   const snap = await getDocs(q);
   
   if (!snap.empty) {
-    logger.warn("Potential duplicate detected for key:", normKey);
+    console.warn("Potential duplicate detected for key:", normKey);
   }
 
   const docRef = await addDoc(collection(db, 'properties'), {

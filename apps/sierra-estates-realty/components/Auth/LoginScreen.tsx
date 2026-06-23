@@ -248,7 +248,7 @@ export default function LoginScreen({ onBack }: { onBack?: () => void }) {
                 <input
                   type="email"
                   className="form-input"
-                  placeholder="name@sierrablurealty.com"
+                  placeholder="name@sierraestatesrealty.com"
                   style={{ paddingLeft: '40px', height: '48px', borderRadius: '12px' }}
                   value={email}
                   autoComplete="email"

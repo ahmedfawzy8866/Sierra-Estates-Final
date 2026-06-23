@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { WealthService } from '@/lib/services/WealthService';
 import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
-import { logger } from '@/lib/logger';
 
 export async function GET(request: Request) {
   const rateLimitResponse = await applyRateLimit(request, publicEndpointLimiter);
@@ -15,7 +14,7 @@ export async function GET(request: Request) {
     const portfolio = await WealthService.getCuratedPortfolio(count, market);
     return NextResponse.json(portfolio);
   } catch (error: any) {
-    logger.error('[Wealth API] Portfolio fetch failed:', error);
+    console.error('[Wealth API] Portfolio fetch failed:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

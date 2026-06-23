@@ -5,6 +5,9 @@ import { Timestamp } from 'firebase-admin/firestore';
 import { WhatsAppParserService } from '@/lib/services/WhatsAppParserService';
 import { logger } from '@/lib/logger';
 
+// Force dynamic rendering — uses Firebase/auth at runtime
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   const auth = await verifyRequest(request);
   if (!auth.authenticated) return unauthorizedResponse();

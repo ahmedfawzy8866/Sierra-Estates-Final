@@ -1,5 +1,5 @@
 /**
- * SIERRA BLU — ROI VALIDATION SUITE
+ * sierra estates — ROI VALIDATION SUITE
  * Tests ROI projections accuracy on 50 real units.
  * 
  * Validates:
@@ -17,7 +17,7 @@ import type { Unit } from '@/lib/models/schema';
  * ROI Test Validator
  */
 export async function validateROIProjections() {
-  console.log('💰 SIERRA BLU ROI VALIDATION SUITE\n');
+  console.log('💰 sierra estates ROI VALIDATION SUITE\n');
 
   try {
     // Fetch up to 50 available units

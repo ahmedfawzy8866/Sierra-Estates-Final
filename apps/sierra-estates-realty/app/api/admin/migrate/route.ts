@@ -10,7 +10,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminRequest } from '@/lib/auth/admin';
-import { logger } from '@/lib/logger';
 import {
   runMigrations,
   validateMigration,
@@ -56,7 +55,7 @@ export async function POST(req: NextRequest) {
         };
 
         // Log migration to audit trail
-        logger.info('[Admin Migration]', {
+        console.log('[Admin Migration]', {
           user: authResult.userId || 'unknown',
           status: result.success ? 'success' : 'failed',
           recordsMigrated: result.results.reduce(
@@ -83,7 +82,7 @@ export async function POST(req: NextRequest) {
           { status: result.success ? 200 : 207 }
         );
       } catch (error) {
-        logger.error('[Admin Migration Error]', error);
+        console.error('[Admin Migration Error]', error);
         return NextResponse.json(
           {
             success: false,
@@ -111,7 +110,7 @@ export async function POST(req: NextRequest) {
       );
     }
   } catch (error) {
-    logger.error('[Admin Migration API Error]', error);
+    console.error('[Admin Migration API Error]', error);
     return NextResponse.json(
       {
         error: 'Internal server error',
@@ -158,7 +157,7 @@ export async function GET(req: NextRequest) {
       );
     }
   } catch (error) {
-    logger.error('[Admin Migration API Error]', error);
+    console.error('[Admin Migration API Error]', error);
     return NextResponse.json(
       {
         error: 'Internal server error',

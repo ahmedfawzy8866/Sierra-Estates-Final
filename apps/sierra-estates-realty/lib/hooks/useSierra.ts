@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { COLLECTIONS, Lead, PipelineStage, StakeholderAcquisitionSource } from '@/lib/models/schema';
 import { db } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { logger } from '@/lib/logger';
 
 export type SierraStage = 
   | 'WELCOME' 
@@ -21,22 +20,6 @@ export interface SierraMessage {
   field?: keyof Lead | string;
 }
 
-const generateId = () => {
-  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-    return crypto.randomUUID();
-  }
-
-  if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
-    const bytes = crypto.getRandomValues(new Uint8Array(16));
-    bytes[6] = (bytes[6] & 0x0f) | 0x40;
-    bytes[8] = (bytes[8] & 0x3f) | 0x80;
-    const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
-    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
-  }
-
-  return `id_${Date.now().toString(16)}_${typeof performance !== 'undefined' ? performance.now().toString(16) : '0'}`;
-};
-
 export function useSierra() {
   const [stage, setStage] = useState<SierraStage>('WELCOME');
   const [messages, setMessages] = useState<SierraMessage[]>([]);
@@ -50,7 +33,7 @@ export function useSierra() {
     setIsTyping(true);
     setTimeout(() => {
       const newMessage: SierraMessage = {
-        id: generateId(),
+        id: Math.random().toString(36).substring(7),
         sender: 'sierra',
         text,
         options,
@@ -63,7 +46,7 @@ export function useSierra() {
 
   const addUserMessage = (text: string) => {
     const newMessage: SierraMessage = {
-      id: generateId(),
+      id: Math.random().toString(36).substring(7),
       sender: 'user',
       text
     };
@@ -154,7 +137,7 @@ export function useSierra() {
             ["View Inventory"]
           );
         } catch (error) {
-          logger.error("Lead capture failed:", error);
+          console.error("Lead capture failed:", error);
           addSierraMessage("I encountered a synchronization error, but our team has been notified.");
         }
         break;
