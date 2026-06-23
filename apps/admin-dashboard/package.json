@@ -2,11 +2,10 @@
   "name": "admin-dashboard",
   "private": true,
   "version": "0.1.0",
-  "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
     "build": "vite build && npm run build:server",
-    "build:server": "esbuild api/index.ts --bundle --platform=node --format=cjs --sourcemap --outfile=api/server.cjs",
+    "build:server": "esbuild api/index.ts --bundle --platform=node --format=cjs --sourcemap --outfile=api/server.js",
     "build:all": "vite build && npm run build:server",
     "start": "node dist/server.cjs",
     "preview": "vite preview",
