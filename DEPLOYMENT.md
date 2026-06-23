@@ -72,7 +72,7 @@ serverless model can't host anyway.
 | **`apps/admin-dashboard`** | `apps/admin-dashboard` | **retired** | not a deployed admin; its Firebase site only redirects | — |
 
 > Identifiers (non-secret, committed): Vercel team `team_k2jaWfzeatcYG6Qpl0ooCxQh`,
-> project `prj_4jwnJjtZtmjtNZTr5oKAmC9vOrv3` (root dir pinned to
+> project `prj_theA731k4WdFVhgd6DJUP6pAry6n` (root dir pinned to
 > `apps/sierra-estates-realty`). Firebase project `sierra-estates`, hosting target
 > `sierra-estates-admin` → site `admin-sierra-estates`.
 
