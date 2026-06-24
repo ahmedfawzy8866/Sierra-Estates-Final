@@ -1,43 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useLang } from "@/contexts/LanguageContext";
-
-const ROOMS = [
-  {
-    name: "Living Area",      icon: "🛋️", of: "01 / 07",
-    img: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=4000&q=100",
-    specs: [["450m²","Total Area"],["6","Bedrooms"],["5","Baths"],["EGP 35M","Price"]],
-  },
-  {
-    name: "Master Suite",     icon: "🛏️", of: "02 / 07",
-    img: "https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=4000&q=100",
-    specs: [["85m²","Suite Area"],["En-Suite","Bathroom"],["Walk-In","Wardrobe"],["Garden","View"]],
-  },
-  {
-    name: "Private Garden",   icon: "🌿", of: "03 / 07",
-    img: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=4000&q=100",
-    specs: [["280m²","Garden"],["Landscape","Design"],["Irrigation","System"],["Private","Access"]],
-  },
-  {
-    name: "Pool Deck",        icon: "🏊", of: "04 / 07",
-    img: "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?w=4000&q=100",
-    specs: [["12×5m","Pool Size"],["Infinity","Edge"],["Heated","Pool"],["Outdoor","Lounge"]],
-  },
-  {
-    name: "Sky Terrace",      icon: "🌅", of: "05 / 07",
-    img: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=4000&q=100",
-    specs: [["120m²","Terrace"],["360°","Panorama"],["BBQ","Station"],["Sunset","Views"]],
-  },
-  {
-    name: "Villa Exterior",   icon: "🏡", of: "06 / 07",
-    img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=4000&q=100",
-    specs: [["800m²","Plot"],["Corner","Position"],["3 Car","Garage"],["2026","Delivery"]],
-  },
-  {
-    name: "Kitchen & Dining", icon: "🍽️", of: "07 / 07",
-    img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=2400&q=85",
-    specs: [["Open","Plan"],["Italian","Kitchen"],["12 Seat","Dining"],["Marble","Counters"]],
-  },
-];
+import { TOUR_ROOMS } from "../lib/data";
 
 /** Cylindrical panorama renderer using Canvas 2D — no WebGL required */
 function usePanorama(canvasRef: React.RefObject<HTMLCanvasElement | null>, imgSrc: string) {
@@ -46,6 +9,11 @@ function usePanorama(canvasRef: React.RefObject<HTMLCanvasElement | null>, imgSr
   const rafRef   = useRef(0);
   const fovRef   = useRef(75); // horizontal field of view in degrees
   const [loading, setLoading] = useState(true);
+
+  // Velocity tracking during drag
+  const dragTrackRef = useRef<{ x: number; y: number; t: number }[]>([]);
+  const touchStartDistRef = useRef(0);
+  const touchStartFovRef = useRef(75);
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
@@ -65,8 +33,6 @@ function usePanorama(canvasRef: React.RefObject<HTMLCanvasElement | null>, imgSr
     s.lat = Math.max(-60, Math.min(60, s.lat));
 
     // For each output column, compute source x from equirectangular projection
-    // For each row, compute source y
-    // fov maps to W pixels → pixelsPerDegree = W / fov
     const degPerPx_H = fov / W;
     const degPerPx_V = (fov * (H / W)) / H;
 
@@ -125,10 +91,14 @@ function usePanorama(canvasRef: React.RefObject<HTMLCanvasElement | null>, imgSr
     if (!s.dragging) {
       s.lon  += s.vLon;
       s.lat  += s.vLat;
-      s.vLon *= 0.91;
-      s.vLat *= 0.91;
-      // gentle auto-drift
-      if (Math.abs(s.vLon) < 0.02) s.lon += 0.04;
+      s.vLon *= 0.94; // friction
+      s.vLat *= 0.94;
+      // wrap longitude
+      s.lon = (s.lon % 360 + 360) % 360;
+      // gentle auto-drift if stationary
+      if (Math.abs(s.vLon) < 0.05 && Math.abs(s.vLat) < 0.05) {
+        s.lon += 0.04;
+      }
     }
     draw();
     rafRef.current = requestAnimationFrame(loop);
@@ -171,27 +141,110 @@ function usePanorama(canvasRef: React.RefObject<HTMLCanvasElement | null>, imgSr
     s.dragging = true;
     s.vLon = 0; s.vLat = 0;
     s.lastX = x; s.lastY = y;
+    dragTrackRef.current = [{ x, y, t: performance.now() }];
   };
+
   const moveDrag = (x: number, y: number) => {
     const s = stateRef.current;
     if (!s.dragging) return;
     const dx = x - s.lastX;
     const dy = y - s.lastY;
-    s.vLon = -dx * 0.15;
-    s.vLat =  dy * 0.15;
-    s.lon += s.vLon;
-    s.lat += s.vLat;
+    
+    // Scale dragging speed by FOV so zoom doesn't make dragging hyper-sensitive
+    const speedMultiplier = fovRef.current / 500;
+    s.lon -= dx * speedMultiplier;
+    s.lat += dy * speedMultiplier;
     s.lastX = x; s.lastY = y;
-  };
-  const endDrag = () => { stateRef.current.dragging = false; };
 
-  const nudge   = (dLon: number, dLat: number) => { stateRef.current.lon += dLon; stateRef.current.lat += dLat; };
-  const resetView = () => { stateRef.current.lon = 0; stateRef.current.lat = 0; stateRef.current.vLon = 0; stateRef.current.vLat = 0; };
+    const now = performance.now();
+    dragTrackRef.current.push({ x, y, t: now });
+    if (dragTrackRef.current.length > 5) {
+      dragTrackRef.current.shift();
+    }
+  };
+
+  const endDrag = () => {
+    const s = stateRef.current;
+    if (!s.dragging) return;
+    s.dragging = false;
+
+    const track = dragTrackRef.current;
+    if (track.length >= 2) {
+      const first = track[0];
+      const last = track[track.length - 1];
+      const dt = last.t - first.t;
+      if (dt > 10) {
+        const vx = (last.x - first.x) / dt;
+        const vy = (last.y - first.y) / dt;
+        // inertia speed based on how fast the user dragged
+        s.vLon = -vx * (fovRef.current / 18);
+        s.vLat = vy * (fovRef.current / 18);
+      }
+    }
+    dragTrackRef.current = [];
+  };
+
+  const nudge   = (dLon: number, dLat: number) => { 
+    stateRef.current.lon += dLon; 
+    stateRef.current.lat += dLat; 
+  };
+  
+  const resetView = () => { 
+    stateRef.current.lon = 0; 
+    stateRef.current.lat = 0; 
+    stateRef.current.vLon = 0; 
+    stateRef.current.vLat = 0; 
+    fovRef.current = 75;
+  };
+
   const zoomIn  = () => { fovRef.current = Math.max(30, fovRef.current - 10); };
   const zoomOut = () => { fovRef.current = Math.min(100, fovRef.current + 10); };
   const getFov  = () => fovRef.current;
 
-  return { loading, startDrag, moveDrag, endDrag, nudge, resetView, zoomIn, zoomOut, getFov };
+  // Touch handlers for pinching & dragging
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      touchStartDistRef.current = Math.sqrt(dx * dx + dy * dy);
+      touchStartFovRef.current = fovRef.current;
+    } else if (e.touches.length === 1) {
+      startDrag(e.touches[0].clientX, e.touches[0].clientY);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 2 && touchStartDistRef.current > 0) {
+      e.preventDefault();
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const ratio = touchStartDistRef.current / dist;
+      fovRef.current = Math.max(30, Math.min(100, touchStartFovRef.current * ratio));
+    } else if (e.touches.length === 1) {
+      moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    touchStartDistRef.current = 0;
+    endDrag();
+  };
+
+  return { 
+    loading, 
+    startDrag, 
+    moveDrag, 
+    endDrag, 
+    nudge, 
+    resetView, 
+    zoomIn, 
+    zoomOut, 
+    getFov,
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd
+  };
 }
 
 export default function VirtualTour() {
@@ -204,8 +257,10 @@ export default function VirtualTour() {
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapRef   = useRef<HTMLDivElement>(null);
-  const { loading, startDrag, moveDrag, endDrag, nudge, resetView, zoomIn, zoomOut, getFov } =
-    usePanorama(canvasRef, ROOMS[room].img);
+  const { 
+    loading, startDrag, moveDrag, endDrag, nudge, resetView, zoomIn, zoomOut, getFov,
+    handleTouchStart, handleTouchMove, handleTouchEnd 
+  } = usePanorama(canvasRef, TOUR_ROOMS[room].bg);
 
   // Size canvas to container
   useEffect(() => {
@@ -221,6 +276,17 @@ export default function VirtualTour() {
     return () => ro.disconnect();
   }, []);
 
+  // Block scroll wheel page scroll and page zoom over canvas
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+    };
+    canvas.addEventListener("wheel", handleWheel, { passive: false });
+    return () => canvas.removeEventListener("wheel", handleWheel);
+  }, []);
+
   // FOV display sync
   useEffect(() => {
     const id = setInterval(() => setFovDisplay(Math.round(getFov())), 200);
@@ -230,7 +296,7 @@ export default function VirtualTour() {
   // Auto-play
   useEffect(() => {
     if (!autoPlay) return;
-    const id = setInterval(() => setRoom(r => (r + 1) % ROOMS.length), 6000);
+    const id = setInterval(() => setRoom(r => (r + 1) % TOUR_ROOMS.length), 6000);
     return () => clearInterval(id);
   }, [autoPlay]);
 
@@ -255,7 +321,7 @@ export default function VirtualTour() {
     }, 60);
   };
 
-  const curRoom = ROOMS[room];
+  const curRoom = TOUR_ROOMS[room];
 
   const wrapStyle: React.CSSProperties = fullscreen
     ? { position: "fixed", inset: 0, zIndex: 900, background: "#07111e" }
@@ -280,9 +346,9 @@ export default function VirtualTour() {
             onMouseMove={e => moveDrag(e.clientX, e.clientY)}
             onMouseUp={e => { endDrag(); (e.currentTarget as HTMLCanvasElement).style.cursor = "grab"; }}
             onMouseLeave={() => endDrag()}
-            onTouchStart={e => startDrag(e.touches[0].clientX, e.touches[0].clientY)}
-            onTouchMove={e => { e.preventDefault(); moveDrag(e.touches[0].clientX, e.touches[0].clientY); }}
-            onTouchEnd={endDrag}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           />
 
           {/* Loading overlay */}
@@ -299,7 +365,7 @@ export default function VirtualTour() {
           {/* Drag hint */}
           {!loading && (
             <div style={{ position: "absolute", bottom: 86, left: "50%", transform: "translateX(-50%)", zIndex: 20, background: "rgba(7,17,30,.78)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,.1)", borderRadius: 20, padding: "7px 18px", fontSize: 11, color: "rgba(240,237,229,.65)", display: "flex", alignItems: "center", gap: 7, animation: "fadeUp .8s .6s both", whiteSpace: "nowrap" }}>
-              ↔↕ Drag to pan · Use +/− to zoom · Arrow keys to look around
+              ↔↕ Drag to pan · Pinch or use +/− to zoom · Arrow keys to look around
             </div>
           )}
 
@@ -328,7 +394,7 @@ export default function VirtualTour() {
           </div>
 
           {/* Right nav cluster */}
-          <div style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", zIndex: 20, display: "flex", flexDirection: "column", gap: 5, alignItems: "center" }}>
+          <div style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", zIndex: 20, display: "flex", flexDirection: "column", gap: 6, alignItems: "center" }}>
             {([["↑", 0, -20], ["↓", 0, 20], ["←", -30, 0], ["→", 30, 0]] as [string, number, number][]).map(([lbl, dl, dt], i) => (
               <button key={i} onClick={() => nudge(dl, dt)} style={{ width: 38, height: 38, borderRadius: 11, background: "rgba(7,17,30,.88)", backdropFilter: "blur(14px)", border: "1px solid rgba(255,255,255,.1)", color: "rgba(240,237,229,.7)", fontSize: 15, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all .2s", fontFamily: "inherit" }}
                 onMouseEnter={e => { const b = e.currentTarget as HTMLButtonElement; b.style.background = "rgba(200,150,26,.18)"; b.style.color = "var(--gold-lt)"; }}
@@ -338,9 +404,15 @@ export default function VirtualTour() {
             ))}
             <div style={{ height: 1, background: "rgba(255,255,255,.07)", margin: "2px 4px", width: "60%" }} />
             {/* Zoom */}
-            <button onClick={zoomIn} style={{ width: 38, height: 38, borderRadius: 11, background: "rgba(7,17,30,.88)", backdropFilter: "blur(14px)", border: "1px solid rgba(255,255,255,.1)", color: "rgba(240,237,229,.7)", fontSize: 17, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>+</button>
-            <button onClick={zoomOut} style={{ width: 38, height: 38, borderRadius: 11, background: "rgba(7,17,30,.88)", backdropFilter: "blur(14px)", border: "1px solid rgba(255,255,255,.1)", color: "rgba(240,237,229,.7)", fontSize: 17, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>−</button>
-            <button onClick={resetView} title="Reset view" style={{ width: 38, height: 38, borderRadius: 11, background: "rgba(7,17,30,.88)", backdropFilter: "blur(14px)", border: "1px solid rgba(255,255,255,.1)", color: "rgba(240,237,229,.7)", fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>⊙</button>
+            <button onClick={zoomIn} style={{ width: 38, height: 38, borderRadius: 11, background: "rgba(7,17,30,.88)", backdropFilter: "blur(14px)", border: "1px solid rgba(255,255,255,.1)", color: "rgba(240,237,229,.7)", fontSize: 18, fontWeight: "bold", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all .2s" }}
+              onMouseEnter={e => { const b = e.currentTarget as HTMLButtonElement; b.style.background = "rgba(200,150,26,.18)"; b.style.color = "var(--gold-lt)"; }}
+              onMouseLeave={e => { const b = e.currentTarget as HTMLButtonElement; b.style.background = "rgba(7,17,30,.88)"; b.style.color = "rgba(240,237,229,.7)"; }}>+</button>
+            <button onClick={zoomOut} style={{ width: 38, height: 38, borderRadius: 11, background: "rgba(7,17,30,.88)", backdropFilter: "blur(14px)", border: "1px solid rgba(255,255,255,.1)", color: "rgba(240,237,229,.7)", fontSize: 18, fontWeight: "bold", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all .2s" }}
+              onMouseEnter={e => { const b = e.currentTarget as HTMLButtonElement; b.style.background = "rgba(200,150,26,.18)"; b.style.color = "var(--gold-lt)"; }}
+              onMouseLeave={e => { const b = e.currentTarget as HTMLButtonElement; b.style.background = "rgba(7,17,30,.88)"; b.style.color = "rgba(240,237,229,.7)"; }}>−</button>
+            <button onClick={resetView} title="Reset view" style={{ width: 38, height: 38, borderRadius: 11, background: "rgba(7,17,30,.88)", backdropFilter: "blur(14px)", border: "1px solid rgba(255,255,255,.1)", color: "rgba(240,237,229,.7)", fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all .2s" }}
+              onMouseEnter={e => { const b = e.currentTarget as HTMLButtonElement; b.style.background = "rgba(200,150,26,.18)"; b.style.color = "var(--gold-lt)"; }}
+              onMouseLeave={e => { const b = e.currentTarget as HTMLButtonElement; b.style.background = "rgba(7,17,30,.88)"; b.style.color = "rgba(240,237,229,.7)"; }}>⊙</button>
           </div>
 
           {/* FOV + Compass */}
@@ -374,18 +446,18 @@ export default function VirtualTour() {
           )}
 
           {/* Prev / Next */}
-          <button onClick={() => setRoom(r => (r - 1 + ROOMS.length) % ROOMS.length)}
+          <button onClick={() => setRoom(r => (r - 1 + TOUR_ROOMS.length) % TOUR_ROOMS.length)}
             style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", zIndex: 20, width: 44, height: 44, borderRadius: 13, background: "rgba(7,17,30,.88)", backdropFilter: "blur(14px)", border: "1px solid rgba(255,255,255,.1)", color: "rgba(240,237,229,.7)", fontSize: 22, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit" }}>
             ‹
           </button>
-          <button onClick={() => setRoom(r => (r + 1) % ROOMS.length)}
+          <button onClick={() => setRoom(r => (r + 1) % TOUR_ROOMS.length)}
             style={{ position: "absolute", right: 66, top: "50%", transform: "translateY(-50%)", zIndex: 20, width: 44, height: 44, borderRadius: 13, background: "rgba(7,17,30,.88)", backdropFilter: "blur(14px)", border: "1px solid rgba(255,255,255,.1)", color: "rgba(240,237,229,.7)", fontSize: 22, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit" }}>
             ›
           </button>
 
           {/* Room pills */}
           <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 20, display: "flex", gap: 6, padding: "14px 16px", background: "linear-gradient(to top,rgba(7,17,30,.9) 0%,transparent 100%)", overflowX: "auto", scrollbarWidth: "none", justifyContent: "center", flexWrap: "wrap" }}>
-            {ROOMS.map((r, i) => (
+            {TOUR_ROOMS.map((r, i) => (
               <button key={i} onClick={() => setRoom(i)}
                 style={{ padding: "7px 16px", borderRadius: 30, border: `1px solid ${room === i ? "var(--gold)" : "rgba(255,255,255,.1)"}`, background: room === i ? "rgba(211,167,71,.14)" : "rgba(255,255,255,.04)", color: room === i ? "var(--gold-lt)" : "rgba(255,255,255,.52)", fontSize: 10.5, fontWeight: 600, cursor: "pointer", transition: "all .25s", whiteSpace: "nowrap", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 5 }}>
                 <span>{r.icon}</span><span>{r.name}</span>

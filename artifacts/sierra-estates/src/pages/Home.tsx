@@ -14,6 +14,7 @@ import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import AIChat from "@/components/AIChat";
 import SecurityShield from "@/components/SecurityShield";
+import { SCENES } from "@/lib/data";
 
 const ALL_CMP_COUNT = 19;
 
@@ -57,6 +58,7 @@ export default function Home() {
   const [rooms, setRooms] = useState<number | null>(null);
   const [smartOpen, setSmartOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
+  const [scene, setScene] = useState(0);
 
   useScrollReveal();
 
@@ -99,7 +101,7 @@ export default function Home() {
       <div style={{ height: 58 }} />
 
       {/* ─ HERO ──────────────────────────────────────────────────────── */}
-      <Hero />
+      <Hero scene={scene} setScene={setScene} />
 
       <GoldLine />
 

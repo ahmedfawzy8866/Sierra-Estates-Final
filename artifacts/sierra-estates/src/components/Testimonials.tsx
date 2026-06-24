@@ -1,4 +1,5 @@
 import { useLang } from "@/contexts/LanguageContext";
+import { motion } from "framer-motion";
 
 const TESTIMONIALS = [
   { name: "Ahmed Hassan", role: "Villa Owner · Hyde Park", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&q=75", text: "Sierra Estates found us our dream villa in Hyde Park within 2 weeks. The AI matching was spot on — every property they showed us was exactly what we described. Exceptional service.", stars: 5 },
@@ -8,17 +9,61 @@ const TESTIMONIALS = [
 
 export default function Testimonials() {
   const { t } = useLang();
+
+  const headerVariants = {
+    hidden: { opacity: 0, y: 30 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" as const } }
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.1
+      }
+    }
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 30 },
+    show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 100, damping: 15 } }
+  };
+
   return (
     <section style={{ background: "var(--ivory)", padding: "90px 0" }}>
       <div style={{ maxWidth: 1320, margin: "0 auto", padding: "0 24px" }}>
-        <div style={{ textAlign: "center", marginBottom: 56 }}>
+        
+        {/* Header */}
+        <motion.div 
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={headerVariants}
+          style={{ textAlign: "center", marginBottom: 56 }}
+        >
           <div className="sec-eyebrow" style={{ justifyContent: "center" }}>{t("testi.eyebrow")}</div>
           <h2 className="sec-title">{t("testi.title")}</h2>
           <p className="sec-sub" style={{ maxWidth: 520, margin: "0 auto" }}>{t("testi.sub")}</p>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24 }}>
+        </motion.div>
+
+        {/* Testimonials Grid */}
+        <motion.div 
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={containerVariants}
+          style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24 }}
+        >
           {TESTIMONIALS.map((t_, i) => (
-            <div key={i} className="testi-card">
+            <motion.div 
+              key={i} 
+              variants={cardVariants}
+              whileHover={{ y: -6, scale: 1.02, boxShadow: "0 20px 40px rgba(10,26,43,.06)" }}
+              className="testi-card"
+              style={{ transition: "box-shadow 0.25s, transform 0.25s" }}
+            >
               <div style={{ display: "flex", gap: 4, marginBottom: 16 }}>
                 {Array.from({ length: t_.stars }).map((_, j) => (
                   <span key={j} style={{ color: "var(--gold)", fontSize: 16 }}>★</span>
@@ -34,9 +79,9 @@ export default function Testimonials() {
                   <div style={{ fontSize: 10, color: "var(--gold-dk)", fontFamily: "var(--font-mono)", letterSpacing: ".12em", marginTop: 3 }}>{t_.role}</div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
       <style>{`@media(max-width:768px){.testi-card+.testi-card{margin-top:0}}@media(max-width:768px){div[style*="repeat(3,1fr)"]{grid-template-columns:1fr!important;}}`}</style>
     </section>
