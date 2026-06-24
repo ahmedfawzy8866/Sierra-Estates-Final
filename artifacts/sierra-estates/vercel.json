@@ -1,7 +1,7 @@
 {
   "version": 2,
   "buildCommand": "vite build --config vite.config.ts",
-  "outputDirectory": "dist",
+  "outputDirectory": "dist/public",
   "installCommand": "npm install --legacy-peer-deps",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
