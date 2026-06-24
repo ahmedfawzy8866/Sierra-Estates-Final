@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "buildCommand": "cd ../.. && NODE_OPTIONS=--max-old-space-size=4096 pnpm --filter @workspace/sierra-estates build",
-  "outputDirectory": "dist/public",
-  "installCommand": "cd ../.. && pnpm install",
+  "buildCommand": "vite build --config vite.config.ts",
+  "outputDirectory": "dist",
+  "installCommand": "pnpm install",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ],
