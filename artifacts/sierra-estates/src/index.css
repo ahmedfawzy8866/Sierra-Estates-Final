@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Inter:wght@300;400;500;600;700;800&family=Cairo:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Cairo:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -6,42 +6,48 @@
 
 /* ── SIERRA ESTATES DESIGN TOKENS ───────────────────────────────────────── */
 :root {
-  --navy:      #002D62;
-  --navy2:     #0A1928;
-  --navy3:     #173456;
-  --gold:      #D3A747;
-  --gold-lt:   #E8CC88;
-  --gold-dk:   #B8903C;
-  --ivory:     #F7F4EE;
-  --ivory-dk:  #F2EDD8;
-  --white:     #FFFFFF;
-  --text:      #111827;
-  --text-m:    #475569;
-  --text-f:    #64748B;
-  --border:    rgba(211,167,71,.2);
-  --border-n:  rgba(255,255,255,.12);
-  --emerald:   #34D399;
-  --red:       #E63946;
-  --font-sans: 'Inter', sans-serif;
-  --font-serif: 'Cormorant Garamond', serif;
-  --font-mono:  'JetBrains Mono', monospace;
+  --navy:        #002D62;
+  --navy2:       #0A1928;
+  --navy3:       #173456;
+  --brand-dark:  #002D62;
+  --gold:        #D3A747;
+  --gold-lt:     #E8CC88;
+  --gold-dk:     #B8903C;
+  --ivory:       #F7F4EE;
+  --ivory-dk:    #F2EDD8;
+  --white:       #FFFFFF;
+  --text:        #111827;
+  --text-m:      #475569;
+  --text-f:      #64748B;
+  --border:      rgba(211,167,71,.2);
+  --border-n:    rgba(255,255,255,.12);
+  --emerald:     #34D399;
+  --red:         #E63946;
+  --font-sans:   'Outfit', sans-serif;
+  --font-serif:  'Cormorant Garamond', serif;
+  --font-mono:   'JetBrains Mono', monospace;
+  --btn-bg:      var(--navy);
+  --btn-text:    var(--white);
 }
 
 .dark {
-  --navy:      #F7F4EE;
-  --navy2:     #F2EDD8;
-  --navy3:     #FFFFFF;
-  --ivory:     #0A1928;
-  --ivory-dk:  #002D62;
-  --white:     #173456;
-  --text:      #F7F4EE;
-  --text-m:    #A0AABF;
-  --text-f:    #7A869A;
-  --border:    rgba(211,167,71,.25);
-  --border-n:  rgba(0,0,0,.2);
+  --navy:        #F7F4EE;
+  --navy2:       #F2EDD8;
+  --navy3:       #FFFFFF;
+  --brand-dark:  #002D62;
+  --ivory:       #0A1928;
+  --ivory-dk:    #002D62;
+  --white:       #173456;
+  --text:        #F7F4EE;
+  --text-m:      #A0AABF;
+  --text-f:      #7A869A;
+  --border:      rgba(211,167,71,.25);
+  --border-n:    rgba(0,0,0,.2);
+  --btn-bg:      var(--gold);
+  --btn-text:    #0A1928;
 }
 
-[dir="rtl"] { font-family: 'Cairo', 'Inter', sans-serif; }
+[dir="rtl"] { font-family: 'Cairo', 'Outfit', sans-serif; }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
@@ -192,7 +198,7 @@ a { text-decoration: none; color: inherit; }
 .sp-inp:focus { border-color: var(--gold); }
 .sp-btn {
   background: linear-gradient(135deg, var(--gold), var(--gold-lt));
-  color: var(--navy); border: none; border-radius: 10px;
+  color: var(--brand-dark); border: none; border-radius: 10px;
   padding: 11px 26px; font-size: 11px; font-weight: 800;
   letter-spacing: .1em; cursor: pointer; font-family: inherit;
   white-space: nowrap; transition: all .22s;
@@ -386,7 +392,7 @@ a { text-decoration: none; color: inherit; }
   padding: 3px 10px; border-radius: 20px;
   font-size: 8.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
 }
-.lc-tag.premium { background: linear-gradient(135deg, var(--gold), var(--gold-lt)); color: var(--navy); }
+.lc-tag.premium { background: linear-gradient(135deg, var(--gold), var(--gold-lt)); color: var(--brand-dark); }
 .lc-tag.standard { background: rgba(0,45,98,.88); color: rgba(211,167,71,.9); border: 1px solid rgba(211,167,71,.3); }
 .lc-view {
   position: absolute; inset: 0;
@@ -396,7 +402,7 @@ a { text-decoration: none; color: inherit; }
 .lc:hover .lc-view { opacity: 1; }
 .lc-view span {
   background: linear-gradient(135deg, var(--gold), var(--gold-lt));
-  color: var(--navy); padding: 8px 22px; border-radius: 22px;
+  color: var(--brand-dark); padding: 8px 22px; border-radius: 22px;
   font-size: 10.5px; font-weight: 700; letter-spacing: .08em;
 }
 .lc-body { padding: 14px 16px; }
@@ -559,7 +565,7 @@ a { text-decoration: none; color: inherit; }
 .qr-inp:focus { border-color: var(--gold); }
 .qr-btn {
   background: linear-gradient(135deg, var(--gold), var(--gold-lt));
-  color: var(--navy); border: none; border-radius: 12px;
+  color: var(--brand-dark); border: none; border-radius: 12px;
   padding: 14px 36px; font-size: 13px; font-weight: 700;
   cursor: pointer; transition: all .28s; font-family: inherit;
 }

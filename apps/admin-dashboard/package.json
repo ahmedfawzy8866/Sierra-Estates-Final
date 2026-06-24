@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
-    "build": "vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs",
+    "build": "vite build && npm run build:server",
+    "build:vite": "vite build",
+    "build:server": "esbuild api/index.ts --bundle --platform=node --format=cjs --sourcemap --outfile=api/server.js",
+    "build:all": "vite build && npm run build:server",
     "start": "node dist/server.cjs",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
@@ -14,9 +17,9 @@
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
-    "@tailwindcss/vite": "catalog:",
+    "@tailwindcss/vite": "^4.1.14",
     "@vercel/speed-insights": "^2.0.0",
-    "@vitejs/plugin-react": "catalog:",
+    "@vitejs/plugin-react": "^5.0.4",
     "dotenv": "^17.2.3",
     "express": "^4.21.2",
     "firebase": "^12.15.0",
@@ -24,27 +27,27 @@
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1",
     "leaflet": "^1.9.4",
-    "lucide-react": "catalog:",
+    "lucide-react": "^0.545.0",
     "motion": "^12.23.24",
-    "react": "catalog:",
-    "react-dom": "catalog:",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
     "react-router-dom": "^7.18.0",
     "recharts": "^3.8.1",
     "three": "^0.184.0",
-    "vite": "catalog:"
+    "twilio": "^6.0.2",
+    "vite": "^7.3.5"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
     "@types/leaflet": "^1.9.21",
-    "@types/node": "catalog:",
-    "@types/react": "catalog:",
-    "@types/react-dom": "catalog:",
+    "@types/node": "^25.3.3",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
     "@types/three": "^0.184.1",
     "autoprefixer": "^10.4.21",
     "esbuild": "^0.25.0",
-    "tailwindcss": "catalog:",
-    "tsx": "catalog:",
-    "typescript": "^5.7.2",
-    "vite": "catalog:"
+    "tailwindcss": "^4.1.14",
+    "tsx": "^4.21.0",
+    "typescript": "^5.7.2"
   }
 }

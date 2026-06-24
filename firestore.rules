@@ -266,5 +266,18 @@ service cloud.firestore {
     match /partners/{id} { allow read, write: if isStaff() || isAdmin(); }
     match /syncQueue/{id} { allow read, write: if isStaff() || isAdmin(); }
     match /syncLog/{id} { allow read, write: if isStaff() || isAdmin(); }
+
+    // Analytics, Logs and Telemetry System Collections
+    match /searches/{id} {
+      allow read: if isStaff() || isAdmin();
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+    match /system_logs/{id} {
+      allow read, write: if isStaff() || isAdmin();
+    }
+    match /system_health/{id} {
+      allow read, write: if isStaff() || isAdmin();
+    }
   }
 }

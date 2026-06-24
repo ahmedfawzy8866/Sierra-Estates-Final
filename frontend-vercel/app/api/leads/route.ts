@@ -1,3 +1,4 @@
+import { applyRateLimit, publicEndpointLimiter } from "@/lib/server/rate-limit";
 import { NextResponse } from 'next/server';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
@@ -5,6 +6,8 @@ import { COLLECTIONS } from '@/lib/models/schema';
 import { sendTelegramMessage } from '@/lib/telegram';
 
 export async function POST(req: Request) {
+  const limited = applyRateLimit(req, publicEndpointLimiter);
+  if (limited) return limited;
   try {
     const data = await req.json();
     const { name, email, phone, message, locale } = data;

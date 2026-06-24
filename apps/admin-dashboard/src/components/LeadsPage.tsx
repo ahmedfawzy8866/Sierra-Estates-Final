@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { createSierraNotification } from '../firebase';
+import { auth, createSierraNotification } from '../firebase';
 import { api } from '../lib/apiClient';
 import { Lead } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
@@ -68,6 +68,14 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
   const [importing, setImporting] = useState(false);
   const [importSuccessMsg, setImportSuccessMsg] = useState<string | null>(null);
   const [importErrorMsg, setImportErrorMsg] = useState<string | null>(null);
+
+  // Twilio CRM communication modal state
+  const [twilioModalLead, setTwilioModalLead] = useState<Lead | null>(null);
+  const [twilioMode, setTwilioMode] = useState<'sms' | 'whatsapp'>('sms');
+  const [twilioMessage, setTwilioMessage] = useState('');
+  const [twilioSending, setTwilioSending] = useState(false);
+  const [twilioStatus, setTwilioStatus] = useState<string | null>(null);
+  const [twilioNote, setTwilioNote] = useState('');
 
   const refreshAgents = async () => {
     try {
@@ -274,6 +282,49 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
       }
     } catch (err) {
       console.error('Failed to delete lead:', err);
+    }
+  };
+
+  const handleSendTwilio = async () => {
+    if (!twilioModalLead) return;
+    setTwilioSending(true);
+    setTwilioStatus(null);
+    try {
+      const endpoint = twilioMode === 'sms' ? '/api/twilio/sms' : '/api/twilio/whatsapp';
+      const response = await api.post<{ success: boolean; sid?: string; error?: string }>(endpoint, {
+        to: twilioModalLead.phone,
+        body: twilioMessage
+      });
+
+      if (response.success) {
+        setTwilioStatus(`Success! Sent message via Twilio. SID: ${response.sid}`);
+        
+        // Log note if provided
+        if (twilioNote.trim()) {
+          await api.post('/api/twilio/call-note', {
+            leadId: twilioModalLead.id,
+            note: `[Twilio ${twilioMode.toUpperCase()}] ${twilioNote.trim()}`,
+            agentEmail: auth.currentUser?.email || 'admin'
+          });
+        }
+        
+        await refreshLeads();
+        
+        // Clear message input but keep modal open for a second to show status
+        setTwilioMessage('');
+        setTwilioNote('');
+        setTimeout(() => {
+          setTwilioModalLead(null);
+          setTwilioStatus(null);
+        }, 1500);
+      } else {
+        setTwilioStatus(`Error: ${response.error || 'Failed to send message'}`);
+      }
+    } catch (err: any) {
+      console.error('Failed to send Twilio message:', err);
+      setTwilioStatus(`Error: ${err.message || 'Server error occurred'}`);
+    } finally {
+      setTwilioSending(false);
     }
   };
 
@@ -883,7 +934,7 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
                         </select>
                       </td>
                       <td className="p-4 text-right">
-                        <div className="inline-flex gap-2">
+                        <div className="inline-flex gap-2" onClick={(e) => e.stopPropagation()}>
                           <a
                             href={`https://wa.me/${l.phone.replace(/[^0-9]/g, '')}`}
                             target="_blank"
@@ -892,6 +943,12 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
                           >
                             WhatsApp
                           </a>
+                          <button
+                            onClick={() => setTwilioModalLead(l)}
+                            className="px-2 py-1 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 font-mono text-[10px] uppercase font-bold rounded border border-cyan-500/20 transition-all duration-150 shrink-0 cursor-pointer"
+                          >
+                            Twilio
+                          </button>
                           <button
                             onClick={() => handleDeleteLead(l.id, l.name)}
                             className="px-2 py-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 font-mono text-[10px] uppercase font-bold rounded border border-red-500/20 transition-all duration-150 shrink-0 select-none cursor-pointer"
@@ -1116,6 +1173,118 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
                   className="w-full py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded text-xs font-bold transition select-none cursor-pointer"
                 >
                   Done
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Twilio SMS & WhatsApp Communication Modal */}
+      {twilioModalLead && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setTwilioModalLead(null)}>
+          <div className="bg-[#0a0f1d] border border-slate-800 rounded-xl w-full max-w-md overflow-hidden shadow-2xl animate-scale-up" onClick={(e) => e.stopPropagation()}>
+            <div className="px-5 py-4 border-b border-slate-800 flex items-center justify-between">
+              <span className="font-mono text-xs uppercase tracking-wider text-cyan-400 font-bold select-none">
+                💬 Twilio Contact Hub
+              </span>
+              <button
+                onClick={() => setTwilioModalLead(null)}
+                className="p-1 text-slate-500 hover:text-white transition duration-150 cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div className="p-5 space-y-4">
+              <div className="bg-slate-900/60 border border-slate-800 rounded-lg p-3 text-xs space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Recipient Name:</span>
+                  <span className="text-white font-bold">{twilioModalLead.name}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Phone:</span>
+                  <span className="text-white font-mono">{twilioModalLead.phone}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Interest:</span>
+                  <span className="text-slate-350 truncate max-w-[200px]">{twilioModalLead.interest}</span>
+                </div>
+              </div>
+
+              {/* Channel Selector */}
+              <div>
+                <label className="block text-[9px] font-mono uppercase tracking-widest text-cyan-400 mb-1.5 select-none">
+                  Communication Channel
+                </label>
+                <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800">
+                  <button
+                    type="button"
+                    onClick={() => setTwilioMode('sms')}
+                    className={`flex-1 py-1.5 text-xs font-semibold rounded transition-all ${twilioMode === 'sms' ? 'bg-cyan-500 text-slate-950 shadow font-bold' : 'text-slate-400 hover:text-white'}`}
+                  >
+                    📱 SMS Message
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTwilioMode('whatsapp')}
+                    className={`flex-1 py-1.5 text-xs font-semibold rounded transition-all ${twilioMode === 'whatsapp' ? 'bg-green-500 text-white shadow font-bold' : 'text-slate-400 hover:text-white'}`}
+                  >
+                    💬 WhatsApp Direct
+                  </button>
+                </div>
+              </div>
+
+              {/* Message Body */}
+              <div>
+                <label className="block text-[9px] font-mono uppercase tracking-widest text-cyan-400 mb-1.5 select-none">
+                  Message Content
+                </label>
+                <textarea
+                  required
+                  rows={4}
+                  value={twilioMessage}
+                  onChange={(e) => setTwilioMessage(e.target.value)}
+                  placeholder={`Type your ${twilioMode === 'sms' ? 'SMS' : 'WhatsApp'} message to send via Twilio...`}
+                  className="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-cyan-500/50 transition duration-150 font-sans resize-none"
+                />
+              </div>
+
+              {/* Log Note */}
+              <div>
+                <label className="block text-[9px] font-mono uppercase tracking-widest text-cyan-400 mb-1.5 select-none">
+                  Add Interaction Note (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={twilioNote}
+                  onChange={(e) => setTwilioNote(e.target.value)}
+                  placeholder="e.g. Discussed pricing details for compound villa"
+                  className="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-cyan-500/50 transition duration-150"
+                />
+              </div>
+
+              {twilioStatus && (
+                <div className={`p-2.5 rounded text-[11px] font-mono border ${twilioStatus.startsWith('Error') ? 'bg-red-950/20 border-red-500/20 text-red-400' : 'bg-emerald-950/20 border-emerald-500/20 text-emerald-400'}`}>
+                  {twilioStatus}
+                </div>
+              )}
+
+              <div className="pt-2 flex gap-3">
+                <button
+                  type="button"
+                  onClick={handleSendTwilio}
+                  disabled={twilioSending || !twilioMessage.trim()}
+                  className={`flex-1 py-2.5 rounded text-xs font-bold font-mono uppercase transition duration-150 active:scale-98 disabled:opacity-50 cursor-pointer ${twilioMode === 'sms' ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950' : 'bg-green-500 hover:bg-green-400 text-white'}`}
+                >
+                  {twilioSending ? 'Sending...' : '📨 Dispatch Message'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTwilioModalLead(null)}
+                  className="py-2.5 px-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded text-xs font-bold transition select-none cursor-pointer"
+                >
+                  Close
                 </button>
               </div>
             </div>

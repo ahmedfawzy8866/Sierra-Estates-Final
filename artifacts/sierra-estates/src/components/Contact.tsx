@@ -116,7 +116,7 @@ export default function Contact({ open, onClose }: Props) {
               </div>
             )}
             <button onClick={submit} disabled={mutation.isPending}
-              style={{ padding: 14, borderRadius: 10, background: "linear-gradient(135deg,var(--gold),var(--gold-lt))", color: "var(--navy)", fontSize: 12, fontWeight: 800, letterSpacing: ".12em", textTransform: "uppercase", border: "none", cursor: mutation.isPending ? "default" : "pointer", fontFamily: "inherit", boxShadow: "0 6px 22px rgba(211,167,71,.3)", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, opacity: mutation.isPending ? 0.7 : 1 }}>
+              style={{ padding: 14, borderRadius: 10, background: "linear-gradient(135deg,var(--gold),var(--gold-lt))", color: "var(--brand-dark)", fontSize: 12, fontWeight: 800, letterSpacing: ".12em", textTransform: "uppercase", border: "none", cursor: mutation.isPending ? "default" : "pointer", fontFamily: "inherit", boxShadow: "0 6px 22px rgba(211,167,71,.3)", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, opacity: mutation.isPending ? 0.7 : 1 }}>
               <span>✈</span>{mutation.isPending ? "..." : t("contact.submit")}
             </button>
           </div>

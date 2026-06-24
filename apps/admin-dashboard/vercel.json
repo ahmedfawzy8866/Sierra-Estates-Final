@@ -1,11 +1,10 @@
 {
   "version": 2,
-  "buildCommand": "cd ../.. && pnpm --filter admin-dashboard build",
+  "buildCommand": "npm run build:vite",
   "outputDirectory": "dist",
-  "installCommand": "cd ../.. && pnpm install",
+  "installCommand": "npm install",
   "functions": {
     "api/index.ts": {
-      "runtime": "nodejs20.x",
       "maxDuration": 30
     }
   },
@@ -23,4 +22,3 @@
     "NODE_ENV": "production"
   }
 }
-
