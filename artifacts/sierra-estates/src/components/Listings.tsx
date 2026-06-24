@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLang } from "@/contexts/LanguageContext";
+import { useLocation } from "wouter";
 
 import { useProperties } from "../hooks/useListings";
 import type { Property } from "../hooks/useListings";
@@ -16,6 +17,7 @@ export default function Listings({ mode, selCmps, rooms }: Props) {
   const [sort, setSort] = useState("ai");
   const [view, setView] = useState<"grid" | "list">("grid");
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [, setLocation] = useLocation();
 
   const { data, total, loading } = useProperties(mode, selCmps, rooms, sort);
 
@@ -89,10 +91,42 @@ export default function Listings({ mode, selCmps, rooms }: Props) {
                   delay={i % 6}
                   hovered={hoveredId === p.id}
                   onHover={setHoveredId}
+                  onViewDetail={() => setLocation(`/properties/${p.id}`)}
                 />
               </motion.div>
             ))}
           </motion.div>
+        )}
+
+        {/* Browse All CTA */}
+        {!loading && data.length > 0 && (
+          <div style={{ textAlign: "center", marginTop: 44 }}>
+            <button
+              onClick={() => setLocation("/properties")}
+              style={{
+                padding: "14px 40px",
+                borderRadius: 12,
+                background: "linear-gradient(135deg,var(--navy),var(--navy2))",
+                border: "1px solid rgba(211,167,71,.25)",
+                color: "var(--gold-lt)",
+                fontSize: 11,
+                fontWeight: 700,
+                letterSpacing: ".15em",
+                textTransform: "uppercase",
+                cursor: "pointer",
+                fontFamily: "inherit",
+                transition: "all .3s",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 10,
+              }}
+              onMouseEnter={e => { const b = e.currentTarget as HTMLButtonElement; b.style.background = "linear-gradient(135deg,var(--gold),var(--gold-lt))"; b.style.color = "var(--navy)"; b.style.border = "1px solid transparent"; b.style.boxShadow = "0 8px 28px rgba(211,167,71,.3)"; }}
+              onMouseLeave={e => { const b = e.currentTarget as HTMLButtonElement; b.style.background = "linear-gradient(135deg,var(--navy),var(--navy2))"; b.style.color = "var(--gold-lt)"; b.style.border = "1px solid rgba(211,167,71,.25)"; b.style.boxShadow = ""; }}
+            >
+              Browse All {total}+ Properties
+              <span style={{ fontSize: 16 }}>→</span>
+            </button>
+          </div>
         )}
       </div>
     </section>
@@ -111,10 +145,12 @@ const CAT_ICONS: Record<string, string> = {
 };
 
 function ListingCard({
-  property: p, mode, view, lang, delay, hovered, onHover
+  property: p, mode, view, lang, delay, hovered, onHover, onViewDetail
 }: {
   property: Property; mode: string; view: string; lang: string;
-  delay: number; hovered: boolean; onHover: (id: string | null) => void;
+  delay: number; hovered: boolean;
+  onHover: (id: string | null) => void;
+  onViewDetail?: () => void;
 }) {
   const [imgIdx, setImgIdx] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -142,9 +178,10 @@ function ListingCard({
   if (view === "list") {
     return (
       <div className={`lc rv rv-d${Math.min(delay, 5)}`}
-        style={{ display: "flex", flexDirection: "row", overflow: "hidden" }}
+        style={{ display: "flex", flexDirection: "row", overflow: "hidden", cursor: "pointer" }}
         onMouseEnter={() => onHover(p.id)}
-        onMouseLeave={() => onHover(null)}>
+        onMouseLeave={() => onHover(null)}
+        onClick={onViewDetail}>
         <div style={{ width: 220, flexShrink: 0, position: "relative", overflow: "hidden" }}>
           <img src={images[imgIdx] || "/estate.png"} alt={title} loading="lazy"
             style={{ width: "100%", height: "100%", objectFit: "cover", transition: "opacity .5s", minHeight: 160 }} />
@@ -164,8 +201,8 @@ function ListingCard({
           </div>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
             <div className="lc-price">{priceStr}</div>
-            <button style={{ padding: "8px 18px", borderRadius: 8, background: "var(--navy)", color: "#fff", fontSize: 9.5, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", border: "none", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
-              💬 Inquire
+            <button onClick={e => { e.stopPropagation(); onViewDetail?.(); }} style={{ padding: "8px 18px", borderRadius: 8, background: "var(--navy)", color: "#fff", fontSize: 9.5, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", border: "none", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
+              View Details →
             </button>
           </div>
         </div>
@@ -221,10 +258,13 @@ function ListingCard({
 
         <div className="lc-price">{priceStr}</div>
 
-        <button style={{ width: "100%", marginTop: 10, padding: "10px", borderRadius: 9, background: "var(--navy)", color: "#fff", fontSize: 9.5, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", border: "none", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, transition: "all .25s" }}
+        <button
+          onClick={onViewDetail}
+          style={{ width: "100%", marginTop: 10, padding: "10px", borderRadius: 9, background: "var(--navy)", color: "#fff", fontSize: 9.5, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", border: "none", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, transition: "all .25s" }}
           onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "linear-gradient(135deg,var(--gold),var(--gold-lt))"; (e.currentTarget as HTMLButtonElement).style.color = "var(--navy)"; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "var(--navy)"; (e.currentTarget as HTMLButtonElement).style.color = "#fff"; }}>
-          <span style={{ fontSize: 14 }}>💬</span> Request Info
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "var(--navy)"; (e.currentTarget as HTMLButtonElement).style.color = "#fff"; }}
+        >
+          <span style={{ fontSize: 13 }}>→</span> View Details
         </button>
       </div>
     </div>

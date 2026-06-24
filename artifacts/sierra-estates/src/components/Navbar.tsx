@@ -176,6 +176,12 @@ export default function Navbar({
 
         {/* Right controls */}
         <div className="hdr-right">
+          <button className="hdr-icon hdr-desktop" onClick={() => setLocation("/properties")} style={{ fontSize: 10.5, fontFamily: "inherit", fontWeight: 700, letterSpacing: ".08em", color: "rgba(255,255,255,.55)" }}>
+            Properties
+          </button>
+          <button className="hdr-icon hdr-desktop" onClick={() => setLocation("/login")} style={{ fontSize: 10.5, fontFamily: "inherit", fontWeight: 700, letterSpacing: ".08em", color: "rgba(211,167,71,.7)" }}>
+            Agent Login
+          </button>
           <button className="hdr-icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} title="Theme">
             {theme === "dark" ? <Sun size={14} /> : <Moon size={14} />}
           </button>
@@ -226,8 +232,10 @@ export default function Navbar({
 
       <style>{`
         .hdr-hamburger { display: none !important; }
+        .hdr-desktop { display: flex !important; }
         @media(max-width: 900px) {
           .hdr-hamburger { display: flex !important; }
+          .hdr-desktop { display: none !important; }
         }
       `}</style>
     </>
