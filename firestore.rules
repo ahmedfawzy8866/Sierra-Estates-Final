@@ -279,5 +279,40 @@ service cloud.firestore {
     match /system_health/{id} {
       allow read, write: if isStaff() || isAdmin();
     }
+
+    // ── Two-App Architecture: Bot & Admin Collections ──
+    // Written by Firebase Admin App only. Never by Vercel.
+    match /bot_jobs/{id} {
+      allow read: if isStaff() || isAdmin();
+      allow write: if isStaff() || isAdmin();
+    }
+    match /exchange/{id} {
+      allow read: if isStaff() || isAdmin();
+      allow write: if isStaff() || isAdmin();
+    }
+    match /owner_negotiations/{id} {
+      allow read: if isStaff() || isAdmin();
+      allow write: if isStaff() || isAdmin();
+    }
+    match /rawScrapeData/{id} {
+      allow read: if isStaff() || isAdmin();
+      allow write: if isStaff() || isAdmin();
+    }
+    match /processedData/{id} {
+      allow read: if isStaff() || isAdmin();
+      allow write: if isStaff() || isAdmin();
+    }
+    match /broker_listings/{id} {
+      allow read: if isStaff() || isAdmin();
+      allow write: if isStaff() || isAdmin();
+    }
+
+    // ── Public write: lead capture forms ──
+    // These collections allow unauthenticated creates (for public forms)
+    // but reads are staff-only
+    match /viewing_requests/{id} {
+      allow create: if true;
+      allow read, update, delete: if isStaff() || isAdmin();
+    }
   }
 }
