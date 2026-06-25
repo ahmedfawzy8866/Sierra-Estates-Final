@@ -9,6 +9,8 @@ import { useFavorites } from "@/context/FavoritesContext";
 import { useColors } from "@/hooks/useColors";
 import type { Property } from "@/data/properties";
 
+const isWeb = Platform.OS === "web";
+
 interface PropertyCardProps {
   property: Property;
   horizontal?: boolean;
@@ -38,7 +40,7 @@ export function PropertyCard({ property, horizontal = false, compareMode = false
 
   if (horizontal) {
     return (
-      <Animated.View entering={FadeInDown.springify().damping(16).mass(0.8)}>
+      <Animated.View entering={isWeb ? undefined : FadeInDown.springify().damping(16).mass(0.8)}>
         <Pressable
           style={({ pressed }) => [
             styles.hCard,
@@ -72,7 +74,7 @@ export function PropertyCard({ property, horizontal = false, compareMode = false
   }
 
   return (
-    <Animated.View entering={FadeInDown.springify().damping(16).mass(0.8)} style={{ width: horizontal ? "auto" : "100%" }}>
+    <Animated.View entering={isWeb ? undefined : FadeInDown.springify().damping(16).mass(0.8)} style={{ width: horizontal ? "auto" : "100%" }}>
       <Pressable
         style={({ pressed }) => [
           styles.card,

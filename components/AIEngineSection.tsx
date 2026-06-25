@@ -170,12 +170,12 @@ export function AIEngineSection() {
     <View style={[styles.section, { backgroundColor: '#111827' }]}>
       <View style={[styles.container, isWide && { maxWidth: contentMaxWidth as any, alignSelf: "center" }]}>
         
-        <Animated.View entering={FadeIn.duration(800)} style={[styles.header]}>
+        <Animated.View entering={isWeb ? undefined : FadeIn.duration(800)} style={[styles.header]}>
           <Text style={styles.headerEyebrow}>INTELLIGENCE OS PLATFORM</Text>
           <Text style={styles.headerTitle}>Powered by AI Engine 3.0</Text>
         </Animated.View>
 
-        <Animated.View entering={FadeInDown.delay(200).springify()} style={[styles.dashRow, { flexDirection: isDesktop ? 'row' : 'column' }]}>
+        <Animated.View entering={isWeb ? undefined : FadeInDown.delay(200).springify()} style={[styles.dashRow, { flexDirection: isDesktop ? 'row' : 'column' }]}>
           <View style={{ flex: 1.3 }}>
             <AVMPanel />
           </View>
@@ -191,7 +191,7 @@ export function AIEngineSection() {
             { title: "ROI Analytics", desc: "Compounding yield matrices showing appreciation, rental income, and reinvestment potential.", icon: "bar-chart-2" },
             { title: "Dream Home AI", desc: "Bilingual AI advisor for New Cairo — instant compound matching in Arabic or English.", icon: "cpu" }
           ].map((f, i) => (
-            <Animated.View key={i} entering={FadeInDown.delay(400 + i * 100).springify()} style={[isDesktop && { flex: 1 }]}>
+            <Animated.View key={i} entering={isWeb ? undefined : FadeInDown.delay(400 + i * 100).springify()} style={[isDesktop && { flex: 1 }]}>
               <Pressable style={({ pressed }) => [
                 styles.featureCard, 
                 pressed && { opacity: 0.8, transform: [{ scale: 0.98 }] }

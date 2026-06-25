@@ -942,7 +942,7 @@ export default function HomeScreen() {
           />
 
           {/* ─── WHY SIERRA HIGHLIGHT CARD ─── */}
-          <Animated.View entering={FadeInDown.delay(200).springify().damping(16)}>
+          <Animated.View entering={isWeb ? undefined : FadeInDown.delay(200).springify().damping(16)}>
             <View style={[
               styles.highlightCard, 
               { 
@@ -967,7 +967,7 @@ export default function HomeScreen() {
             </View>
           </Animated.View>
 
-          <Animated.View entering={FadeInDown.delay(400).springify()} style={[styles.featuresGrid, { flexDirection: rowDir }]}>
+          <Animated.View entering={isWeb ? undefined : FadeInDown.delay(400).springify()} style={[styles.featuresGrid, { flexDirection: rowDir }]}>
             {FEATURES.map((f, i) => (
               <View
                 key={i}

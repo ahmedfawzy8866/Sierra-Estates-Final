@@ -7,6 +7,8 @@ import { useTheme } from '@/context/ThemeContext';
 import { useBreakpoint } from '@/hooks/useBreakpoint';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
+const isWeb = Platform.OS === 'web';
+
 export default function CareersPage() {
   const colors = useColors();
   const { isDark } = useTheme();
@@ -31,7 +33,7 @@ export default function CareersPage() {
         <View style={[styles.inner, isWide && { maxWidth: contentMaxWidth as any, alignSelf: 'center', width: '100%' }]}>
           
           {/* Header */}
-          <Animated.View entering={FadeInDown.springify()} style={styles.header}>
+          <Animated.View entering={isWeb ? undefined : FadeInDown.springify()} style={styles.header}>
             <View style={[styles.badge, { backgroundColor: colors.gold + '22' }]}>
               <Text style={[styles.badgeText, { color: colors.gold }]}>WE'RE HIRING</Text>
             </View>
@@ -44,7 +46,7 @@ export default function CareersPage() {
           {/* Job Listings */}
           <View style={styles.jobsList}>
             {JOBS.map((job, idx) => (
-              <Animated.View key={idx} entering={FadeInDown.delay(200 + idx * 100).springify()}>
+              <Animated.View key={idx} entering={isWeb ? undefined : FadeInDown.delay(200 + idx * 100).springify()}>
                 <View style={[styles.jobCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
                   <View style={styles.jobHeader}>
                     <Text style={[styles.jobTitle, { color: colors.text }]}>{job.title}</Text>
