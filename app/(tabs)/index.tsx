@@ -132,6 +132,7 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const scrollY = useRef(new RNAnimated.Value(0)).current;
   const [claimVisible, setClaimVisible] = useState(false);
+  const [aiQuery, setAiQuery] = useState("");
   const mapIframeRef = useRef<any>(null);
   const mapWebViewRef = useRef<any>(null);
   const tourIframeRef = useRef<any>(null);
@@ -596,6 +597,38 @@ export default function HomeScreen() {
                 <Text style={[styles.ctaSecondaryText, { color: heroCtaSecondaryText }]}>{t.viewMap}</Text>
               </Pressable>
             </RNAnimated.View>
+
+            <RNAnimated.View style={[{ opacity: fade3, transform: [{ translateY: slide3 }], marginTop: 24, width: isWide ? "60%" : "100%", alignSelf: "center" }]}>
+              <View style={[styles.aiSearchContainer, { backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(13, 27, 54, 0.05)", borderColor: isDark ? "rgba(255,255,255,0.2)" : "rgba(13, 27, 54, 0.1)" }]}>
+                <Feather name="search" size={20} color={heroTextColor} style={{ marginLeft: 16 }} />
+                <TextInput
+                  style={[styles.aiSearchInput, { color: heroTextColor }]}
+                  placeholder="Ask AI: e.g. 'Villa with pool under 10M'"
+                  placeholderTextColor={heroSubTextColor}
+                  value={aiQuery}
+                  onChangeText={setAiQuery}
+                  onSubmitEditing={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                    if (aiQuery.trim()) {
+                      router.push(`/listings?search=${encodeURIComponent(aiQuery)}&ai=true` as any);
+                    }
+                  }}
+                  returnKeyType="search"
+                />
+                <Pressable 
+                  style={[styles.aiSearchBtn, { backgroundColor: colors.gold }]}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                    if (aiQuery.trim()) {
+                      router.push(`/listings?search=${encodeURIComponent(aiQuery)}&ai=true` as any);
+                    }
+                  }}
+                >
+                  <Text style={[styles.aiSearchBtnText, { color: colors.navyDeep }]}>Match</Text>
+                </Pressable>
+              </View>
+            </RNAnimated.View>
+
           </View>
 
           {/* Scene Selector Thumbnails */}
@@ -1171,6 +1204,36 @@ const styles = StyleSheet.create({
   stickyTitle: { fontSize: 17, fontWeight: "700", textAlign: "center" },
   hero: { minHeight: 640, justifyContent: "space-between" },
   heroWide: { minHeight: 700 },
+  heroBrandingTextColor: {
+    fontFamily: "Inter-SemiBold",
+  },
+  aiSearchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    height: 56,
+    borderRadius: 28,
+    borderWidth: 1,
+    overflow: "hidden",
+    backdropFilter: "blur(10px)",
+  },
+  aiSearchInput: {
+    flex: 1,
+    height: "100%",
+    paddingHorizontal: 16,
+    fontFamily: "Inter-Regular",
+    fontSize: 16,
+    outlineStyle: "none",
+  },
+  aiSearchBtn: {
+    height: "100%",
+    paddingHorizontal: 24,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  aiSearchBtnText: {
+    fontFamily: "Inter-Bold",
+    fontSize: 16,
+  },
   heroBranding: {
     alignItems: "center",
     justifyContent: "space-between",

@@ -14,10 +14,12 @@
       "backgroundColor": "#040C16"
     },
     "ios": {
-      "supportsTablet": false
+      "supportsTablet": false,
+      "jsEngine": "hermes"
     },
     "android": {
-      "backgroundColor": "#040C16"
+      "backgroundColor": "#040C16",
+      "jsEngine": "hermes"
     },
     "web": {
       "favicon": "./assets/images/icon.png"

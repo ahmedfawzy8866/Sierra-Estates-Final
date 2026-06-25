@@ -13,6 +13,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Animated, { FadeIn, FadeInUp } from "react-native-reanimated";
 import { WebView } from "react-native-webview";
 
 import { ContactModal } from "@/components/ContactModal";
@@ -113,7 +114,7 @@ export default function PropertyDetailScreen() {
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: botPad + 100 }}>
-        <View style={styles.heroWrap}>
+        <Animated.View entering={FadeIn.duration(600)} style={styles.heroWrap}>
           <Image source={property.image} style={styles.heroImage} />
 
           {property.isOffPlan && (
@@ -136,9 +137,9 @@ export default function PropertyDetailScreen() {
             <Feather name="camera" size={15} color={colors.navyDeep} />
             <Text style={[styles.tourBtnText, { color: colors.navyDeep }]}>Virtual Tour</Text>
           </Pressable>
-        </View>
+        </Animated.View>
 
-        <View style={[styles.scoreBar, { backgroundColor: isDark ? colors.navyMid : colors.surfaceAlt }]}>
+        <Animated.View entering={FadeInUp.delay(100).duration(500)} style={[styles.scoreBar, { backgroundColor: isDark ? colors.navyMid : colors.surfaceAlt }]}>
           <View style={styles.scoreLeft}>
             <Feather name="cpu" size={14} color={colors.gold} />
             <Text style={[styles.scoreLabel, { color: colors.mutedForeground }]}>AI Score</Text>
@@ -156,9 +157,9 @@ export default function PropertyDetailScreen() {
             <Text style={[styles.scoreLabel, { color: colors.mutedForeground }]}>Type</Text>
             <Text style={[styles.scoreValueAlt, { color: colors.text }]} numberOfLines={1}>{property.type.charAt(0).toUpperCase() + property.type.slice(1)}</Text>
           </View>
-        </View>
+        </Animated.View>
 
-        <View style={styles.body}>
+        <Animated.View entering={FadeInUp.delay(200).duration(500)} style={styles.body}>
           <View style={styles.titleBlock}>
             <Text style={[styles.price, { color: colors.gold }]}>{property.priceLabel}</Text>
             <Text style={[styles.title, { color: colors.text }]}>{property.title}</Text>
@@ -204,6 +205,17 @@ export default function PropertyDetailScreen() {
 
           <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
+          <View style={[styles.compoundInfo, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            <Feather name="layers" size={18} color={colors.gold} />
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.compoundLabel, { color: colors.mutedForeground }]}>Compound / Development</Text>
+              <Text style={[styles.compoundName, { color: colors.text }]}>{property.compound}</Text>
+            </View>
+            <Feather name="chevron-right" size={16} color={colors.mutedForeground} />
+          </View>
+
+          <View style={[styles.divider, { backgroundColor: colors.border, marginTop: 20 }]} />
+
           <Text style={[styles.sectionTitle, { color: colors.text }]}>Location & Neighbourhood</Text>
           <View style={[styles.mapContainer, { borderColor: colors.border }]}>
             <WebView
@@ -221,18 +233,7 @@ export default function PropertyDetailScreen() {
               <Text style={[styles.openMapBtnText, { color: colors.navyDeep }]}>Open Full Map</Text>
             </Pressable>
           </View>
-
-          <View style={[styles.divider, { backgroundColor: colors.border }]} />
-
-          <View style={[styles.compoundInfo, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <Feather name="layers" size={18} color={colors.gold} />
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.compoundLabel, { color: colors.mutedForeground }]}>Compound / Development</Text>
-              <Text style={[styles.compoundName, { color: colors.text }]}>{property.compound}</Text>
-            </View>
-            <Feather name="chevron-right" size={16} color={colors.mutedForeground} />
-          </View>
-        </View>
+        </Animated.View>
       </ScrollView>
 
       <View style={[styles.bottomBar, { backgroundColor: colors.background, borderTopColor: colors.border, paddingBottom: botPad + 8 }]}>
