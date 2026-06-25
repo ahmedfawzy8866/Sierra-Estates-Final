@@ -17,11 +17,11 @@ import { useClaim } from "@/context/ClaimContext";
 import { ClaimNowModal } from "@/components/ClaimNowModal";
 
 const NAV_LINKS = [
-  { label: "navHome", route: "/(tabs)/index", icon: "home", match: "/" },
-  { label: "navSearch", route: "/(tabs)/listings", icon: "search", match: "/listings" },
-  { label: "navMap", route: "/(tabs)/map", icon: "map", match: "/map" },
-  { label: "navSaved", route: "/(tabs)/favorites", icon: "heart", match: "/favorites" },
-  { label: "navAccount", route: "/(tabs)/profile", icon: "user", match: "/profile" },
+  { label: "navHome", route: "/", icon: "home", match: "/" },
+  { label: "navSearch", route: "/listings", icon: "search", match: "/listings" },
+  { label: "navMap", route: "/map", icon: "map", match: "/map" },
+  { label: "navSaved", route: "/favorites", icon: "heart", match: "/favorites" },
+  { label: "navAccount", route: "/profile", icon: "user", match: "/profile" },
 ] as const;
 
 interface WebNavProps {
