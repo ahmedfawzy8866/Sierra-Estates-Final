@@ -26,7 +26,7 @@ const DEFAULT_TERMINAL_LOGS: TermLine[] = [
   { t: 'dim', l: 'Last sync: 2026-06-16 · All systems nominal' },
 ];
 
-export default function OpenClawPage() {
+export default function OpenClawPage({ T, isAr = false }: { T?: (key: string) => string; isAr?: boolean }) {
   const [cmd, setCmd] = useState('');
   const [logs, setLogs] = useState<TermLine[]>(DEFAULT_TERMINAL_LOGS);
   const termEndRef = useRef<HTMLDivElement>(null);
@@ -49,21 +49,21 @@ export default function OpenClawPage() {
     }
 
     if (trimmed.toLowerCase().includes('status')) {
-      nextLogs.push({ t: 'green', l: '[✓] All 6 agents operational · Database link active' });
+      nextLogs.push({ t: 'green', l: isAr ? '[✓] كافة الوكلاء الـ 6 متصلون · اتصال قاعدة البيانات نشط' : '[✓] All 6 agents operational · Database link active' });
     } else if (trimmed.toLowerCase().includes('sync')) {
       nextLogs.push(
-        { t: 'blue', l: '[~] Triggering full telemetry sync with Firestore...' },
-        { t: 'green', l: '[✓] Sync complete · 1,547 compound index points processed' }
+        { t: 'blue', l: isAr ? '[~] جاري بدء المزامنة الكاملة للبيانات العقارية مع Firestore...' : '[~] Triggering full telemetry sync with Firestore...' },
+        { t: 'green', l: isAr ? '[✓] اكتمال المزامنة · تم معالجة 1,547 نقطة فهرس مركبة بنجاح' : '[✓] Sync complete · 1,547 compound index points processed' }
       );
     } else if (trimmed.toLowerCase().includes('leads')) {
-      nextLogs.push({ t: '', l: '  Active leads: 284 · Flagged: 3 · Delta improvement: +8 today' });
+      nextLogs.push({ t: '', l: isAr ? '  العملاء النشطون: 284 · المعلقون: 3 · التحسن اليومي: +8 اليوم' : '  Active leads: 284 · Flagged: 3 · Delta improvement: +8 today' });
     } else if (trimmed.toLowerCase().includes('help')) {
       nextLogs.push({
         t: 'dim',
-        l: 'Operational Commands: status · sync · leads · agents · deploy · clear',
+        l: isAr ? 'أوامر التشغيل المتاحة: status · sync · leads · agents · deploy · clear' : 'Operational Commands: status · sync · leads · agents · deploy · clear',
       });
     } else {
-      nextLogs.push({ t: 'red', l: `[!] Syntax error: ${trimmed} · Type 'help' for support` });
+      nextLogs.push({ t: 'red', l: isAr ? `[!] خطأ في الصيغة: ${trimmed} · اكتب 'help' للدعم` : `[!] Syntax error: ${trimmed} · Type 'help' for support` });
     }
 
     setLogs(nextLogs);
@@ -73,8 +73,8 @@ export default function OpenClawPage() {
   const executeAction = (actionName: string, icon: string) => {
     setLogs((prev) => [
       ...prev,
-      { t: 'blue', l: `[~] Dispatching pipeline instruction: ${actionName}...` },
-      { t: 'green', l: `[✓] Execution code returned success for ${actionName} ${icon}` },
+      { t: 'blue', l: isAr ? `[~] جاري إرسال تعليمات البنية التحتية: ${actionName}...` : `[~] Dispatching pipeline instruction: ${actionName}...` },
+      { t: 'green', l: isAr ? `[✓] تم إرجاع رمز التشغيل بنجاح لـ ${actionName} ${icon}` : `[✓] Execution code returned success for ${actionName} ${icon}` },
     ]);
   };
 
@@ -95,29 +95,38 @@ export default function OpenClawPage() {
     }
   };
 
+  const bottomActions = [
+    { l: isAr ? 'نشر الواجهة' : 'Deploy Frontend', c: '🚀' },
+    { l: isAr ? 'مزامنة البيانات' : 'Sync Firestore', c: '🔄' },
+    { l: isAr ? 'تشغيل الوكلاء' : 'Run All Agents', c: '🤖' },
+    { l: isAr ? 'نسخ احتياطي' : 'Backup Database', c: '💾' },
+    { l: isAr ? 'مسح التخزين' : 'Clear Cache', c: '🧹' },
+    { l: isAr ? 'فحص الربط' : 'Test Webhooks', c: '⚡' },
+  ];
+
   return (
-    <div className="space-y-6 animate-fade-in-up">
+    <div className="space-y-6 animate-fade-in-up" dir={isAr ? 'rtl' : 'ltr'}>
       {/* Mini Controls */}
-      <div className="flex gap-2 flex-wrap select-none">
+      <div className={`flex gap-2 flex-wrap select-none ${isAr ? 'justify-start' : ''}`}>
         <button
           onClick={() => setLogs(DEFAULT_TERMINAL_LOGS)}
           className="px-4 py-2 text-xs font-mono bg-white/5 hover:bg-white/10 border border-slate-800 text-slate-300 rounded-lg transition active:scale-95 duration-100 cursor-pointer"
           id="btn-reset-terminal"
         >
-          🔄 Reset Terminal
+          {isAr ? '🔄 إعادة ضبط الطرفية' : '🔄 Reset Terminal'}
         </button>
         <button
           onClick={() => {
             setLogs((p) => [
               ...p,
-              { t: 'blue', l: '[~] Establishing secure SSL channel...' },
-              { t: 'green', l: '[✓] Handshake resolved · CRM Firebase modules connected successfully.' },
+              { t: 'blue', l: isAr ? '[~] جاري إنشاء قناة اتصال SSL آمنة...' : '[~] Establishing secure SSL channel...' },
+              { t: 'green', l: isAr ? '[✓] تم حل المصافحة الفنية · اتصالات Firebase CRM نشطة بنجاح.' : '[✓] Handshake resolved · CRM Firebase modules connected successfully.' },
             ]);
           }}
           className="px-4 py-2 text-xs font-mono bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-lg shadow hover:bg-[#C8961A]/20 transition active:scale-95 duration-100 cursor-pointer"
           id="btn-test-db-connection"
         >
-          ⚡ Verify DB connection
+          {isAr ? '⚡ فحص الاتصال بقاعدة البيانات' : '⚡ Verify DB connection'}
         </button>
       </div>
 
@@ -125,16 +134,16 @@ export default function OpenClawPage() {
       <div className="bg-[#05080f] border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
         <div className="px-5 py-3.5 bg-[#0a0f1d]/60 border-b border-slate-800 flex items-center justify-between select-none">
           <span className="font-mono text-[9px] uppercase tracking-wider text-cyan-400 font-bold">
-            ⚙️ OpenClaw · Shell Telemetry Console
+            {isAr ? '⚙️ أوبن كلو · طرفية مراقبة النظام والقياس' : '⚙️ OpenClaw · Shell Telemetry Console'}
           </span>
           <span className="text-[8px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded font-bold">
-            Connected SSL
+            {isAr ? 'اتصال SSL آمن' : 'Connected SSL'}
           </span>
         </div>
 
         <div className="p-5 h-[340px] overflow-y-auto font-mono text-xs space-y-1 scrollbar scroll-smooth">
           {logs.map((l, i) => (
-            <div key={i} className={`leading-relaxed whitespace-pre-wrap ${renderColorClass(l.t)}`}>
+            <div key={i} className={`leading-relaxed whitespace-pre-wrap ${renderColorClass(l.t)} ${isAr ? 'text-right' : 'text-left'}`}>
               {l.l}
             </div>
           ))}
@@ -147,7 +156,7 @@ export default function OpenClawPage() {
               onChange={(e) => setCmd(e.target.value)}
               onKeyDown={runCommand}
               className="flex-1 bg-transparent border-none outline-none text-white font-semibold text-xs py-0"
-              placeholder="Type command e.g., 'help', 'status'..."
+              placeholder={isAr ? 'اكتب أمراً مثل "help" أو "status"...' : "Type command e.g., 'help', 'status'..."}
               id="terminal-repl-input"
               autoFocus
             />
@@ -158,14 +167,7 @@ export default function OpenClawPage() {
 
       {/* Grid actions trigger */}
       <div className="grid grid-cols-2 sm:grid-cols-6 gap-3">
-        {[
-          { l: 'Deploy Frontend', c: '🚀' },
-          { l: 'Sync Firestore', c: '🔄' },
-          { l: 'Run All Agents', c: '🤖' },
-          { l: 'Backup Database', c: '💾' },
-          { l: 'Clear Cache', c: '🧹' },
-          { l: 'Test Webhooks', c: '⚡' },
-        ].map((a, i) => (
+        {bottomActions.map((a, i) => (
           <button
             key={i}
             onClick={() => executeAction(a.l, a.c)}

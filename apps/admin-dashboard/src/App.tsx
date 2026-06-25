@@ -524,7 +524,7 @@ export default function App() {
       case 'dbEditor':
         return <DBEditorPage T={T} isAr={isAr} />;
       case 'openclaw':
-        return <OpenClawPage />;
+        return <OpenClawPage T={T} isAr={isAr} />;
       default:
         return <OverviewPage T={T} />;
     }
