@@ -12,7 +12,8 @@ firebase use sierra-estates
 firebase deploy --only firestore:rules,storage
 ```
 
-**Verify**: Every staff user must have a `users/{uid}` doc with `role` in `{admin, manager, agent}`.
+**Verify**: Every staff user must have a `users/{uid}` doc with `role` in `{admin, agent, employee}`.
+**Also**: Set Firebase Auth custom claims on each user to match their Firestore role.
 
 ### 2. Rotate Compromised API Keys
 
@@ -86,6 +87,15 @@ Set `ALLOWED_ORIGNS` in Vercel to restrict API access:
 ```
 ALLOWED_ORIGNS=https://sierra-estates.net,https://admin.sierra-estates.net
 ```
+
+### 9. Two-App Security Boundary
+
+The Vercel and Firebase Admin apps share Firestore but have separate security surfaces:
+
+- **Vercel App**: Only has read access to most collections. Writes are limited to new leads and viewing requests.
+- **Firebase Admin App**: Full write access. Protected by `SBR_SECRET_KEY` + Firebase Auth custom claims.
+- **Never share Admin SDK credentials** between the two deployment environments.
+- **FIREBASE_ADMIN_URL** env var in Vercel must point to the Firebase Admin app only — never to internal services.
 
 ## Ongoing Security Maintenance
 

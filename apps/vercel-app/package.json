@@ -1,8 +1,8 @@
 {
-  "name": "@sierra-estates/realty",
+  "name": "@sierra-estates/vercel-app",
   "version": "1.0.0",
   "private": true,
-  "description": "Sierra Estates — Main Next.js app (public site + admin + API routes)",
+  "description": "Sierra Estates — Public client site + lightweight agent/CRM/employee dashboard (Vercel)",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",

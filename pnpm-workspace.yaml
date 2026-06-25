@@ -35,12 +35,19 @@ minimumReleaseAgeExclude:
   - stripe-replit-sync
 
 packages:
-  - "apps/sierra-estates-realty"
-  - "apps/api"
-  - "apps/agents"
-  - "apps/admin-dashboard"
-  - "apps/mass-blast"
+  # ─── TWO-APP ARCHITECTURE ───
+  # Vercel App: public client site + light dashboard (read-only)
+  - "apps/vercel-app"
+  # Firebase Admin App: admin panel + bots + scrapers + workflows (write)
+  - "apps/firebase-admin"
+  # ─── SUPPORTING APPS ───
+  - "apps/api"              # Python FastAPI (Cloud Run)
+  - "apps/agents"           # WhatsApp scraper + deal orchestration
+  - "apps/admin-dashboard"  # Legacy Vite SPA (redirects to /admin)
+  - "apps/mass-blast"       # WhatsApp bulk messaging
+  # ─── SHARED PACKAGES (used by BOTH apps) ───
   - "packages/*"
+  # ─── INFRASTRUCTURE ───
   - "functions"
   - "scripts"
 

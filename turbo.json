@@ -11,6 +11,13 @@
     "lint": { "dependsOn": ["^lint"] },
     "type-check": { "dependsOn": ["^type-check"] },
     "test:ci": { "dependsOn": ["^build"], "outputs": ["coverage/**"] },
-    "clean": { "cache": false }
+    "clean": { "cache": false },
+    "deploy": {
+      "dependsOn": ["build"],
+      "inputs": ["$TURBO_DEFAULT$"]
+    },
+    "deploy:rules": {
+      "cache": false
+    }
   }
 }
