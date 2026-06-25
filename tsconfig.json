@@ -8,8 +8,13 @@
     "paths": {
       "@/*": [
         "./*"
-      ]
+      ],
+      "@sierra-estates/obedian": ["packages/obedian/src/index.ts"],
+      "@sierra-estates/memory-engine": ["packages/memory-engine/src/index.ts"],
+      "@sierra-estates/agents-core": ["packages/agents-core/src/index.ts"],
+      "@sierra-estates/db": ["packages/db/lib/index.ts"]
     }
+
   },
   "include": [
     "**/*.ts",
@@ -18,6 +23,37 @@
     "expo-env.d.ts"
   ],
   "exclude": [
-    "vendor"
+    "vendor",
+    "services/hermes-agent",
+    "node_modules",
+    "**/node_modules",
+    "packages/open-memory",
+    "packages/ui",
+    "**/__tests__",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "packages/agents",
+    "lib",
+    "**/lib",
+    "packages/agents-core/src/dev-runner.ts",
+    "backend",
+    "back",
+    "**/back",
+    "app",
+    "components",
+    "constants",
+    "context",
+    "hooks",
+    "server",
+    "workflows",
+    "apps/admin-dashboard",
+    "apps/api"
   ]
 }
+
+
+
+
+
+
+

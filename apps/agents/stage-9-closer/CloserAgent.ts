@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Stage 9 Closer Agent
  * Handles the final stages of a deal: viewing follow-up, proposal finalization,

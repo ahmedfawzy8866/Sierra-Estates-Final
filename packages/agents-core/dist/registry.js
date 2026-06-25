@@ -1,82 +1,51 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registry = exports.AgentRegistry = void 0;
-const fs = __importStar(require("fs"));
-const path = __importStar(require("path"));
-class AgentRegistry {
-    constructor(customSrcDir) {
+var fs = require("fs");
+var path = require("path");
+var AgentRegistry = /** @class */ (function () {
+    function AgentRegistry(customSrcDir) {
         this.profiles = {};
         this.srcDir = customSrcDir || __dirname;
         this.loadAllProfiles();
     }
-    loadAllProfiles() {
+    AgentRegistry.prototype.loadAllProfiles = function () {
         try {
-            const files = fs.readdirSync(this.srcDir);
-            for (const file of files) {
+            var files = fs.readdirSync(this.srcDir);
+            for (var _i = 0, files_1 = files; _i < files_1.length; _i++) {
+                var file = files_1[_i];
                 if (file.endsWith('.md')) {
-                    const name = path.basename(file, '.md');
-                    const filePath = path.join(this.srcDir, file);
-                    const content = fs.readFileSync(filePath, 'utf-8');
-                    const profile = this.parseMarkdownProfile(name, content);
-                    this.profiles[name] = profile;
+                    var name_1 = path.basename(file, '.md');
+                    var filePath = path.join(this.srcDir, file);
+                    var content = fs.readFileSync(filePath, 'utf-8');
+                    var profile = this.parseMarkdownProfile(name_1, content);
+                    this.profiles[name_1] = profile;
                 }
             }
         }
         catch (err) {
             console.error('[AgentRegistry] Error loading profiles:', err);
         }
-    }
-    parseMarkdownProfile(name, content) {
+    };
+    AgentRegistry.prototype.parseMarkdownProfile = function (name, content) {
         // Basic Frontmatter Parser
-        const frontmatterRegex = /^---\r?\n([\s\S]+?)\r?\n---\r?\n([\s\S]*)$/;
-        const match = content.match(frontmatterRegex);
-        let domain = 'General Development';
-        let description = '';
-        let ruleRef = '';
-        let dnaRef = '';
-        let systemPrompt = content;
+        var frontmatterRegex = /^---\r?\n([\s\S]+?)\r?\n---\r?\n([\s\S]*)$/;
+        var match = content.match(frontmatterRegex);
+        var domain = 'General Development';
+        var description = '';
+        var ruleRef = '';
+        var dnaRef = '';
+        var systemPrompt = content;
         if (match) {
-            const frontmatter = match[1];
+            var frontmatter = match[1];
             systemPrompt = match[2];
-            const lines = frontmatter.split('\n');
-            for (const line of lines) {
-                const parts = line.split(':');
+            var lines = frontmatter.split('\n');
+            for (var _i = 0, lines_1 = lines; _i < lines_1.length; _i++) {
+                var line = lines_1[_i];
+                var parts = line.split(':');
                 if (parts.length >= 2) {
-                    const key = parts[0].trim().toLowerCase();
-                    const val = parts.slice(1).join(':').trim();
+                    var key = parts[0].trim().toLowerCase();
+                    var val = parts.slice(1).join(':').trim();
                     if (key === 'domain')
                         domain = val;
                     else if (key === 'description')
@@ -89,21 +58,21 @@ class AgentRegistry {
             }
         }
         return {
-            name,
-            domain,
-            description,
+            name: name,
+            domain: domain,
+            description: description,
             systemPrompt: systemPrompt.trim(),
-            ruleRef,
-            dnaRef,
+            ruleRef: ruleRef,
+            dnaRef: dnaRef,
         };
-    }
-    getAgent(name) {
+    };
+    AgentRegistry.prototype.getAgent = function (name) {
         return this.profiles[name] || null;
-    }
-    listAgents() {
+    };
+    AgentRegistry.prototype.listAgents = function () {
         return Object.values(this.profiles);
-    }
-}
+    };
+    return AgentRegistry;
+}());
 exports.AgentRegistry = AgentRegistry;
 exports.registry = new AgentRegistry();
-//# sourceMappingURL=registry.js.map

@@ -1,5 +1,5 @@
 """
-SIERRA ESTATESE BOT - API INTEGRATION GUIDE
+SIERRA ESTATES BOT - API INTEGRATION GUIDE
 Real API Endpoints & Configuration Examples
 """
 
@@ -354,7 +354,7 @@ class GoogleCalendarIntegration:
             },
             'attendees': [
                 {'email': customer_email},
-                {'email': 'agent@sierrablue.com'}  # Your agent email
+                {'email': 'agent@sierraestates.com'}  # Your agent email
             ],
             'location': 'سييرا إستيتس - مكتب التجمع الخامس',
             'reminders': {
@@ -437,10 +437,10 @@ class GoogleCalendarIntegration:
 # Google Calendar Configuration
 GOOGLE_CALENDAR_CONFIG = {
     "credentials_json": "/path/to/service-account-key.json",
-    "calendar_id": "sierra-estatese-viewings@sierrablue.com",
+    "calendar_id": "sierra-estates-viewings@sierraestates.com",
     "agent_emails": [
-        "agent1@sierrablue.com",
-        "agent2@sierrablue.com"
+        "agent1@sierraestates.com",
+        "agent2@sierraestates.com"
     ],
     "timezone": "Africa/Cairo"
 }
@@ -509,7 +509,7 @@ class AnalyticsIntegration:
 # 6. COMPLETE INTEGRATION EXAMPLE
 # ============================================================================
 
-class IntegratedSierraEstateseBot:
+class IntegratedSierraEstatesBot:
     """Bot with all real API integrations"""
     
     def __init__(self, config: Dict):
@@ -576,7 +576,7 @@ GOOGLE_CALENDAR_CREDENTIALS=/path/to/credentials.json
 MIXPANEL_TOKEN=your_mixpanel_token
 
 # Bot Configuration
-BOT_NAME=Sierra Estatese AI
+BOT_NAME=Sierra Estates AI
 BOT_TIMEZONE=Africa/Cairo
 """
 
@@ -624,7 +624,7 @@ curl -X POST https://graph.instagram.com/v18.0/{phone_number_id}/messages \
     "to": "20123456789",
     "type": "text",
     "text": {
-      "body": "Hello from Sierra Estatese!"
+      "body": "Hello from Sierra Estates!"
     }
   }'
 

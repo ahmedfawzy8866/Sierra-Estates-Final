@@ -1,15 +1,15 @@
 # ==============================================================================
 # Sierra Estates - Obsidian Memory Vault Sync Script
-# Updates the Obsidian Vault with Sierra-2026 Codebase Status and Git Sourcing Data
+# Updates the Obsidian Vault with Sierra Estates Codebase Status and Git Sourcing Data
 # Scheduled to run automatically every 2 hours
 # ==============================================================================
 
 $ErrorActionPreference = "Stop"
 
 # Paths Definition
-$workspacePath = "F:\Final"
-$vaultPath = "I:\Work Sierra Estates\Sierra Engine Brain\obsidian-vault"
-$logPath = "F:\Final\scripts\obsidian-sync.log"
+$workspacePath = "H:\Firebase\Sierra-Estates-Final"
+$vaultPath = "H:\Firebase\Sierra-Estates-Final\docs\obsidian-vault"
+$logPath = "H:\Firebase\Sierra-Estates-Final\scripts\obsidian-sync.log"
 
 function Write-Log($msg) {
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
@@ -35,7 +35,7 @@ if (-not (Test-Path $vaultPath)) {
 
 try {
     # 1. Fetch Git Repository Information
-    Write-Log "Querying Git status for F:\Final..."
+    Write-Log "Querying Git status for H:\Firebase\Sierra-Estates-Final..."
     $gitBranch = git -C $workspacePath rev-parse --abbrev-ref HEAD 2>$null
     if ($null -eq $gitBranch) { $gitBranch = "main" }
     
@@ -74,7 +74,7 @@ try {
     # We construct the string line-by-line to avoid here-string escaping issues
     $lines = @(
         ('# 📅 Operations & Git Activity Ledger: {0}' -f $todayStr),
-        '> **Automated Sync Source:** `F:\Final` (sierra-2026)  ',
+        '> **Automated Sync Source:** `H:\Firebase\Sierra-Estates-Final` (sierra-estates)  ',
         ('> **Last Synced:** {0}' -f $nowStr),
         '> **Parent Node:** [[Daily Activity Ledger]]',
         '',
@@ -122,7 +122,7 @@ try {
         $engineContent = [System.IO.File]::ReadAllText($enginePath, [System.Text.Encoding]::UTF8)
         
         $oldPathPattern = "file:///C:/Users/sierr/.gemini/antigravity/worktrees/Final/refine-full-stack-ecosystem/docs/obsidian-vault"
-        $newPathPattern = "file:///F:/Final/docs/obsidian-vault"
+        $newPathPattern = "file:///H:/Firebase/Sierra-Estates-Final/docs/obsidian-vault"
         
         if ($engineContent.Contains($oldPathPattern)) {
             $engineContent = $engineContent.Replace($oldPathPattern, $newPathPattern)

@@ -782,6 +782,129 @@ registerCrudRoutes("agents", "agents");
 registerCrudRoutes("workflows", "workflows");
 registerCrudRoutes("pages", "pages");
 registerCrudRoutes("followups", "followups");
+registerCrudRoutes("deals", "deals");
+
+// Joined Closer Deals list
+app.get("/api/admin/closer/deals", async (req, res) => {
+  try {
+    if (!db) {
+      res.status(550).json({ success: false, error: "Database not initialized" });
+      return;
+    }
+    const dealsSnap = await db.collection("deals").get();
+    const deals = dealsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    const leadsSnap = await db.collection("leads").get();
+    const leadsMap = new Map(leadsSnap.docs.map(doc => [doc.id, doc.data()]));
+
+    const listingsSnap = await db.collection("listings").get();
+    const listingsMap = new Map(listingsSnap.docs.map(doc => [doc.id, doc.data()]));
+
+    const mappedDeals = deals.map((deal: any) => {
+      const lead = leadsMap.get(deal.stakeholderId) || {};
+      const asset = listingsMap.get(deal.assetId) || {};
+
+      let stage = 'initial';
+      let prog = 25;
+      if (deal.stage === 'S9_initiated') {
+        stage = 'initial';
+        prog = 25;
+      } else if (deal.stage === 'S9_proposal_ready') {
+        stage = 'negotiation';
+        prog = 50;
+      } else if (deal.stage === 'S9_signing_initiated') {
+        stage = 'contract';
+        prog = 75;
+      } else if (deal.stage === 'S10_complete' || deal.status === 'closed_won') {
+        stage = 'closed';
+        prog = 100;
+      }
+
+      return {
+        id: deal.id,
+        client: lead.name || 'Unknown Client',
+        phone: lead.phone || '',
+        prop: asset.title || `Property (${deal.assetId})`,
+        value: deal.negotiatedPrice 
+          ? `EGP ${(deal.negotiatedPrice / 1_000_000).toFixed(1)}M` 
+          : (asset.price ? `EGP ${(parseFloat(asset.price) / 1_000_000).toFixed(1)}M` : 'EGP 0M'),
+        stage,
+        prog,
+        signed: deal.signingEnvelope?.status === 'signed' || deal.signingEnvelope?.status === 'completed' || deal.stage === 'S9_signing_initiated' || deal.stage === 'S10_complete',
+        deposit: deal.paymentStatus === 'paid' || deal.stage === 'S10_complete',
+        c: stage === 'closed' ? '#34D399' : stage === 'contract' ? '#1E88D9' : stage === 'negotiation' ? '#f59e0b' : '#E63946'
+      };
+    });
+
+    res.json({ success: true, deals: mappedDeals });
+  } catch (e: any) {
+    res.status(500).json({ success: false, error: e.message });
+  }
+});
+
+// Closer Agent actions
+app.post("/api/closer/initiate", async (req, res) => {
+  try {
+    if (!db) {
+      res.status(550).json({ success: false, error: "Database not initialized" });
+      return;
+    }
+    const { stakeholderId, assetId } = req.body;
+    const dealId = `DL-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    const { CloserAgent } = await import('../../agents/stage-9-closer/CloserAgent');
+    const closer = CloserAgent.getInstance();
+
+    await db.collection('deals').doc(dealId).set({
+      stakeholderId,
+      assetId,
+      stage: 'S9_initiated',
+      status: 'active',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+
+    res.json({ success: true, dealId });
+  } catch (e: any) {
+    res.status(500).json({ success: false, error: e.message });
+  }
+});
+
+app.post("/api/closer/finalize", async (req, res) => {
+  try {
+    const { dealId, proposalData } = req.body;
+    const { CloserAgent } = await import('../../agents/stage-9-closer/CloserAgent');
+    const closer = CloserAgent.getInstance();
+    const proposalId = await closer.finalizeProposal(dealId, proposalData || {});
+    res.json({ success: true, proposalId });
+  } catch (e: any) {
+    res.status(500).json({ success: false, error: e.message });
+  }
+});
+
+app.post("/api/closer/signing", async (req, res) => {
+  try {
+    const { dealId } = req.body;
+    const { CloserAgent } = await import('../../agents/stage-9-closer/CloserAgent');
+    const closer = CloserAgent.getInstance();
+    const result = await closer.initiateSigning(dealId);
+    res.json({ success: true, envelopeId: result.envelopeId });
+  } catch (e: any) {
+    res.status(500).json({ success: false, error: e.message });
+  }
+});
+
+app.post("/api/closer/complete", async (req, res) => {
+  try {
+    const { dealId } = req.body;
+    const { CloserAgent } = await import('../../agents/stage-9-closer/CloserAgent');
+    const closer = CloserAgent.getInstance();
+    await closer.completeClosing(dealId);
+    res.json({ success: true });
+  } catch (e: any) {
+    res.status(500).json({ success: false, error: e.message });
+  }
+});
 
 // Special Bulk Leads route
 app.post("/api/admin/leads/bulk", async (req, res) => {

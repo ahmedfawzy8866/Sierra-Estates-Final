@@ -1,5 +1,5 @@
 """
-sierra estatesE BOT - API INTEGRATION GUIDE
+SIERRA ESTATES BOT - API INTEGRATION GUIDE
 Real API Endpoints & Configuration Examples
 """
 
@@ -249,9 +249,9 @@ WHATSAPP_CONFIG = {
     "auth_token": "YOUR_TWILIO_AUTH_TOKEN",
     "whatsapp_from": "+20123456789",  # Your WhatsApp Business number
     "templates": {
-        "initial_greeting": "sierra_estatese_greeting_ar",
-        "viewing_confirmation": "sierra_estatese_viewing_confirmation_ar",
-        "viewing_reminder": "sierra_estatese_viewing_reminder_ar"
+        "initial_greeting": "sierra_estates_greeting_ar",
+        "viewing_confirmation": "sierra_estates_viewing_confirmation_ar",
+        "viewing_reminder": "sierra_estates_viewing_reminder_ar"
     }
 }
 
@@ -266,7 +266,7 @@ class MetaWhatsAppIntegration:
         """
         self.phone_number_id = phone_number_id
         self.access_token = access_token
-        self.base_url = f"https://graph.facebook.com/v18.0/{phone_number_id}/messages"
+        self.base_url = f"https://graph.instagram.com/v18.0/{phone_number_id}/messages"
     
     def send_text_message(self, recipient_phone: str, message_text: str) -> Dict:
         """Send text message"""
@@ -306,6 +306,7 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google.oauth2.service_account import Credentials as ServiceAccountCredentials
 from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.transport.urllib3 import Request
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from datetime import datetime, timedelta
@@ -353,9 +354,9 @@ class GoogleCalendarIntegration:
             },
             'attendees': [
                 {'email': customer_email},
-                {'email': 'agent@sierraestatese.com'}  # Your agent email
+                {'email': 'agent@sierraestates.com'}  # Your agent email
             ],
-            'location': 'سييرا بلو - مكتب التجمع الخامس',
+            'location': 'سييرا إستيتس - مكتب التجمع الخامس',
             'reminders': {
                 'useDefault': False,
                 'overrides': [
@@ -436,10 +437,10 @@ class GoogleCalendarIntegration:
 # Google Calendar Configuration
 GOOGLE_CALENDAR_CONFIG = {
     "credentials_json": "/path/to/service-account-key.json",
-    "calendar_id": "sierra-estatese-viewings@sierraestatese.com",
+    "calendar_id": "sierra-estates-viewings@sierraestates.com",
     "agent_emails": [
-        "agent1@sierraestatese.com",
-        "agent2@sierraestatese.com"
+        "agent1@sierraestates.com",
+        "agent2@sierraestates.com"
     ],
     "timezone": "Africa/Cairo"
 }
@@ -508,7 +509,7 @@ class AnalyticsIntegration:
 # 6. COMPLETE INTEGRATION EXAMPLE
 # ============================================================================
 
-class IntegratedSierraEstateseBot:
+class IntegratedSierraEstatesBot:
     """Bot with all real API integrations"""
     
     def __init__(self, config: Dict):
@@ -537,7 +538,7 @@ class IntegratedSierraEstateseBot:
         property_data = self.property_api.check_property_availability(reference_code)
         
         # 4. Send WhatsApp greeting
-        greeting_msg = f"أهلاً بحضرتك في سييرا بلو"
+        greeting_msg = f"أهلاً بحضرتك في سييرا إستيتس"
         self.whatsapp.send_text_message(phone, greeting_msg)
         
         # 5. Track discovery and schedule
@@ -575,7 +576,7 @@ GOOGLE_CALENDAR_CREDENTIALS=/path/to/credentials.json
 MIXPANEL_TOKEN=your_mixpanel_token
 
 # Bot Configuration
-BOT_NAME=Sierra Estatese AI
+BOT_NAME=Sierra Estates AI
 BOT_TIMEZONE=Africa/Cairo
 """
 
@@ -615,7 +616,7 @@ curl -X GET https://api.property-finder.eg/v2/properties/SB001 \
   -H "Content-Type: application/json"
 
 Test WhatsApp API:
-curl -X POST https://graph.facebook.com/v18.0/{phone_number_id}/messages \
+curl -X POST https://graph.instagram.com/v18.0/{phone_number_id}/messages \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -623,7 +624,7 @@ curl -X POST https://graph.facebook.com/v18.0/{phone_number_id}/messages \
     "to": "20123456789",
     "type": "text",
     "text": {
-      "body": "Hello from Sierra Estatese!"
+      "body": "Hello from Sierra Estates!"
     }
   }'
 

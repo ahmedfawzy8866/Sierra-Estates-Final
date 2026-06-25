@@ -1,5 +1,5 @@
-// sierra-estatese/config/views.ts
-// 10 Official Sierra Estatese View Configurations
+// sierra-estates/config/views.ts
+// 10 Official Sierra Estates View Configurations
 // Each view maps to a specific agent, audience, and Firestore collection.
 
 export interface ViewConfig {
@@ -16,7 +16,7 @@ export interface ViewConfig {
 
 export const VIEW_CONFIGS: Record<string, ViewConfig> = {
 
-  // ── PUBLIC VIEWS ─────────────────────────────────────────────────
+  // ── PUBLIC VIEWS ────────────────────────────────────────────
 
   public_inventory: {
     id: "public_inventory",
@@ -25,7 +25,7 @@ export const VIEW_CONFIGS: Record<string, ViewConfig> = {
     agent: "Curator",
     collection: "listings",
     visibility: "public",
-    icon: "🆴️",
+    icon: "inventory",
     description: "Main property grid shown to clients on the landing page",
     dsl: `VISIBILITY public
 SHOW "Property_Name", "Compound", "Bedrooms", "Price", "Area_SqM", "Deal_Status", "ROI_Estimate", "Primary_Image"
@@ -46,7 +46,7 @@ COVER "Primary_Image" SIZE large ASPECT cover`,
     agent: "Curator",
     collection: "listings",
     visibility: "public",
-    icon: "💎",
+    icon: "gem",
     description: "AI-flagged below-market premium properties for the hero section",
     dsl: `VISIBILITY public
 SHOW "Property_Name", "Compound", "Price", "Price_Per_SqM", "Deal_Score", "ROI_Estimate", "Deal_Status", "Area_SqM"
@@ -63,6 +63,8 @@ AI TAGS "ROI_Badge", "Deal_Status", "Capital_Growth_Tag"
 COVER "Primary_Image" SIZE large ASPECT cover`,
   },
 
+  // ── SCRIBE AGENT VIEWS ───────────────────────────────────────
+
   scribe_dashboard: {
     id: "scribe_dashboard",
     label: "Scribe — Intake Dashboard",
@@ -70,7 +72,7 @@ COVER "Primary_Image" SIZE large ASPECT cover`,
     agent: "Scribe",
     collection: "broker_listings",
     visibility: "internal",
-    icon: "✍️",
+    icon: "scribe",
     description: "Real-time feed of WhatsApp/Telegram raw unit intake and AI extraction status",
     dsl: `VISIBILITY internal
 SHOW "SBR_Code", "Extraction_Status", "Compound", "Bedrooms", "Bathrooms", "Price", "Area_SqM", "Furnishing", "Source_Channel", "Agent_Name", "Sync_Hash", "Created_Time"
@@ -90,7 +92,7 @@ FREEZE COLUMNS 1`,
     agent: "Scribe",
     collection: "broker_listings",
     visibility: "internal",
-    icon: "🔍",
+    icon: "dedupe",
     description: "AI-detected potential duplicate listings pending manual review and merge decision",
     dsl: `VISIBILITY internal
 SHOW "SBR_Code", "Compound", "Bedrooms", "Price", "Area_SqM", "Sync_Hash", "Duplicate_Of", "Confidence_Score", "Source_Channel", "Created_Time"
@@ -102,6 +104,25 @@ WRAP CELLS false
 FREEZE COLUMNS 2`,
   },
 
+  owner_approval: {
+    id: "owner_approval",
+    label: "Owners — Approval Queue",
+    labelAr: "قائمة موافقة الملاك",
+    agent: "Scribe",
+    collection: "broker_listings",
+    visibility: "broker",
+    icon: "approval",
+    description: "Pending owner leads awaiting broker approval before outreach is sent",
+    dsl: `VISIBILITY broker
+SHOW "Owner_Name", "Phone", "Compound", "Unit_Type", "Bedrooms", "Asking_Price", "Source_Group", "Approval_Status", "Received_Time", "Agent_Assigned"
+FILTER "Approval_Status" = "pending_approval"
+GROUP BY "Compound"
+SORT BY "Received_Time" ASC
+WRAP CELLS true`,
+  },
+
+  // ── MATCHMAKER AGENT VIEWS ───────────────────────────────────
+
   matchmaker_leads: {
     id: "matchmaker_leads",
     label: "Matchmaker — Lead Scoring",
@@ -109,7 +130,7 @@ FREEZE COLUMNS 2`,
     agent: "Matchmaker",
     collection: "leads",
     visibility: "broker",
-    icon: "🧠",
+    icon: "matchmaker",
     description: "AI-scored leads with neural property match percentages and Leila scores",
     dsl: `VISIBILITY broker
 SHOW "Lead_Name", "Phone", "Budget_Min", "Budget_Max", "Preferred_Compounds", "Preferred_Bedrooms", "Neural_Match_Score", "Leila_Score", "Matched_Properties", "Status", "Last_Interaction", "Agent_Assigned"
@@ -120,6 +141,28 @@ SORT BY "Neural_Match_Score" DESC, "Leila_Score" DESC
 AI TAGS "Neural_Match_Score"`,
   },
 
+  investor_intelligence: {
+    id: "investor_intelligence",
+    label: "Market Intelligence Dashboard",
+    labelAr: "مركز ذكاء السوق",
+    agent: "Matchmaker",
+    collection: "listings",
+    visibility: "investor",
+    icon: "analytics",
+    description: "ROI, IRR, capital appreciation and compound-level market analytics for investors",
+    dsl: `VISIBILITY investor
+SHOW "Compound", "Avg_Price_Per_SqM", "YoY_Appreciation", "Avg_ROI", "Avg_IRR", "Rental_Yield", "Supply_Count", "Demand_Score", "Price_Trend_1Y", "Price_Trend_5Y"
+GROUP BY "Compound"
+SORT BY "Avg_ROI" DESC
+COMPARE "Avg_ROI" AGAINST "Market_ROI"
+COMPARE "Avg_Price_Per_SqM" AGAINST "Cairo_Average"
+COMPARE "Rental_Yield" AGAINST "Market_ROI"
+AI TAGS "Capital_Growth_Tag", "ROI_Badge"
+CHART bar AGGREGATE average ON "Avg_ROI" COLOR auto HEIGHT medium`,
+  },
+
+  // ── CLOSER AGENT VIEWS ───────────────────────────────────────
+
   closer_pipeline: {
     id: "closer_pipeline",
     label: "Closer — Active Pipeline",
@@ -127,7 +170,7 @@ AI TAGS "Neural_Match_Score"`,
     agent: "Closer",
     collection: "proposals",
     visibility: "broker",
-    icon: "🤝",
+    icon: "pipeline",
     description: "Active deals in final closing stages with commission projections",
     dsl: `VISIBILITY broker
 SHOW "Property_Name", "SBR_Code", "Lead_Name", "Stage", "Asking_Price", "Negotiated_Price", "Commission_Rate", "Commission_EGP", "Expected_Close_Date", "Agent_Assigned", "Last_Update"
@@ -138,6 +181,24 @@ WRAP CELLS false
 FREEZE COLUMNS 2`,
   },
 
+  crm_kanban: {
+    id: "crm_kanban",
+    label: "CRM — Agent Kanban Board",
+    labelAr: "لوحة إدارة العملاء",
+    agent: "Closer",
+    collection: "leads",
+    visibility: "broker",
+    icon: "kanban",
+    description: "Full CRM pipeline in Kanban view grouped by deal stage per agent",
+    dsl: `VISIBILITY broker
+SHOW "Lead_Name", "Phone", "Property_Interest", "Budget", "Stage", "Agent_Assigned", "Next_Action", "Last_Contact", "Neural_Match_Score"
+GROUP BY "Stage"
+FILTER "Agent_Assigned" IS NOT EMPTY
+FILTER "Status" != "closed_lost"
+SORT BY "Last_Contact" ASC
+COVER "Property_Thumbnail" SIZE small ASPECT cover`,
+  },
+
   commission_ledger: {
     id: "commission_ledger",
     label: "Commission Ledger",
@@ -145,7 +206,7 @@ FREEZE COLUMNS 2`,
     agent: "Closer",
     collection: "sales",
     visibility: "internal",
-    icon: "💰",
+    icon: "ledger",
     description: "All finalized sales with commission breakdown, agent attribution, and payment status",
     dsl: `VISIBILITY internal
 SHOW "SBR_Code", "Property_Name", "Lead_Name", "Sale_Price_EGP", "Commission_Rate", "Commission_EGP", "Agent_Name", "Close_Date", "Payment_Status", "Invoice_Ref"
@@ -158,9 +219,19 @@ FREEZE COLUMNS 2`,
   },
 };
 
-export const PUBLIC_VIEWS   = Object.values(VIEW_CONFIGS).filter(v => v.visibility === "public");
-export const BROKER_VIEWS   = Object.values(VIEW_CONFIGS).filter(v => v.visibility === "broker");
+// ── EXPORTS & HELPERS ──────────────────────────────────────────
+
+export const PUBLIC_VIEWS = Object.values(VIEW_CONFIGS).filter(v => v.visibility === "public");
+export const BROKER_VIEWS = Object.values(VIEW_CONFIGS).filter(v => v.visibility === "broker");
+export const INVESTOR_VIEWS = Object.values(VIEW_CONFIGS).filter(v => v.visibility === "investor");
 export const INTERNAL_VIEWS = Object.values(VIEW_CONFIGS).filter(v => v.visibility === "internal");
+
+export const VIEWS_BY_AGENT = {
+  Scribe: Object.values(VIEW_CONFIGS).filter(v => v.agent === "Scribe"),
+  Curator: Object.values(VIEW_CONFIGS).filter(v => v.agent === "Curator"),
+  Matchmaker: Object.values(VIEW_CONFIGS).filter(v => v.agent === "Matchmaker"),
+  Closer: Object.values(VIEW_CONFIGS).filter(v => v.agent === "Closer"),
+};
 
 export function getViewsByRole(role: "public" | "broker" | "investor" | "internal"): ViewConfig[] {
   const hierarchy: Record<string, string[]> = {

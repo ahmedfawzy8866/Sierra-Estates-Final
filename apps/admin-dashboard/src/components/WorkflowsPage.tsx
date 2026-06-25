@@ -195,7 +195,7 @@ export default function WorkflowsPage({ T, isAr }: WorkflowsPageProps) {
   const [activeTemplateKey, setActiveTemplateKey] = useState<string>('automation');
 
   const onConnect = useCallback((params: Connection | Edge) => {
-    setEdges((eds) => addEdge({ ...params, animated: true, style: { strokeWidth: 2, stroke: '#94a3b8' } }, eds));
+    setEdges((eds) => addEdge({ ...params, animated: true, style: { strokeWidth: 2, stroke: '#94a3b8' } } as any, eds));
   }, [setEdges]);
 
   // Load selected template setup

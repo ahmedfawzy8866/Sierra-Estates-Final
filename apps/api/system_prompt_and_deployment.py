@@ -1,5 +1,5 @@
 """
-SIERRA ESTATESE AI BOT - SYSTEM PROMPT & DEPLOYMENT GUIDE
+SIERRA ESTATES AI BOT - SYSTEM PROMPT & DEPLOYMENT GUIDE
 Complete Implementation Ready for Production
 """
 
@@ -7,18 +7,18 @@ Complete Implementation Ready for Production
 # PART 1: COMPLETE SYSTEM PROMPT (For LLM/Claude)
 # ============================================================================
 
-SIERRA_BLUE_COMPLETE_SYSTEM_PROMPT = """
-أنت مستشار عقاري ذكي في شركة سييرا بلو (Sierra Estatese Real Estate).
+SIERRA_ESTATES_COMPLETE_SYSTEM_PROMPT = """
+أنت مستشار عقاري ذكي في شركة سييرا إستيتس (Sierra Estates Real Estate).
 
 ═══════════════════════════════════════════════════════════════════════════
 📋 IDENTITY & PERSONA
 ═══════════════════════════════════════════════════════════════════════════
 
-الاسم: Sierra Estatese AI Advisor
+الاسم: Sierra Estates AI Advisor
 الدور: مستشار عقاري ذكي متخصص في إدارة رحلة العميل من الاستفسار حتى المعاينة
 اللغة: اللهجة المصرية الاحترافية المهذبة
 مستوى الخبرة: خبير في سوق العقارات المصري
-التوقيع: "مع سييرا بلو... أسهل، أسرع، وأصدق 🎯"
+التوقيع: "مع سييرا إستيتس... أسهل، أسرع، وأصدق"
 
 ═══════════════════════════════════════════════════════════════════════════
 🎯 CORE PHILOSOPHY
@@ -363,7 +363,7 @@ IMPLEMENTATION_CHECKLIST = {
 
 DEPLOYMENT_SCRIPT = """#!/bin/bash
 
-# Sierra Estatese Bot - Deployment Script
+# Sierra Estates Bot - Deployment Script
 # Usage: ./deploy.sh [staging|production]
 
 set -e
@@ -371,46 +371,46 @@ set -e
 ENVIRONMENT=${1:-staging}
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-echo "🚀 Deploying Sierra Estatese Bot to $ENVIRONMENT environment..."
+echo "Deploying Sierra Estates Bot to $ENVIRONMENT environment..."
 
 # 1. Validate environment
-echo "1️⃣ Validating environment..."
+echo "Validating environment..."
 if [ ! -f ".env.$ENVIRONMENT" ]; then
-    echo "❌ .env.$ENVIRONMENT file not found"
+    echo "env.$ENVIRONMENT file not found"
     exit 1
 fi
 
 # 2. Install dependencies
-echo "2️⃣ Installing dependencies..."
+echo "Installing dependencies..."
 pip install -r requirements.txt
 
 # 3. Load environment variables
-echo "3️⃣ Loading environment variables..."
+echo "Loading environment variables..."
 export $(cat .env.$ENVIRONMENT | xargs)
 
 # 4. Run tests
-echo "4️⃣ Running tests..."
+echo "Running tests..."
 python -m pytest tests/ -v
 
 # 5. Validate API connections
-echo "5️⃣ Validating API connections..."
+echo "Validating API connections..."
 python scripts/validate_apis.py
 
 # 6. Database migration
-echo "6️⃣ Running database migrations..."
+echo "Running database migrations..."
 python scripts/migrate_db.py
 
 # 7. Deploy bot
-echo "7️⃣ Deploying bot service..."
-docker build -t sierra-estatese-bot:latest .
-docker tag sierra-estatese-bot:latest sierra-estatese-bot:$ENVIRONMENT
+echo "Deploying bot service..."
+docker build -t sierra-estates-bot:latest .
+docker tag sierra-estates-bot:latest sierra-estates-bot:$ENVIRONMENT
 
 if [ "$ENVIRONMENT" = "production" ]; then
-    docker push sierra-estatese-bot:latest
+    docker push sierra-estates-bot:latest
     # Deploy to Kubernetes or your hosting solution
-    kubectl apply -f k8s/sierra-estatese-bot-$ENVIRONMENT.yaml
+    kubectl apply -f k8s/sierra-estates-bot-$ENVIRONMENT.yaml
 else
-    docker run -d --name sierra-estatese-bot-$ENVIRONMENT sierra-estatese-bot:$ENVIRONMENT
+    docker run -d --name sierra-estates-bot-$ENVIRONMENT sierra-estates-bot:$ENVIRONMENT
 fi
 
 # 8. Health check
@@ -556,7 +556,7 @@ MONITORING_CONFIG = """
 # ============================================================================
 
 TRAINING_DOCUMENT = """
-# Sierra Estatese Bot - Team Training Guide
+# Sierra Estates Bot - Team Training Guide
 
 ## For Support Team:
 1. Read System Prompt completely
@@ -587,7 +587,7 @@ TRAINING_DOCUMENT = """
 
 # Print all implementations
 if __name__ == "__main__":
-    print("Sierra Estatese Bot - Complete System Implementation")
+    print("Sierra Estates Bot - Complete System Implementation")
     print("=" * 70)
     print("\nGenerated Files:")
     print("1. sierra_estates_bot_implementation.py - Core bot logic")
