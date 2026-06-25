@@ -64,6 +64,11 @@ const BOT_DESCRIPTIONS: Record<string, { en: string; ar: string; icon: LucideIco
     ar: 'مطابقة العملاء بالعقارات',
     icon: Heart,
   },
+  'hermes-agent': {
+    en: 'Hermes Dispatcher — automated multi-channel client messaging',
+    ar: 'هيرميس المرسل — رسائل العملاء الآلية متعددة القنوات',
+    icon: MessageSquare,
+  },
 };
 
 export default function BotsControlPage({ T, isAr = false }: BotsControlPageProps) {

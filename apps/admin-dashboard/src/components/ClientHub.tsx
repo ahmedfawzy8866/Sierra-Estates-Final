@@ -132,6 +132,8 @@ export default function ClientHub({
   const [tourRoom, setTourRoom] = useState(0);
   const [tourHint, setTourHint] = useState(true);
   const [tourLoading, setTourLoading] = useState(true);
+  const [activeTourRooms, setActiveTourRooms] = useState<Array<{ name: string; bg: string }>>(TOUR_ROOMS);
+  const [activeTourListingCode, setActiveTourListingCode] = useState<string | null>(null);
 
   // Chat fab state
   const [chatOpen, setChatOpen] = useState(false);
@@ -187,6 +189,7 @@ export default function ClientHub({
           img: d.img || 0,
           createdAt: d.createdAt?.toDate ? d.createdAt.toDate() : new Date(),
           updatedAt: d.updatedAt?.toDate ? d.updatedAt.toDate() : new Date(),
+          panoramas: d.panoramas || undefined,
         });
       });
       setListings(loaded);
@@ -381,8 +384,12 @@ export default function ClientHub({
     const width = el.clientWidth || 800;
     const height = el.clientHeight || 500;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    const isMobileDevice = window.innerWidth < 768;
+    const pixelRatioClamp = isMobileDevice ? 1.0 : 1.5;
+    const segments = isMobileDevice ? 32 : 60; // dynamic LOD segments to save mobile CPU/GPU
+
+    const renderer = new THREE.WebGLRenderer({ antialias: !isMobileDevice });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, pixelRatioClamp));
     renderer.setSize(width, height);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.6;
@@ -396,7 +403,7 @@ export default function ClientHub({
     const cam = new THREE.PerspectiveCamera(75, width / height, 1, 1100);
     cam.position.set(0, 0, 0.01);
 
-    const geo = new THREE.SphereGeometry(500, 60, 40);
+    const geo = new THREE.SphereGeometry(500, segments, segments);
     geo.scale(-1, 1, 1); // orient geometry inside
 
     const mat = new THREE.MeshBasicMaterial({ color: 0x0a101d }); // fallback background color
@@ -434,11 +441,12 @@ export default function ClientHub({
         setTourLoading(false);
       }, undefined, (e) => {
         console.error("Panoramas texture failure: ", e);
+        // Fallback static color / asset logic on load failure
         setTourLoading(false);
       });
     };
 
-    loadTexture(TOUR_ROOMS[tourRoom].bg);
+    loadTexture(activeTourRooms[tourRoom]?.bg || TOUR_ROOMS[0].bg);
 
     // Dynamic rotation animation loop
     let rafId: number;
@@ -547,10 +555,10 @@ export default function ClientHub({
   // Update Three.js Texture when user swaps rooms
   useEffect(() => {
     const el = tourContainerRef.current;
-    if (el && (el as any).__loadTexture) {
-      (el as any).__loadTexture(TOUR_ROOMS[tourRoom].bg);
+    if (el && (el as any).__loadTexture && activeTourRooms[tourRoom]) {
+      (el as any).__loadTexture(activeTourRooms[tourRoom].bg);
     }
-  }, [tourRoom]);
+  }, [tourRoom, activeTourRooms]);
 
   // 7. Ambient Particle drift canvas backdrop behind hero
   useEffect(() => {
@@ -1033,17 +1041,34 @@ export default function ClientHub({
 
                       <div className="flex items-center justify-between pt-2">
                         <span className="font-mono text-xs font-black text-[#C8961A]">{l.price}</span>
-                        <button 
-                          onClick={() => {
-                            setQrCpd(l.cmp);
-                            setQrReqs(`Interested in unit: ${l.code} (${l.beds} bed ${l.type}).`);
-                            const element = document.getElementById('contact');
-                            if (element) element.scrollIntoView({ behavior: 'smooth' });
-                          }}
-                          className="text-[9px] uppercase font-bold text-[#C8961A] select-none text-right hover:underline"
-                        >
-                          Send Request →
-                        </button>
+                        <div className="flex items-center gap-2">
+                          {l.panoramas && l.panoramas.length > 0 && (
+                            <button
+                              onClick={() => {
+                                setActiveTourRooms(l.panoramas!);
+                                setActiveTourListingCode(l.code);
+                                setTourRoom(0);
+                                const el = document.getElementById('tour-360');
+                                if (el) el.scrollIntoView({ behavior: 'smooth' });
+                              }}
+                              className="text-[9px] uppercase font-bold text-cyan-400 hover:text-cyan-300 select-none transition"
+                              title="View 3D Tour from database"
+                            >
+                              ⬡ 3D Tour
+                            </button>
+                          )}
+                          <button 
+                            onClick={() => {
+                              setQrCpd(l.cmp);
+                              setQrReqs(`Interested in unit: ${l.code} (${l.beds} bed ${l.type}).`);
+                              const element = document.getElementById('contact');
+                              if (element) element.scrollIntoView({ behavior: 'smooth' });
+                            }}
+                            className="text-[9px] uppercase font-bold text-[#C8961A] select-none text-right hover:underline"
+                          >
+                            Request →
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1055,21 +1080,21 @@ export default function ClientHub({
       </section>
 
       {/* ── COHESIVE 3D VIRTUAL TOUR PANORAMAS V2.0 ────────────────────── */}
-      <section className="bg-slate-950 py-20 px-4 md:px-8 border-t border-slate-900" id="tour-360">
+      <section className={`py-20 px-4 md:px-8 border-t transition-colors ${theme === 'light' ? 'bg-slate-50 border-slate-200' : 'bg-slate-950 border-slate-900'}`} id="tour-360">
         <div className="max-w-7xl mx-auto space-y-8">
           <div className="space-y-2">
             <span className="font-mono text-[9px] font-extrabold text-[#C8961A] uppercase tracking-[0.3em]">
               {isAr ? 'الجولة الافتراضية' : 'PANORAMIC STAGE'}
             </span>
-            <h2 className="font-serif text-3xl md:text-5xl font-light text-white leading-tight">
+            <h2 className={`font-serif text-3xl md:text-5xl font-light leading-tight ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>
               {isAr ? 'استعرض الغرف كاملة' : '360° Sphere virtual tour'}
             </h2>
-            <p className="text-xs text-slate-550 leading-relaxed">
+            <p className={`text-xs leading-relaxed ${theme === 'light' ? 'text-slate-500' : 'text-slate-500'}`}>
               Drag on the viewport in any direction to explore the property structure in full 360° virtual space. Zoom in/out to inspect finer details.
             </p>
           </div>
 
-          <div className="relative h-[65vh] min-h-[480px] bg-slate-950 border border-slate-900 rounded-2xl overflow-hidden shadow-2xl">
+          <div className={`relative h-[65vh] min-h-[480px] border rounded-2xl overflow-hidden shadow-2xl transition-colors ${theme === 'light' ? 'bg-slate-200 border-slate-300' : 'bg-slate-950 border-slate-900'}`}>
             {/* Sphere container target */}
             <div ref={tourContainerRef} className="absolute inset-0 cursor-grab active:cursor-grabbing" />
 
@@ -1081,9 +1106,9 @@ export default function ClientHub({
             )}
 
             {/* Float badge title indicator */}
-            <div className="absolute top-4 left-4 bg-slate-950/95 border border-[#C8961A]/30 p-3.5 rounded-xl z-20 shadow-2xl backdrop-blur select-none">
-              <div className="font-serif text-lg md:text-xl text-white font-medium">{TOUR_ROOMS[tourRoom].name}</div>
-              <div className="font-mono text-[7.5px] uppercase tracking-widest text-[#C8961A] mt-1">SIERRA PANORAMIC 3D ROOM {tourRoom + 1} / {TOUR_ROOMS.length}</div>
+            <div className={`absolute top-4 left-4 p-3.5 rounded-xl z-20 shadow-2xl backdrop-blur select-none border ${theme === 'light' ? 'bg-white/90 border-[#C8961A]/20' : 'bg-slate-950/95 border-[#C8961A]/30'}`}>
+              <div className={`font-serif text-lg md:text-xl font-medium ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{activeTourRooms[tourRoom]?.name || TOUR_ROOMS[tourRoom]?.name}</div>
+              <div className="font-mono text-[7.5px] uppercase tracking-widest text-[#C8961A] mt-1">SIERRA 3D ROOM {tourRoom + 1} / {activeTourRooms.length}{activeTourListingCode ? ` · ${activeTourListingCode}` : ''}</div>
             </div>
 
             {tourHint && (
@@ -1174,19 +1199,37 @@ export default function ClientHub({
             </div>
           </div>
 
-          {/* Panoramic pills navigations */}
+          {/* Panoramic pills navigations — uses activeTourRooms (DB-wired or fallback) */}
           <div className="flex gap-2.5 pb-2 overflow-x-auto justify-center select-none scrollbar">
-            {TOUR_ROOMS.map((rm, i) => (
+            {activeTourListingCode && (
+              <div className="flex items-center gap-2 mr-3 font-mono text-[9px] uppercase tracking-widest text-[#C8961A]/70 self-center whitespace-nowrap">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#C8961A] animate-pulse" />
+                DB: {activeTourListingCode}
+              </div>
+            )}
+            {activeTourRooms.map((rm, i) => (
               <button 
                 key={i}
                 onClick={() => setTourRoom(i)}
                 className={`py-2 px-5 rounded-full border text-[11px] font-bold whitespace-nowrap cursor-pointer transition select-none tracking-wide text-xs ${
-                  tourRoom === i ? 'bg-[#C8961A]/20 border-[#C8961A] text-[#E9C176]' : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'
+                  tourRoom === i
+                    ? 'bg-[#C8961A]/20 border-[#C8961A] text-[#E9C176]'
+                    : theme === 'light'
+                      ? 'bg-slate-100 border-slate-300 text-slate-600 hover:text-slate-900 hover:border-slate-400'
+                      : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'
                 }`}
               >
                 {rm.name}
               </button>
             ))}
+            {activeTourListingCode && (
+              <button
+                onClick={() => { setActiveTourRooms(TOUR_ROOMS); setActiveTourListingCode(null); setTourRoom(0); }}
+                className="py-2 px-4 rounded-full border border-slate-700 text-[10px] text-slate-500 hover:text-white cursor-pointer transition whitespace-nowrap"
+              >
+                ↩ Reset
+              </button>
+            )}
           </div>
         </div>
       </section>

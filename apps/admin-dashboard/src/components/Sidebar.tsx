@@ -3,7 +3,7 @@ import {
   LogOut, Languages, PanelLeftClose, PanelLeftOpen, X,
   LayoutDashboard, Users, Building2, CalendarCheck, BarChart3,
   FileText, Bot, Workflow, Zap, Settings, RefreshCw, Database,
-  Sun, Moon,
+  Sun, Moon, Terminal,
   type LucideIcon,
 } from 'lucide-react';
 import { auth } from '../firebase';
@@ -46,13 +46,14 @@ export const NAV_ITEMS: NavItem[] = [
   // ── Automation & agents ────────────────────────────────────────────
   { id: 'bots',           label: 'Bots Control',      labelAr: 'التحكم بالبوتات',       icon: Bot,             section: 'automation' },
   { id: 'agents',         label: 'AI Agents',         labelAr: 'وكلاء الذكاء',          icon: Bot,             section: 'automation', badge: '6', badgeTone: 'success' },
-  { id: 'workflows',      label: 'Workflows',         labelAr: 'سير العمل',             icon: Workflow,        section: 'automation', badge: '8', badgeTone: 'info' },
+  { id: 'workflows',      label: 'DataFlow',         labelAr: 'تدفق البيانات',             icon: Workflow,        section: 'automation', badge: '8', badgeTone: 'info' },
   // ── Integrations ───────────────────────────────────────────────────
   { id: 'easyListing',    label: 'Easy Listing',      labelAr: 'إدراج سريع',            icon: Zap,             section: 'integrations' },
   { id: 'automation',     label: 'Automation Portal', labelAr: 'بوابة الأتمتة',         icon: Settings,        section: 'integrations' },
   { id: 'dataSync',       label: 'Data Sync',         labelAr: 'مزامنة البيانات',       icon: RefreshCw,       section: 'integrations' },
   // ── System ─────────────────────────────────────────────────────────
   { id: 'dbEditor',       label: 'DB Editor',         labelAr: 'محرر قاعدة البيانات',   icon: Database,        section: 'system' },
+  { id: 'openclaw',       label: 'OpenClaw Terminal', labelAr: 'طرفية أوبن كلو',        icon: Terminal,        section: 'system' },
 ];
 
 const SECTION_LABELS: Record<NavItem['section'], { en: string; ar: string }> = {

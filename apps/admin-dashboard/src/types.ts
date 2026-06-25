@@ -29,6 +29,7 @@ export interface Listing {
   img: number;
   createdAt: Date;
   updatedAt: Date;
+  panoramas?: Array<{ name: string; bg: string }>;
 }
 
 export interface Agent {

@@ -20,6 +20,7 @@ const INITIAL_AGENTS = [
   {name:'Marketing Oracle',desc:'Auto-generates ad copy and configures Facebook/Instagram targeted campaigns.',emoji:'📈',color:'#f43f5e',status:'Idle',load:18,tasks:412},
   {name:'Data Enricher',desc:'Cross-references property data with external APIs for comprehensive details.',emoji:'🧠',color:'#6366f1',status:'Running',load:82,tasks:1980},
   {name:'Social Publisher',desc:'Schedules and formats automated social media posting across networks.',emoji:'📱',color:'#0ea5e9',status:'Online',load:45,tasks:754},
+  {name:'Hermes Bot',desc:'Message dispatch and communication broker — routes notifications to client WhatsApp & SMS.',emoji:'✉️',color:'#06b6d4',status:'Online',load:32,tasks:4120},
 ];
 
 const INITIAL_WORKFLOWS = [
@@ -106,8 +107,37 @@ const INITIAL_WORKFLOWS = [
 ];
 
 const INITIAL_LISTINGS = [
-  {code:'SE-HYP-VLA-0001',cmp:'Hyde Park',type:'Villa',beds:5,area:420,price:'EGP 35M',ai:9.8,status:'Active',img:0},
-  {code:'SE-HYP-TWH-0002',cmp:'Hyde Park',type:'Twin House',beds:4,area:280,price:'EGP 22M',ai:9.5,status:'Active',img:1},
+  {
+    code:'SE-HYP-VLA-0001',
+    cmp:'Hyde Park',
+    type:'Villa',
+    beds:5,
+    area:420,
+    price:'EGP 35M',
+    ai:9.8,
+    status:'Active',
+    img:0,
+    panoramas: [
+      { name: 'Villa Entrance (DB)', bg: 'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1600&q=85' },
+      { name: 'Grand Living Area (DB)', bg: 'https://images.unsplash.com/photo-1600210492493-0946911123ea?w=1600&q=85' },
+      { name: 'Sky Foyer (DB)', bg: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&q=85' }
+    ]
+  },
+  {
+    code:'SE-HYP-TWH-0002',
+    cmp:'Hyde Park',
+    type:'Twin House',
+    beds:4,
+    area:280,
+    price:'EGP 22M',
+    ai:9.5,
+    status:'Active',
+    img:1,
+    panoramas: [
+      { name: 'Cozy Living Room (DB)', bg: 'https://images.unsplash.com/photo-1613977257363-707ba9348227?w=1600&q=85' },
+      { name: 'Private Garden Deck (DB)', bg: 'https://images.unsplash.com/photo-1598228723793-52759bba239c?w=1600&q=85' }
+    ]
+  },
   {code:'SE-HYP-APT-0003',cmp:'Hyde Park',type:'Apartment',beds:3,area:165,price:'EGP 12.5M',ai:9.2,status:'Review',img:2},
   {code:'SE-MVI-VLA-0004',cmp:'Mountain View iCity',type:'Villa',beds:6,area:550,price:'EGP 42M',ai:9.6,status:'Active',img:3},
   {code:'SE-MVI-PTH-0005',cmp:'Mountain View iCity',type:'Penthouse',beds:4,area:320,price:'EGP 18M',ai:9.4,status:'Active',img:4},
@@ -261,5 +291,32 @@ const INITIAL_LISTINGS = [
     }
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, 'system_health');
+  }
+
+  // 7. Bots
+  try {
+    console.log('Seeding bots...');
+    const batch = writeBatch(db);
+    const botsToSeed = [
+      { id: 'whatsapp-scraper', status: 'syncing', enabled: true },
+      { id: 'n8n-orchestrator', status: 'active', enabled: true },
+      { id: 'scribe-agent', status: 'idle', enabled: true },
+      { id: 'curator-agent', status: 'active', enabled: true },
+      { id: 'closer-agent', status: 'active', enabled: true },
+      { id: 'matchmaker-agent', status: 'active', enabled: true },
+      { id: 'hermes-agent', status: 'active', enabled: true }
+    ];
+    botsToSeed.forEach((bot) => {
+      const docRef = doc(db, 'bots', bot.id);
+      batch.set(docRef, {
+        status: bot.status,
+        enabled: bot.enabled,
+        lastPulse: new Date().toISOString(),
+        updatedAt: new Date()
+      }, { merge: true });
+    });
+    await batch.commit();
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, 'bots');
   }
 }

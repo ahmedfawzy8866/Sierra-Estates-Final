@@ -48,7 +48,7 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     brandSub: 'INTELLIGENCE OS',
     overview: 'Intelligence OS',
     agents: 'Agents & Bots',
-    workflows: 'Workflows',
+    workflows: 'DataFlow',
     openclaw: 'OpenClaw Terminal',
     nexus: 'Nexus-AI Telemetry',
     leads: 'CRM · Leads',
@@ -139,7 +139,7 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     brandSub: 'نظام التشغيل الذكي',
     overview: 'لوحة التحكم والذكاء',
     agents: 'الوكلاء والبوتات',
-    workflows: 'سير العمل',
+    workflows: 'تدفق البيانات (DataFlow)',
     openclaw: 'طرفية أوبن كلو',
     nexus: 'نيكسوس · البث المباشر',
     leads: 'إدارة العملاء',
@@ -523,6 +523,8 @@ export default function App() {
         return <PageEditorPage T={T} isAr={isAr} />;
       case 'dbEditor':
         return <DBEditorPage T={T} isAr={isAr} />;
+      case 'openclaw':
+        return <OpenClawPage />;
       default:
         return <OverviewPage T={T} />;
     }

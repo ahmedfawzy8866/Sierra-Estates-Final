@@ -25,7 +25,9 @@ service cloud.firestore {
     }
 
     function isRegisteredAdmin() {
-      return isEmailVerified() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+      return isEmailVerified()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'superadmin'];
     }
 
     function isAdmin() {
@@ -277,6 +279,12 @@ service cloud.firestore {
       allow read, write: if isStaff() || isAdmin();
     }
     match /system_health/{id} {
+      allow read, write: if isStaff() || isAdmin();
+    }
+    match /bots/{id} {
+      allow read, write: if isStaff() || isAdmin();
+    }
+    match /bot_commands/{id} {
       allow read, write: if isStaff() || isAdmin();
     }
   }
