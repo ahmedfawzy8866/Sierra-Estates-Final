@@ -7,6 +7,7 @@ import { ComposedChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import DashboardWidgets from './DashboardWidgets';
 import AgentLeaderboard from './AgentLeaderboard';
 import ActivityFeed from './ActivityFeed';
+import MyTasks from './MyTasks';
 import { getAgentIconComponent } from './AgentsPage';
 
 const CHART_DATA = [
@@ -30,6 +31,7 @@ export default function OverviewPage({ T }: OverviewPageProps) {
   const [recentSearches, setRecentSearches] = useState<SearchLog[]>([]);
   const [searchRange, setSearchRange] = useState<'7d' | '30d' | 'all'>('7d');
   const [loading, setLoading] = useState(true);
+  const [activeRightTab, setActiveRightTab] = useState<'tasks' | 'activity'>('tasks');
 
   const CustomSearchTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
@@ -402,9 +404,34 @@ export default function OverviewPage({ T }: OverviewPageProps) {
           </div>
         </div>
 
-        {/* System Logs Activity Feed */}
-        <div className="lg:col-span-1">
-          <ActivityFeed />
+        {/* Right Panel: Tasks Checklist & System Logs Tabbed Component */}
+        <div className="lg:col-span-1 flex flex-col h-full space-y-3">
+          <div className="flex bg-[#0a0f1d] border border-slate-800 rounded-xl overflow-hidden shadow-xl p-1 select-none shrink-0">
+            <button
+              onClick={() => setActiveRightTab('tasks')}
+              className={`flex-1 py-2 text-center font-mono text-[10px] uppercase tracking-wider font-bold rounded-lg transition-all duration-150 cursor-pointer ${
+                activeRightTab === 'tasks'
+                  ? 'bg-cyan-500 text-slate-950 shadow-md'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              My Tasks
+            </button>
+            <button
+              onClick={() => setActiveRightTab('activity')}
+              className={`flex-1 py-2 text-center font-mono text-[10px] uppercase tracking-wider font-bold rounded-lg transition-all duration-150 cursor-pointer ${
+                activeRightTab === 'activity'
+                  ? 'bg-cyan-500 text-slate-950 shadow-md'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              System Activity
+            </button>
+          </div>
+
+          <div className="flex-1">
+            {activeRightTab === 'tasks' ? <MyTasks /> : <ActivityFeed />}
+          </div>
         </div>
       </div>
 

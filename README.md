@@ -1,66 +1,46 @@
 # Sierra Estates Platform - Unified Monorepo
 
-Clean backend-only monorepo for the Sierra Estates luxury PropTech platform (New Cairo market). No frontend code; this repo contains only API routes, services, agents, Firebase functions, and automation workflows.
+Unified monorepo for the Sierra Estates luxury PropTech platform (New Cairo market). This repository contains the API routes, core services, multi-agent frameworks, Firebase cloud functions, external automation workflows, and the **Admin Console & Client Hub frontend interface**.
 
 ## Stack
-
-> **Migration complete**: Code and history from several legacy repositories have been consolidated here under the Sierra Estates brand. See [MIGRATION.md](./MIGRATION.md) for details.
+- **Frontend / Admin OS:** Vite + React + TailwindCSS (v4) + Lucide Icons + Recharts
+- **Python Backend Sidecar:** FastAPI + Uvicorn + Docker (PropertyFinder Atlas sync & Bot implementer)
+- **Functions:** Node.js 20 Cloud Functions
+- **Database & Storage:** Firebase Firestore + Auth + Cloud Storage
+- **Monorepo Manager:** PNPM Workspaces
 
 ## 📦 Repository Structure
 
 ```
 Sierra-Estates-Final/
 ├── apps/
-│   ├── sierra-estates-realty/  # Main backend/API + admin dashboard (Next.js 16 + Turbopack)
-│   │   ├── app/               # App Router pages & API routes (/api/*)
-│   │   │   ├── admin/         # Admin dashboard (staff-gated)
-│   │   │   ├── api/           # REST API endpoints
-│   │   │   └── (marketing)/   # Public site (listings, about, contact)
-│   │   ├── components/        # React components (admin UI, shared)
-│   │   ├── hooks/             # Custom React hooks
-│   │   ├── lib/               # Utilities, services, models, agents
-│   │   └── public/            # Static assets
-│   ├── api/                   # Python service (Docker/Cloud Run) — PropertyFinder sync + bot integration
+│   ├── admin-dashboard/       # Consolidated Admin Console + Client Hub frontend application
+│   │   ├── api/               # Express/Fastify API server routes (Auth, Twilio, PropertyFinder proxy)
+│   │   ├── src/               # React + Tailwind frontend application
+│   │   │   ├── components/    # Page components (ClientHub, Overview, AgentsPage, WorkflowsPage, ScribePage)
+│   │   │   └── lib/           # Clients (firebase, apiClient)
+│   │   └── package.json       # Dev & build scripts for the dashboard
+│   ├── api/                   # Python FastAPI service — PropertyFinder sync + AI bot implementation
 │   │   ├── main.py            # FastAPI entry point
-│   │   ├── requirements.txt   # Python dependencies
+│   │   ├── property_finder_sync.py # PropertyFinder API logic
 │   │   └── Dockerfile         # Container definition
 ├── packages/
-│   ├── agents-core/           # Multi-agent framework & AI services
-│   ├── db/                    # Firestore models & schema
-│   ├── config/                # Shared configuration
-│   └── obedian/               # Obsidian vault integration
+│   ├── agents-core/           # Multi-agent framework, workflow engine, and AI registry
+│   ├── obedian/               # Local JSON-backed long-term memory module
+│   └── exchange/              # Firestore message bus between Admin, Agents, and Workflows
 ├── functions/                 # Firebase Cloud Functions (Node.js 20)
-│   └── src/
-│       └── index.ts           # collectData, processDataForApp
-├── workflows/                 # Node scripts for external data sync (triggered by GitHub Actions)
-├── scripts/
-│   └── sync-obsidian.ps1      # Sync workflow documentation to Obsidian vault
-├── .github/workflows/         # CI/CD pipelines (lint, type-check, test, build)
+│   └── lib/                   # Compiled functions
 ├── firestore.rules            # Production Firestore security rules
 ├── storage.rules              # Production Storage security rules
-├── pnpm-workspace.yaml        # Monorepo workspace config
-├── turbo.json                 # Turborepo build cache config
-├── package.json               # Root workspace dependencies
-├── firebase.json              # Firebase Functions + Firestore + Storage config
-├── vercel.json                # Vercel deployment config (root dir)
-├── CLAUDE.md                  # Codebase guidelines & architecture decisions
-├── docs/
-│   ├── API_CONTRACT.md        # API specification for separate frontend repo
-│   └── obsidian-vault/        # Architecture & operational documentation
-└── NEXT_STEPS.md              # Outstanding tasks & migration checklist
+├── pnpm-workspace.yaml        # Monorepo workspace configuration
+├── package.json               # Root dependencies
+└── firebase.json              # Firebase configuration
 ```
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 - **Node.js** 20+
-- **pnpm** 9+
-- **Firebase CLI** (for deployment)
-- **Docker** (optional, for local Firebase emulation)
-
-### Installation
-
-```bash
 pnpm install
 cp .env.example .env   # fill in your credentials
 pnpm dev               # Next.js API on :3000
