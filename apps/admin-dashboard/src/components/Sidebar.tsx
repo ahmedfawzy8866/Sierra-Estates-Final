@@ -103,21 +103,18 @@ export default function Sidebar({
       dir={isAr ? 'rtl' : 'ltr'}
     >
       {/* ── Brand header ──────────────────────────────────────────────── */}
-      <div className="border-b border-slate-800/80 px-3 h-14 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-2.5 overflow-hidden">
+      <div className="border-b border-slate-800/80 px-3 h-16 flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-3 overflow-hidden">
           {/* Logo mark — refined, not glowing */}
-          <div className="w-8 h-8 rounded-md bg-gradient-to-br from-slate-100 to-slate-300 flex items-center justify-center shrink-0 shadow-sm">
-            <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
-              <path d="M4 20L12 4L20 20H4Z" stroke="#0f172a" strokeWidth="2" strokeLinejoin="round" />
-              <path d="M9 14H15" stroke="#0f172a" strokeWidth="2" strokeLinecap="round" />
-            </svg>
+          <div className="w-10 h-10 rounded-md bg-gradient-to-br from-slate-100 to-slate-300 flex items-center justify-center shrink-0 shadow-sm overflow-hidden p-1">
+            <img src="/assets/logo-gold.png" alt="Sierra Estates logo" className="w-full h-full object-contain" />
           </div>
           {!collapsed && (
             <div className="select-none overflow-hidden">
-              <div className="font-semibold text-[13px] text-white tracking-tight leading-none">
+              <div className="font-bold text-base text-white tracking-tight leading-none">
                 {isAr ? 'سييرا إستيتس' : 'Sierra Estates'}
               </div>
-              <div className="text-[9px] tracking-[0.18em] text-slate-500 uppercase mt-1 font-medium">
+              <div className="text-[11px] tracking-[0.18em] text-slate-500 uppercase mt-1 font-medium">
                 {isAr ? 'لوحة التحكم' : 'Admin Console'}
               </div>
             </div>
@@ -142,7 +139,7 @@ export default function Sidebar({
           return (
             <div key={section} className="space-y-0.5">
               {!collapsed && (
-                <div className="px-2 mb-1.5 text-[10px] font-semibold tracking-[0.12em] text-slate-600 uppercase select-none">
+                <div className="px-3 mb-2 text-[11px] font-semibold tracking-[0.12em] text-slate-500 uppercase select-none">
                   {isAr ? SECTION_LABELS[section].ar : SECTION_LABELS[section].en}
                 </div>
               )}
@@ -155,7 +152,7 @@ export default function Sidebar({
                     key={item.id}
                     onClick={() => handleItemClick(item.id)}
                     title={collapsed ? label : undefined}
-                    className={`group w-full flex items-center gap-2.5 px-2.5 h-8 rounded-md text-[13px] font-medium cursor-pointer transition-all duration-150 relative ${
+                    className={`group w-full flex items-center gap-3 px-3 h-10 rounded-md text-sm font-medium cursor-pointer transition-all duration-150 relative ${
                       isActive
                         ? 'bg-slate-800/80 text-white'
                         : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
@@ -166,7 +163,7 @@ export default function Sidebar({
                       <span className="absolute left-0 top-1.5 bottom-1.5 w-0.5 rounded-full bg-blue-400" />
                     )}
                     <Icon
-                      className={`w-4 h-4 shrink-0 transition-colors ${
+                      className={`w-5 h-5 shrink-0 transition-colors ${
                         isActive ? 'text-blue-400' : 'text-slate-500 group-hover:text-slate-300'
                       }`}
                       strokeWidth={1.75}
