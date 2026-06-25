@@ -13,6 +13,8 @@ import Testimonials from "@/components/Testimonials";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import AIChat from "@/components/AIChat";
+import SecurityShield from "@/components/SecurityShield";
+import { SCENES } from "@/lib/data";
 
 const ALL_CMP_COUNT = 19;
 
@@ -56,6 +58,7 @@ export default function Home() {
   const [rooms, setRooms] = useState<number | null>(null);
   const [smartOpen, setSmartOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
+  const [scene, setScene] = useState(0);
 
   useScrollReveal();
 
@@ -98,7 +101,7 @@ export default function Home() {
       <div style={{ height: 58 }} />
 
       {/* ─ HERO ──────────────────────────────────────────────────────── */}
-      <Hero />
+      <Hero scene={scene} setScene={setScene} />
 
       <GoldLine />
 
@@ -137,6 +140,16 @@ export default function Home() {
         <GoldOrbs />
         <div style={{ position: "relative", zIndex: 1 }}>
           <IntelligenceOS />
+        </div>
+      </div>
+
+      <GoldLine />
+
+      {/* ─ SECURITY SHIELD ───────────────────────────────────────────── */}
+      <div style={{ position: "relative" }}>
+        <GoldOrbs />
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <SecurityShield />
         </div>
       </div>
 
@@ -207,7 +220,7 @@ export default function Home() {
           <div className="rv rv-d3" style={{ marginBottom: 64 }}>
             <button
               onClick={() => setContactOpen(true)}
-              style={{ padding: "18px 52px", borderRadius: 14, background: "linear-gradient(135deg,var(--gold),var(--gold-lt))", color: "var(--navy)", fontSize: 13, fontWeight: 800, letterSpacing: ".14em", textTransform: "uppercase", border: "none", cursor: "pointer", fontFamily: "inherit", boxShadow: "0 8px 36px rgba(211,167,71,.4)", transition: "all .3s", position: "relative", overflow: "hidden" }}
+              style={{ padding: "18px 52px", borderRadius: 14, background: "linear-gradient(135deg,var(--gold),var(--gold-lt))", color: "var(--brand-dark)", fontSize: 13, fontWeight: 800, letterSpacing: ".14em", textTransform: "uppercase", border: "none", cursor: "pointer", fontFamily: "inherit", boxShadow: "0 8px 36px rgba(211,167,71,.4)", transition: "all .3s", position: "relative", overflow: "hidden" }}
               onMouseEnter={e => { const b = e.currentTarget as HTMLButtonElement; b.style.transform = "translateY(-4px) scale(1.03)"; b.style.boxShadow = "0 20px 50px rgba(211,167,71,.55)"; }}
               onMouseLeave={e => { const b = e.currentTarget as HTMLButtonElement; b.style.transform = ""; b.style.boxShadow = "0 8px 36px rgba(211,167,71,.4)"; }}
             >

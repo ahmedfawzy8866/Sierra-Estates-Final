@@ -35,10 +35,13 @@ minimumReleaseAgeExclude:
   - stripe-replit-sync
 
 packages:
-  - artifacts/*
-  - lib/*
-  - lib/integrations/*
-  - scripts
+  - "apps/*"
+  - "packages/*"
+  - "functions"
+  - "artifacts/*"
+  - "lib/*"
+  - "lib/integrations/*"
+  - "scripts"
 
 catalog:
   '@replit/vite-plugin-cartographer': ^0.5.21
@@ -73,6 +76,10 @@ onlyBuiltDependencies:
   - esbuild
   - msw
   - unrs-resolver
+  - '@firebase/util'
+  - '@google/genai'
+  - core-js
+  - protobufjs
 
 overrides:
   # replit uses linux-x64 only, we can exclude all other platforms

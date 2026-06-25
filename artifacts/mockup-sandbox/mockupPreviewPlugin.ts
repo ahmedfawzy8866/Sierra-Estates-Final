@@ -51,11 +51,36 @@ export function mockupPreviewPlugin(): Plugin {
     }));
   }
 
+  function isValidImportPath(importPath: string): boolean {
+    // Prevent path traversal and absolute paths
+    return !importPath.includes("..") && !path.isAbsolute(importPath);
+  }
+
+  const JS_SOURCE_UNSAFE_CHAR_MAP: Record<string, string> = {
+    "<": "\\u003C",
+    ">": "\\u003E",
+    "/": "\\u002F",
+    "\\": "\\\\",
+    "\b": "\\b",
+    "\f": "\\f",
+    "\n": "\\n",
+    "\r": "\\r",
+    "\t": "\\t",
+    "\0": "\\0",
+    "\u2028": "\\u2028",
+    "\u2029": "\\u2029",
+  };
+
+  function escapeUnsafeForJsSource(value: string): string {
+    return value.replace(/[<>/\\\b\f\n\r\t\0\u2028\u2029]/g, (ch) => JS_SOURCE_UNSAFE_CHAR_MAP[ch] ?? ch);
+  }
+
   function generateSource(components: Array<DiscoveredComponent>): string {
     const entries = components
+      .filter((c) => isValidImportPath(c.importPath))
       .map(
         (c) =>
-          `  ${JSON.stringify(c.globKey)}: () => import(${JSON.stringify(c.importPath)})`,
+          `  ${escapeUnsafeForJsSource(JSON.stringify(c.globKey))}: () => import(${escapeUnsafeForJsSource(JSON.stringify(c.importPath))})`,
       )
       .join(",\n");
 
