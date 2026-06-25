@@ -13,6 +13,7 @@ import {
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { SierraNotification } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
+import { Bell, User, Home, AlertTriangle, Settings } from 'lucide-react';
 
 interface NotificationCenterProps {
   isAr: boolean;
@@ -119,14 +120,14 @@ export default function NotificationCenter({ isAr }: NotificationCenterProps) {
   const getTypeMeta = (type: SierraNotification['type']) => {
     switch (type) {
       case 'lead':
-        return { emoji: '👤', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' };
+        return { icon: User, color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' };
       case 'listing':
-        return { emoji: '🏘️', color: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20' };
+        return { icon: Home, color: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20' };
       case 'error':
-        return { emoji: '⚠️', color: 'text-red-400 bg-red-500/10 border-red-500/20' };
+        return { icon: AlertTriangle, color: 'text-red-400 bg-red-500/10 border-red-500/20' };
       case 'system':
       default:
-        return { emoji: '⚙️', color: 'text-purple-400 bg-purple-500/10 border-purple-500/20' };
+        return { icon: Settings, color: 'text-purple-400 bg-purple-500/10 border-purple-500/20' };
     }
   };
 
@@ -141,7 +142,7 @@ export default function NotificationCenter({ isAr }: NotificationCenterProps) {
         title={isAr ? 'الإشعارات' : 'Notifications'}
         id="btn-notification-bell"
       >
-        <span>🔔</span>
+        <Bell className="w-4 h-4" />
         {unreadCount > 0 && (
           <span className="absolute -top-1 -right-1 bg-gradient-to-r from-cyan-500 to-blue-500 text-black font-semibold font-mono text-[9px] w-4 h-4 rounded-full flex items-center justify-center animate-pulse select-none">
             {unreadCount}
@@ -211,7 +212,7 @@ export default function NotificationCenter({ isAr }: NotificationCenterProps) {
                     >
                       {/* Left icon wrapper */}
                       <div className={`w-7 h-7 shrink-0 rounded-lg flex items-center justify-center border font-sans text-xs select-none ${meta.color}`}>
-                        {meta.emoji}
+                        <meta.icon className="w-3.5 h-3.5" />
                       </div>
 
                       {/* Msg Details */}
@@ -257,9 +258,10 @@ export default function NotificationCenter({ isAr }: NotificationCenterProps) {
             </div>
 
             {/* Footer summary bar */}
-            <div className="p-2 border-t border-slate-800 bg-[#070b14] text-center select-none">
+            <div className="p-2 border-t border-slate-800 bg-[#070b14] flex items-center justify-center gap-1 select-none">
+              <Settings className="w-3 h-3 text-slate-500" />
               <p className="text-[9px] font-mono tracking-wider text-slate-500 uppercase">
-                ⚙️ SIERRA NETWORK REAL-TIME ALERTS
+                SIERRA NETWORK REAL-TIME ALERTS
               </p>
             </div>
           </motion.div>

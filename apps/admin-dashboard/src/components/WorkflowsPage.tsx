@@ -31,7 +31,9 @@ import {
   Play,
   Settings,
   FolderOpen,
-  Boxes
+  Boxes,
+  Globe,
+  Clock
 } from 'lucide-react';
 
 // ---------------------------------------------------------
@@ -363,7 +365,7 @@ export default function WorkflowsPage({ T, isAr }: WorkflowsPageProps) {
                 onDragStart={(e) => onDragStart(e, 'gate', 'Staging Approval Gate', 'lock', 'Manual review gate before prod release')}
                 draggable
               >
-                <div className="w-6 h-6 rounded bg-rose-500/10 flex items-center justify-center text-rose-500">🔒</div>
+                <div className="w-6 h-6 rounded bg-rose-500/10 flex items-center justify-center text-rose-500"><Lock className="w-3.5 h-3.5" /></div>
                 <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 group-hover:text-rose-500 transition-colors">Approval Gate</span>
               </div>
             </div>
@@ -378,7 +380,7 @@ export default function WorkflowsPage({ T, isAr }: WorkflowsPageProps) {
                 onDragStart={(e) => onDragStart(e, 'trigger', 'HTTP Request Noun', 'webhook', 'Inbound REST API or GraphQL call')}
                 draggable
               >
-                <div className="w-6 h-6 rounded bg-emerald-500/10 flex items-center justify-center text-emerald-500">🌐</div>
+                <div className="w-6 h-6 rounded bg-emerald-500/10 flex items-center justify-center text-emerald-500"><Globe className="w-3.5 h-3.5" /></div>
                 <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 group-hover:text-emerald-500 transition-colors">Client Request</span>
               </div>
               <div
@@ -386,7 +388,7 @@ export default function WorkflowsPage({ T, isAr }: WorkflowsPageProps) {
                 onDragStart={(e) => onDragStart(e, 'process', 'Joi Input Validation', 'sliders', 'Validates JSON request payload structure')}
                 draggable
               >
-                <div className="w-6 h-6 rounded bg-purple-500/10 flex items-center justify-center text-purple-500">📋</div>
+                <div className="w-6 h-6 rounded bg-purple-500/10 flex items-center justify-center text-purple-500"><ShieldCheck className="w-3.5 h-3.5" /></div>
                 <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 group-hover:text-purple-500 transition-colors">Request Validator</span>
               </div>
               <div
@@ -394,7 +396,7 @@ export default function WorkflowsPage({ T, isAr }: WorkflowsPageProps) {
                 onDragStart={(e) => onDragStart(e, 'gate', 'Rate Limit Guard', 'lock', 'Limit connections by client IP')}
                 draggable
               >
-                <div className="w-6 h-6 rounded bg-rose-500/10 flex items-center justify-center text-rose-500">⏱️</div>
+                <div className="w-6 h-6 rounded bg-rose-500/10 flex items-center justify-center text-rose-500"><Clock className="w-3.5 h-3.5" /></div>
                 <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 group-hover:text-rose-500 transition-colors">Rate Limiter</span>
               </div>
               <div
@@ -402,7 +404,7 @@ export default function WorkflowsPage({ T, isAr }: WorkflowsPageProps) {
                 onDragStart={(e) => onDragStart(e, 'process', 'DataLoader DB Resolver', 'parse', 'Batches SQL/NoSQL queries to avoid N+1 load')}
                 draggable
               >
-                <div className="w-6 h-6 rounded bg-purple-500/10 flex items-center justify-center text-purple-500">📦</div>
+                <div className="w-6 h-6 rounded bg-purple-500/10 flex items-center justify-center text-purple-500"><Layers className="w-3.5 h-3.5" /></div>
                 <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 group-hover:text-purple-500 transition-colors">DataLoader Resolver</span>
               </div>
             </div>
@@ -417,7 +419,7 @@ export default function WorkflowsPage({ T, isAr }: WorkflowsPageProps) {
                 onDragStart={(e) => onDragStart(e, 'action', 'Database Sync Action', 'db', 'Save/Patch record into Firestore')}
                 draggable
               >
-                <div className="w-6 h-6 rounded bg-amber-500/10 flex items-center justify-center text-amber-500">💾</div>
+                <div className="w-6 h-6 rounded bg-amber-500/10 flex items-center justify-center text-amber-500"><Database className="w-3.5 h-3.5" /></div>
                 <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 group-hover:text-amber-500 transition-colors">Database Sync</span>
               </div>
               <div
@@ -425,7 +427,7 @@ export default function WorkflowsPage({ T, isAr }: WorkflowsPageProps) {
                 onDragStart={(e) => onDragStart(e, 'action', 'Slack/Telegram Dispatch', 'alert', 'Notify team of build status')}
                 draggable
               >
-                <div className="w-6 h-6 rounded bg-amber-500/10 flex items-center justify-center text-amber-500">🔔</div>
+                <div className="w-6 h-6 rounded bg-amber-500/10 flex items-center justify-center text-amber-500"><Bell className="w-3.5 h-3.5" /></div>
                 <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 group-hover:text-amber-500 transition-colors">Dispatch Alert</span>
               </div>
             </div>

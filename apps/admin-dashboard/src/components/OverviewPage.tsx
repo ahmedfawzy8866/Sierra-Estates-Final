@@ -7,6 +7,7 @@ import { ComposedChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import DashboardWidgets from './DashboardWidgets';
 import AgentLeaderboard from './AgentLeaderboard';
 import ActivityFeed from './ActivityFeed';
+import { getAgentIconComponent } from './AgentsPage';
 
 const CHART_DATA = [
   { month: 'Jan', deals: 35, revenue: 1.1 },
@@ -345,7 +346,10 @@ export default function OverviewPage({ T }: OverviewPageProps) {
           <div className="p-4 space-y-3.5 max-h-[160px] overflow-y-auto">
             {agents.slice(0, 4).map((a) => (
               <div key={a.id} className="flex items-center gap-2.5">
-                <span className="text-base shrink-0 select-none">{a.emoji}</span>
+                {(() => {
+                  const Icon = getAgentIconComponent(a.emoji);
+                  return <Icon className="w-4 h-4 shrink-0 text-cyan-400" />;
+                })()}
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-xs font-semibold text-slate-200 truncate">{a.name}</span>

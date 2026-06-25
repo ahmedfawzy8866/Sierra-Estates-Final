@@ -1,4 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
+import {
+  RefreshCw,
+  Database,
+  Terminal,
+  UploadCloud,
+  Bot,
+  Save,
+  Trash2,
+  Zap
+} from 'lucide-react';
 
 interface TermLine {
   t: 'dim' | 'green' | 'red' | 'blue' | 'prompt' | '';
@@ -70,11 +80,11 @@ export default function OpenClawPage({ T, isAr = false }: { T?: (key: string) =>
     setCmd('');
   };
 
-  const executeAction = (actionName: string, icon: string) => {
+  const executeAction = (actionName: string, iconName: string) => {
     setLogs((prev) => [
       ...prev,
       { t: 'blue', l: isAr ? `[~] جاري إرسال تعليمات البنية التحتية: ${actionName}...` : `[~] Dispatching pipeline instruction: ${actionName}...` },
-      { t: 'green', l: isAr ? `[✓] تم إرجاع رمز التشغيل بنجاح لـ ${actionName} ${icon}` : `[✓] Execution code returned success for ${actionName} ${icon}` },
+      { t: 'green', l: isAr ? `[✓] تم إرجاع رمز التشغيل بنجاح لـ ${actionName} [${iconName}]` : `[✓] Execution code returned success for ${actionName} [${iconName}]` },
     ]);
   };
 
@@ -96,12 +106,12 @@ export default function OpenClawPage({ T, isAr = false }: { T?: (key: string) =>
   };
 
   const bottomActions = [
-    { l: isAr ? 'نشر الواجهة' : 'Deploy Frontend', c: '🚀' },
-    { l: isAr ? 'مزامنة البيانات' : 'Sync Firestore', c: '🔄' },
-    { l: isAr ? 'تشغيل الوكلاء' : 'Run All Agents', c: '🤖' },
-    { l: isAr ? 'نسخ احتياطي' : 'Backup Database', c: '💾' },
-    { l: isAr ? 'مسح التخزين' : 'Clear Cache', c: '🧹' },
-    { l: isAr ? 'فحص الربط' : 'Test Webhooks', c: '⚡' },
+    { l: isAr ? 'نشر الواجهة' : 'Deploy Frontend', icon: UploadCloud, iconName: 'deploy' },
+    { l: isAr ? 'مزامنة البيانات' : 'Sync Firestore', icon: RefreshCw, iconName: 'sync' },
+    { l: isAr ? 'تشغيل الوكلاء' : 'Run All Agents', icon: Bot, iconName: 'run' },
+    { l: isAr ? 'نسخ احتياطي' : 'Backup Database', icon: Save, iconName: 'backup' },
+    { l: isAr ? 'مسح التخزين' : 'Clear Cache', icon: Trash2, iconName: 'clear' },
+    { l: isAr ? 'فحص الربط' : 'Test Webhooks', icon: Zap, iconName: 'test' },
   ];
 
   return (
@@ -110,10 +120,11 @@ export default function OpenClawPage({ T, isAr = false }: { T?: (key: string) =>
       <div className={`flex gap-2 flex-wrap select-none ${isAr ? 'justify-start' : ''}`}>
         <button
           onClick={() => setLogs(DEFAULT_TERMINAL_LOGS)}
-          className="px-4 py-2 text-xs font-mono bg-white/5 hover:bg-white/10 border border-slate-800 text-slate-300 rounded-lg transition active:scale-95 duration-100 cursor-pointer"
+          className="flex items-center gap-1.5 px-4 py-2 text-xs font-mono bg-white/5 hover:bg-white/10 border border-slate-800 text-slate-300 rounded-lg transition active:scale-95 duration-100 cursor-pointer"
           id="btn-reset-terminal"
         >
-          {isAr ? '🔄 إعادة ضبط الطرفية' : '🔄 Reset Terminal'}
+          <RefreshCw className="w-3.5 h-3.5 text-slate-400" />
+          <span>{isAr ? 'إعادة ضبط الطرفية' : 'Reset Terminal'}</span>
         </button>
         <button
           onClick={() => {
@@ -123,19 +134,23 @@ export default function OpenClawPage({ T, isAr = false }: { T?: (key: string) =>
               { t: 'green', l: isAr ? '[✓] تم حل المصافحة الفنية · اتصالات Firebase CRM نشطة بنجاح.' : '[✓] Handshake resolved · CRM Firebase modules connected successfully.' },
             ]);
           }}
-          className="px-4 py-2 text-xs font-mono bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-lg shadow hover:bg-[#C8961A]/20 transition active:scale-95 duration-100 cursor-pointer"
+          className="flex items-center gap-1.5 px-4 py-2 text-xs font-mono bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-lg shadow hover:bg-[#C8961A]/20 transition active:scale-95 duration-100 cursor-pointer"
           id="btn-test-db-connection"
         >
-          {isAr ? '⚡ فحص الاتصال بقاعدة البيانات' : '⚡ Verify DB connection'}
+          <Database className="w-3.5 h-3.5 text-cyan-400" />
+          <span>{isAr ? 'فحص الاتصال بقاعدة البيانات' : 'Verify DB connection'}</span>
         </button>
       </div>
 
       {/* Terminal emulator */}
       <div className="bg-[#05080f] border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
         <div className="px-5 py-3.5 bg-[#0a0f1d]/60 border-b border-slate-800 flex items-center justify-between select-none">
-          <span className="font-mono text-[9px] uppercase tracking-wider text-cyan-400 font-bold">
-            {isAr ? '⚙️ أوبن كلو · طرفية مراقبة النظام والقياس' : '⚙️ OpenClaw · Shell Telemetry Console'}
-          </span>
+          <div className="flex items-center gap-2">
+            <Terminal className="w-4 h-4 text-cyan-400" />
+            <span className="font-mono text-[9px] uppercase tracking-wider text-cyan-400 font-bold">
+              {isAr ? 'أوبن كلو · طرفية مراقبة النظام والقياس' : 'OpenClaw · Shell Telemetry Console'}
+            </span>
+          </div>
           <span className="text-[8px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded font-bold">
             {isAr ? 'اتصال SSL آمن' : 'Connected SSL'}
           </span>
@@ -167,18 +182,21 @@ export default function OpenClawPage({ T, isAr = false }: { T?: (key: string) =>
 
       {/* Grid actions trigger */}
       <div className="grid grid-cols-2 sm:grid-cols-6 gap-3">
-        {bottomActions.map((a, i) => (
-          <button
-            key={i}
-            onClick={() => executeAction(a.l, a.c)}
-            className="flex flex-col items-center justify-center p-3.5 bg-[#0a0f1d] border border-slate-800 hover:border-cyan-500/30 rounded transition duration-200 select-none cursor-pointer duration-100 active:scale-95"
-          >
-            <span className="text-xl mb-1">{a.c}</span>
-            <span className="font-mono text-[8.5px] tracking-wide uppercase text-slate-500 shrink-0">
-              {a.l}
-            </span>
-          </button>
-        ))}
+        {bottomActions.map((a, i) => {
+          const Icon = a.icon;
+          return (
+            <button
+              key={i}
+              onClick={() => executeAction(a.l, a.iconName)}
+              className="flex flex-col items-center justify-center p-3.5 bg-[#0a0f1d] border border-slate-800 hover:border-cyan-500/30 rounded transition duration-200 select-none cursor-pointer duration-100 active:scale-95"
+            >
+              <Icon className="w-5 h-5 text-cyan-400 mb-1" />
+              <span className="font-mono text-[8.5px] tracking-wide uppercase text-slate-500 shrink-0">
+                {a.l}
+              </span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Agent } from '../types';
+import { getAgentIconComponent } from './AgentsPage';
 
 // Deterministic 30-day deal metrics resolver for agents (matches AgentsPage)
 const getDeals30DaysForAgent = (agentId: string, agentName: string): number => {
@@ -154,18 +155,21 @@ export default function AgentLeaderboard() {
             {agents.map((agent, idx) => (
               <tr key={agent.id} className="border-b border-slate-800/50 hover:bg-slate-800/20 transition group">
                 <td className="py-3 px-5 text-center font-mono text-xs">
-                  {idx === 0 ? <span className="text-[#C9A24A] text-lg">🥇</span> : 
-                   idx === 1 ? <span className="text-slate-300 text-lg">🥈</span> : 
-                   idx === 2 ? <span className="text-[#b47a46] text-lg">🥉</span> : 
-                   <span className="text-slate-500">#{idx + 1}</span>}
+                  {idx === 0 ? <span className="text-[#C9A24A] font-bold text-[10px] uppercase tracking-wider bg-[#C9A24A]/10 border border-[#C9A24A]/20 px-1.5 py-0.5 rounded">1st</span> : 
+                   idx === 1 ? <span className="text-slate-300 font-bold text-[10px] uppercase tracking-wider bg-slate-300/10 border border-slate-300/20 px-1.5 py-0.5 rounded">2nd</span> : 
+                   idx === 2 ? <span className="text-[#b47a46] font-bold text-[10px] uppercase tracking-wider bg-[#b47a46]/10 border border-[#b47a46]/20 px-1.5 py-0.5 rounded">3rd</span> : 
+                   <span className="text-slate-500 font-mono text-xs">#{idx + 1}</span>}
                 </td>
                 <td className="py-3 px-5">
                   <div className="flex items-center gap-3">
                     <div 
-                      className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-lg shadow-inner border border-white/5"
+                      className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center shadow-inner border border-white/5"
                       style={{ backgroundColor: `${agent.color}20`, color: agent.color }}
                     >
-                      {agent.emoji}
+                      {(() => {
+                        const Icon = getAgentIconComponent(agent.emoji);
+                        return <Icon className="w-4 h-4 animate-pulse" style={{ color: agent.color }} />;
+                      })()}
                     </div>
                     <span className="font-bold text-slate-200 text-sm whitespace-nowrap">{agent.name}</span>
                     <CloseRateGauge deals={agent.deals} totalLeads={agent.totalLeads} color={agent.color} />

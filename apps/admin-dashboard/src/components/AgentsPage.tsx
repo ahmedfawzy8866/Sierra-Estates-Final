@@ -7,6 +7,38 @@ import HighlightText from './HighlightText';
 import { motion } from 'motion/react';
 import { recordAccess, getRelevanceScore } from '../utils/relevance';
 import {
+  Settings,
+  FileText,
+  RefreshCw,
+  Bot,
+  Languages,
+  Briefcase,
+  Eye,
+  PenTool,
+  Compass,
+  TrendingUp,
+  Cpu,
+  Smartphone,
+  Mail,
+  User
+} from 'lucide-react';
+
+export const getAgentIconComponent = (emoji: string) => {
+  switch (emoji) {
+    case '🤖': return Bot;
+    case '🐪': return Languages;
+    case '💼': return Briefcase;
+    case '🕵️': return Eye;
+    case '✍️': return PenTool;
+    case '🎨': return Compass;
+    case '📈': return TrendingUp;
+    case '🧠': return Cpu;
+    case '📱': return Smartphone;
+    case '✉️': return Mail;
+    default: return User;
+  }
+};
+import {
   ResponsiveContainer,
   BarChart,
   Bar,
@@ -53,7 +85,10 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
     return (
       <div className="bg-slate-950/95 dark:bg-[#0b1329]/95 border border-slate-200 dark:border-slate-800 p-3 rounded-lg shadow-xl backdrop-blur-md">
         <div className="flex items-center gap-2 mb-1.5">
-          <span className="text-sm">{data.emoji}</span>
+          {(() => {
+            const Icon = getAgentIconComponent(data.emoji);
+            return <Icon className="w-4 h-4 text-cyan-400" />;
+          })()}
           <span className="text-xs font-bold text-slate-900 dark:text-white font-sans">{label}</span>
         </div>
         <div className="text-[11px] font-mono space-y-1 text-slate-600 dark:text-slate-350">
@@ -273,7 +308,10 @@ export default function AgentsPage({ T, searchQuery = '' }: AgentsPageProps) {
                 className="w-10 h-10 rounded-xl flex items-center justify-center text-lg mb-3 shadow"
                 style={{ backgroundColor: `${a.color}15`, border: `1px solid ${a.color}30` }}
               >
-                {a.emoji}
+                {(() => {
+                  const Icon = getAgentIconComponent(a.emoji);
+                  return <Icon className="w-5 h-5" style={{ color: a.color }} />;
+                })()}
               </div>
 
               <div className="flex justify-between items-start mb-1">
@@ -281,7 +319,7 @@ export default function AgentsPage({ T, searchQuery = '' }: AgentsPageProps) {
                   <HighlightText text={a.name} highlight={searchQuery} />
                   {getRelevanceScore(a.id) > 0 && (
                     <span className="inline-flex items-center gap-0.5 px-1 py-0.5 rounded bg-cyan-950/60 border border-cyan-800/40 text-[8px] font-mono text-cyan-400 font-medium cursor-help" title={`Relevance Score: ${getRelevanceScore(a.id)}`}>
-                      🎯 {getRelevanceScore(a.id)}
+                      Score: {getRelevanceScore(a.id)}
                     </span>
                   )}
                 </div>
@@ -325,17 +363,17 @@ export default function AgentsPage({ T, searchQuery = '' }: AgentsPageProps) {
                   className="mt-4 pt-3 border-t border-slate-800 flex gap-2"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <button className="flex-1 py-1 px-2 hover:bg-white/5 border border-slate-800 text-[10px] uppercase font-mono tracking-wider text-slate-400 hover:text-white rounded-md transition duration-150 cursor-pointer">
-                    ⚙️ CONFIG
+                  <button className="flex-1 py-1 px-2 hover:bg-white/5 border border-slate-800 text-[10px] uppercase font-mono tracking-wider text-slate-400 hover:text-white rounded-md transition duration-150 cursor-pointer flex items-center justify-center gap-1">
+                    <Settings className="w-3 h-3 text-slate-500" /> CONFIG
                   </button>
-                  <button className="flex-1 py-1 px-2 hover:bg-white/5 border border-slate-800 text-[10px] uppercase font-mono tracking-wider text-slate-400 hover:text-white rounded-md transition duration-150 cursor-pointer">
-                    📋 LOGS
+                  <button className="flex-1 py-1 px-2 hover:bg-white/5 border border-slate-800 text-[10px] uppercase font-mono tracking-wider text-slate-400 hover:text-white rounded-md transition duration-150 cursor-pointer flex items-center justify-center gap-1">
+                    <FileText className="w-3 h-3 text-slate-500" /> LOGS
                   </button>
                   <button
                     onClick={() => handleRestart(a)}
-                    className="flex-1 py-1 px-2 bg-green-500/15 border border-green-500/20 text-[10px] uppercase font-mono tracking-wider text-green-400 font-bold rounded-md hover:bg-green-500/25 transition duration-150 cursor-pointer"
+                    className="flex-1 py-1 px-2 bg-green-500/15 border border-green-500/20 text-[10px] uppercase font-mono tracking-wider text-green-400 font-bold rounded-md hover:bg-green-500/25 transition duration-150 cursor-pointer flex items-center justify-center gap-1"
                   >
-                    🔁 REBOOT
+                    <RefreshCw className="w-3 h-3" /> REBOOT
                   </button>
                 </div>
               )}

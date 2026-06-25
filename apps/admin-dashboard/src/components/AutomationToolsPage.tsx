@@ -8,7 +8,7 @@ export default function AutomationToolsPage() {
       <div className="bg-[#0a0f1d] border border-slate-800 rounded-xl overflow-hidden shadow-xl">
         <div className="px-5 py-4 border-b border-slate-800 bg-slate-900/40">
           <span className="font-mono text-[10px] uppercase tracking-wider text-cyan-400 font-bold select-none">
-            🤖 AUTOMATION TOOLS PORTAL
+            AUTOMATION TOOLS PORTAL
           </span>
         </div>
         <div className="p-5 space-y-6">

@@ -4,6 +4,7 @@ import L from 'leaflet';
 import { collection, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType, createSierraNotification } from '../firebase';
 import { Listing } from '../types';
+import { Sun, Moon, Settings } from 'lucide-react';
 
 // Let's import the leaflet styles dynamically if not loaded
 const loadLeafletStyle = () => {
@@ -800,7 +801,6 @@ export default function ClientHub({
           </div>
         </div>
 
-        {/* Header Right togglers */}
         <div className="ml-auto flex items-center gap-3">
           <button 
             onClick={() => setTheme(t => t === 'dark' ? 'light' : 'dark')}
@@ -809,7 +809,7 @@ export default function ClientHub({
             }`}
             title="Toggle Theme"
           >
-            {theme === 'dark' ? '☀️' : '🌙'}
+            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
           <button 
             onClick={onEnterAdminSession}
@@ -818,7 +818,7 @@ export default function ClientHub({
             } hover:text-[#C8961A] hover:border-[#C8961A]/30`}
             title="Access Admin Console"
           >
-            ⚙️
+            <Settings className="w-4 h-4" />
           </button>
         </div>
       </header>
@@ -1587,9 +1587,9 @@ export default function ClientHub({
           </span>
           <button 
             onClick={onEnterAdminSession}
-            className="font-mono hover:text-[#C8961A] text-[10px] tracking-wider transition underline font-black cursor-pointer uppercase select-none"
+            className="font-mono hover:text-[#C8961A] text-[10px] tracking-wider transition underline font-black cursor-pointer uppercase select-none flex items-center gap-1.5"
           >
-            ⚙️ Access Admin Portal 3.0
+            <Settings className="w-3 h-3" /> Access Admin Portal 3.0
           </button>
         </div>
       </footer>

@@ -3,6 +3,8 @@ import { api } from '../lib/apiClient';
 import { Lead, Agent } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import PriceHeatmapWidget from './PriceHeatmapWidget';
+import { getAgentIconComponent } from './AgentsPage';
+import { Settings, Zap, DollarSign, Compass } from 'lucide-react';
 
 interface ReportsPageProps {
   T: (key: string) => string;
@@ -568,7 +570,7 @@ export default function ReportsPage({ T, isAr = false }: ReportsPageProps) {
               { id: '7days', label: isAr ? 'آخر ٧ أيام' : 'Last 7 Days' },
               { id: '30days', label: isAr ? 'آخر ٣٠ يوم' : 'Last 30 Days' },
               { id: 'thisMonth', label: isAr ? 'الشهر الحالي' : 'This Month' },
-              { id: 'custom', label: isAr ? 'مخصص ⚙️' : 'Custom Period' },
+              { id: 'custom', label: isAr ? 'مخصص' : 'Custom Period' },
             ].map((opt) => (
               <button
                 key={opt.id}
@@ -684,8 +686,8 @@ export default function ReportsPage({ T, isAr = false }: ReportsPageProps) {
             {/* Scaled Pipeline values */}
             <div className="bg-[#0a0f1d] border border-slate-800 rounded-xl overflow-hidden shadow-xl">
               <div className="px-5 py-4 border-b border-slate-800 bg-slate-900/40">
-                <span className="font-mono text-[10px] uppercase tracking-wider text-cyan-400 font-bold select-none text-xs">
-                  💰 {T('revPipeline')} Projection
+                <span className="font-mono text-[10px] uppercase tracking-wider text-cyan-400 font-bold select-none text-xs flex items-center gap-1.5">
+                  <DollarSign className="w-3.5 h-3.5 text-cyan-400" /> {T('revPipeline')} Projection
                 </span>
               </div>
               <div className="p-5 space-y-4">
@@ -710,8 +712,8 @@ export default function ReportsPage({ T, isAr = false }: ReportsPageProps) {
           {/* Dynamic Compounds Rank Listing */}
           <div className="bg-[#0a0f1d] border border-slate-800 rounded-xl overflow-hidden shadow-xl">
             <div className="px-5 py-4 border-b border-slate-800 flex items-center justify-between select-none bg-slate-900/40">
-              <span className="font-mono text-[10px] uppercase tracking-wider text-cyan-400 font-bold text-xs">
-                🗺️ {T('perfByCompound')} Rank Listing
+              <span className="font-mono text-[10px] uppercase tracking-wider text-cyan-400 font-bold text-xs flex items-center gap-1.5">
+                <Compass className="w-3.5 h-3.5 text-cyan-400" /> {T('perfByCompound')} Rank Listing
               </span>
               <span className="text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/10 px-2 py-0.5 rounded font-bold font-mono uppercase">
                 {filteredLeads.length} Leads Active
@@ -778,7 +780,12 @@ export default function ReportsPage({ T, isAr = false }: ReportsPageProps) {
                       <div key={item.id} className="space-y-1.5 relative">
                         <div className="flex justify-between items-center text-xs">
                           <div className="flex items-center gap-2 font-mono">
-                            <span className="text-sm select-none">{item.emoji}</span>
+                            <span className="text-sm select-none flex items-center justify-center">
+                              {(() => {
+                                const Icon = getAgentIconComponent(item.emoji);
+                                return <Icon className="w-3.5 h-3.5" style={{ color: item.color }} />;
+                              })()}
+                            </span>
                             <span className="font-bold text-slate-200">{item.name}</span>
                             <span className={`text-[8px] px-1.5 py-0.5 rounded ${
                               item.status === 'Online' || item.status === 'Running' 
@@ -821,7 +828,12 @@ export default function ReportsPage({ T, isAr = false }: ReportsPageProps) {
                                     style={{ borderRightColor: `${item.color}50`, borderBottomColor: `${item.color}50` }}
                                   />
                                   <div className="flex items-center gap-2 mb-1.5 border-b border-slate-800/60 pb-1.5">
-                                    <span className="text-sm select-none">{item.emoji}</span>
+                                    <span className="text-sm select-none flex items-center justify-center">
+                                      {(() => {
+                                        const Icon = getAgentIconComponent(item.emoji);
+                                        return <Icon className="w-3.5 h-3.5" style={{ color: item.color }} />;
+                                      })()}
+                                    </span>
                                     <span className="font-bold text-xs text-white uppercase tracking-wider">{item.name}</span>
                                     <span className="ml-auto text-[8px] font-mono bg-slate-900 border border-slate-800 text-slate-400 px-1 py-0.5 rounded-full uppercase">
                                       {item.status}
@@ -864,8 +876,8 @@ export default function ReportsPage({ T, isAr = false }: ReportsPageProps) {
             <div className="bg-[#0a0f1d] border border-slate-800 rounded-xl overflow-hidden shadow-xl p-5 flex flex-col justify-between">
               <div>
                 <div className="px-0 pb-4 border-b border-slate-850 flex items-center justify-between mb-4">
-                  <span className="font-mono text-[10px] uppercase tracking-wider text-cyan-400 font-semibold select-none text-xs">
-                    ⚡ {isAr ? 'متوسط سرعة استجابة الوكلاء' : 'Individual Broker Engagement Speed'}
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-cyan-400 font-semibold select-none text-xs flex items-center gap-1.5">
+                    <Zap className="w-3.5 h-3.5" /> {isAr ? 'متوسط سرعة استجابة الوكلاء' : 'Individual Broker Engagement Speed'}
                   </span>
                   <span className="text-[9px] bg-cyan-950 text-cyan-400 border border-cyan-800/10 px-2 py-0.5 rounded font-bold font-mono uppercase">
                     Lower is Faster
@@ -888,7 +900,12 @@ export default function ReportsPage({ T, isAr = false }: ReportsPageProps) {
                         <div key={item.id} className="space-y-1.5 relative">
                           <div className="flex justify-between items-center text-xs font-mono">
                             <div className="flex items-center gap-1.5">
-                              <span className="text-sm select-none">{item.emoji}</span>
+                              <span className="text-sm select-none flex items-center justify-center">
+                                {(() => {
+                                  const Icon = getAgentIconComponent(item.emoji);
+                                  return <Icon className="w-3.5 h-3.5" style={{ color: item.color }} />;
+                                })()}
+                              </span>
                               <span className="text-slate-200">{item.name}</span>
                             </div>
                             <div className="flex items-center gap-2">
@@ -934,7 +951,12 @@ export default function ReportsPage({ T, isAr = false }: ReportsPageProps) {
                                       }}
                                     />
                                     <div className="flex items-center gap-2 mb-1.5 border-b border-slate-800/60 pb-1.5">
-                                      <span className="text-sm select-none">{item.emoji}</span>
+                                      <span className="text-sm select-none flex items-center justify-center">
+                                        {(() => {
+                                          const Icon = getAgentIconComponent(item.emoji);
+                                          return <Icon className="w-3.5 h-3.5" style={{ color: item.color }} />;
+                                        })()}
+                                      </span>
                                       <span className="font-bold text-xs text-white uppercase tracking-wider">{item.name}</span>
                                       <span className="ml-auto text-[8px] font-mono bg-slate-900 border border-slate-800 text-slate-400 px-1 py-0.5 rounded-full uppercase">
                                         {item.status}
@@ -1007,7 +1029,7 @@ export default function ReportsPage({ T, isAr = false }: ReportsPageProps) {
                   >
                     {agents.map(a => (
                       <option key={a.id} value={a.id} className="bg-slate-950 text-white">
-                        {a.emoji} {a.name}
+                        {a.name}
                       </option>
                     ))}
                   </select>
@@ -1022,7 +1044,7 @@ export default function ReportsPage({ T, isAr = false }: ReportsPageProps) {
                   >
                     {agents.map(a => (
                       <option key={a.id} value={a.id} className="bg-slate-950 text-white">
-                        {a.emoji} {a.name}
+                        {a.name}
                       </option>
                     ))}
                   </select>
@@ -1065,7 +1087,12 @@ export default function ReportsPage({ T, isAr = false }: ReportsPageProps) {
                       {/* Agent A stats summary */}
                       <div className="space-y-1.5">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs">{agentA?.emoji}</span>
+                          <span className="text-xs">
+                            {agentA && (() => {
+                              const Icon = getAgentIconComponent(agentA.emoji);
+                              return <Icon className="w-3.5 h-3.5 animate-pulse" style={{ color: colorA }} />;
+                            })()}
+                          </span>
                           <span className="font-bold text-xs uppercase font-mono tracking-wider text-white truncate max-w-[120px]">
                             {agentA?.name}
                           </span>
@@ -1099,7 +1126,12 @@ export default function ReportsPage({ T, isAr = false }: ReportsPageProps) {
                       {/* Agent B stats summary */}
                       <div className="space-y-1.5">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs">{agentB?.emoji}</span>
+                          <span className="text-xs">
+                            {agentB && (() => {
+                              const Icon = getAgentIconComponent(agentB.emoji);
+                              return <Icon className="w-3.5 h-3.5 animate-pulse" style={{ color: colorB }} />;
+                            })()}
+                          </span>
                           <span className="font-bold text-xs uppercase font-mono tracking-wider text-white truncate max-w-[120px]">
                             {agentB?.name}
                           </span>
@@ -1346,8 +1378,8 @@ export default function ReportsPage({ T, isAr = false }: ReportsPageProps) {
           <div className="bg-[#0a0f1d] border border-slate-800 rounded-xl overflow-hidden shadow-xl" id="reports-activity-heatmap-card">
             <div className="px-5 py-4 border-b border-slate-800 bg-slate-900/40 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 select-none">
               <div className="space-y-1">
-                <span className="font-mono text-[10px] uppercase tracking-wider text-cyan-400 font-semibold text-xs block">
-                  ⚙️ {isAr ? 'خريطة وتحليل أوقات النشاط والردود' : 'Agent Response & Activity Heatmap'}
+                <span className="font-mono text-[10px] uppercase tracking-wider text-cyan-400 font-semibold text-xs flex items-center gap-1.5 select-none">
+                  <Settings className="w-3.5 h-3.5 text-cyan-400" /> {isAr ? 'خريطة وتحليل أوقات النشاط والردود' : 'Agent Response & Activity Heatmap'}
                 </span>
                 <p className="text-[10px] text-slate-500 font-mono">
                   {isAr ? 'رصد ساعات الاستجابة ومستويات الضغط اليومية على شبكة المبيعات' : 'Analysis of daily peak workflow stress ratios and operational agent response frequencies.'}

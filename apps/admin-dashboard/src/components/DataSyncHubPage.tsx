@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../lib/apiClient';
+import { RefreshCw, Zap } from 'lucide-react';
 
 interface SyncResult {
   success: boolean;
@@ -63,8 +64,8 @@ export default function DataSyncHubPage() {
     <div className="space-y-6 animate-fade-in-up">
       <div className="bg-[#0a0f1d] border border-slate-800 rounded-xl overflow-hidden shadow-xl">
         <div className="px-5 py-4 border-b border-slate-800 bg-slate-900/40 flex justify-between items-center">
-          <span className="font-mono text-[10px] uppercase tracking-wider text-cyan-400 font-bold select-none">
-            🔄 DATA SYNC & INTEGRATION HUB
+          <span className="font-mono text-[10px] uppercase tracking-wider text-cyan-400 font-bold select-none flex items-center gap-1.5">
+            <RefreshCw className="w-3.5 h-3.5" /> DATA SYNC & INTEGRATION HUB
           </span>
           <div className="flex gap-2 text-[9px] font-mono">
             <span className="px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-500/20 text-emerald-400">
@@ -84,7 +85,7 @@ export default function DataSyncHubPage() {
             </div>
             
             <h3 className="text-white font-bold text-sm mb-1 flex items-center gap-2">
-              <span className="text-base">🚀</span> PropertyFinder Atlas Sync Center
+              <Zap className="w-4 h-4 text-cyan-400" /> PropertyFinder Atlas Sync Center
             </h3>
             <p className="text-slate-400 text-xs mb-6 max-w-2xl">
               Perform on-demand synchronization of your listings and leads directly from the PropertyFinder Atlas OAuth2 API into Sierra Estates' real-time Firestore database.
@@ -113,9 +114,17 @@ export default function DataSyncHubPage() {
                   <button 
                     onClick={handleSyncListings}
                     disabled={syncingListings}
-                    className="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-4 py-2 rounded text-xs font-bold font-mono uppercase transition duration-150 active:scale-98 disabled:opacity-50"
+                    className="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-4 py-2 rounded text-xs font-bold font-mono uppercase transition duration-150 active:scale-98 disabled:opacity-50 flex items-center justify-center gap-1.5"
                   >
-                    {syncingListings ? 'Syncing Listings...' : '🔄 Run Listings Sync'}
+                    {syncingListings ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Syncing Listings...
+                      </>
+                    ) : (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5" /> Run Listings Sync
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
@@ -142,9 +151,17 @@ export default function DataSyncHubPage() {
                   <button 
                     onClick={handleSyncLeads}
                     disabled={syncingLeads}
-                    className="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-4 py-2 rounded text-xs font-bold font-mono uppercase transition duration-150 active:scale-98 disabled:opacity-50"
+                    className="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-4 py-2 rounded text-xs font-bold font-mono uppercase transition duration-150 active:scale-98 disabled:opacity-50 flex items-center justify-center gap-1.5"
                   >
-                    {syncingLeads ? 'Syncing Leads...' : '🔄 Run Leads Sync'}
+                    {syncingLeads ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Syncing Leads...
+                      </>
+                    ) : (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5" /> Run Leads Sync
+                      </>
+                    )}
                   </button>
                 </div>
               </div>

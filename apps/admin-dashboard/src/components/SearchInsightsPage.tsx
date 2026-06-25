@@ -5,6 +5,7 @@ import { SearchLog } from '../types';
 import { motion } from 'motion/react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
+import { Zap, Bot, Mic, TrendingUp } from 'lucide-react';
 import { 
   BarChart, 
   Bar, 
@@ -791,7 +792,7 @@ export default function SearchInsightsPage({ T, isAr = false }: SearchInsightsPa
               className="px-3.5 py-1.5 text-[11px] font-mono text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20 rounded border border-cyan-500/30 transition-all font-semibold uppercase animate-pulse flex items-center gap-1.5"
               id="btn-seed-search-telemetry"
             >
-              ⚡ {isAr ? 'توليد عينة بيانات بحث' : 'Seed Sample Insights Data'}
+              Seed Sample Insights Data
             </button>
           )}
         </div>
@@ -932,11 +933,11 @@ export default function SearchInsightsPage({ T, isAr = false }: SearchInsightsPa
               onChange={(e) => setScopeFilter(e.target.value as any)}
               className="px-2.5 py-1 bg-slate-900 border border-slate-800 rounded text-[11px] font-mono text-slate-300 focus:outline-none focus:border-cyan-500"
             >
-              <option value="all">🌐 {isAr ? 'جميع الفئات' : 'All Fields'}</option>
-              <option value="leads">👤 {T('leads')}</option>
-              <option value="listings">🏢 {T('listings')}</option>
-              <option value="agents">🤖 {T('agents')}</option>
-              <option value="workflows">⚡ {T('workflows')}</option>
+              <option value="all">{isAr ? 'جميع الفئات' : 'All Fields'}</option>
+              <option value="leads">{T('leads')}</option>
+              <option value="listings">{T('listings')}</option>
+              <option value="agents">{T('agents')}</option>
+              <option value="workflows">{T('workflows')}</option>
             </select>
 
             {/* Time filter dropdown */}
@@ -945,9 +946,9 @@ export default function SearchInsightsPage({ T, isAr = false }: SearchInsightsPa
               onChange={(e) => setTimeFilter(e.target.value as any)}
               className="px-2.5 py-1 bg-slate-900 border border-slate-800 rounded text-[11px] font-mono text-slate-300 focus:outline-none focus:border-cyan-500"
             >
-              <option value="7d">📅 {isAr ? 'آخر 7 أيام' : 'Last 7 Days'}</option>
-              <option value="30d">📅 {isAr ? 'آخر 30 يوم' : 'Last 30 Days'}</option>
-              <option value="all">📅 {isAr ? 'كل الأوقات' : 'All Time'}</option>
+              <option value="7d">{isAr ? 'آخر 7 أيام' : 'Last 7 Days'}</option>
+              <option value="30d">{isAr ? 'آخر 30 يوم' : 'Last 30 Days'}</option>
+              <option value="all">{isAr ? 'كل الأوقات' : 'All Time'}</option>
             </select>
 
             {/* Input method selection button */}
@@ -1125,8 +1126,8 @@ export default function SearchInsightsPage({ T, isAr = false }: SearchInsightsPa
             {/* Keyword Trends Leaderboard */}
             <div className="bg-slate-950/40 border border-slate-800/60 rounded-lg p-4 flex flex-col justify-between" id="insights-keyword-leaderboard">
               <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-bold block mb-3">
-                  🔥 {isAr ? "صدارة الكلمات والاتجاهات" : "Leaderboard & Popularity Trends"}
+                <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-bold flex items-center gap-1.5 mb-3">
+                  <TrendingUp className="w-3.5 h-3.5 text-cyan-400" /> {isAr ? "صدارة الكلمات والاتجاهات" : "Leaderboard & Popularity Trends"}
                 </span>
 
                 <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
@@ -1399,7 +1400,7 @@ export default function SearchInsightsPage({ T, isAr = false }: SearchInsightsPa
 
             <div className="space-y-3">
               <div className="p-3 bg-cyan-500/5 border border-cyan-500/10 rounded-lg flex gap-3">
-                <span className="text-lg">🤖</span>
+                <Bot className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
                 <p className="text-[11px] text-slate-300 leading-relaxed">
                   <strong className="text-cyan-400 font-mono block mb-1">
                     {isAr ? 'تحديث تلقائي للفهرسة' : 'Automated Agent Indexing Match'}
@@ -1411,7 +1412,7 @@ export default function SearchInsightsPage({ T, isAr = false }: SearchInsightsPa
               </div>
 
               <div className="p-3 bg-red-500/5 border border-red-500/10 rounded-lg flex gap-3">
-                <span className="text-lg">🎙️</span>
+                <Mic className="w-5 h-5 text-red-450 shrink-0 mt-0.5" />
                 <p className="text-[11px] text-slate-300 leading-relaxed">
                   <strong className="text-red-400 font-mono block mb-1">
                     {isAr ? 'كفاءة التعرف الصوتي' : 'Voice Accessibility Metrics'}
@@ -1423,7 +1424,7 @@ export default function SearchInsightsPage({ T, isAr = false }: SearchInsightsPa
               </div>
 
               <div className="p-3 bg-slate-900/50 border border-slate-800 rounded-lg flex gap-3">
-                <span className="text-lg">⚡</span>
+                <Zap className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
                 <p className="text-[11px] text-slate-300 leading-relaxed">
                   <strong className="text-slate-400 font-mono block mb-1">
                     {isAr ? 'نشاط سير العمل التلقائي' : 'Synergetic Workflows'}

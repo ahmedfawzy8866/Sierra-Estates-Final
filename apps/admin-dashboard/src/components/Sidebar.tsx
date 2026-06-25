@@ -173,7 +173,7 @@ export default function Sidebar({
                     />
                     {!collapsed && (
                       <>
-                        <span className="truncate select-none flex-1 text-left">{label}</span>
+                        <span className={`truncate select-none flex-1 ${isAr ? 'text-right' : 'text-left'}`}>{label}</span>
                         {item.badge && (
                           <span
                             className={`text-[10px] font-semibold px-1.5 py-0.5 rounded select-none ${

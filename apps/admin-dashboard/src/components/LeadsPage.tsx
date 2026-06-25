@@ -5,6 +5,26 @@ import { Lead } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import HighlightText from './HighlightText';
 import { recordAccess, getRelevanceScore } from '../utils/relevance';
+import {
+  Sparkles,
+  AlertTriangle,
+  RefreshCw,
+  FileText,
+  CheckCircle2,
+  ChevronRight,
+  UserPlus,
+  FileSpreadsheet,
+  Search,
+  Zap,
+  UserCheck,
+  Inbox,
+  FolderArchive,
+  Trash2,
+  Globe,
+  Clock,
+  ShieldAlert,
+  Flame
+} from 'lucide-react';
 
 interface LeadsPageProps {
   T: (key: string) => string;
@@ -675,7 +695,7 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
                   : 'bg-[#05080f]/40 text-slate-400 border-slate-800 hover:text-slate-200'
               }`}
             >
-              <span>🔥</span>
+              <Flame className="w-3.5 h-3.5 text-red-500" />
               <span>{isAr ? 'الأكثر تفاعلاً فقط' : 'Hot Leads Only'}</span>
             </button>
 
@@ -693,7 +713,7 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
               }`}
               id="btn-archived-leads-toggle"
             >
-              <span>📁</span>
+              <FolderArchive className="w-3.5 h-3.5 text-amber-500" />
               <span>{isAr ? 'عرض الأرشيف' : 'Show Archived'}</span>
             </button>
 
@@ -708,7 +728,7 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
                 }`}
                 id="btn-relevance-sort-toggle"
               >
-                <span>🎯</span>
+                <Sparkles className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
                 <span>{isAr ? 'ترتيب حسب الأهمية' : 'Sort by Relevance'}</span>
               </button>
             )}
@@ -728,7 +748,7 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
         {/* Hot Buttons / Horizontal Stage Filters */}
         <div className="border-t border-slate-900/60 pt-3.5 animate-fade-in-up">
           <p className={`text-[10px] font-mono uppercase tracking-wider text-slate-500 mb-2 select-none ${isAr ? 'text-right' : 'text-left'}`}>
-            ⚡ {isAr ? 'تصفية حسب حالة الاهتمام' : 'Filter by Interest Status (stage)'}
+            {isAr ? 'تصفية حسب حالة الاهتمام' : 'Filter by Interest Status (stage)'}
           </p>
           <div className={`flex gap-2 overflow-x-auto pb-1.5 custom-scrollbar ${isAr ? 'flex-row-reverse' : 'flex-row'}`}>
             {[
@@ -880,10 +900,10 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
                           <div className="min-w-0">
                             <span className="font-semibold text-white inline-flex items-center gap-1.5 uppercase tracking-wide">
                               <HighlightText text={l.name} highlight={searchQuery} />
-                              {l.hot && <span className="text-[10px] animate-bounce shrink-0">🔥</span>}
+                              {l.hot && <Flame className="w-3.5 h-3.5 text-red-500 animate-pulse shrink-0" />}
                               {getRelevanceScore(l.id) > 0 && (
                                 <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-cyan-950/60 border border-cyan-800/40 text-[9px] font-mono text-cyan-400 font-medium cursor-help" title={`Relevance Score: ${getRelevanceScore(l.id)}`} onClick={(e) => { e.stopPropagation(); }}>
-                                  🎯 {getRelevanceScore(l.id)}
+                                  Score: {getRelevanceScore(l.id)}
                                 </span>
                               )}
                             </span>
@@ -925,10 +945,10 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
                           }}
                           className="bg-slate-950/60 border border-slate-850 hover:border-cyan-500/30 text-white rounded px-2 py-1 text-[10px] font-mono outline-none transition duration-150 cursor-pointer focus:border-cyan-500/50"
                         >
-                          <option value="unassigned">👤 Unassigned</option>
+                          <option value="unassigned">Unassigned</option>
                           {agents.map((ag) => (
                             <option key={ag.id} value={ag.id}>
-                              {ag.emoji} {ag.name}
+                              {ag.name}
                             </option>
                           ))}
                         </select>
@@ -1057,7 +1077,7 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
                       onChange={(e) => setHot(e.target.checked)}
                       className="rounded border-slate-800 text-cyan-500 focus:ring-0 bg-transparent shrink-0 cursor-pointer"
                     />
-                    <span className="font-mono text-[9px] uppercase tracking-widest text-cyan-400">Flag Hot 🔥</span>
+                    <span className="font-mono text-[9px] uppercase tracking-widest text-cyan-400">Flag Hot (Urgent)</span>
                   </label>
                 </div>
               </div>
@@ -1071,11 +1091,11 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
                   onChange={(e) => setOwnerId(e.target.value)}
                   className="w-full bg-[#05080f] border border-slate-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-cyan-500/50 transition duration-150 cursor-pointer"
                 >
-                  <option value="auto" className="bg-[#0a0f1d] text-cyan-400 font-bold">⚡ Auto-Assign (Lowest Lead Burden)</option>
-                  <option value="unassigned" className="bg-[#0a0f1d] text-slate-400">👤 Unassigned</option>
+                  <option value="auto" className="bg-[#0a0f1d] text-cyan-400 font-bold">Auto-Assign (Lowest Lead Burden)</option>
+                  <option value="unassigned" className="bg-[#0a0f1d] text-slate-400">Unassigned</option>
                   {agents.map((ag) => (
                     <option key={ag.id} value={ag.id} className="bg-[#0a0f1d] text-white">
-                      {ag.emoji} {ag.name}
+                      {ag.name}
                     </option>
                   ))}
                 </select>
@@ -1129,27 +1149,27 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
               </p>
 
               {importSuccessMsg && (
-                <div className="text-emerald-400 text-xs py-2 px-3 bg-emerald-950/20 border border-emerald-500/15 rounded-lg select-none">
-                  🎉 {importSuccessMsg}
+                <div className="text-emerald-400 text-xs py-2 px-3 bg-emerald-950/20 border border-emerald-500/15 rounded-lg select-none flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> {importSuccessMsg}
                 </div>
               )}
 
               {importErrorMsg && (
-                <div className="text-red-400 text-xs py-2 px-3 bg-red-950/20 border border-red-500/15 rounded-lg select-none">
-                  ⚠️ {importErrorMsg}
+                <div className="text-red-400 text-xs py-2 px-3 bg-red-950/20 border border-red-500/15 rounded-lg select-none flex items-center gap-1.5">
+                  <ShieldAlert className="w-3.5 h-3.5 text-red-400" /> {importErrorMsg}
                 </div>
               )}
 
               <div className="p-6 border border-dashed border-slate-800 hover:border-cyan-500/40 rounded flex flex-col items-center justify-center text-center gap-1.5 cursor-pointer hover:bg-white/1 transition duration-150 relative">
                 {importing ? (
                   <>
-                    <span className="text-2xl mt-1 select-none animate-spin">🔄</span>
+                    <RefreshCw className="w-8 h-8 text-cyan-400 animate-spin mb-1" />
                     <p className="text-xs font-medium text-slate-350">Processing file...</p>
                     <p className="text-[10px] text-slate-500 uppercase tracking-widest">Adding leads to CRM database</p>
                   </>
                 ) : (
                   <>
-                    <span className="text-2xl mt-1 select-none">📂</span>
+                    <FileSpreadsheet className="w-8 h-8 text-slate-500 mb-1" />
                     <p className="text-xs font-medium text-slate-300">Select spreadsheet CSV</p>
                     <p className="text-[10px] text-slate-500 uppercase tracking-wider">Click or drag a file here</p>
                     <input
@@ -1304,7 +1324,7 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
             id="bulk-action-toolbar"
           >
             <div className={`flex items-center gap-2 font-semibold text-white ${isAr ? 'flex-row-reverse' : ''}`}>
-              <span className="text-sm">⚡</span>
+              <Zap className="w-4 h-4 text-cyan-400" />
               <span>
                 {isAr 
                   ? `تم تحديد ${selectedLeadIds.length} من العملاء` 
@@ -1328,7 +1348,7 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
                   id="bulk-action-reassign-select"
                 >
                   <option value="">
-                    {isAr ? '🔗 نقل العملاء إلى...' : '🔗 Transition status...'}
+                    {isAr ? 'نقل العملاء إلى...' : 'Transition status...'}
                   </option>
                   <option value="Initial Contact">Initial Contact</option>
                   <option value="Viewing Scheduled">Viewing Scheduled</option>
@@ -1341,34 +1361,44 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
               {/* Archive / Restore Button */}
               <button
                 onClick={() => handleBulkArchive(!showArchived)}
-                className={`px-3 py-1.5 text-[11px] font-medium border rounded transition cursor-pointer select-none active:scale-95 duration-100 ${
+                className={`px-3 py-1.5 text-[11px] font-medium border rounded transition cursor-pointer select-none active:scale-95 duration-100 flex items-center gap-1 ${
                   showArchived
                     ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20'
                     : 'bg-amber-500/10 text-amber-500 border-amber-500/20 hover:bg-amber-500/20'
                 }`}
                 id="bulk-action-archive-btn"
               >
-                {showArchived 
-                  ? (isAr ? '📥 استعادة إلى النشط' : '📥 Restore to Active')
-                  : (isAr ? '📁 أرشفة جماعية' : '📁 Bulk Archive')}
+                {showArchived ? (
+                  <>
+                    <Inbox className="w-3.5 h-3.5" />
+                    <span>{isAr ? 'استعادة إلى النشط' : 'Restore to Active'}</span>
+                  </>
+                ) : (
+                  <>
+                    <FolderArchive className="w-3.5 h-3.5" />
+                    <span>{isAr ? 'أرشفة جماعية' : 'Bulk Archive'}</span>
+                  </>
+                )}
               </button>
 
               {/* Bulk Auto-Assign Button */}
               <button
                 onClick={handleBulkAutoAssign}
-                className="px-3 py-1.5 text-[11px] font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/15 rounded transition cursor-pointer select-none active:scale-95 duration-100 uppercase tracking-wider font-mono"
+                className="px-3 py-1.5 text-[11px] font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/15 rounded transition cursor-pointer select-none active:scale-95 duration-100 uppercase tracking-wider font-mono flex items-center gap-1"
                 id="bulk-action-auto-assign-btn"
               >
-                ⚡ {isAr ? 'توزيع تلقائي' : 'Auto-Assign'}
+                <Zap className="w-3 h-3 text-cyan-400" />
+                <span>{isAr ? 'توزيع تلقائي' : 'Auto-Assign'}</span>
               </button>
 
               {/* Delete Button */}
               <button
                 onClick={handleBulkDelete}
-                className="px-3 py-1.5 text-[11px] font-medium bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 rounded transition cursor-pointer select-none active:scale-95 duration-100"
+                className="px-3 py-1.5 text-[11px] font-medium bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 rounded transition cursor-pointer select-none active:scale-95 duration-100 flex items-center gap-1"
                 id="bulk-action-delete-btn"
               >
-                🗑️ {isAr ? 'حذف نهائي' : 'Delete Permanent'}
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>{isAr ? 'حذف نهائي' : 'Delete Permanent'}</span>
               </button>
             </div>
 

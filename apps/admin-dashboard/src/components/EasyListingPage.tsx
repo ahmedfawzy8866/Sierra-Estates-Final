@@ -3,7 +3,7 @@ import { db } from '../firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-import { Upload, Download, Copy, Check, FileImage, FileText, MessageCircle } from 'lucide-react';
+import { Upload, Download, Copy, Check, FileImage, FileText, MessageCircle, Bot } from 'lucide-react';
 
 const COMPOUND_DICTIONARY: Record<string, string> = {
   'ميفيدا': 'MI', 'mivida': 'MI',
@@ -552,7 +552,7 @@ Contact Sierra Estates today to schedule a viewing and embrace the definition of
           ) : (
             <div className="h-full flex flex-col items-center justify-center border-2 border-dashed border-slate-800 rounded-2xl bg-slate-900/10 min-h-[400px]">
               <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mb-4">
-                <span className="text-2xl">🤖</span>
+                <Bot className="w-8 h-8 text-cyan-400" />
               </div>
               <h3 className="text-slate-300 font-serif text-lg mb-2">Awaiting Input Data</h3>
               <p className="text-slate-500 text-sm text-center max-w-sm">
