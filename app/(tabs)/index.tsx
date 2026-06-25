@@ -962,7 +962,15 @@ export default function HomeScreen() {
                 {isRTL ? "مستقبل العقارات في مصر" : "The Future of Real Estate"}
               </Text>
               <Text style={[styles.highlightCardText, { color: 'rgba(255,255,255,0.8)', textAlign: isRTL ? 'right' : 'left' }]}>
-                We use AI to get you the best opportunities in the whole market. We control all data through alignment with <Text style={{ color: colors.gold, fontWeight: 'bold' }}>more than 500 real estate brokerage companies</Text> and <Text style={{ color: colors.gold, fontWeight: 'bold' }}>3000+ freelance brokers</Text>. That's our guarantee you have the best.
+                {isRTL ? (
+                  <>
+                    نحن نعتمد على الذكاء الاصطناعي المتقدم لتوفير أفضل الفرص في السوق. من خلال شراكاتنا الحصرية مع <Text style={{ color: colors.gold, fontWeight: 'bold' }}>أكثر من 500 شركة وساطة عقارية</Text> و <Text style={{ color: colors.gold, fontWeight: 'bold' }}>3,000+ مستشار عقاري مستقل</Text>، نضمن لك الوصول لأفضل الاستثمارات.
+                  </>
+                ) : (
+                  <>
+                    We leverage advanced AI to unlock the finest opportunities across the market. By exclusively aligning with <Text style={{ color: colors.gold, fontWeight: 'bold' }}>500+ elite real estate brokerages</Text> and <Text style={{ color: colors.gold, fontWeight: 'bold' }}>3,000+ independent consultants</Text>, we guarantee unparalleled access to premium investments.
+                  </>
+                )}
               </Text>
             </View>
           </Animated.View>

@@ -171,8 +171,8 @@ export function AIEngineSection() {
       <View style={[styles.container, isWide && { maxWidth: contentMaxWidth as any, alignSelf: "center" }]}>
         
         <Animated.View entering={isWeb ? undefined : FadeIn.duration(800)} style={[styles.header]}>
-          <Text style={styles.headerEyebrow}>INTELLIGENCE OS PLATFORM</Text>
-          <Text style={styles.headerTitle}>Powered by AI Engine 3.0</Text>
+          <Text style={styles.headerEyebrow}>{isRTL ? "منصة التشغيل الذكية" : "INTELLIGENCE OS PLATFORM"}</Text>
+          <Text style={styles.headerTitle}>{isRTL ? "مدعوم بمحرك الذكاء الاصطناعي 3.0" : "Powered by AI Engine 3.0"}</Text>
         </Animated.View>
 
         <Animated.View entering={isWeb ? undefined : FadeInDown.delay(200).springify()} style={[styles.dashRow, { flexDirection: isDesktop ? 'row' : 'column' }]}>
@@ -186,10 +186,26 @@ export function AIEngineSection() {
 
         <View style={[styles.featuresRow, { flexDirection: isDesktop ? 'row' : 'column' }]}>
           {[
-            { title: "AI Dream Match", desc: "Describe your lifestyle and our intelligence engine instantly matches you with the perfect property.", icon: "star" },
-            { title: "AVM Pricing", desc: "Real-time automated valuation model trained on 12,000+ Cairo transactions with 94% accuracy.", icon: "target" },
-            { title: "ROI Analytics", desc: "Compounding yield matrices showing appreciation, rental income, and reinvestment potential.", icon: "bar-chart-2" },
-            { title: "Dream Home AI", desc: "Bilingual AI advisor for New Cairo — instant compound matching in Arabic or English.", icon: "cpu" }
+            { 
+              title: isRTL ? "المطابقة الذكية" : "AI Dream Match", 
+              desc: isRTL ? "صف أسلوب حياتك وسيقوم محرك الذكاء الاصطناعي الخاص بنا بمطابقتك فوراً مع العقار المثالي." : "Describe your lifestyle and our intelligence engine instantly matches you with the perfect property.", 
+              icon: "star" 
+            },
+            { 
+              title: isRTL ? "التسعير الآلي (AVM)" : "AVM Pricing", 
+              desc: isRTL ? "نموذج تقييم آلي لحظي مدرب على أكثر من 12,000 معاملة في القاهرة بدقة تصل إلى 94%." : "Real-time automated valuation model trained on 12,000+ Cairo transactions with 94% accuracy.", 
+              icon: "target" 
+            },
+            { 
+              title: isRTL ? "تحليلات الاستثمار" : "ROI Analytics", 
+              desc: isRTL ? "مصفوفات العائد المركب التي توضح زيادة القيمة، ودخل الإيجار، وإمكانيات إعادة الاستثمار." : "Compounding yield matrices showing appreciation, rental income, and reinvestment potential.", 
+              icon: "bar-chart-2" 
+            },
+            { 
+              title: isRTL ? "مستشار العقارات AI" : "Dream Home AI", 
+              desc: isRTL ? "مستشار عقاري ثنائي اللغة للقاهرة الجديدة — مطابقة فورية للمجمعات السكنية." : "Bilingual AI advisor for New Cairo — instant compound matching in Arabic or English.", 
+              icon: "cpu" 
+            }
           ].map((f, i) => (
             <Animated.View key={i} entering={isWeb ? undefined : FadeInDown.delay(400 + i * 100).springify()} style={[isDesktop && { flex: 1 }]}>
               <Pressable style={({ pressed }) => [
@@ -201,7 +217,9 @@ export function AIEngineSection() {
                   <Text style={{ color: '#FFFFFF', fontSize: 16, fontWeight: '700' }}>{f.title}</Text>
                 </View>
                 <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, lineHeight: 20, marginBottom: 20 }}>{f.desc}</Text>
-                <Text style={{ color: '#E9C176', fontSize: 12, fontWeight: 'bold', marginTop: 'auto' }}>+ Explore</Text>
+                <Text style={{ color: '#E9C176', fontSize: 12, fontWeight: 'bold', marginTop: 'auto', textAlign: isRTL ? 'right' : 'left' }}>
+                  {isRTL ? "استكشف +" : "+ Explore"}
+                </Text>
               </Pressable>
             </Animated.View>
           ))}
