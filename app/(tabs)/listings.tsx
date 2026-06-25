@@ -313,7 +313,7 @@ export default function ListingsScreen() {
 
           <Pressable
             style={[styles.mapViewBtn, { backgroundColor: colors.card, borderColor: colors.border }]}
-            onPress={() => router.push("/(tabs)/map" as any)}
+            onPress={() => router.push("/map" as any)}
           >
             <Feather name="map-pin" size={13} color={colors.gold} />
             <Text style={[styles.mapViewBtnText, { color: colors.gold }]}>Map</Text>

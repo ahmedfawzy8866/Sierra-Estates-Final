@@ -559,7 +559,7 @@ export default function HomeScreen() {
                   ]}
                   onPress={() => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                    router.push("/(tabs)/listings" as any);
+                    router.push("/listings" as any);
                   }}
                 >
                   <Text
@@ -589,7 +589,7 @@ export default function HomeScreen() {
                 ]}
                 onPress={() => {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  router.push("/(tabs)/map" as any);
+                  router.push("/map" as any);
                 }}
               >
                 <Feather name="map" size={14} color={heroCtaSecondaryIconColor} />
@@ -700,13 +700,13 @@ export default function HomeScreen() {
               icon="search"
               label={t.search}
               color={colors}
-              onPress={() => router.push("/(tabs)/listings" as any)}
+              onPress={() => router.push("/listings" as any)}
             />
             <QuickAction
               icon="map"
               label={t.mapView}
               color={colors}
-              onPress={() => router.push("/(tabs)/map" as any)}
+              onPress={() => router.push("/map" as any)}
             />
             <QuickAction
               icon="camera"
@@ -792,7 +792,7 @@ export default function HomeScreen() {
                 opacity: pressed ? 0.7 : 1,
               },
             ]}
-            onPress={() => router.push("/(tabs)/listings" as any)}
+            onPress={() => router.push("/listings" as any)}
           >
             <Text style={[styles.seeAllText, { color: colors.gold }]}>
               {t.seeAll} {PROPERTIES.length} {t.properties}
@@ -824,7 +824,7 @@ export default function HomeScreen() {
               style={[styles.embeddedOpenBtn, { borderColor: colors.gold + '60', backgroundColor: colors.gold + '12' }]}
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                router.push('/(tabs)/map' as any);
+                router.push('/map' as any);
               }}
             >
               <Feather name="maximize-2" size={14} color={colors.gold} />
@@ -838,7 +838,7 @@ export default function HomeScreen() {
             style={[styles.embeddedMapContainer, { borderColor: colors.border, borderRadius: 16, overflow: 'hidden' }]}
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              router.push('/(tabs)/map' as any);
+              router.push('/map' as any);
             }}
           >
             <View style={StyleSheet.absoluteFill} pointerEvents="none">

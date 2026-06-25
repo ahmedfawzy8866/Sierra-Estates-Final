@@ -205,7 +205,7 @@ export default function PropertyDetailScreen() {
             />
             <Pressable
               style={[styles.openMapBtn, { backgroundColor: colors.gold }]}
-              onPress={() => router.push("/(tabs)/map" as any)}
+              onPress={() => router.push("/map" as any)}
             >
               <Feather name="map" size={13} color={colors.navyDeep} />
               <Text style={[styles.openMapBtnText, { color: colors.navyDeep }]}>Open Full Map</Text>
