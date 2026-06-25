@@ -15,6 +15,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useClaim } from "@/context/ClaimContext";
 import { ClaimNowModal } from "@/components/ClaimNowModal";
+import { HeaderFilters } from "@/components/HeaderFilters";
 
 const NAV_LINKS = [
   { label: "navHome", route: "/", icon: "home", match: "/" },
@@ -87,31 +88,9 @@ export function WebNav({ onClaimPress }: WebNavProps) {
           </View>
         </Pressable>
 
-        {/* Desktop nav links — hidden on tablet (hamburger instead) */}
+        {/* Desktop Search Filters */}
         <View style={[styles.navLinks, { flexDirection: rowDir }]}>
-          {NAV_LINKS.map((link) => {
-          const active = isActive(link);
-            return (
-              <Pressable
-                key={link.route}
-                style={[styles.navLink]}
-                onPress={() => router.push(link.route as any)}
-              >
-                <Text
-                  style={[
-                    styles.navLinkText,
-                    {
-                      color: active ? colors.gold : colors.mutedForeground,
-                      borderBottomColor: active ? colors.gold : "transparent",
-                      borderBottomWidth: 2,
-                    },
-                  ]}
-                >
-                  {(t as any)[link.label]}
-                </Text>
-              </Pressable>
-            );
-          })}
+          <HeaderFilters />
         </View>
 
         {/* Right actions */}

@@ -15,6 +15,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 
+import { ContactModal } from "@/components/ContactModal";
 import { VirtualTourModal } from "@/components/VirtualTourModal";
 import { useFavorites } from "@/context/FavoritesContext";
 import { PROPERTIES } from "@/data/properties";
@@ -61,6 +62,7 @@ export default function PropertyDetailScreen() {
   const { isFavorite, toggleFavorite } = useFavorites();
   const [enquired, setEnquired] = useState(false);
   const [tourVisible, setTourVisible] = useState(false);
+  const [contactVisible, setContactVisible] = useState(false);
 
   const property = PROPERTIES.find((p) => p.id === id);
   const fav = property ? isFavorite(property.id) : false;
@@ -76,8 +78,16 @@ export default function PropertyDetailScreen() {
   }
 
   function onEnquire() {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    setEnquired(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setContactVisible(true);
+  }
+
+  function handleContactSubmit() {
+    setContactVisible(false);
+    setTimeout(() => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      setEnquired(true);
+    }, 400);
   }
 
   return (
@@ -256,6 +266,14 @@ export default function PropertyDetailScreen() {
         onClose={() => setTourVisible(false)}
         propertyTitle={property.title}
         tourUrl={property.tourUrl}
+      />
+
+      <ContactModal
+        visible={contactVisible}
+        onClose={() => setContactVisible(false)}
+        isRent={property.status === "rent"}
+        propertyTitle={property.title}
+        onSubmit={handleContactSubmit}
       />
     </View>
   );

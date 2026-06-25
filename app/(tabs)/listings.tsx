@@ -1,7 +1,7 @@
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { router } from "expo-router";
-import React, { useState } from "react";
+import { router, useLocalSearchParams } from "expo-router";
+import React, { useState, useEffect } from "react";
 import {
   FlatList,
   Platform,
@@ -21,7 +21,9 @@ import { useColors } from "@/hooks/useColors";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 
 const TYPES = ["All", "Penthouse", "Villa", "Estate", "Compound", "Beachfront"] as const;
-const CITIES = ["All Cities", "Dubai", "Abu Dhabi", "Riyadh"];
+const STATUS = ["All", "Rent", "Resale"] as const;
+const FURNISHED = ["All", "Yes", "No"] as const;
+const ROOMS = ["Any", "1", "2", "3", "4", "5+"] as const;
 const SORT_OPTIONS = [
   { key: "aiScore", label: "AI Score" },
   { key: "yield", label: "Yield" },
@@ -43,7 +45,17 @@ export default function ListingsScreen() {
 
   const [search, setSearch] = useState("");
   const [activeType, setActiveType] = useState("All");
-  const [activeCity, setActiveCity] = useState("All Cities");
+  const [activeStatus, setActiveStatus] = useState("All");
+  const [activeRooms, setActiveRooms] = useState("Any");
+  const [activeFurnished, setActiveFurnished] = useState("All");
+  const params = useLocalSearchParams();
+
+  useEffect(() => {
+    if (params.status) setActiveStatus(params.status as string);
+    if (params.rooms) setActiveRooms(params.rooms as string);
+    if (params.furnished) setActiveFurnished(params.furnished as string);
+  }, [params]);
+
   const [sortBy, setSortBy] = useState<SortKey>("aiScore");
   const [compareMode, setCompareMode] = useState(false);
   const [compareIds, setCompareIds] = useState<string[]>([]);
@@ -70,7 +82,9 @@ export default function ListingsScreen() {
       p.location.toLowerCase().includes(search.toLowerCase()) ||
       p.compound.toLowerCase().includes(search.toLowerCase());
     const matchType = activeType === "All" || p.type === activeType.toLowerCase();
-    const matchCity = activeCity === "All Cities" || p.city === activeCity;
+    const matchStatus = activeStatus === "All" || p.status === activeStatus.toLowerCase();
+    const matchFurnished = activeFurnished === "All" || (activeFurnished === "Yes" ? p.furnished === true : p.furnished === false);
+    const matchRoomsUI = activeRooms === "Any" || (activeRooms === "5+" ? p.beds >= 5 : p.beds.toString() === activeRooms);
     const matchOffPlan = !showOffPlanOnly || p.isOffPlan;
     
     // New BottomSheet Filters
@@ -82,7 +96,7 @@ export default function ListingsScreen() {
       (listingType.includes("Rent") && p.price < 500000) // Mock logic for rent
     );
     
-    return matchSearch && matchType && matchCity && matchOffPlan && matchCompound && matchBeds && matchListingType;
+    return matchSearch && matchType && matchStatus && matchFurnished && matchRoomsUI && matchOffPlan && matchCompound && matchBeds && matchListingType;
   }).sort((a, b) => {
     if (sortBy === "price_desc") return b.price - a.price;
     if (sortBy === "price_asc") return a.price - b.price;
@@ -148,22 +162,62 @@ export default function ListingsScreen() {
               ))}
             </View>
 
-            {/* City */}
-            <Text style={[styles.sidebarLabel, { color: colors.mutedForeground }]}>City</Text>
+            {/* Status */}
+            <Text style={[styles.sidebarLabel, { color: colors.mutedForeground }]}>Status</Text>
             <View style={styles.sidebarPills}>
-              {CITIES.map((city) => (
+              {STATUS.map((s) => (
                 <Pressable
-                  key={city}
+                  key={s}
                   style={[
                     styles.sidebarPill,
                     {
-                      backgroundColor: activeCity === city ? colors.gold + "20" : colors.background,
-                      borderColor: activeCity === city ? colors.gold : colors.border,
+                      backgroundColor: activeStatus === s ? colors.gold + "20" : colors.background,
+                      borderColor: activeStatus === s ? colors.gold : colors.border,
                     },
                   ]}
-                  onPress={() => setActiveCity(city)}
+                  onPress={() => setActiveStatus(s)}
                 >
-                  <Text style={[styles.sidebarPillText, { color: activeCity === city ? colors.gold : colors.text }]}>{city}</Text>
+                  <Text style={[styles.sidebarPillText, { color: activeStatus === s ? colors.gold : colors.text }]}>{s}</Text>
+                </Pressable>
+              ))}
+            </View>
+
+            {/* Rooms */}
+            <Text style={[styles.sidebarLabel, { color: colors.mutedForeground }]}>Rooms</Text>
+            <View style={styles.sidebarPills}>
+              {ROOMS.map((r) => (
+                <Pressable
+                  key={r}
+                  style={[
+                    styles.sidebarPill,
+                    {
+                      backgroundColor: activeRooms === r ? colors.gold + "20" : colors.background,
+                      borderColor: activeRooms === r ? colors.gold : colors.border,
+                    },
+                  ]}
+                  onPress={() => setActiveRooms(r)}
+                >
+                  <Text style={[styles.sidebarPillText, { color: activeRooms === r ? colors.gold : colors.text }]}>{r}</Text>
+                </Pressable>
+              ))}
+            </View>
+
+            {/* Furnished */}
+            <Text style={[styles.sidebarLabel, { color: colors.mutedForeground }]}>Furnished</Text>
+            <View style={styles.sidebarPills}>
+              {FURNISHED.map((f) => (
+                <Pressable
+                  key={f}
+                  style={[
+                    styles.sidebarPill,
+                    {
+                      backgroundColor: activeFurnished === f ? colors.gold + "20" : colors.background,
+                      borderColor: activeFurnished === f ? colors.gold : colors.border,
+                    },
+                  ]}
+                  onPress={() => setActiveFurnished(f)}
+                >
+                  <Text style={[styles.sidebarPillText, { color: activeFurnished === f ? colors.gold : colors.text }]}>{f}</Text>
                 </Pressable>
               ))}
             </View>
