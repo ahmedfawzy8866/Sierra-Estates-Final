@@ -35,12 +35,13 @@ minimumReleaseAgeExclude:
   - stripe-replit-sync
 
 packages:
-  - "apps/*"
+  - "apps/sierra-estates-realty"
+  - "apps/api"
+  - "apps/agents"
+  - "apps/admin-dashboard"
+  - "apps/mass-blast"
   - "packages/*"
   - "functions"
-  - "artifacts/*"
-  - "lib/*"
-  - "lib/integrations/*"
   - "scripts"
 
 catalog:
