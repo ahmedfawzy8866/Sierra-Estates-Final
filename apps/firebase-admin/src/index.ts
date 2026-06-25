@@ -1,11 +1,15 @@
 /**
- * SIERRA ESTATES — FIREBASE ADMIN APP
+ * SIERRA ESTATES — FIREBASE ADMIN APP (Cloud Functions)
  *
  * Entry point for Cloud Functions + Express API.
  * This is the admin/bot/scraper side of the two-app architecture.
  *
+ * IMPORTANT: No service account key needed!
+ * Cloud Functions automatically get Application Default Credentials (ADC).
+ * Org policies that block key creation are fine — ADC is the recommended approach.
+ *
  * Architecture:
- *   Vercel App (public + light dashboard) ←→ Firestore ←→ Firebase Admin App (this)
+ *   Vercel App (Client SDK only) ←→ Firestore ←→ Cloud Functions (Admin SDK via ADC)
  *
  * Hard Rules:
  *   1. Same Firestore DB as Vercel app (never create a second DB)
@@ -18,44 +22,15 @@
 import * as admin from 'firebase-admin';
 
 // ─── Firebase Admin SDK Initialization ────────────────────────────────
-// Uses the same project as the Vercel app — ONE DB, ONE Auth.
+// Cloud Functions get ADC automatically — no service account key needed.
+// This is the Google-recommended approach and works with org policies.
 
 if (!admin.apps.length) {
-  const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
-  const projectId =
-    process.env.FIREBASE_PROJECT_ID ||
-    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-  const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
-
-  if (serviceAccountJson) {
-    let parsedCredential: object;
-    try {
-      const raw = serviceAccountJson.trim();
-      const jsonStr = raw.startsWith('{')
-        ? raw
-        : Buffer.from(raw, 'base64').toString('utf-8');
-      parsedCredential = JSON.parse(jsonStr);
-    } catch {
-      throw new Error('FIREBASE_SERVICE_ACCOUNT_JSON is not valid JSON or base64');
-    }
-    admin.initializeApp({
-      credential: admin.credential.cert(parsedCredential as admin.ServiceAccount),
-      projectId,
-      storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    });
-  } else if (projectId && clientEmail && privateKey) {
-    admin.initializeApp({
-      credential: admin.credential.cert({ projectId, clientEmail, privateKey }),
-      projectId,
-      storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    });
-  } else {
-    admin.initializeApp({
-      credential: admin.credential.applicationDefault(),
-      projectId: projectId || 'sierra-estates',
-    });
-  }
+  admin.initializeApp({
+    credential: admin.credential.applicationDefault(),
+    projectId: process.env.FIREBASE_PROJECT_ID || 'sierra-blu',
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'sierra-blu.firebasestorage.app',
+  });
 }
 
 export const adminAuth = admin.auth();
