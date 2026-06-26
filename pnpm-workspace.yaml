@@ -36,6 +36,7 @@ minimumReleaseAgeExclude:
 
 packages:
   - "apps/*"
+  - "apps/agents/*"
   - "packages/*"
   - "functions"
   - "artifacts/*"
@@ -177,4 +178,5 @@ allowBuilds:
   core-js: true
   esbuild: true
   protobufjs: true
+  puppeteer: true
 
