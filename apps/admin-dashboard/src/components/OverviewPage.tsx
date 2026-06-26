@@ -7,6 +7,8 @@ import { ComposedChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import DashboardWidgets from './DashboardWidgets';
 import AgentLeaderboard from './AgentLeaderboard';
 import ActivityFeed from './ActivityFeed';
+import StatsCard from './StatsCard';
+import { Building2, Users, TrendingUp, Award } from 'lucide-react';
 
 const CHART_DATA = [
   { month: 'Jan', deals: 35, revenue: 1.1 },
@@ -244,6 +246,41 @@ export default function OverviewPage({ T }: OverviewPageProps) {
 
   return (
     <div className="space-y-6 animate-fade-in-up">
+      {/* KPI StatsCards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatsCard
+          title="Total Listings"
+          value={listingsCount}
+          change={12.5}
+          icon={Building2}
+          iconColor="text-cyan-400"
+          variant="default"
+        />
+        <StatsCard
+          title="Active Leads"
+          value={activeLeadsCount}
+          change={8.3}
+          icon={Users}
+          iconColor="text-blue-400"
+          variant="default"
+        />
+        <StatsCard
+          title="Avg Deal Value"
+          value="EGP 6.2M"
+          change={5.1}
+          icon={TrendingUp}
+          iconColor="text-emerald-400"
+          variant="success"
+        />
+        <StatsCard
+          title="Deals Closed"
+          value={97}
+          change={-2.4}
+          icon={Award}
+          iconColor="text-purple-400"
+          variant="default"
+        />
+      </div>
       {/* Cards stats grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {CARD_STATS.map((k, i) => (

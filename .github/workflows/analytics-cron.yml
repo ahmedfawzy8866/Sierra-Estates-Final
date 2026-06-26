@@ -1,0 +1,47 @@
+name: Weekly Analytics Report
+
+on:
+  schedule:
+    # Run every Monday at 8:00 AM UTC (10:00 AM Cairo)
+    - cron: '0 8 * * 1'
+  workflow_dispatch:
+    inputs:
+      date_range:
+        description: 'Date range YYYY-MM-DD:YYYY-MM-DD (optional)'
+        required: false
+        default: ''
+
+jobs:
+  generate-report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install -r scripts/python/requirements.txt
+          pip install -r scripts/python/requirements-dev.txt
+
+      - name: Run analytics report
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          ARGS="--source firestore --output reports/analytics-$(date +%Y-%m-%d).csv"
+          if [ -n "${{ github.event.inputs.date_range }}" ]; then
+            ARGS="$ARGS --date-range ${{ github.event.inputs.date_range }}"
+          fi
+          python scripts/python/analytics-report.py $ARGS
+
+      - name: Upload report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: analytics-report
+          path: reports/
+          retention-days: 90

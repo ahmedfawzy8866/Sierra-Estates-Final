@@ -3,7 +3,7 @@ import {
   LogOut, Languages, PanelLeftClose, PanelLeftOpen, X,
   LayoutDashboard, Users, Building2, CalendarCheck, BarChart3,
   FileText, Bot, Workflow, Zap, Settings, RefreshCw, Database,
-  MessageSquare, Sun, Moon,
+  MessageSquare, Search, Sun, Moon,
   type LucideIcon,
 } from 'lucide-react';
 import { auth } from '../firebase';
@@ -42,6 +42,7 @@ export const NAV_ITEMS: NavItem[] = [
   { id: 'listings',       label: 'Property Inventory',labelAr: 'العقارات',              icon: Building2,       section: 'core' },
   { id: 'followups',      label: 'Follow-ups',        labelAr: 'المتابعات',             icon: CalendarCheck,   section: 'core' },
   { id: 'searchInsights', label: 'Search Insights',   labelAr: 'تحليلات البحث',         icon: BarChart3,       section: 'core' },
+  { id: 'smartSearch',   label: 'Smart Search',     labelAr: 'بحث ذكي',              icon: Search,          section: 'core' },
   { id: 'pageEditor',     label: 'Page Editor',       labelAr: 'محرر الصفحات',          icon: FileText,        section: 'core' },
   // ── Automation & agents ────────────────────────────────────────────
   { id: 'bots',           label: 'Bots Control',      labelAr: 'التحكم بالبوتات',       icon: Bot,             section: 'automation' },

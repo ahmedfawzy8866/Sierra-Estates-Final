@@ -38,6 +38,7 @@ import PageEditorPage from './components/PageEditorPage';
 import FollowupsPage from './components/FollowupsPage';
 import BotsControlPage from './components/BotsControlPage';
 import OwnerNegotiationsPage from './components/OwnerNegotiationsPage';
+import SmartSearchPage from './components/SmartSearchPage';
 
 import GlobalProgressTracker from './components/GlobalProgressTracker';
 import AdminHealthMonitor from './components/AdminHealthMonitor';
@@ -516,6 +517,8 @@ export default function App() {
         return <DataSyncHubPage />;
       case 'negotiations':
         return <OwnerNegotiationsPage />;
+      case 'smartSearch':
+        return <SmartSearchPage />;
       case 'searchInsights':
         return <SearchInsightsPage T={T} isAr={isAr} />;
       case 'followups':

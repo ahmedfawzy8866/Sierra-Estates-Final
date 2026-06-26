@@ -4,6 +4,7 @@ import { api } from '../lib/apiClient';
 import { Lead } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import HighlightText from './HighlightText';
+import LeadScoreBadge from './LeadScoreBadge';
 import { recordAccess, getRelevanceScore } from '../utils/relevance';
 
 interface LeadsPageProps {
@@ -881,11 +882,10 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
                             <span className="font-semibold text-white inline-flex items-center gap-1.5 uppercase tracking-wide">
                               <HighlightText text={l.name} highlight={searchQuery} />
                               {l.hot && <span className="text-[10px] animate-bounce shrink-0">🔥</span>}
-                              {getRelevanceScore(l.id) > 0 && (
-                                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-cyan-950/60 border border-cyan-800/40 text-[9px] font-mono text-cyan-400 font-medium cursor-help" title={`Relevance Score: ${getRelevanceScore(l.id)}`} onClick={(e) => { e.stopPropagation(); }}>
-                                  🎯 {getRelevanceScore(l.id)}
-                                </span>
-                              )}
+                              <LeadScoreBadge 
+                                score={l.lead_score ?? l.score ?? (l.hot ? 8 : Math.min(10, getRelevanceScore(l.id) + 2))} 
+                                size="sm" 
+                              />
                             </span>
                           </div>
                         </div>
