@@ -14,6 +14,8 @@ export interface Lead {
   updatedAt: Date;
   ownerId?: string;
   archived?: boolean;
+  lead_score?: number;
+  score?: number;
 }
 
 export interface Listing {
