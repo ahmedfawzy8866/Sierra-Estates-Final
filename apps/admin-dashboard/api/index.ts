@@ -1212,24 +1212,92 @@ async function getHermesAIResponse(conversationId: string, userMessage: string):
   const fullSystemPrompt = `${HERMES_SYSTEM_PROMPT}${propertyContext}`;
 
   // 2. Build or restore session
-  if (!hermesSessions.has(conversationId)) {
-    hermesSessions.set(conversationId, [
-      { role: 'system', content: fullSystemPrompt }
-    ]);
-  } else {
-    // Update system prompt with fresh listings
-    const history = hermesSessions.get(conversationId)!;
-    const sysIndex = history.findIndex(h => h.role === 'system');
-    if (sysIndex !== -1) {
-      history[sysIndex].content = fullSystemPrompt;
+  let history: Array<{role: string; content: string}> = [];
+
+  if (db) {
+    try {
+      const messagesRef = db.collection('leads').doc(conversationId).collection('messages');
+      const snapshot = await messagesRef.orderBy('createdAt', 'asc').limit(20).get();
+      
+      if (snapshot.empty) {
+        // If no history exists, inject the HERMES_SYSTEM_PROMPT (with live property context) and save it.
+        await messagesRef.add({
+          role: 'system',
+          content: fullSystemPrompt,
+          createdAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+        history = [{ role: 'system', content: fullSystemPrompt }];
+      } else {
+        history = snapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            role: data.role || '',
+            content: data.content || ''
+          };
+        });
+        
+        // Update existing system prompt if present in history to have latest listings
+        const sysIndex = history.findIndex(h => h.role === 'system');
+        if (sysIndex !== -1) {
+          history[sysIndex].content = fullSystemPrompt;
+        }
+      }
+    } catch (e) {
+      console.error('[Hermes] Failed to load/init message history from Firestore:', e);
+      // Fallback to in-memory Map
+      if (!hermesSessions.has(conversationId)) {
+        hermesSessions.set(conversationId, [
+          { role: 'system', content: fullSystemPrompt }
+        ]);
+      } else {
+        const memHistory = hermesSessions.get(conversationId)!;
+        const sysIndex = memHistory.findIndex(h => h.role === 'system');
+        if (sysIndex !== -1) {
+          memHistory[sysIndex].content = fullSystemPrompt;
+        }
+      }
+      history = hermesSessions.get(conversationId)!;
     }
+  } else {
+    // Fallback to in-memory Map if db is not initialized
+    if (!hermesSessions.has(conversationId)) {
+      hermesSessions.set(conversationId, [
+        { role: 'system', content: fullSystemPrompt }
+      ]);
+    } else {
+      const memHistory = hermesSessions.get(conversationId)!;
+      const sysIndex = memHistory.findIndex(h => h.role === 'system');
+      if (sysIndex !== -1) {
+        memHistory[sysIndex].content = fullSystemPrompt;
+      }
+    }
+    history = hermesSessions.get(conversationId)!;
   }
-  const history = hermesSessions.get(conversationId)!;
 
   // Add the user message if it's not already the last entry
   const lastMsg = history[history.length - 1];
   if (!lastMsg || lastMsg.role !== 'user' || lastMsg.content !== userMessage) {
     history.push({ role: 'user', content: userMessage });
+    if (db) {
+      try {
+        await db.collection('leads').doc(conversationId).collection('messages').add({
+          role: 'user',
+          content: userMessage,
+          createdAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+      } catch (err) {
+        console.error('[Hermes] Failed to save user message to Firestore:', err);
+      }
+    } else {
+      // Fallback: save to in-memory Map
+      const memHistory = hermesSessions.get(conversationId);
+      if (memHistory) {
+        const memLastMsg = memHistory[memHistory.length - 1];
+        if (!memLastMsg || memLastMsg.role !== 'user' || memLastMsg.content !== userMessage) {
+          memHistory.push({ role: 'user', content: userMessage });
+        }
+      }
+    }
   }
 
   // 3. Try Gemini LLM Generation
@@ -1254,6 +1322,24 @@ async function getHermesAIResponse(conversationId: string, userMessage: string):
       if (response && response.text) {
         const reply = response.text.trim();
         history.push({ role: 'assistant', content: reply });
+        
+        // Save reply to Firestore
+        if (db) {
+          try {
+            await db.collection('leads').doc(conversationId).collection('messages').add({
+              role: 'assistant',
+              content: reply,
+              createdAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+          } catch (err) {
+            console.error('[Hermes] Failed to save assistant reply to Firestore:', err);
+          }
+        } else {
+          const memHistory = hermesSessions.get(conversationId);
+          if (memHistory) {
+            memHistory.push({ role: 'assistant', content: reply });
+          }
+        }
         return reply;
       }
     } catch (err) {
@@ -1264,6 +1350,23 @@ async function getHermesAIResponse(conversationId: string, userMessage: string):
   // 4. Fallback to rule-based response
   const reply = hermesRuleFallback(userMessage);
   history.push({ role: 'assistant', content: reply });
+  
+  if (db) {
+    try {
+      await db.collection('leads').doc(conversationId).collection('messages').add({
+        role: 'assistant',
+        content: reply,
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    } catch (err) {
+      console.error('[Hermes] Failed to save fallback reply to Firestore:', err);
+    }
+  } else {
+    const memHistory = hermesSessions.get(conversationId);
+    if (memHistory) {
+      memHistory.push({ role: 'assistant', content: reply });
+    }
+  }
   return reply;
 }
 
