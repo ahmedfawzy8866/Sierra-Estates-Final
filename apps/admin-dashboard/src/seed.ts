@@ -319,4 +319,66 @@ const INITIAL_LISTINGS = [
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, 'bots');
   }
+
+  // 8. Admin Tasks
+  try {
+    const tasksSnap = await getDocs(collection(db, 'admin_tasks'));
+    if (tasksSnap.empty) {
+      console.log('Seeding admin tasks...');
+      const batch = writeBatch(db);
+      const tasksToSeed = [
+        {
+          id: 'phase1',
+          phase: 'Phase 1: Dynamic Data (Firebase)',
+          items: [
+            { title: 'Initialize Firebase client connection', completed: true },
+            { title: 'Create collections for Properties and Agents', completed: true },
+            { title: 'Migrate static data to Firebase Firestore', completed: true },
+            { title: 'Implement real-time updates for availability', completed: true }
+          ]
+        },
+        {
+          id: 'phase2',
+          phase: 'Phase 2: AI Search & Matchmaking (OpenClaw)',
+          items: [
+            { title: 'Initialize OpenClaw gateway connection', completed: true },
+            { title: 'Feed property data to AI agent for vector search', completed: true },
+            { title: 'Build natural language search UI on home page', completed: true },
+            { title: 'Handle fuzzy queries (e.g. Villa under 10M)', completed: true }
+          ]
+        },
+        {
+          id: 'phase3',
+          phase: 'Phase 3: Hermes AI LLM & Inventory Context',
+          items: [
+            { title: 'Import @google/genai and initialize Gemini client', completed: true },
+            { title: 'Integrate live property inventory context from Firestore', completed: true },
+            { title: 'Update chat endpoints to use live Gemini (gemini-2.5-flash)', completed: true },
+            { title: 'Test and verify integration compiles and executes', completed: true }
+          ]
+        },
+        {
+          id: 'phase4',
+          phase: 'Phase 4: WhatsApp Integration & Webhook Setup',
+          items: [
+            { title: 'Create WhatsApp Business App in Meta Console', completed: false },
+            { title: 'Register backend URL as a Meta webhook', completed: false },
+            { title: 'Enable Twilio WhatsApp Sandbox for testing', completed: false },
+            { title: 'Configure production WhatsApp environment variables', completed: false }
+          ]
+        }
+      ];
+
+      tasksToSeed.forEach((task) => {
+        const docRef = doc(db, 'admin_tasks', task.id);
+        batch.set(docRef, {
+          phase: task.phase,
+          items: task.items
+        });
+      });
+      await batch.commit();
+    }
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, 'admin_tasks');
+  }
 }

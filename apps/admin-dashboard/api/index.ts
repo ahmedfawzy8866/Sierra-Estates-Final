@@ -37,6 +37,72 @@ app.use((req, res, next) => {
 let db: admin.firestore.Firestore | null = null;
 const FIREBASE_PROJECT = "sierra-blu";
 
+async function seedAdminTasksIfEmpty() {
+  if (!db) return;
+  try {
+    const tasksRef = db.collection('admin_tasks');
+    const snapshot = await tasksRef.limit(1).get();
+    if (snapshot.empty) {
+      console.log('[Backend] Seeding admin_tasks collection...');
+      const tasksToSeed = [
+        {
+          id: 'phase1',
+          phase: 'Phase 1: Dynamic Data (Firebase)',
+          items: [
+            { title: 'Initialize Firebase client connection', completed: true },
+            { title: 'Create collections for Properties and Agents', completed: true },
+            { title: 'Migrate static data to Firebase Firestore', completed: true },
+            { title: 'Implement real-time updates for availability', completed: true }
+          ]
+        },
+        {
+          id: 'phase2',
+          phase: 'Phase 2: AI Search & Matchmaking (OpenClaw)',
+          items: [
+            { title: 'Initialize OpenClaw gateway connection', completed: true },
+            { title: 'Feed property data to AI agent for vector search', completed: true },
+            { title: 'Build natural language search UI on home page', completed: true },
+            { title: 'Handle fuzzy queries (e.g. Villa under 10M)', completed: true }
+          ]
+        },
+        {
+          id: 'phase3',
+          phase: 'Phase 3: Hermes AI LLM & Inventory Context',
+          items: [
+            { title: 'Import @google/genai and initialize Gemini client', completed: true },
+            { title: 'Integrate live property inventory context from Firestore', completed: true },
+            { title: 'Update chat endpoints to use live Gemini (gemini-2.5-flash)', completed: true },
+            { title: 'Test and verify integration compiles and executes', completed: true }
+          ]
+        },
+        {
+          id: 'phase4',
+          phase: 'Phase 4: WhatsApp Integration & Webhook Setup',
+          items: [
+            { title: 'Create WhatsApp Business App in Meta Console', completed: false },
+            { title: 'Register backend URL as a Meta webhook', completed: false },
+            { title: 'Enable Twilio WhatsApp Sandbox for testing', completed: false },
+            { title: 'Configure production WhatsApp environment variables', completed: false }
+          ]
+        }
+      ];
+
+      const batch = db.batch();
+      tasksToSeed.forEach((task) => {
+        const docRef = tasksRef.doc(task.id);
+        batch.set(docRef, {
+          phase: task.phase,
+          items: task.items
+        });
+      });
+      await batch.commit();
+      console.log('[Backend] admin_tasks successfully seeded! ✅');
+    }
+  } catch (err) {
+    console.error('[Backend] Failed to seed admin_tasks:', err);
+  }
+}
+
 if (!admin.apps.length) {
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
   const privateKey = process.env.FIREBASE_PRIVATE_KEY;
@@ -80,6 +146,10 @@ if (!admin.apps.length) {
       console.warn('FIREBASE_SERVICE_ACCOUNT not set and ADC fallback failed:', err.message);
     }
   }
+}
+
+if (db) {
+  seedAdminTasksIfEmpty();
 }
 
 // ─── Firestore REST API fallback (no auth required — listings are public) ────
@@ -1350,7 +1420,7 @@ app.post('/api/webhook/whatsapp', async (req, res) => {
 app.get('/api/admin/enhancement-tasks', authenticateAdmin, async (req, res) => {
   try {
     if (!db) { res.status(503).json({ error: 'DB not ready' }); return; }
-    const snapshot = await db.collection('admin_tasks').orderBy('id').get();
+    const snapshot = await db.collection('admin_tasks').get();
     const tasks = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
     res.json({ success: true, tasks });
   } catch (e: any) {
