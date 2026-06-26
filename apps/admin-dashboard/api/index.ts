@@ -4,12 +4,14 @@ dotenv.config();
 import express from 'express';
 import admin from 'firebase-admin';
 import twilio from 'twilio';
+import { GoogleGenAI } from '@google/genai';
 
 // ─── Config ────────────────────────────────────────────────────────────────────
 const WA_VERIFY_TOKEN = process.env.WA_VERIFY_TOKEN || 'sierra_hermes_2026';
 const WA_PHONE_ID = process.env.WA_PHONE_ID || '';
 const WA_TOKEN = process.env.WA_TOKEN || '';
 const OPENCLAW_API_KEY = process.env.OPENCLAW_API_KEY || '';
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 const AGENT_PHONE = process.env.AGENT_PHONE || '';
 
 const app = express();
@@ -995,6 +997,83 @@ function hermesRuleFallback(message: string): string {
   return 'Thank you for reaching out to Sierra Estates! Are you looking for a villa, apartment, or townhouse in New Cairo? 🏙️';
 }
 
+// Generate AI response with live property context and session history using Gemini API
+async function getHermesAIResponse(conversationId: string, userMessage: string): Promise<string> {
+  // 1. Fetch live property context from Firestore (limit 15 for prompt size / token efficiency)
+  let propertyContext = '';
+  if (db) {
+    try {
+      const snapshot = await db.collection('listings').limit(15).get();
+      const properties = snapshot.docs.map(d => ({ id: d.id, ...d.data() })) as any[];
+      if (properties.length > 0) {
+        propertyContext = "\n\n## AVAILABLE PROPERTY INVENTORY (REFERENCE ONLY):\n" + 
+          properties.map(p => 
+            `- ${p.title || 'Property'} (${p.type || 'Apartment'}) in ${p.cmp || p.compound || 'New Cairo'}. Price: ${p.price || 'Contact for price'} EGP, Beds: ${p.beds || 0}, Baths: ${p.baths || 0}, Area: ${p.area || 0} sqm. Ref: ${p.pfReferenceNumber || p.id}`
+          ).join('\n');
+      }
+    } catch (e) {
+      console.error('[Hermes] Failed to load live inventory for context:', e);
+    }
+  }
+
+  const fullSystemPrompt = `${HERMES_SYSTEM_PROMPT}${propertyContext}`;
+
+  // 2. Build or restore session
+  if (!hermesSessions.has(conversationId)) {
+    hermesSessions.set(conversationId, [
+      { role: 'system', content: fullSystemPrompt }
+    ]);
+  } else {
+    // Update system prompt with fresh listings
+    const history = hermesSessions.get(conversationId)!;
+    const sysIndex = history.findIndex(h => h.role === 'system');
+    if (sysIndex !== -1) {
+      history[sysIndex].content = fullSystemPrompt;
+    }
+  }
+  const history = hermesSessions.get(conversationId)!;
+
+  // Add the user message if it's not already the last entry
+  const lastMsg = history[history.length - 1];
+  if (!lastMsg || lastMsg.role !== 'user' || lastMsg.content !== userMessage) {
+    history.push({ role: 'user', content: userMessage });
+  }
+
+  // 3. Try Gemini LLM Generation
+  if (GEMINI_API_KEY) {
+    try {
+      const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+      const chatHistory = history
+        .filter(item => item.role !== 'system')
+        .map(item => ({
+          role: item.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: item.content }]
+        }));
+
+      const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: chatHistory,
+        config: {
+          systemInstruction: fullSystemPrompt
+        }
+      });
+
+      if (response && response.text) {
+        const reply = response.text.trim();
+        history.push({ role: 'assistant', content: reply });
+        return reply;
+      }
+    } catch (err) {
+      console.error('[Hermes] Gemini LLM generation error:', err);
+    }
+  }
+
+  // 4. Fallback to rule-based response
+  const reply = hermesRuleFallback(userMessage);
+  history.push({ role: 'assistant', content: reply });
+  return reply;
+}
+
 // POST /api/hermes/chat — conversational AI endpoint
 app.post('/api/hermes/chat', async (req, res) => {
   try {
@@ -1004,18 +1083,7 @@ app.post('/api/hermes/chat', async (req, res) => {
       return;
     }
 
-    // Build or restore session
-    if (!hermesSessions.has(conversationId)) {
-      hermesSessions.set(conversationId, [
-        { role: 'system', content: HERMES_SYSTEM_PROMPT }
-      ]);
-    }
-    const history = hermesSessions.get(conversationId)!;
-    history.push({ role: 'user', content: message });
-
-    // Reply via rule-based fallback (replace with OpenClaw/OpenAI call when key is set)
-    const reply = hermesRuleFallback(message);
-    history.push({ role: 'assistant', content: reply });
+    const reply = await getHermesAIResponse(conversationId, message);
 
     // Log lead to Firestore
     if (db && phone) {
@@ -1101,7 +1169,7 @@ app.post('/api/webhook/whatsapp', async (req, res) => {
           console.log(`[WhatsApp] 📩 From ${phone}: ${userText}`);
 
           // Get Hermes reply
-          const reply = hermesRuleFallback(userText);
+          const reply = await getHermesAIResponse(conversationId, userText);
 
           // Send reply via WhatsApp Business API
           if (WA_TOKEN && WA_PHONE_ID) {
