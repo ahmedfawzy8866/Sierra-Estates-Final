@@ -37,8 +37,6 @@
     "**/lib",
     "packages/agents-core/src/dev-runner.ts",
     "backend",
-    "back",
-    "**/back",
     "app",
     "components",
     "constants",
@@ -46,7 +44,6 @@
     "hooks",
     "server",
     "workflows",
-    "apps/admin-dashboard",
     "apps/api"
   ]
 }

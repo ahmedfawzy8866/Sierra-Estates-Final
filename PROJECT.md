@@ -10,10 +10,8 @@
 ```
 Sierra-Estates-Final/
 ├── apps/
-│   └── admin-dashboard/          🛠️  ADMIN DASHBOARD (React + Express API)
-│       ├── api/index.ts           ← Express serverless API (Firebase Admin + Twilio + PF)
-│       ├── src/                   ← React admin dashboard UI
-│       └── vercel.json            ← Vercel deployment config
+│   ├── api/                      📡  PYTHON API (PropertyFinder sync + bot integration)
+│   └── agents/                   🤖  AUTOMATION AGENTS (whatsapp-bot, closer)
 │
 ├── artifacts/
 │   └── sierra-estates/           🏠  CLIENT PORTAL (React Vite SPA)
@@ -51,16 +49,10 @@ Sierra-Estates-Final/
 | **Contact** | `/contact` | Contact form + WhatsApp button |
 | **About** | `/about` | About Sierra Estates |
 
-### 🛠️ Admin Dashboard — `apps/admin-dashboard`
-| Page | Route | Description |
-|------|-------|-------------|
-| **Dashboard Home** | `/` | Overview stats, recent activity |
-| **Listings Manager** | `/listings` | View/add/edit all properties |
-| **Leads / CRM** | `/leads` | Client leads list with Twilio SMS |
-| **PropertyFinder Sync** | `/pf-sync` | Sync listings from PF Atlas API |
-| **Agents Monitor** | `/agents` | Status of all automation agents |
-| **Workflows** | `/workflows` | n8n-style workflow management |
-| **Settings** | `/settings` | API keys, integrations, env config |
+### 🛠️ Admin Console (Unified)
+The legacy React SPA admin dashboard has been deprecated. The admin console and tasks management interface have been unified into:
+*   **Mobile Admin**: Handled by the Expo App Router at `app/admin.tsx`.
+*   **Backend API**: Handled by the Next.js API layer at `backend/src/app/api/`.
 
 ---
 
@@ -88,7 +80,6 @@ Sierra-Estates-Final/
 | App | Vercel URL | Vercel Project |
 |-----|-----------|---------------|
 | **Client Portal** | https://sierra-estates.vercel.app | `sierra-estates` |
-| **Admin Dashboard** | https://admin-dashboard-sooty-eight-31.vercel.app | `admin-dashboard` |
 
 ### Custom Domain (Namecheap)
 - Domain: `sierra-estates.net`

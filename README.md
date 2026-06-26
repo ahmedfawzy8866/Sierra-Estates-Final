@@ -13,23 +13,20 @@ Unified monorepo for the Sierra Estates luxury PropTech platform (New Cairo mark
 
 ```
 Sierra-Estates-Final/
+├── app/                       # Expo Router Mobile App (React Native UI files)
+├── backend/                   # Next.js Web App & API Layer (@sierra-estates/backend)
 ├── apps/
-│   ├── admin-dashboard/       # Consolidated Admin Console + Client Hub frontend application
-│   │   ├── api/               # Express/Fastify API server routes (Auth, Twilio, PropertyFinder proxy)
-│   │   ├── src/               # React + Tailwind frontend application
-│   │   │   ├── components/    # Page components (ClientHub, Overview, AgentsPage, WorkflowsPage, ScribePage)
-│   │   │   └── lib/           # Clients (firebase, apiClient)
-│   │   └── package.json       # Dev & build scripts for the dashboard
 │   ├── api/                   # Python FastAPI service — PropertyFinder sync + AI bot implementation
 │   │   ├── main.py            # FastAPI entry point
 │   │   ├── property_finder_sync.py # PropertyFinder API logic
 │   │   └── Dockerfile         # Container definition
+│   └── agents/                # Agent runtime wrappers (whatsapp-bot, stage-9-closer)
 ├── packages/
 │   ├── agents-core/           # Multi-agent framework, workflow engine, and AI registry
+│   ├── memory-engine/         # Pub/sub SharedMemoryBus for agent communication
 │   ├── obedian/               # Local JSON-backed long-term memory module
-│   └── exchange/              # Firestore message bus between Admin, Agents, and Workflows
+│   └── db/                    # Shared database access layers
 ├── functions/                 # Firebase Cloud Functions (Node.js 20)
-│   └── lib/                   # Compiled functions
 ├── firestore.rules            # Production Firestore security rules
 ├── storage.rules              # Production Storage security rules
 ├── pnpm-workspace.yaml        # Monorepo workspace configuration
