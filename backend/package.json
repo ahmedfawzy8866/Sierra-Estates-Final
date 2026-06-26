@@ -10,15 +10,17 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "@sendgrid/mail": "^8.1.4",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.38.0",
+    "axios": "^1.7.9",
+    "firebase": "^11.1.0",
+    "firebase-admin": "^13.0.2",
     "next": "^15.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "firebase": "^11.1.0",
-    "firebase-admin": "^13.0.2",
-    "@google/generative-ai": "^0.21.0",
-    "@sendgrid/mail": "^8.1.4",
     "resend": "^4.0.0",
-    "axios": "^1.7.9",
     "zod": "^3.23.8"
   },
   "devDependencies": {

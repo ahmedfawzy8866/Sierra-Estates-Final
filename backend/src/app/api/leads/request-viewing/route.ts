@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { sendTelegramMessage } from '@/lib/services/telegram-controller';
+import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
 
 export async function POST(req: NextRequest) {
+  const limited = await applyRateLimit(req, publicEndpointLimiter);
+  if (limited) return limited;
+
   const body = await req.json();
   const { stakeholderName, stakeholderPhone, assetId, preferredDate, notes } = body;
 

@@ -25,6 +25,8 @@ const OPTIONAL_VARS = [
   'TELEGRAM_CHAT_ID',
   'SENDGRID_API_KEY',
   'RESEND_API_KEY',
+  'UPSTASH_REDIS_REST_URL',
+  'UPSTASH_REDIS_REST_TOKEN',
 ] as const;
 
 export function validateEnv(): void {

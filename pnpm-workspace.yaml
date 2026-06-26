@@ -33,6 +33,7 @@ packages:
   - "lib/*"
   - "lib/integrations/*"
   - "scripts"
+  - "backend"
 
 catalog:
   '@tailwindcss/vite': ^4.1.14
