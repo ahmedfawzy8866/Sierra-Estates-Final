@@ -47,3 +47,7 @@ obedian-store.json
 *-restore.ts
 *-restore.tsx
 
+# Internal
+skills/
+upload/
+tool-results/
