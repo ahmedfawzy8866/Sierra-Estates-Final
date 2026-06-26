@@ -24,7 +24,7 @@ Aligned with STATUS.md. Sorted by deployment-readiness (pre-deploy → post-depl
 - [x] Sidebar updated with Negotiations nav item
 
 ## 🆕 Next Logical Steps
-- [ ] Connect AI Smart Filter to frontend UI component
+- [x] Connect AI Smart Filter to frontend UI component
 - [ ] Integrate real Virtual Tour SDK
 - [ ] Add more unit tests for PF sync engine edge cases
 - [ ] Wire LeadScoreBadge into LeadsPage lead cards

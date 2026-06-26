@@ -3,6 +3,8 @@ import * as THREE from 'three';
 import L from 'leaflet';
 import { collection, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType, createSierraNotification } from '../firebase';
+import { api } from '../lib/apiClient';
+import { Search, Loader2, Sparkles, X } from 'lucide-react';
 import { Listing } from '../types';
 
 // Let's import the leaflet styles dynamically if not loaded
@@ -123,6 +125,47 @@ export default function ClientHub({
   const [smartSubmitted, setSmartSubmitted] = useState(false);
   const [smartName, setSmartName] = useState('');
   const [smartWa, setSmartWa] = useState('');
+
+  // AI Smart Search integration
+  const [smartSearchQuery, setSmartSearchQuery] = useState('');
+  const [loadingSmartSearch, setLoadingSmartSearch] = useState(false);
+  const [errorSmartSearch, setErrorSmartSearch] = useState<string | null>(null);
+
+  const handleSmartSearch = async () => {
+    if (!smartSearchQuery.trim()) return;
+    setLoadingSmartSearch(true);
+    setErrorSmartSearch(null);
+    try {
+      const res = await api.post<any>('/api/listings/smart-filter', { query: smartSearchQuery, limit: 50 });
+      const filters = res.parsedFilters || {};
+      
+      // Map AI extracted filters to ClientHub local state
+      if (filters.offeringType) {
+        setMode(filters.offeringType === 'rent' ? 'rent' : 'resale');
+      } else {
+        setMode('all');
+      }
+      
+      if (filters.bedrooms) {
+        setRooms(filters.bedrooms);
+      } else {
+        setRooms(null);
+      }
+      
+      if (filters.compound) {
+        setSelectedCompounds([filters.compound]);
+      } else {
+        setSelectedCompounds([]);
+      }
+      
+      // Scroll to listings section to see results
+      document.getElementById('listings')?.scrollIntoView({ behavior: 'smooth' });
+    } catch (err: any) {
+      setErrorSmartSearch(err.message || 'Smart search failed');
+    } finally {
+      setLoadingSmartSearch(false);
+    }
+  };
 
   // Dropdowns state
   const [ddOpen, setOpen] = useState<'cpd' | 'rooms' | 'near' | null>(null);
@@ -909,6 +952,52 @@ export default function ClientHub({
           <p className="text-xs md:text-sm text-slate-400 font-medium tracking-wide max-w-lg select-none">
             {isAr ? '١٩ مجمعاً فاخراً بالقاهرة الجديدة · مطابقة واحتساب لعوائد الاستثمار فورياً' : '19 premium compounds matching New Cairo luxury Briefs. Full instant ROI tracking.'}
           </p>
+
+          {/* AI Smart Search Bar */}
+          <div className="w-full max-w-2xl mt-4 relative animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+            <div className="relative group">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-[#C8961A]/40 to-[#E9C176]/20 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-500" />
+              <div className="relative flex items-center bg-slate-950/80 border border-[#C8961A]/30 rounded-full shadow-2xl backdrop-blur-xl p-1.5 focus-within:border-[#C8961A]/70 focus-within:ring-1 focus-within:ring-[#C8961A]/30 transition-all">
+                <div className="pl-4 pr-2 flex items-center justify-center text-[#C8961A]">
+                  <Sparkles size={18} className="animate-pulse" />
+                </div>
+                <input
+                  type="text"
+                  value={smartSearchQuery}
+                  onChange={(e) => setSmartSearchQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSmartSearch()}
+                  placeholder={isAr ? "ابحث بالذكاء الاصطناعي... 'فيلا ٣ غرف في مدينتي'" : "Search with AI... e.g. '3 bedroom villa in Madinaty for rent'"}
+                  className="flex-1 bg-transparent border-none outline-none text-white text-sm md:text-base py-3 px-2 placeholder:text-slate-500 font-medium"
+                />
+                {smartSearchQuery && (
+                  <button 
+                    onClick={() => { setSmartSearchQuery(''); setErrorSmartSearch(null); }}
+                    className="p-2 text-slate-400 hover:text-white transition"
+                  >
+                    <X size={16} />
+                  </button>
+                )}
+                <button
+                  onClick={handleSmartSearch}
+                  disabled={loadingSmartSearch || !smartSearchQuery.trim()}
+                  className="ml-2 py-3 px-6 md:px-8 bg-gradient-to-r from-[#C8961A] to-[#E9C176] hover:from-[#E9C176] hover:to-[#C8961A] text-slate-950 font-bold text-xs uppercase tracking-wider rounded-full shadow-lg transform hover:scale-105 active:scale-95 transition disabled:opacity-70 flex items-center justify-center min-w-[120px]"
+                >
+                  {loadingSmartSearch ? <Loader2 size={16} className="animate-spin" /> : (
+                    <span className="flex items-center gap-2">
+                      <Search size={14} strokeWidth={3} />
+                      {isAr ? 'بحث' : 'Search'}
+                    </span>
+                  )}
+                </button>
+              </div>
+            </div>
+            {errorSmartSearch && (
+              <div className="absolute -bottom-8 left-0 right-0 text-red-400 text-xs font-mono text-center">
+                {errorSmartSearch}
+              </div>
+            )}
+          </div>
+
 
           {/* Quick Stats banner */}
           <div className="grid grid-cols-4 gap-6 bg-slate-950/60 p-4 border border-slate-800/80 max-w-lg w-full rounded-2xl shadow-2xl backdrop-blur-md select-none mt-4 border-t-[#C8961A]/40">
