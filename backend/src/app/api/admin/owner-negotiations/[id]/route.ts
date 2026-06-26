@@ -19,7 +19,7 @@ const patchSchema = z
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const authResult = await verifyAdminRequest(req);
-  if (!authResult.authenticated) return unauthorizedResponse();
+  if (!authResult.success) return unauthorizedResponse();
 
   try {
     const { id } = await params;
@@ -39,7 +39,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const authResult = await verifyAdminRequest(req);
-  if (!authResult.authenticated) return unauthorizedResponse();
+  if (!authResult.success) return unauthorizedResponse();
 
   try {
     const { id } = await params;

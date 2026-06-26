@@ -19,7 +19,7 @@ const initiateSchema = z.object({
 
 export async function GET(req: NextRequest) {
   const authResult = await verifyAdminRequest(req);
-  if (!authResult.authenticated) return unauthorizedResponse();
+  if (!authResult.success) return unauthorizedResponse();
 
   try {
     const { searchParams } = new URL(req.url);
@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const authResult = await verifyAdminRequest(req);
-  if (!authResult.authenticated) return unauthorizedResponse();
+  if (!authResult.success) return unauthorizedResponse();
 
   try {
     const parsed = initiateSchema.safeParse(await req.json());
