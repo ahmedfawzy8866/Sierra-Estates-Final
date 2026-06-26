@@ -38,7 +38,7 @@ export default function FavoritesScreen() {
           </Text>
           <Pressable
             style={({ pressed }) => [styles.browseBtn, { backgroundColor: colors.gold, opacity: pressed ? 0.85 : 1 }]}
-            onPress={() => router.push("/(tabs)/listings" as any)}
+            onPress={() => router.push("/listings" as any)}
           >
             <Text style={[styles.browseBtnText, { color: colors.navyDeep }]}>Browse Listings</Text>
           </Pressable>

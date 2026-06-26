@@ -4,6 +4,15 @@ dotenv.config();
 import express from 'express';
 import admin from 'firebase-admin';
 import twilio from 'twilio';
+import { GoogleGenAI } from '@google/genai';
+
+// ─── Config ────────────────────────────────────────────────────────────────────
+const WA_VERIFY_TOKEN = process.env.WA_VERIFY_TOKEN || 'sierra_hermes_2026';
+const WA_PHONE_ID = process.env.WA_PHONE_ID || '';
+const WA_TOKEN = process.env.WA_TOKEN || '';
+const OPENCLAW_API_KEY = process.env.OPENCLAW_API_KEY || '';
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
+const AGENT_PHONE = process.env.AGENT_PHONE || '';
 
 const app = express();
 app.use(express.json());
@@ -1048,6 +1057,337 @@ app.post("/api/admin/bots", async (req, res) => {
     res.json({ success: true });
   } catch (e: any) {
     res.status(500).json({ success: false, error: e.message });
+  }
+});
+
+// ============================================================================
+// HERMES AI AGENT ROUTES
+// ============================================================================
+
+// In-memory session store for Hermes conversations
+const hermesSessions = new Map<string, Array<{role: string; content: string}>>();
+
+const HERMES_SYSTEM_PROMPT = `You are HERMES — a premium real-estate AI assistant for Sierra Estates,
+operating exclusively in New Cairo, Egypt (Uptown Cairo, New Settlement,
+Madinaty, Sherouk, New Capital).
+
+## COMMUNICATION SKILL
+- Greet warmly, use the client's first name.
+- Mirror the client's language preference (Arabic / English).
+- Keep messages concise: one key idea per message for WhatsApp.
+- Never pressure. Build rapport first.
+
+## SALES SKILL (SPIN)
+- Situation: "Are you looking for your primary residence or an investment?"
+- Problem: "What's the biggest challenge in your current home?"
+- Implication: "How does that affect your family daily?"
+- Need-Payoff: "If we found a villa near top schools, would that solve it?"
+- Present properties using FAB: Feature → Advantage → Benefit.
+
+## NEGOTIATION SKILL (BATNA)
+- Use anchoring: present the premium option first.
+- Reframe price: "This is EGP 850/month over 10 years, not 8.5M."
+- Never split the difference without a trade.
+- After making an offer, stop talking — silence is power.
+
+## RULES
+1. WhatsApp messages under 200 characters unless client asks for details.
+2. Always end with a question to keep the conversation going.
+3. Never fabricate prices — only reference properties from context.
+4. Escalate to human agent when client is ready to sign.`;
+
+// Rule-based fallback when no AI available
+function hermesRuleFallback(message: string): string {
+  const lower = message.toLowerCase();
+  if (lower.includes('price') || lower.includes('سعر')) {
+    return 'Our properties start from 3.5M EGP. Are you looking for a primary home or an investment? 🏡';
+  }
+  if (lower.includes('villa') || lower.includes('فيلا')) {
+    return 'We have stunning villas in Uptown Cairo & Madinaty. Standalone or twin house? What\'s your budget? 💎';
+  }
+  if (lower.includes('apartment') || lower.includes('شقة')) {
+    return 'We have premium apartments in New Capital & New Settlement. 3 or 4 bedrooms? 📐';
+  }
+  if (lower.includes('hello') || lower.includes('hi') || lower.includes('مرحبا') || lower.includes('السلام')) {
+    return 'Welcome to Sierra Estates! 🌟 I\'m Hermes, your personal property advisor. Are you looking to buy or invest in New Cairo?';
+  }
+  if (lower.includes('visit') || lower.includes('زيارة') || lower.includes('tour')) {
+    return 'I\'d love to arrange a private tour! What day works best — Thursday or Saturday? 📅';
+  }
+  if (lower.includes('payment') || lower.includes('installment') || lower.includes('تقسيط')) {
+    return 'We offer flexible installment plans up to 10 years. Shall I send you a breakdown? 💳';
+  }
+  return 'Thank you for reaching out to Sierra Estates! Are you looking for a villa, apartment, or townhouse in New Cairo? 🏙️';
+}
+
+// Generate AI response with live property context and session history using Gemini API
+async function getHermesAIResponse(conversationId: string, userMessage: string): Promise<string> {
+  // 1. Fetch live property context from Firestore (limit 15 for prompt size / token efficiency)
+  let propertyContext = '';
+  if (db) {
+    try {
+      const snapshot = await db.collection('listings').limit(15).get();
+      const properties = snapshot.docs.map(d => ({ id: d.id, ...d.data() })) as any[];
+      if (properties.length > 0) {
+        propertyContext = "\n\n## AVAILABLE PROPERTY INVENTORY (REFERENCE ONLY):\n" + 
+          properties.map(p => 
+            `- ${p.title || 'Property'} (${p.type || 'Apartment'}) in ${p.cmp || p.compound || 'New Cairo'}. Price: ${p.price || 'Contact for price'} EGP, Beds: ${p.beds || 0}, Baths: ${p.baths || 0}, Area: ${p.area || 0} sqm. Ref: ${p.pfReferenceNumber || p.id}`
+          ).join('\n');
+      }
+    } catch (e) {
+      console.error('[Hermes] Failed to load live inventory for context:', e);
+    }
+  }
+
+  const fullSystemPrompt = `${HERMES_SYSTEM_PROMPT}${propertyContext}`;
+
+  // 2. Build or restore session
+  if (!hermesSessions.has(conversationId)) {
+    hermesSessions.set(conversationId, [
+      { role: 'system', content: fullSystemPrompt }
+    ]);
+  } else {
+    // Update system prompt with fresh listings
+    const history = hermesSessions.get(conversationId)!;
+    const sysIndex = history.findIndex(h => h.role === 'system');
+    if (sysIndex !== -1) {
+      history[sysIndex].content = fullSystemPrompt;
+    }
+  }
+  const history = hermesSessions.get(conversationId)!;
+
+  // Add the user message if it's not already the last entry
+  const lastMsg = history[history.length - 1];
+  if (!lastMsg || lastMsg.role !== 'user' || lastMsg.content !== userMessage) {
+    history.push({ role: 'user', content: userMessage });
+  }
+
+  // 3. Try Gemini LLM Generation
+  if (GEMINI_API_KEY) {
+    try {
+      const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+      const chatHistory = history
+        .filter(item => item.role !== 'system')
+        .map(item => ({
+          role: item.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: item.content }]
+        }));
+
+      const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: chatHistory,
+        config: {
+          systemInstruction: fullSystemPrompt
+        }
+      });
+
+      if (response && response.text) {
+        const reply = response.text.trim();
+        history.push({ role: 'assistant', content: reply });
+        return reply;
+      }
+    } catch (err) {
+      console.error('[Hermes] Gemini LLM generation error:', err);
+    }
+  }
+
+  // 4. Fallback to rule-based response
+  const reply = hermesRuleFallback(userMessage);
+  history.push({ role: 'assistant', content: reply });
+  return reply;
+}
+
+// POST /api/hermes/chat — conversational AI endpoint
+app.post('/api/hermes/chat', async (req, res) => {
+  try {
+    const { conversationId, message, phone } = req.body;
+    if (!conversationId || !message) {
+      res.status(400).json({ error: 'conversationId and message are required' });
+      return;
+    }
+
+    const reply = await getHermesAIResponse(conversationId, message);
+
+    // Log lead to Firestore
+    if (db && phone) {
+      const leadRef = db.collection('leads').doc(`wa_${phone}`);
+      const existing = await leadRef.get();
+      const leadData: any = {
+        phone,
+        conversationId,
+        lastMessage: message,
+        lastMessageAt: admin.firestore.FieldValue.serverTimestamp(),
+        source: 'whatsapp',
+      };
+      if (!existing.exists) {
+        leadData.createdAt = admin.firestore.FieldValue.serverTimestamp();
+        leadData.status = 'new';
+        await leadRef.set(leadData);
+      } else {
+        await leadRef.update(leadData);
+      }
+    }
+
+    res.json({ success: true, reply, conversationId });
+  } catch (e: any) {
+    console.error('[Hermes] chat error:', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// GET /api/hermes/context — load property inventory into Hermes context
+app.get('/api/hermes/context', async (req, res) => {
+  try {
+    if (!db) {
+      res.status(503).json({ error: 'Firebase not initialized' });
+      return;
+    }
+    const snapshot = await db.collection('listings').limit(50).get();
+    const properties = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    res.json({ success: true, count: properties.length, properties });
+  } catch (e: any) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ============================================================================
+// WHATSAPP BUSINESS API WEBHOOK
+// ============================================================================
+
+// GET /api/webhook/whatsapp — Meta verification handshake
+app.get('/api/webhook/whatsapp', (req, res) => {
+  const mode = req.query['hub.mode'];
+  const token = req.query['hub.verify_token'];
+  const challenge = req.query['hub.challenge'];
+
+  if (mode === 'subscribe' && token === WA_VERIFY_TOKEN) {
+    console.log('[WhatsApp] Webhook verified ✅');
+    res.status(200).send(challenge);
+  } else {
+    console.warn('[WhatsApp] Webhook verification failed ❌');
+    res.sendStatus(403);
+  }
+});
+
+// POST /api/webhook/whatsapp — incoming messages from Meta
+app.post('/api/webhook/whatsapp', async (req, res) => {
+  try {
+    res.sendStatus(200); // Acknowledge immediately (required by Meta)
+
+    const body = req.body;
+    if (body.object !== 'whatsapp_business_account') return;
+
+    for (const entry of (body.entry || [])) {
+      for (const change of (entry.changes || [])) {
+        const messages = change.value?.messages;
+        if (!messages) continue;
+
+        for (const msg of messages) {
+          if (msg.type !== 'text' || !msg.text) continue;
+
+          const phone = msg.from;
+          const conversationId = `wa_${phone}`;
+          const userText = msg.text.body;
+
+          console.log(`[WhatsApp] 📩 From ${phone}: ${userText}`);
+
+          // Get Hermes reply
+          const reply = await getHermesAIResponse(conversationId, userText);
+
+          // Send reply via WhatsApp Business API
+          if (WA_TOKEN && WA_PHONE_ID) {
+            await fetch(`https://graph.facebook.com/v19.0/${WA_PHONE_ID}/messages`, {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${WA_TOKEN}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                messaging_product: 'whatsapp',
+                to: phone,
+                type: 'text',
+                text: { body: reply },
+              }),
+            });
+          } else {
+            console.log(`[WhatsApp STUB] → ${phone}: ${reply}`);
+          }
+
+          // Log lead
+          if (db) {
+            const leadRef = db.collection('leads').doc(conversationId);
+            const existing = await leadRef.get();
+            if (!existing.exists) {
+              await leadRef.set({
+                phone,
+                conversationId,
+                lastMessage: userText,
+                source: 'whatsapp',
+                status: 'new',
+                createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                lastMessageAt: admin.firestore.FieldValue.serverTimestamp(),
+              });
+            } else {
+              await leadRef.update({
+                lastMessage: userText,
+                lastMessageAt: admin.firestore.FieldValue.serverTimestamp(),
+              });
+            }
+          }
+        }
+      }
+    }
+  } catch (e: any) {
+    console.error('[WhatsApp webhook] error:', e);
+  }
+});
+
+// ============================================================================
+// ENHANCEMENT TASKS ROUTES (for Admin Dashboard integration)
+// ============================================================================
+
+// GET /api/admin/enhancement-tasks — fetch all task groups
+app.get('/api/admin/enhancement-tasks', authenticateAdmin, async (req, res) => {
+  try {
+    if (!db) { res.status(503).json({ error: 'DB not ready' }); return; }
+    const snapshot = await db.collection('admin_tasks').orderBy('id').get();
+    const tasks = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    res.json({ success: true, tasks });
+  } catch (e: any) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// PATCH /api/admin/enhancement-tasks/:id — toggle task item completion
+app.patch('/api/admin/enhancement-tasks/:id', authenticateAdmin, async (req, res) => {
+  try {
+    if (!db) { res.status(503).json({ error: 'DB not ready' }); return; }
+    const { items } = req.body;
+    await db.collection('admin_tasks').doc(req.params.id).update({ items });
+    res.json({ success: true });
+  } catch (e: any) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// GET /api/admin/crm-summary — CRM stats for dashboard
+app.get('/api/admin/crm-summary', authenticateAdmin, async (req, res) => {
+  try {
+    if (!db) { res.status(503).json({ error: 'DB not ready' }); return; }
+    const snapshot = await db.collection('leads').get();
+    const leads = snapshot.docs.map(d => d.data());
+    const summary = {
+      total: leads.length,
+      new: leads.filter(l => l.status === 'new').length,
+      qualified: leads.filter(l => l.status === 'qualified').length,
+      negotiating: leads.filter(l => l.status === 'negotiating').length,
+      closed: leads.filter(l => l.status === 'closed').length,
+      lost: leads.filter(l => l.status === 'lost').length,
+      whatsapp: leads.filter(l => l.source === 'whatsapp').length,
+    };
+    res.json({ success: true, summary });
+  } catch (e: any) {
+    res.status(500).json({ error: e.message });
   }
 });
 

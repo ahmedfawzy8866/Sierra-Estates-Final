@@ -179,4 +179,7 @@ allowBuilds:
   esbuild: true
   protobufjs: true
   puppeteer: true
+  openclaw: true
+  tree-sitter-bash: true
+  unrs-resolver: true
 

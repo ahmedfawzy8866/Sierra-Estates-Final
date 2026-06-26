@@ -93,7 +93,7 @@ export const PROPERTIES: Property[] = [
     description:
       "A private waterfront compound in Madinaty featuring three interconnected villas, a private berth, and direct lake access.",
     features: ["Private lake access", "Boat berth", "Helipad", "Infinity pool", "Guest house", "Golf club membership"],
-    compound: "Madinaty Lakes",
+    compound: "Hyde Park",
     lat: 30.089,
     lng: 31.636,
     isFeatured: true,
@@ -144,7 +144,7 @@ export const PROPERTIES: Property[] = [
     description:
       "The Observatory commands unobstructed views of New Cairo. Investment-grade with consistent short-term rental premiums.",
     features: ["City views", "Open plan living", "Floor-to-ceiling glass", "Lounge terrace", "Maid's room", "Parking x2"],
-    compound: "5th Settlement",
+    compound: "Al Rehab",
     lat: 30.016,
     lng: 31.439,
     isFeatured: false,

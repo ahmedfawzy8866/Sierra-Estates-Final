@@ -221,3 +221,96 @@ Proprietary - Sierra Estates Inc.
 **Last Updated**: May 31, 2026  
 **Build**: Turbopack + Turborepo  
 **Status**: Production Ready ✅
+
+---
+
+## 🤖 Antigravity AI OS — Enhancement Plan
+
+> Powered by **Antigravity IDE** · Engineered by the Sierra Estates engineering team.
+
+This section documents the AI-native enhancements layered on top of the core platform. These features are tracked live in the Admin Dashboard (`/admin`), synced to Firebase Firestore, and reflected in `enhancements_obsidian.md` for the Obsidian vault.
+
+### 🚀 Phase Overview
+
+| Phase | Name | Status |
+|-------|------|--------|
+| Phase 1 | Dynamic Data (Firebase) | 🔄 In Progress |
+| Phase 2 | AI Search & Matchmaking (OpenClaw) | 🔄 In Progress |
+| Phase 3 | WhatsApp Automation & CRM | 🔄 In Progress |
+| Phase 4 | Hermes AI Direct Assistant | ✅ Scaffolded |
+| Phase 5 | Market Expansion & Analytics | ⏳ Planned |
+
+---
+
+### 🧠 HERMES — AI Direct Assistant
+
+**Hermes** is Sierra Estates' AI-powered sales and negotiation assistant, running on the Hermes JS Engine with the OpenClaw AI gateway.
+
+**Skills equipped:**
+
+| Skill | Methodology |
+|-------|-------------|
+| 🗣️ **Communication** | Bilingual (AR/EN), WhatsApp-optimized, rapport-first |
+| 💼 **Sales** | SPIN Selling — Situation · Problem · Implication · Need-Payoff |
+| 🤝 **Negotiation** | BATNA strategy, anchoring, conditional close, concession framework |
+| 🔍 **AI Property Search** | OpenClaw vector search, natural language queries |
+| 📊 **Lead Extraction** | Auto-captures budget, area, property type, timeline from chat |
+
+**Hermes handles:**
+- Incoming WhatsApp messages → AI-powered conversational responses
+- Lead qualification → Auto-logs to Firestore `crm_leads` collection
+- Agent notifications → WhatsApp alerts when a lead is ready to close
+- Fallback logic → Rule-based responses when AI API is unavailable
+
+---
+
+### 📱 WhatsApp CRM Integration
+
+The WhatsApp Business API is wired to Hermes via `lib/whatsapp.ts`:
+
+```
+Incoming WhatsApp → Webhook → hermesAgent.chat() → Reply → Firestore CRM log
+```
+
+**Environment variables needed:**
+```env
+EXPO_PUBLIC_WA_PHONE_ID=your_phone_number_id
+EXPO_PUBLIC_WA_TOKEN=your_access_token
+EXPO_PUBLIC_WA_VERIFY_TOKEN=sierra_hermes_2026
+EXPO_PUBLIC_OPENCLAW_KEY=your_openclaw_api_key
+```
+
+---
+
+### 🛠️ Technical Stack (AI Layer)
+
+| Component | Technology |
+|-----------|-----------|
+| JS Engine | Hermes (configured in `app.json`) |
+| AI Gateway | OpenClaw v2026 (`openclaw` npm package) |
+| Crypto | `react-native-ecc` for ECC-encrypted voice messages |
+| AI Search | OpenClaw vector index (`lib/aiSearch.ts`) |
+| Agent | `lib/agents/hermes.ts` — Hermes singleton agent |
+| WhatsApp | `lib/whatsapp.ts` — Business API v19 integration |
+| CRM | `lib/crm.ts` — Firestore-backed lead management |
+| Admin UI | `app/admin.tsx` — Live dashboard with CRM + task tracker |
+
+---
+
+### 📊 Market Valuation (New Cairo, 2026)
+
+| Metric | Value |
+|--------|-------|
+| Target Market | New Cairo (Uptown, Settlement, Madinaty, Sherouk, New Capital) |
+| Estimated TAM | EGP 4.2 Billion |
+| Active Listings | 500+ units |
+| Avg Price/m² | EGP 18,000 – 35,000 |
+| Projected Year-1 Revenue | EGP 150 Million |
+| WhatsApp Lead Conversion Target | 8% |
+
+---
+
+**Last Updated**: June 26, 2026  
+**Build**: Turbopack + Turborepo + Hermes JS Engine  
+**AI**: OpenClaw + Hermes Agent  
+**Status**: Production Ready ✅ | AI Layer Active 🤖

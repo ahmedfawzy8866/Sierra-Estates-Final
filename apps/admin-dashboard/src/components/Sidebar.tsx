@@ -3,7 +3,7 @@ import {
   LogOut, Languages, PanelLeftClose, PanelLeftOpen, X,
   LayoutDashboard, Users, Building2, CalendarCheck, BarChart3,
   FileText, Bot, Workflow, Zap, Settings, RefreshCw, Database,
-  Sun, Moon, Terminal,
+  Sun, Moon, Terminal, Rocket,
   type LucideIcon,
 } from 'lucide-react';
 import { auth } from '../firebase';
@@ -54,6 +54,7 @@ export const NAV_ITEMS: NavItem[] = [
   // ── System ─────────────────────────────────────────────────────────
   { id: 'dbEditor',       label: 'DB Editor',         labelAr: 'محرر قاعدة البيانات',   icon: Database,        section: 'system' },
   { id: 'openclaw',       label: 'OpenClaw Terminal', labelAr: 'طرفية أوبن كلو',        icon: Terminal,        section: 'system' },
+  { id: 'enhancement',   label: 'Enhancement Plan',  labelAr: 'خطة التحسين',           icon: Rocket,          section: 'system', badge: '🤖', badgeTone: 'info' },
 ];
 
 const SECTION_LABELS: Record<NavItem['section'], { en: string; ar: string }> = {

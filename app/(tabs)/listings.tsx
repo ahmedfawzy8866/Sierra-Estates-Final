@@ -1,7 +1,7 @@
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { router } from "expo-router";
-import React, { useState } from "react";
+import { router, useLocalSearchParams } from "expo-router";
+import React, { useState, useEffect } from "react";
 import {
   FlatList,
   Platform,
@@ -14,14 +14,19 @@ import {
   RefreshControl,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Animated, { FadeInUp } from "react-native-reanimated";
+import { WebView } from "react-native-webview";
 
 import { PropertyCard } from "@/components/PropertyCard";
 import { PROPERTIES } from "@/data/properties";
+import { fetchProperties } from "@/lib/firebase";
 import { useColors } from "@/hooks/useColors";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 
 const TYPES = ["All", "Penthouse", "Villa", "Estate", "Compound", "Beachfront"] as const;
-const CITIES = ["All Cities", "Dubai", "Abu Dhabi", "Riyadh"];
+const STATUS = ["All", "Rent", "Resale"] as const;
+const FURNISHED = ["All", "Yes", "No"] as const;
+const ROOMS = ["Any", "1", "2", "3", "4", "5+"] as const;
 const SORT_OPTIONS = [
   { key: "aiScore", label: "AI Score" },
   { key: "yield", label: "Yield" },
@@ -43,12 +48,58 @@ export default function ListingsScreen() {
 
   const [search, setSearch] = useState("");
   const [activeType, setActiveType] = useState("All");
-  const [activeCity, setActiveCity] = useState("All Cities");
+  const [activeStatus, setActiveStatus] = useState("All");
+  const [activeRooms, setActiveRooms] = useState("Any");
+  const [activeFurnished, setActiveFurnished] = useState("All");
+  const params = useLocalSearchParams();
+  const [properties, setProperties] = useState<any[]>(PROPERTIES);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    loadFirebaseProperties();
+  }, [params.search, params.ai]);
+
+  const loadFirebaseProperties = async () => {
+    setLoading(true);
+    try {
+      const fbProps = await fetchProperties();
+      // Hydrate local images back into the data from static PROPERTIES list
+      const hydrated = fbProps.map(fbProp => {
+        const localMatch = PROPERTIES.find(p => p.id === fbProp.id);
+        return { ...fbProp, image: localMatch?.image };
+      });
+      
+      let finalProps = hydrated.length > 0 ? hydrated : PROPERTIES;
+      
+      // If AI search is triggered
+      if (params.ai === 'true' && params.search) {
+        setSearch(params.search as string);
+        const { searchPropertiesWithAI, initializeAIGateway } = await import("@/lib/aiSearch");
+        initializeAIGateway();
+        finalProps = await searchPropertiesWithAI(params.search as string, finalProps);
+      } else if (params.search && !search) {
+        setSearch(params.search as string);
+      }
+      
+      setProperties(finalProps);
+    } catch (e) {
+      console.log("Failed to load properties", e);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    if (params.status) setActiveStatus(params.status as string);
+    if (params.rooms) setActiveRooms(params.rooms as string);
+    if (params.furnished) setActiveFurnished(params.furnished as string);
+  }, [params]);
+
   const [sortBy, setSortBy] = useState<SortKey>("aiScore");
   const [compareMode, setCompareMode] = useState(false);
   const [compareIds, setCompareIds] = useState<string[]>([]);
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [showOffPlanOnly, setShowOffPlanOnly] = useState(false);
+  const [showMap, setShowMap] = useState(false);
 
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = React.useCallback(() => {
@@ -63,14 +114,21 @@ export default function ListingsScreen() {
   const [finishing, setFinishing] = useState<string[]>([]);
   const [listingType, setListingType] = useState<string[]>([]);
 
-  const filtered = PROPERTIES.filter((p) => {
-    const matchSearch =
-      search.trim() === "" ||
-      p.title.toLowerCase().includes(search.toLowerCase()) ||
-      p.location.toLowerCase().includes(search.toLowerCase()) ||
-      p.compound.toLowerCase().includes(search.toLowerCase());
-    const matchType = activeType === "All" || p.type === activeType.toLowerCase();
-    const matchCity = activeCity === "All Cities" || p.city === activeCity;
+  const filtered = properties.filter((p) => {
+    const typeMatch = activeType === "All" || p.type.toLowerCase() === activeType.toLowerCase();
+    const statusMatch = activeStatus === "All" || (activeStatus === "Rent" ? p.isOffPlan === false : p.isOffPlan === true);
+    const furnishMatch = activeFurnished === "All" || (activeFurnished === "Yes" ? p.features.includes("Smart home automation") : !p.features.includes("Smart home automation"));
+    let roomsMatch = true;
+    if (activeRooms !== "Any") {
+      if (activeRooms === "5+") {
+        roomsMatch = p.beds >= 5;
+      } else {
+        roomsMatch = p.beds === parseInt(activeRooms);
+      }
+    }
+    const textMatch = p.title.toLowerCase().includes(search.toLowerCase()) || 
+                     p.location.toLowerCase().includes(search.toLowerCase()) ||
+                     p.compound.toLowerCase().includes(search.toLowerCase());
     const matchOffPlan = !showOffPlanOnly || p.isOffPlan;
     
     // New BottomSheet Filters
@@ -82,7 +140,7 @@ export default function ListingsScreen() {
       (listingType.includes("Rent") && p.price < 500000) // Mock logic for rent
     );
     
-    return matchSearch && matchType && matchCity && matchOffPlan && matchCompound && matchBeds && matchListingType;
+    return typeMatch && statusMatch && furnishMatch && roomsMatch && textMatch && matchOffPlan && matchCompound && matchBeds && matchListingType;
   }).sort((a, b) => {
     if (sortBy === "price_desc") return b.price - a.price;
     if (sortBy === "price_asc") return a.price - b.price;
@@ -98,6 +156,36 @@ export default function ListingsScreen() {
       prev.includes(id) ? prev.filter((x) => x !== id) : prev.length < 3 ? [...prev, id] : prev
     );
   }
+
+  const mapHtml = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+* { margin:0; padding:0; }
+html,body,#map { width:100%; height:100%; }
+.prop-marker { background:#040C16; color:#E9C176; border:2px solid #E9C176; border-radius:16px; padding:4px 10px; font-size:11px; font-weight:800; font-family:sans-serif; white-space:nowrap; cursor:pointer; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<script>
+var map = L.map('map',{zoomControl:false,attributionControl:false}).setView([30.04, 31.45], 11);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(map);
+var markers = ${JSON.stringify(
+    filtered.map((p) => ({ id: p.id, lat: p.lat, lng: p.lng, title: p.title }))
+  )};
+markers.forEach(function(m) {
+  var el=document.createElement('div'); el.className='prop-marker'; el.innerText=m.title.split(" ").slice(0, 2).join(" ");
+  el.onclick = function() { window.ReactNativeWebView.postMessage(m.id); };
+  L.marker([m.lat,m.lng],{icon:L.divIcon({className:'',html:el,iconSize:null,iconAnchor:[40,16]})}).addTo(map);
+});
+</script>
+</body>
+</html>`;
 
   // Bottom padding — no tab bar on desktop
   const bottomPadding = isWide ? 40 : Platform.OS === "web" ? 34 + 84 : 100;
@@ -148,22 +236,62 @@ export default function ListingsScreen() {
               ))}
             </View>
 
-            {/* City */}
-            <Text style={[styles.sidebarLabel, { color: colors.mutedForeground }]}>City</Text>
+            {/* Status */}
+            <Text style={[styles.sidebarLabel, { color: colors.mutedForeground }]}>Status</Text>
             <View style={styles.sidebarPills}>
-              {CITIES.map((city) => (
+              {STATUS.map((s) => (
                 <Pressable
-                  key={city}
+                  key={s}
                   style={[
                     styles.sidebarPill,
                     {
-                      backgroundColor: activeCity === city ? colors.gold + "20" : colors.background,
-                      borderColor: activeCity === city ? colors.gold : colors.border,
+                      backgroundColor: activeStatus === s ? colors.gold + "20" : colors.background,
+                      borderColor: activeStatus === s ? colors.gold : colors.border,
                     },
                   ]}
-                  onPress={() => setActiveCity(city)}
+                  onPress={() => setActiveStatus(s)}
                 >
-                  <Text style={[styles.sidebarPillText, { color: activeCity === city ? colors.gold : colors.text }]}>{city}</Text>
+                  <Text style={[styles.sidebarPillText, { color: activeStatus === s ? colors.gold : colors.text }]}>{s}</Text>
+                </Pressable>
+              ))}
+            </View>
+
+            {/* Rooms */}
+            <Text style={[styles.sidebarLabel, { color: colors.mutedForeground }]}>Rooms</Text>
+            <View style={styles.sidebarPills}>
+              {ROOMS.map((r) => (
+                <Pressable
+                  key={r}
+                  style={[
+                    styles.sidebarPill,
+                    {
+                      backgroundColor: activeRooms === r ? colors.gold + "20" : colors.background,
+                      borderColor: activeRooms === r ? colors.gold : colors.border,
+                    },
+                  ]}
+                  onPress={() => setActiveRooms(r)}
+                >
+                  <Text style={[styles.sidebarPillText, { color: activeRooms === r ? colors.gold : colors.text }]}>{r}</Text>
+                </Pressable>
+              ))}
+            </View>
+
+            {/* Furnished */}
+            <Text style={[styles.sidebarLabel, { color: colors.mutedForeground }]}>Furnished</Text>
+            <View style={styles.sidebarPills}>
+              {FURNISHED.map((f) => (
+                <Pressable
+                  key={f}
+                  style={[
+                    styles.sidebarPill,
+                    {
+                      backgroundColor: activeFurnished === f ? colors.gold + "20" : colors.background,
+                      borderColor: activeFurnished === f ? colors.gold : colors.border,
+                    },
+                  ]}
+                  onPress={() => setActiveFurnished(f)}
+                >
+                  <Text style={[styles.sidebarPillText, { color: activeFurnished === f ? colors.gold : colors.text }]}>{f}</Text>
                 </Pressable>
               ))}
             </View>
@@ -208,33 +336,46 @@ export default function ListingsScreen() {
             </Text>
           </View>
 
-          {/* Property grid */}
-          <FlatList
-            data={filtered}
-            keyExtractor={(p) => p.id}
-            numColumns={numColumns}
-            key={numColumns}
-            renderItem={({ item }) => (
-              <View style={[styles.gridCell, { width: numColumns === 3 ? "33.33%" : "50%" }]}>
-                <PropertyCard
-                  property={item}
-                  compareMode={compareMode}
-                  isCompared={compareIds.includes(item.id)}
-                  onCompare={toggleCompare}
+          {/* Main content area */}
+          <View style={{ flex: 1, flexDirection: showMap ? "row" : "column" }}>
+            <FlatList
+              data={filtered}
+              keyExtractor={(item) => item.id}
+              numColumns={numColumns}
+              key={`grid-${numColumns}`}
+              contentContainerStyle={{ padding: 20, paddingBottom: bottomPadding }}
+              refreshControl={<RefreshControl refreshing={loading} onRefresh={loadFirebaseProperties} tintColor={colors.gold} />}
+              renderItem={({ item, index }) => (
+                <Animated.View entering={FadeInUp.delay(index * 50).duration(400)} style={[styles.gridCell, { width: showMap ? "100%" : (numColumns === 3 ? "33.33%" : "50%") }]}>
+                  <PropertyCard
+                    property={item}
+                    compareMode={compareMode}
+                    isCompared={compareIds.includes(item.id)}
+                    onCompare={toggleCompare}
+                  />
+                </Animated.View>
+              )}
+              contentContainerStyle={{ padding: 20, paddingBottom: bottomPadding }}
+              showsVerticalScrollIndicator={false}
+              style={{ flex: showMap ? 0.4 : 1 }}
+              ListEmptyComponent={
+                <View style={styles.empty}>
+                  <Feather name="search" size={40} color={colors.mutedForeground} />
+                  <Text style={[styles.emptyText, { color: colors.mutedForeground }]}>No properties found</Text>
+                  <Text style={[styles.emptyHint, { color: colors.mutedForeground }]}>Try adjusting your filters</Text>
+                </View>
+              }
+            />
+            {showMap && (
+              <View style={{ flex: 0.6, borderLeftWidth: 1, borderColor: colors.border }}>
+                <WebView
+                  source={{ html: mapHtml }}
+                  style={{ flex: 1 }}
+                  onMessage={(e) => router.push(`/property/${e.nativeEvent.data}` as any)}
                 />
               </View>
             )}
-            contentContainerStyle={{ padding: 20, paddingBottom: bottomPadding }}
-            showsVerticalScrollIndicator={false}
-            style={{ flex: 1 }}
-            ListEmptyComponent={
-              <View style={styles.empty}>
-                <Feather name="search" size={40} color={colors.mutedForeground} />
-                <Text style={[styles.emptyText, { color: colors.mutedForeground }]}>No properties found</Text>
-                <Text style={[styles.emptyHint, { color: colors.mutedForeground }]}>Try adjusting your filters</Text>
-              </View>
-            }
-          />
+          </View>
         </View>
       ) : (
         // ─── MOBILE LAYOUT ───
@@ -312,11 +453,11 @@ export default function ListingsScreen() {
           </Pressable>
 
           <Pressable
-            style={[styles.mapViewBtn, { backgroundColor: colors.card, borderColor: colors.border }]}
-            onPress={() => router.push("/(tabs)/map" as any)}
+            style={[styles.mapViewBtn, { backgroundColor: showMap ? colors.gold + "22" : colors.card, borderColor: showMap ? colors.gold : colors.border }]}
+            onPress={() => setShowMap(!showMap)}
           >
-            <Feather name="map-pin" size={13} color={colors.gold} />
-            <Text style={[styles.mapViewBtnText, { color: colors.gold }]}>Map</Text>
+            <Feather name="map-pin" size={13} color={showMap ? colors.gold : colors.text} />
+            <Text style={[styles.mapViewBtnText, { color: showMap ? colors.gold : colors.text }]}>Map</Text>
           </Pressable>
 
           <View style={styles.spacer} />
@@ -352,36 +493,48 @@ export default function ListingsScreen() {
         )}
       </View>
 
-      <FlatList
-        data={filtered}
-        keyExtractor={(p) => p.id}
-        refreshControl={
-          <RefreshControl 
-            refreshing={refreshing} 
-            onRefresh={onRefresh} 
-            tintColor={colors.gold}
-            colors={[colors.gold]} 
+      {showMap ? (
+        <View style={{ flex: 1 }}>
+          <WebView
+            source={{ html: mapHtml }}
+            style={{ flex: 1 }}
+            onMessage={(e) => router.push(`/property/${e.nativeEvent.data}` as any)}
           />
-        }
-        renderItem={({ item }) => (
-          <PropertyCard
-            property={item}
-            compareMode={compareMode}
-            isCompared={compareIds.includes(item.id)}
-            onCompare={toggleCompare}
-          />
-        )}
-        contentContainerStyle={[styles.list, { paddingBottom: bottomPadding }]}
-        showsVerticalScrollIndicator={false}
-        ListFooterComponent={<SierraFooter />}
-        ListEmptyComponent={
-          <View style={styles.empty}>
-            <Feather name="search" size={40} color={colors.mutedForeground} />
-            <Text style={[styles.emptyText, { color: colors.mutedForeground }]}>No properties found</Text>
-            <Text style={[styles.emptyHint, { color: colors.mutedForeground }]}>Try adjusting your filters</Text>
-          </View>
-        }
-      />
+        </View>
+      ) : (
+        <Animated.FlatList
+          data={filtered}
+          keyExtractor={(p) => p.id}
+          refreshControl={
+            <RefreshControl 
+              refreshing={refreshing} 
+              onRefresh={onRefresh} 
+              tintColor={colors.gold}
+              colors={[colors.gold]} 
+            />
+          }
+          renderItem={({ item, index }) => (
+            <Animated.View entering={FadeInUp.delay(index * 50).duration(400)}>
+              <PropertyCard
+                property={item}
+                compareMode={compareMode}
+                isCompared={compareIds.includes(item.id)}
+                onCompare={toggleCompare}
+              />
+            </Animated.View>
+          )}
+          contentContainerStyle={[styles.list, { paddingBottom: bottomPadding }]}
+          showsVerticalScrollIndicator={false}
+          ListFooterComponent={<SierraFooter />}
+          ListEmptyComponent={
+            <View style={styles.empty}>
+              <Feather name="search" size={40} color={colors.mutedForeground} />
+              <Text style={[styles.emptyText, { color: colors.mutedForeground }]}>No properties found</Text>
+              <Text style={[styles.emptyHint, { color: colors.mutedForeground }]}>Try adjusting your filters</Text>
+            </View>
+          }
+        />
+      )}
 
       {compareMode && compareIds.length >= 2 && (
         <View style={[styles.compareBar, { backgroundColor: colors.gold, borderTopColor: colors.goldDark }]}>

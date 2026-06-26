@@ -37,6 +37,7 @@ import DBEditorPage from './components/DBEditorPage';
 import PageEditorPage from './components/PageEditorPage';
 import FollowupsPage from './components/FollowupsPage';
 import BotsControlPage from './components/BotsControlPage';
+import EnhancementTasksPage from './components/EnhancementTasksPage';
 
 import GlobalProgressTracker from './components/GlobalProgressTracker';
 import AdminHealthMonitor from './components/AdminHealthMonitor';
@@ -525,6 +526,8 @@ export default function App() {
         return <DBEditorPage T={T} isAr={isAr} />;
       case 'openclaw':
         return <OpenClawPage T={T} isAr={isAr} />;
+      case 'enhancement':
+        return <EnhancementTasksPage />;
       default:
         return <OverviewPage T={T} />;
     }
