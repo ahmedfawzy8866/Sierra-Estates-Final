@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { getAIService } from '@/lib/ai';
+import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
 
 interface SmartFilterParams {
   query: string;  // Natural language search, e.g. "3 bedroom villa in New Cairo under 5 million"
@@ -31,6 +32,8 @@ interface StructuredFilter {
 }
 
 export async function POST(request: NextRequest) {
+  const limited = applyRateLimit(request, publicEndpointLimiter);
+  if (limited) return limited;
   try {
     const { query: userQuery, limit: resultLimit = 20 } = await request.json() as SmartFilterParams;
 
