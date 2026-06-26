@@ -9,6 +9,12 @@ Aligned with STATUS.md. Sorted by deployment-readiness (pre-deploy → post-depl
 - [x] Property Finder Sync API
 - [x] Careers Page (Framer Motion)
 - [x] Design System (`design.css`)
+- [x] PropertyFinder Atlas sync engine (paginated, dedup, override protection)
+- [x] Twilio WhatsApp integration (4-number load balancing, rate limits, queue)
+- [x] CORS middleware for all API routes
+- [x] Rate limiting middleware for all API routes (public/admin/sync/webhook tiers)
+- [x] Environment config validation (Zod schemas, feature gates)
+- [x] Admin DataSyncHubPage upgraded with real API endpoints
 
 ## 🆕 Next Logical Steps
 - [ ] Connect AI Smart Filter to real Firestore query
@@ -35,8 +41,8 @@ Aligned with STATUS.md. Sorted by deployment-readiness (pre-deploy → post-depl
 - [ ] **Rotate credentials**: Quarterly rotation of SBR_SECRET_KEY, JWT_SECRET, Firebase admin key
 
 ## 💡 Enhancement Candidates (safe, high-value, not blocking)
-- [ ] **Edge rate-limiting**: Move from in-memory to Upstash Redis for multi-instance consistency
-- [ ] **Request/response validation**: Add zod schemas to public endpoints (leads, listings, concierge) to prevent API contract drift
+- [x] **Edge rate-limiting**: Upstash Redis support built into rate-limit.ts (auto-detects env vars)
+- [x] **Request/response validation**: Zod env config validation in lib/server/env-config.ts
 - [ ] **Refresh stale docs**: Audit issue/PR descriptions for outdated TODO/STATUS refs
 - [ ] **Real AI service**: Replace MockAIService with actual implementation (or switch to LLM vendor)
 - [ ] **Consolidate secrets**: Move web app from Vercel to Firebase Hosting + Functions for unified secrets/deployment (lower priority)
