@@ -44,4 +44,6 @@ obedian-store.json
 .agents/
 .wwebjs_auth/
 .wwebjs_cache/
+*-restore.ts
+*-restore.tsx
 
