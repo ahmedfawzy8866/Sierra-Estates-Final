@@ -100,3 +100,8 @@ back/
 *.zip
 *.tar.gz
 *.bin
+
+# ─── Internal / tooling ───
+skills/
+upload/
+tool-results/
