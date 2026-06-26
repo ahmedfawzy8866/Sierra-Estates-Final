@@ -68,6 +68,32 @@ module.exports = {
       coverageDirectory: './coverage',
       testTimeout: 30000,
       verbose: true,
+    },
+    {
+      displayName: 'backend',
+      preset: 'ts-jest',
+      testEnvironment: 'node',
+      roots: [
+        '<rootDir>/backend/src',
+      ],
+      testMatch: [
+        '**/__tests__/**/*.test.ts',
+        '**/__tests__/**/*.test.js',
+      ],
+      modulePathIgnorePatterns: [
+        '<rootDir>/vendor',
+      ],
+      moduleNameMapper: {
+        '^next/server$': '<rootDir>/backend/src/__mocks__/next-server.ts',
+        '^@/(.*)$': '<rootDir>/backend/src/$1',
+      },
+      transform: {
+        '^.+\\.tsx?$': ['ts-jest', {
+          tsconfig: '<rootDir>/backend/tsconfig.json',
+        }],
+      },
+      testTimeout: 15000,
+      verbose: true,
     }
   ]
 };

@@ -26,21 +26,21 @@ interface VirtualTourModalProps {
 const { width: WINDOW_W, height: SCREEN_H } = Dimensions.get("window");
 const SCREEN_W = Platform.OS === "web" ? Math.min(WINDOW_W, 480) : WINDOW_W;
 
-export function VirtualTourModal({ visible, onClose, propertyTitle }: VirtualTourModalProps) {
+export function VirtualTourModal({ visible, onClose, propertyTitle, tourUrl }: VirtualTourModalProps) {
   const colors = useColors();
   const [loading, setLoading] = useState(true);
 
-  // Instead of generating Pannellum HTML, we inject the advanced Three.js virtual tour from the web.
-  // We can inject a small script to change the title if we wanted, but the HTML itself is self-contained.
-  const html = VIRTUAL_TOUR_HTML;
+  // If tourUrl is provided (e.g. Momento360 embed URL), load it directly. 
+  // Otherwise, fall back to the self-contained Pannellum 360 viewer.
+  const source = tourUrl ? { uri: tourUrl } : { html: VIRTUAL_TOUR_HTML };
 
-  const injectedJS = `
+  const injectedJS = !tourUrl ? `
     document.querySelector('a[href="../Sierra Estates 1.0 Client Hub.html"].hdr-btn').onclick = function(e) {
       e.preventDefault();
       window.ReactNativeWebView.postMessage('close');
     };
     true;
-  `;
+  ` : '';
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" statusBarTranslucent>
@@ -71,14 +71,14 @@ export function VirtualTourModal({ visible, onClose, propertyTitle }: VirtualTou
             </View>
           )}
           <WebView
-            source={{ html }}
+            source={source}
             style={styles.webview}
             onLoadEnd={() => setLoading(false)}
             javaScriptEnabled
             allowsInlineMediaPlayback
             mediaPlaybackRequiresUserAction={false}
-            scrollEnabled={false}
-            injectedJavaScript={injectedJS}
+            scrollEnabled={tourUrl ? true : false}
+            injectedJavaScript={injectedJS || undefined}
             onMessage={(event) => {
               if (event.nativeEvent.data === 'close') {
                 onClose();

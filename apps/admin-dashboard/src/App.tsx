@@ -38,6 +38,7 @@ import PageEditorPage from './components/PageEditorPage';
 import FollowupsPage from './components/FollowupsPage';
 import BotsControlPage from './components/BotsControlPage';
 import EnhancementTasksPage from './components/EnhancementTasksPage';
+import OwnerNegotiationsPage from './components/OwnerNegotiationsPage';
 
 import GlobalProgressTracker from './components/GlobalProgressTracker';
 import AdminHealthMonitor from './components/AdminHealthMonitor';
@@ -60,6 +61,7 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     reports: 'Reports',
     searchInsights: 'Search Insights',
     followups: 'Follow-ups',
+    ownerNegotiations: 'Owner Negotiations',
     bots: 'Bots Control',
     pageEditor: 'Page Editor (CMS)',
     dbEditor: 'DB Editor (Raw)',
@@ -151,6 +153,7 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     reports: 'التقارير التحليلية',
     searchInsights: 'تحليلات البحث',
     followups: 'المتابعات',
+    ownerNegotiations: 'مفاوضات الملاك',
     bots: 'التحكم بالبوتات',
     pageEditor: 'محرر الصفحات',
     dbEditor: 'محرر قاعدة البيانات',
@@ -528,6 +531,8 @@ export default function App() {
         return <OpenClawPage T={T} isAr={isAr} />;
       case 'enhancement':
         return <EnhancementTasksPage />;
+      case 'ownerNegotiations':
+        return <OwnerNegotiationsPage T={T} isAr={isAr} searchQuery={searchQuery} />;
       default:
         return <OverviewPage T={T} />;
     }

@@ -3,7 +3,7 @@ import {
   LogOut, Languages, PanelLeftClose, PanelLeftOpen, X,
   LayoutDashboard, Users, Building2, CalendarCheck, BarChart3,
   FileText, Bot, Workflow, Zap, Settings, RefreshCw, Database,
-  Sun, Moon, Terminal, Rocket,
+  Sun, Moon, Terminal, Rocket, MessageCircle,
   type LucideIcon,
 } from 'lucide-react';
 import { auth } from '../firebase';
@@ -43,6 +43,7 @@ export const NAV_ITEMS: NavItem[] = [
   { id: 'followups',      label: 'Follow-ups',        labelAr: 'المتابعات',             icon: CalendarCheck,   section: 'core' },
   { id: 'searchInsights', label: 'Search Insights',   labelAr: 'تحليلات البحث',         icon: BarChart3,       section: 'core' },
   { id: 'pageEditor',     label: 'Page Editor',       labelAr: 'محرر الصفحات',          icon: FileText,        section: 'core' },
+  { id: 'ownerNegotiations', label: 'Owner Negotiations', labelAr: 'مفاوضات الملاك',      icon: MessageCircle,   section: 'core' },
   // ── Automation & agents ────────────────────────────────────────────
   { id: 'bots',           label: 'Bots Control',      labelAr: 'التحكم بالبوتات',       icon: Bot,             section: 'automation' },
   { id: 'agents',         label: 'AI Agents',         labelAr: 'وكلاء الذكاء',          icon: Bot,             section: 'automation', badge: '6', badgeTone: 'success' },
