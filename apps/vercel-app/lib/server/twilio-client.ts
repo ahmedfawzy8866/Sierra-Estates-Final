@@ -1,0 +1,853 @@
+/**
+ * SIERRA ESTATES — TWILIO WHATSAPP INTEGRATION MODULE
+ *
+ * Production-grade WhatsApp Business API integration via Twilio REST API.
+ * Designed for Vercel Edge/Serverless — uses native `fetch` instead of the
+ * Twilio SDK to avoid bundle-size bloat on cold starts.
+ *
+ * Features:
+ *   - Lazy-initialized REST client (no SDK dependency)
+ *   - Multi-sender load balancing across 4 WABA numbers
+ *   - Per-number rate limiting (30 msg / 2 hr, 120 msg / day)
+ *   - Operating-hours enforcement (12:00–20:00 Africa/Cairo)
+ *   - Outbound message queue with automatic retry
+ *   - Inbound webhook signature verification
+ *   - Delivery-receipt tracking in Firestore
+ *
+ * Firestore Collections:
+ *   - `whatsapp_sender_stats`  — per-number daily send counters
+ *   - `whatsapp_outbound_queue` — queued messages pending dispatch
+ *   - `whatsapp_message_log`   — delivery-status audit trail
+ *
+ * Usage:
+ *   import { sendWhatsAppMessage, drainOutboundQueue,
+ *            verifyTwilioSignature, updateMessageStatus } from '@/lib/server/twilio-client';
+ */
+
+import { adminDb } from '@/lib/server/firebase-admin';
+import { Timestamp } from 'firebase-admin/firestore';
+import crypto from 'crypto';
+
+// ─── Configuration ──────────────────────────────────────────────────────────
+
+/** Twilio Account SID (starts with "AC") */
+const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID ?? '';
+
+/** Twilio Auth Token */
+const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN ?? '';
+
+/** Pool of WhatsApp Business sender numbers */
+const SENDER_NUMBERS: string[] = [
+  process.env.WABA_NUMBER_1 ?? '',
+  process.env.WABA_NUMBER_2 ?? '',
+  process.env.WABA_NUMBER_3 ?? '',
+  process.env.WABA_NUMBER_4 ?? '',
+].filter(Boolean);
+
+/** Twilio Messages REST endpoint */
+const TWILIO_MESSAGES_URL = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
+
+// ─── Rate Limits ────────────────────────────────────────────────────────────
+
+/** Maximum messages a single sender number may send per 2-hour sliding window */
+const MAX_PER_WINDOW = 30;
+
+/** Maximum messages a single sender number may send per calendar day */
+const MAX_PER_DAY_PER_NUMBER = 120;
+
+/** Maximum messages across all sender numbers per calendar day */
+const MAX_TOTAL_DAILY = 480;
+
+/** 2-hour window in milliseconds */
+const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
+
+// ─── Operating Hours ────────────────────────────────────────────────────────
+
+/** Operating-hour start (hour, 24-h format) in Africa/Cairo */
+const OPS_START_HOUR = 12;
+
+/** Operating-hour end (hour, 24-h format) in Africa/Cairo */
+const OPS_END_HOUR = 20;
+
+// ─── Queue Constants ────────────────────────────────────────────────────────
+
+/** Maximum messages processed per `drainOutboundQueue()` call */
+const DRAIN_BATCH_SIZE = 10;
+
+/** Maximum delivery attempts before marking a message as permanently failed */
+const MAX_DELIVERY_ATTEMPTS = 5;
+
+// ─── Firestore Collection Names ─────────────────────────────────────────────
+
+const COLL_SENDER_STATS = 'whatsapp_sender_stats';
+const COLL_OUTBOUND_QUEUE = 'whatsapp_outbound_queue';
+const COLL_MESSAGE_LOG = 'whatsapp_message_log';
+
+// ─── Types ──────────────────────────────────────────────────────────────────
+
+/** Shape of a document in `whatsapp_sender_stats` */
+interface SenderStat {
+  phoneNumber: string;
+  date: string;           // YYYY-MM-DD
+  count: number;
+  windowStart: number;    // Unix epoch ms — start of current 2-hour window
+  windowCount: number;    // Messages sent within the current 2-hour window
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/** Shape of a document in `whatsapp_outbound_queue` */
+interface OutboundQueueItem {
+  to: string;
+  body: string;
+  senderNumber?: string;
+  status: 'queued' | 'sent' | 'failed';
+  createdAt: FirebaseFirestore.Timestamp;
+  scheduledFor: FirebaseFirestore.Timestamp;
+  attempts: number;
+  lastError?: string;
+  updatedAt?: FirebaseFirestore.Timestamp;
+}
+
+/** Shape of a document in `whatsapp_message_log` */
+interface MessageLogEntry {
+  messageSid: string;
+  to: string;
+  from: string;
+  body: string;
+  status: string;
+  senderNumber: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt?: FirebaseFirestore.Timestamp;
+}
+
+/** Result returned by `sendWhatsAppMessage` */
+export interface SendMessageResult {
+  success: boolean;
+  messageSid?: string;
+  errorCode?: number;
+  errorMessage?: string;
+  senderNumber?: string;
+  queued?: boolean;
+}
+
+// ─── Helpers ────────────────────────────────────────────────────────────────
+
+/**
+ * Returns the current date string in `YYYY-MM-DD` format using the
+ * Africa/Cairo timezone.
+ */
+function getTodayCairo(): string {
+  return new Date().toLocaleDateString('en-CA', { timeZone: 'Africa/Cairo' });
+}
+
+/**
+ * Returns the current hour (0–23) in the Africa/Cairo timezone.
+ */
+function getCurrentHourCairo(): number {
+  const formatter = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Africa/Cairo',
+    hour: 'numeric',
+    hour12: false,
+  });
+  return parseInt(formatter.format(new Date()), 10);
+}
+
+/**
+ * Returns the current time as a Firestore Timestamp.
+ */
+function nowAsTimestamp(): FirebaseFirestore.Timestamp {
+  return Timestamp.now();
+}
+
+/**
+ * Returns a Firestore Timestamp representing the start of the next
+ * operating-hours window (12:00 Africa/Cairo today or tomorrow).
+ */
+function nextOpWindowTimestamp(): FirebaseFirestore.Timestamp {
+  const now = new Date();
+
+  // Build a date in Cairo timezone
+  const cairoParts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Africa/Cairo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  }).formatToParts(now);
+
+  const get = (type: string) => cairoParts.find(p => p.type === type)?.value ?? '0';
+
+  const year = parseInt(get('year'), 10);
+  const month = parseInt(get('month'), 10) - 1; // JS months are 0-indexed
+  let day = parseInt(get('day'), 10);
+
+  // Africa/Cairo is UTC+2 (no DST as of recent years)
+  const cairoOffsetHours = 2;
+  const targetMs = Date.UTC(year, month, day, OPS_START_HOUR - cairoOffsetHours, 0, 0);
+
+  if (targetMs <= now.getTime()) {
+    // Next window is tomorrow
+    day += 1;
+  }
+
+  const nextMs = Date.UTC(year, month, day, OPS_START_HOUR - cairoOffsetHours, 0, 0);
+  return Timestamp.fromMillis(nextMs);
+}
+
+/**
+ * Checks whether we are currently within operating hours (12:00–20:00 Africa/Cairo).
+ */
+function isWithinOperatingHours(): boolean {
+  const hour = getCurrentHourCairo();
+  return hour >= OPS_START_HOUR && hour < OPS_END_HOUR;
+}
+
+// ─── Twilio REST API ────────────────────────────────────────────────────────
+
+/**
+ * Lazy-initialised Twilio REST caller.  Avoids importing the full `twilio`
+ * SDK — we only need a single `POST` with Basic auth.
+ *
+ * @internal This is a low-level primitive; prefer `sendWhatsAppMessage`.
+ */
+async function callTwilioMessagesAPI(
+  from: string,
+  to: string,
+  body: string,
+): Promise<{ sid?: string; errorCode?: number; errorMessage?: string }> {
+  if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN) {
+    throw new Error(
+      '[twilio-client] TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN must be set.'
+    );
+  }
+
+  const credentials = Buffer.from(
+    `${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`
+  ).toString('base64');
+
+  const params = new URLSearchParams({
+    From: `whatsapp:+${from}`,
+    To: `whatsapp:+${to}`,
+    Body: body,
+  });
+
+  const response = await fetch(TWILIO_MESSAGES_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Basic ${credentials}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: params.toString(),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    return {
+      errorCode: data.code ?? response.status,
+      errorMessage: data.message ?? `Twilio API error ${response.status}`,
+    };
+  }
+
+  return { sid: data.sid };
+}
+
+// ─── Sender Selection / Load Balancing ──────────────────────────────────────
+
+/**
+ * Retrieves (or initialises) the sender-stats document for a given phone
+ * number and the current Cairo-calendar date.
+ */
+async function getSenderStat(
+  phoneNumber: string,
+  date: string
+): Promise<SenderStat> {
+  const docId = `${phoneNumber}_${date}`;
+  const snap = await adminDb.collection(COLL_SENDER_STATS).doc(docId).get();
+
+  if (snap.exists) {
+    return snap.data() as SenderStat;
+  }
+
+  // Initialise a new stat document
+  const newStat: SenderStat = {
+    phoneNumber,
+    date,
+    count: 0,
+    windowStart: Date.now(),
+    windowCount: 0,
+    updatedAt: nowAsTimestamp(),
+  };
+
+  await adminDb.collection(COLL_SENDER_STATS).doc(docId).set(newStat);
+  return newStat;
+}
+
+/**
+ * Increments the send counter for a given phone number, respecting both
+ * the 2-hour window and daily limits.
+ *
+ * @returns `true` if the increment was applied, `false` if the number
+ *          has hit a rate limit.
+ */
+async function incrementSenderStat(phoneNumber: string): Promise<boolean> {
+  const date = getTodayCairo();
+  const docId = `${phoneNumber}_${date}`;
+  const stat = await getSenderStat(phoneNumber, date);
+
+  const now = Date.now();
+
+  // Reset 2-hour window if it has expired
+  const windowExpired = now - stat.windowStart >= TWO_HOURS_MS;
+  const currentWindowCount = windowExpired ? 0 : stat.windowCount;
+
+  // Check limits
+  if (stat.count >= MAX_PER_DAY_PER_NUMBER) return false;
+  if (currentWindowCount >= MAX_PER_WINDOW) return false;
+
+  await adminDb
+    .collection(COLL_SENDER_STATS)
+    .doc(docId)
+    .update({
+      count: stat.count + 1,
+      windowCount: currentWindowCount + 1,
+      windowStart: windowExpired ? now : stat.windowStart,
+      updatedAt: nowAsTimestamp(),
+    });
+
+  return true;
+}
+
+/**
+ * Selects the sender number with the lowest daily usage (round-robin via
+ * count comparison).  Respects per-number and total-daily limits.
+ *
+ * @returns The selected phone number, or `null` if all numbers are exhausted.
+ */
+async function selectSenderNumber(): Promise<string | null> {
+  const date = getTodayCairo();
+
+  // Load stats for all senders
+  const stats = await Promise.all(
+    SENDER_NUMBERS.map(async (num) => {
+      const stat = await getSenderStat(num, date);
+      return { number: num, stat };
+    })
+  );
+
+  // Check total daily limit
+  const totalDaily = stats.reduce((sum, s) => sum + s.stat.count, 0);
+  if (totalDaily >= MAX_TOTAL_DAILY) {
+    return null;
+  }
+
+  // Sort by daily count ascending — pick the least-used number
+  const sorted = stats.sort((a, b) => a.stat.count - b.stat.count);
+
+  for (const { number, stat } of sorted) {
+    if (stat.count >= MAX_PER_DAY_PER_NUMBER) continue;
+
+    // Check 2-hour window
+    const now = Date.now();
+    const windowExpired = now - stat.windowStart >= TWO_HOURS_MS;
+    const windowCount = windowExpired ? 0 : stat.windowCount;
+    if (windowCount >= MAX_PER_WINDOW) continue;
+
+    return number;
+  }
+
+  return null;
+}
+
+// ─── Public API: Send Message ───────────────────────────────────────────────
+
+/**
+ * Sends a WhatsApp message via Twilio, or queues it for later delivery
+ * if we are outside operating hours.
+ *
+ * Load-balances across the 4 configured WABA sender numbers, picking the
+ * one with the lowest daily send count.  If a specific `senderNumber` is
+ * provided, that number is used directly (subject to rate limits).
+ *
+ * @param to          Recipient phone number in E.164 format (without the leading `+`).
+ * @param body        Message body (plain text).
+ * @param senderNumber  Optional override for the sender number (E.164 without `+`).
+ * @returns A `SendMessageResult` describing the outcome.
+ *
+ * @example
+ * ```ts
+ * const result = await sendWhatsAppMessage('201012345678', 'Hello from Sierra!');
+ * if (result.queued) console.log('Message queued for next operating window');
+ * else if (result.success) console.log('Sent:', result.messageSid);
+ * ```
+ */
+export async function sendWhatsAppMessage(
+  to: string,
+  body: string,
+  senderNumber?: string,
+): Promise<SendMessageResult> {
+  // ── Guard: validate required env vars ────────────────────────────────
+  if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN) {
+    return {
+      success: false,
+      errorMessage:
+        '[twilio-client] TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN are not configured.',
+    };
+  }
+
+  if (SENDER_NUMBERS.length === 0) {
+    return {
+      success: false,
+      errorMessage:
+        '[twilio-client] No WABA sender numbers configured (WABA_NUMBER_1–4).',
+    };
+  }
+
+  // ── Operating-hours gate ─────────────────────────────────────────────
+  if (!isWithinOperatingHours()) {
+    return queueMessage(to, body, senderNumber);
+  }
+
+  // ── Sender selection ─────────────────────────────────────────────────
+  const selectedSender = senderNumber ?? (await selectSenderNumber());
+
+  if (!selectedSender) {
+    // All senders exhausted — queue for later
+    return queueMessage(to, body, senderNumber);
+  }
+
+  // ── Rate-limit check & counter increment ─────────────────────────────
+  const allowed = await incrementSenderStat(selectedSender);
+  if (!allowed) {
+    return queueMessage(to, body, senderNumber);
+  }
+
+  // ── Call Twilio REST API ─────────────────────────────────────────────
+  try {
+    const result = await callTwilioMessagesAPI(selectedSender, to, body);
+
+    if (result.errorCode) {
+      console.error(
+        `[twilio-client] Twilio API error ${result.errorCode}: ${result.errorMessage}`
+      );
+
+      // Log the failure
+      await logMessage({
+        messageSid: '',
+        to,
+        from: selectedSender,
+        body,
+        status: 'failed',
+        senderNumber: selectedSender,
+        createdAt: nowAsTimestamp(),
+      });
+
+      return {
+        success: false,
+        errorCode: result.errorCode,
+        errorMessage: result.errorMessage,
+        senderNumber: selectedSender,
+      };
+    }
+
+    // Log the successful send
+    await logMessage({
+      messageSid: result.sid ?? '',
+      to,
+      from: selectedSender,
+      body,
+      status: 'sent',
+      senderNumber: selectedSender,
+      createdAt: nowAsTimestamp(),
+    });
+
+    return {
+      success: true,
+      messageSid: result.sid,
+      senderNumber: selectedSender,
+    };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Unknown error';
+    console.error('[twilio-client] sendWhatsAppMessage failed:', message);
+
+    return {
+      success: false,
+      errorMessage: message,
+      senderNumber: selectedSender,
+    };
+  }
+}
+
+// ─── Message Queue ──────────────────────────────────────────────────────────
+
+/**
+ * Enqueues a message for delivery at the next operating-hours window.
+ *
+ * @internal Called by `sendWhatsAppMessage` when outside operating hours
+ *           or when rate limits are hit.
+ */
+async function queueMessage(
+  to: string,
+  body: string,
+  senderNumber?: string,
+): Promise<SendMessageResult> {
+  try {
+    const scheduledFor = nextOpWindowTimestamp();
+
+    const item: Omit<OutboundQueueItem, 'updatedAt'> = {
+      to,
+      body,
+      senderNumber: senderNumber ?? undefined,
+      status: 'queued',
+      createdAt: nowAsTimestamp(),
+      scheduledFor,
+      attempts: 0,
+    };
+
+    const docRef = await adminDb.collection(COLL_OUTBOUND_QUEUE).add(item);
+
+    console.info(
+      `[twilio-client] Message queued (${docRef.id}) for ${scheduledFor.toDate().toISOString()}`
+    );
+
+    return {
+      success: true,
+      queued: true,
+      senderNumber,
+    };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Unknown error';
+    console.error('[twilio-client] Failed to queue message:', message);
+
+    return {
+      success: false,
+      errorMessage: `Failed to queue message: ${message}`,
+    };
+  }
+}
+
+// ─── Public API: Drain Outbound Queue ───────────────────────────────────────
+
+/**
+ * Processes the outbound message queue, dispatching up to
+ * {@link DRAIN_BATCH_SIZE} messages per call.
+ *
+ * This function should be invoked on a schedule (e.g. via Vercel Cron or
+ * an external scheduler) every 1–2 minutes during operating hours.
+ *
+ * Behaviour:
+ *   1. Skips entirely if outside operating hours.
+ *   2. Queries `whatsapp_outbound_queue` for `status == 'queued'` and
+ *      `scheduledFor <= now`, ordered by `scheduledFor` ascending.
+ *   3. For each message: increments sender stats, calls the Twilio API,
+ *      and updates the queue item status on success or failure.
+ *   4. Messages that exceed {@link MAX_DELIVERY_ATTEMPTS} are marked as
+ *      permanently `failed`.
+ *
+ * @returns An object summarising the drain run.
+ *
+ * @example
+ * ```ts
+ * // In a Vercel Cron route: app/api/cron/drain-whatsapp/route.ts
+ * import { drainOutboundQueue } from '@/lib/server/twilio-client';
+ * export async function GET() {
+ *   const result = await drainOutboundQueue();
+ *   return Response.json(result);
+ * }
+ * ```
+ */
+export async function drainOutboundQueue(): Promise<{
+  processed: number;
+  sent: number;
+  failed: number;
+  skipped: number;
+}> {
+  const summary = { processed: 0, sent: 0, failed: 0, skipped: 0 };
+
+  // ── Respect operating hours ──────────────────────────────────────────
+  if (!isWithinOperatingHours()) {
+    console.info('[twilio-client] drainOutboundQueue: outside operating hours — skipping.');
+    return summary;
+  }
+
+  // ── Guard: config ────────────────────────────────────────────────────
+  if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || SENDER_NUMBERS.length === 0) {
+    console.warn('[twilio-client] drainOutboundQueue: Twilio not configured — skipping.');
+    return summary;
+  }
+
+  try {
+    const now = Timestamp.now();
+
+    const snapshot = await adminDb
+      .collection(COLL_OUTBOUND_QUEUE)
+      .where('status', '==', 'queued')
+      .where('scheduledFor', '<=', now)
+      .orderBy('scheduledFor', 'asc')
+      .limit(DRAIN_BATCH_SIZE)
+      .get();
+
+    if (snapshot.empty) {
+      return summary;
+    }
+
+    for (const doc of snapshot.docs) {
+      summary.processed += 1;
+      const data = doc.data() as OutboundQueueItem;
+
+      // ── Max attempts check ───────────────────────────────────────────
+      if (data.attempts >= MAX_DELIVERY_ATTEMPTS) {
+        await adminDb.collection(COLL_OUTBOUND_QUEUE).doc(doc.id).update({
+          status: 'failed',
+          lastError: 'Exceeded maximum delivery attempts',
+          updatedAt: nowAsTimestamp(),
+        });
+        summary.failed += 1;
+        continue;
+      }
+
+      // ── Sender selection ─────────────────────────────────────────────
+      const senderNumber = data.senderNumber ?? (await selectSenderNumber());
+
+      if (!senderNumber) {
+        // All senders at capacity — leave queued for next drain cycle
+        summary.skipped += 1;
+        continue;
+      }
+
+      // ── Rate-limit check ─────────────────────────────────────────────
+      const allowed = await incrementSenderStat(senderNumber);
+      if (!allowed) {
+        summary.skipped += 1;
+        continue;
+      }
+
+      // ── Increment attempt counter ────────────────────────────────────
+      await adminDb.collection(COLL_OUTBOUND_QUEUE).doc(doc.id).update({
+        attempts: data.attempts + 1,
+        updatedAt: nowAsTimestamp(),
+      });
+
+      // ── Send via Twilio ──────────────────────────────────────────────
+      try {
+        const result = await callTwilioMessagesAPI(senderNumber, data.to, data.body);
+
+        if (result.errorCode) {
+          await adminDb.collection(COLL_OUTBOUND_QUEUE).doc(doc.id).update({
+            status: data.attempts + 1 >= MAX_DELIVERY_ATTEMPTS ? 'failed' : 'queued',
+            lastError: `Twilio ${result.errorCode}: ${result.errorMessage}`,
+            updatedAt: nowAsTimestamp(),
+          });
+          summary.failed += 1;
+        } else {
+          await adminDb.collection(COLL_OUTBOUND_QUEUE).doc(doc.id).update({
+            status: 'sent',
+            senderNumber,
+            updatedAt: nowAsTimestamp(),
+          });
+
+          // Log the successful send
+          await logMessage({
+            messageSid: result.sid ?? '',
+            to: data.to,
+            from: senderNumber,
+            body: data.body,
+            status: 'sent',
+            senderNumber,
+            createdAt: nowAsTimestamp(),
+          });
+
+          summary.sent += 1;
+        }
+      } catch (err) {
+        const errMsg = err instanceof Error ? err.message : 'Unknown send error';
+        await adminDb.collection(COLL_OUTBOUND_QUEUE).doc(doc.id).update({
+          status: data.attempts + 1 >= MAX_DELIVERY_ATTEMPTS ? 'failed' : 'queued',
+          lastError: errMsg,
+          updatedAt: nowAsTimestamp(),
+        });
+        summary.failed += 1;
+      }
+    }
+  } catch (err) {
+    console.error(
+      '[twilio-client] drainOutboundQueue error:',
+      err instanceof Error ? err.message : err
+    );
+  }
+
+  return summary;
+}
+
+// ─── Public API: Webhook Signature Verification ─────────────────────────────
+
+/**
+ * Verifies that an incoming webhook request genuinely originated from Twilio.
+ *
+ * Twilio signs every webhook request with an `X-Twilio-Signature` header.
+ * The signature is a Base64-encoded SHA1 HMAC computed over the concatenation
+ * of the URL and the request parameters sorted alphabetically by key, using
+ * the Auth Token as the secret.
+ *
+ * @param url       The full URL that Twilio called (including protocol and query string).
+ * @param body      The raw request body **or** the parsed params as a `Record<string, string>`.
+ *                  If a string is provided, it is parsed as URL-encoded form data.
+ * @param signature The value of the `X-Twilio-Signature` header.
+ * @returns `true` if the signature is valid, `false` otherwise.
+ *
+ * @example
+ * ```ts
+ * // In an API route handler:
+ * import { verifyTwilioSignature } from '@/lib/server/twilio-client';
+ *
+ * const signature = req.headers.get('X-Twilio-Signature') ?? '';
+ * const url = req.url;
+ * const body = await req.text();
+ * const isValid = verifyTwilioSignature(url, body, signature);
+ * if (!isValid) return new Response('Invalid signature', { status: 403 });
+ * ```
+ */
+export function verifyTwilioSignature(
+  url: string,
+  body: string | Record<string, string>,
+  signature: string,
+): boolean {
+  if (!TWILIO_AUTH_TOKEN) {
+    console.error('[twilio-client] Cannot verify signature: TWILIO_AUTH_TOKEN is not set.');
+    return false;
+  }
+
+  // Parse body into sorted key-value pairs
+  let params: Record<string, string>;
+
+  if (typeof body === 'string') {
+    params = {};
+    const parsed = new URLSearchParams(body);
+    parsed.forEach((value, key) => {
+      params[key] = value;
+    });
+  } else {
+    params = body;
+  }
+
+  // Build the concatenated string: URL + sorted params
+  const sortedKeys = Object.keys(params).sort();
+  let data = url;
+  for (const key of sortedKeys) {
+    data += key + params[key];
+  }
+
+  // Compute HMAC-SHA1
+  const hmac = crypto
+    .createHmac('sha1', TWILIO_AUTH_TOKEN)
+    .update(data, 'utf8')
+    .digest('base64');
+
+  // Constant-time comparison to prevent timing attacks
+  try {
+    return crypto.timingSafeEqual(
+      Buffer.from(hmac, 'base64'),
+      Buffer.from(signature, 'base64'),
+    );
+  } catch {
+    // Length mismatch or invalid base64 — signature is invalid
+    return false;
+  }
+}
+
+// ─── Public API: Delivery Status ────────────────────────────────────────────
+
+/**
+ * Updates the delivery status of a WhatsApp message in the
+ * `whatsapp_message_log` Firestore collection.
+ *
+ * Call this from your Twilio status-callback webhook handler to track
+ * delivery progress (queued → sent → delivered → read, or undelivered / failed).
+ *
+ * @param messageSid  The `MessageSid` provided by Twilio.
+ * @param status      The new status string (e.g. `'delivered'`, `'read'`,
+ *                    `'undelivered'`, `'failed'`).
+ *
+ * @example
+ * ```ts
+ * // In a status-callback API route:
+ * import { updateMessageStatus } from '@/lib/server/twilio-client';
+ *
+ * const form = await req.formData();
+ * await updateMessageStatus(
+ *   form.get('MessageSid') as string,
+ *   form.get('MessageStatus') as string,
+ * );
+ * ```
+ */
+export async function updateMessageStatus(
+  messageSid: string,
+  status: string,
+): Promise<void> {
+  if (!messageSid) {
+    console.warn('[twilio-client] updateMessageStatus called with empty messageSid — ignoring.');
+    return;
+  }
+
+  try {
+    // Find the log entry by messageSid
+    const snapshot = await adminDb
+      .collection(COLL_MESSAGE_LOG)
+      .where('messageSid', '==', messageSid)
+      .limit(1)
+      .get();
+
+    if (snapshot.empty) {
+      // No existing log — create a minimal entry
+      await adminDb.collection(COLL_MESSAGE_LOG).add({
+        messageSid,
+        status,
+        createdAt: nowAsTimestamp(),
+        updatedAt: nowAsTimestamp(),
+      });
+      console.info(`[twilio-client] Created message log for ${messageSid} with status: ${status}`);
+      return;
+    }
+
+    // Update the existing entry
+    const docId = snapshot.docs[0].id;
+    await adminDb.collection(COLL_MESSAGE_LOG).doc(docId).update({
+      status,
+      updatedAt: nowAsTimestamp(),
+    });
+
+    console.info(`[twilio-client] Updated ${messageSid} → ${status}`);
+  } catch (err) {
+    console.error(
+      '[twilio-client] updateMessageStatus failed:',
+      err instanceof Error ? err.message : err
+    );
+    // Intentionally not re-throwing — status updates are non-critical
+  }
+}
+
+// ─── Internal: Message Log Writer ───────────────────────────────────────────
+
+/**
+ * Writes a message-log entry to the `whatsapp_message_log` Firestore collection.
+ *
+ * @internal Used by `sendWhatsAppMessage` and `drainOutboundQueue` to
+ *           record both successful sends and failures.
+ */
+async function logMessage(entry: MessageLogEntry): Promise<void> {
+  try {
+    await adminDb.collection(COLL_MESSAGE_LOG).add({
+      ...entry,
+      updatedAt: nowAsTimestamp(),
+    });
+  } catch (err) {
+    // Logging is non-critical — swallow the error but report it
+    console.error(
+      '[twilio-client] Failed to write message log:',
+      err instanceof Error ? err.message : err
+    );
+  }
+}
