@@ -37,6 +37,7 @@ import DBEditorPage from './components/DBEditorPage';
 import PageEditorPage from './components/PageEditorPage';
 import FollowupsPage from './components/FollowupsPage';
 import BotsControlPage from './components/BotsControlPage';
+import OwnerNegotiationsPage from './components/OwnerNegotiationsPage';
 
 import GlobalProgressTracker from './components/GlobalProgressTracker';
 import AdminHealthMonitor from './components/AdminHealthMonitor';
@@ -513,6 +514,8 @@ export default function App() {
         return <AutomationToolsPage />;
       case 'dataSync':
         return <DataSyncHubPage />;
+      case 'negotiations':
+        return <OwnerNegotiationsPage />;
       case 'searchInsights':
         return <SearchInsightsPage T={T} isAr={isAr} />;
       case 'followups':

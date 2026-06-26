@@ -3,7 +3,7 @@ import {
   LogOut, Languages, PanelLeftClose, PanelLeftOpen, X,
   LayoutDashboard, Users, Building2, CalendarCheck, BarChart3,
   FileText, Bot, Workflow, Zap, Settings, RefreshCw, Database,
-  Sun, Moon,
+  MessageSquare, Sun, Moon,
   type LucideIcon,
 } from 'lucide-react';
 import { auth } from '../firebase';
@@ -51,6 +51,7 @@ export const NAV_ITEMS: NavItem[] = [
   { id: 'easyListing',    label: 'Easy Listing',      labelAr: 'إدراج سريع',            icon: Zap,             section: 'integrations' },
   { id: 'automation',     label: 'Automation Portal', labelAr: 'بوابة الأتمتة',         icon: Settings,        section: 'integrations' },
   { id: 'dataSync',       label: 'Data Sync',         labelAr: 'مزامنة البيانات',       icon: RefreshCw,       section: 'integrations' },
+  { id: 'negotiations',   label: 'Negotiations',      labelAr: 'المفاوضات',             icon: MessageSquare,   section: 'integrations', badge: 'New', badgeTone: 'success' },
   // ── System ─────────────────────────────────────────────────────────
   { id: 'dbEditor',       label: 'DB Editor',         labelAr: 'محرر قاعدة البيانات',   icon: Database,        section: 'system' },
 ];
