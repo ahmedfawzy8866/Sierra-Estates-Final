@@ -162,6 +162,14 @@ export default function ListingsHubPage({ T, searchQuery = '' }: ListingsHubPage
       setListings(
         loaded.map((d) => ({
           ...d,
+          code: d.code || d.pfReferenceNumber || d.id || '',
+          cmp: d.cmp || d.compound || '',
+          type: d.type || d.propertyType || '',
+          beds: Number(d.beds || 0),
+          area: Number(d.area || 0),
+          price: d.price || '0',
+          ai: Number(d.ai || 9.0),
+          status: d.status || 'Active',
           createdAt: d.createdAt ? new Date(d.createdAt) : new Date(),
           updatedAt: d.updatedAt ? new Date(d.updatedAt) : new Date(),
         }))
