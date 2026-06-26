@@ -4,9 +4,21 @@ module.exports = {
       displayName: 'mobile',
       preset: 'jest-expo',
       setupFilesAfterEnv: ['@testing-library/jest-native/extend-expect'],
+      roots: [
+        '<rootDir>/app',
+        '<rootDir>/components',
+        '<rootDir>/lib',
+        '<rootDir>/constants'
+      ],
       testMatch: [
-        '<rootDir>/__tests__/**/*.test.[jt]s?(x)',
-        '<rootDir>/src/**/*.test.[jt]s?(x)'
+        '**/__tests__/**/*.test.[jt]s?(x)',
+        '**/*.test.[jt]s?(x)'
+      ],
+      modulePathIgnorePatterns: [
+        '<rootDir>/vendor',
+        '<rootDir>/back',
+        '<rootDir>/backend',
+        '<rootDir>/packages/open-memory'
       ],
       transformIgnorePatterns: [
         'node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)'
@@ -23,6 +35,12 @@ module.exports = {
       testMatch: [
         '**/__tests__/**/*.test.ts',
         '**/__tests__/**/*.test.js',
+      ],
+      modulePathIgnorePatterns: [
+        '<rootDir>/vendor',
+        '<rootDir>/back',
+        '<rootDir>/backend',
+        '<rootDir>/packages/open-memory'
       ],
       moduleNameMapper: {
         '^@sierra-estates/obedian$': '<rootDir>/packages/obedian/src/index.ts',

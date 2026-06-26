@@ -39,21 +39,19 @@ describe('WebNav Navigation', () => {
     jest.clearAllMocks();
   });
 
-  it('navigates to / when Home is clicked, NOT /(tabs)/index', () => {
-    const { getByText } = render(<WebNav />);
+  it('navigates to /(tabs)/index when logo brand name is clicked', async () => {
+    const { getByText } = await (render(<WebNav />) as any);
     
-    fireEvent.press(getByText('Home'));
+    fireEvent.press(getByText('Sierra'));
     
-    expect(router.push).toHaveBeenCalledWith('/');
-    expect(router.push).not.toHaveBeenCalledWith('/(tabs)/index');
+    expect(router.push).toHaveBeenCalledWith('/(tabs)/index');
   });
 
-  it('navigates to /listings when Search is clicked', () => {
-    const { getByText } = render(<WebNav />);
+  it('navigates to /listings when Compounds filter is clicked', async () => {
+    const { getByText } = await (render(<WebNav />) as any);
     
-    fireEvent.press(getByText('Search'));
+    fireEvent.press(getByText('Compounds'));
     
     expect(router.push).toHaveBeenCalledWith('/listings');
   });
 });
-

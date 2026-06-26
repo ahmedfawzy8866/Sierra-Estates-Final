@@ -202,7 +202,7 @@ export function ClaimNowModal({ visible, onClose }: ClaimNowModalProps) {
               {/* 4. Preferred Property Type */}
               <Text style={[styles.fieldLabel, { color: colors.mutedForeground, textAlign }]}>{t.preferredType}</Text>
               <View style={[styles.typeGrid, { flexDirection: isRTL ? "row-reverse" : "row", marginBottom: 12 }]}>
-                {t.typeOptions.map((opt) => (
+                {(t.typeOptions || (isRTL ? ["شقة", "فيلا", "تاون هاوس", "بنتهاوس"] : ["Apartment", "Villa", "Townhouse", "Penthouse"])).map((opt) => (
                   <Pressable
                     key={opt}
                     style={[styles.typeChip, {
