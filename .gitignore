@@ -42,4 +42,6 @@ yarn-error.*
 coverage/
 obedian-store.json
 .agents/
+.wwebjs_auth/
+.wwebjs_cache/
 
