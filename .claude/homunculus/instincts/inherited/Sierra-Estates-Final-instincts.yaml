@@ -1,0 +1,317 @@
+# Instincts generated from https://github.com/ahmedfawzy8866/Sierra-Estates-Final
+# Generated: 2026-06-26T22:25:20.048Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: Sierra-Estates-Final-commit-conventional
+trigger: "when writing a commit message"
+confidence: 0.85
+domain: git
+source: repo-analysis
+source_repo: https://github.com/ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Commit Conventional
+
+## Action
+
+Use conventional commit format with prefixes: feat
+
+## Evidence
+
+- 2 commits analyzed
+- Detected conventional commit pattern
+- Examples: feat(security): rate-limit public listings endpoints, feat(whatsapp): rebuild outbound queue on Upstash Redis
+
+---
+id: Sierra-Estates-Final-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Commit Length
+
+## Action
+
+Write moderate-length commit messages (~54 characters)
+
+## Evidence
+
+- Average commit message length: 54 chars
+- Based on 2 commits
+
+---
+id: Sierra-Estates-Final-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Naming Files
+
+## Action
+
+Use camelCase naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: camelCase
+
+---
+id: Sierra-Estates-Final-import-alias
+trigger: "when importing modules"
+confidence: 0.85
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Import Alias
+
+## Action
+
+Use path aliases (@/, ~/) instead of relative imports
+
+## Evidence
+
+- Import analysis shows alias pattern
+- Example: import { x } from '@/lib/x'
+
+---
+id: Sierra-Estates-Final-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Export Style
+
+## Action
+
+Prefer named exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: named
+
+---
+id: sierra-estates-final-instinct-file-naming
+trigger: "When creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Instinct File Naming
+
+## Action
+
+Name the file using camelCase
+
+## Evidence
+
+- Pattern in namingConventions.files
+
+---
+id: sierra-estates-final-instinct-function-naming
+trigger: "When defining a function"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Instinct Function Naming
+
+## Action
+
+Name the function using camelCase
+
+## Evidence
+
+- Pattern in namingConventions.functions
+
+---
+id: sierra-estates-final-instinct-class-naming
+trigger: "When defining a class"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Instinct Class Naming
+
+## Action
+
+Name the class using PascalCase
+
+## Evidence
+
+- Pattern in namingConventions.classes
+
+---
+id: sierra-estates-final-instinct-constant-naming
+trigger: "When defining a constant"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Instinct Constant Naming
+
+## Action
+
+Name the constant using SCREAMING_SNAKE_CASE
+
+## Evidence
+
+- Pattern in namingConventions.constants
+
+---
+id: sierra-estates-final-instinct-import-style
+trigger: "When importing modules"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Instinct Import Style
+
+## Action
+
+Use alias import style
+
+## Evidence
+
+- Pattern in importStyle
+
+---
+id: sierra-estates-final-instinct-export-style
+trigger: "When exporting modules or functions"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Instinct Export Style
+
+## Action
+
+Use named exports
+
+## Evidence
+
+- Pattern in exportStyle
+
+---
+id: sierra-estates-final-instinct-git-commit-format
+trigger: "When writing a commit message"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Instinct Git Commit Format
+
+## Action
+
+Use the conventional commit format with a 'feat' prefix for features
+
+## Evidence
+
+- Seen in commit: feat(security): rate-limit public listings endpoints
+- Seen in commit: feat(whatsapp): rebuild outbound queue on Upstash Redis
+
+---
+id: sierra-estates-final-instinct-git-commit-length
+trigger: "When composing a commit message"
+confidence: 0.7
+domain: git
+source: repo-analysis
+source_repo: ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Instinct Git Commit Length
+
+## Action
+
+Keep the commit message concise, around 54 characters on average
+
+## Evidence
+
+- Pattern in commits.averageLength
+
+---
+id: sierra-estates-final-instinct-error-handling
+trigger: "When handling errors in code"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Instinct Error Handling
+
+## Action
+
+Use try-catch blocks for error handling
+
+## Evidence
+
+- Pattern in errorHandling.style
+
+---
+id: sierra-estates-final-instinct-testing-location
+trigger: "When adding new tests"
+confidence: 0.6
+domain: testing
+source: repo-analysis
+source_repo: ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Instinct Testing Location
+
+## Action
+
+Place test files in mixed locations (not strictly separated from source files)
+
+## Evidence
+
+- Pattern in architecture.folderStructure.testLocation
+
+---
+id: sierra-estates-final-instinct-testing-config
+trigger: "When configuring tests for an app"
+confidence: 0.7
+domain: testing
+source: repo-analysis
+source_repo: ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Instinct Testing Config
+
+## Action
+
+Use a Jest config file (e.g., jest.config.js) in the app's directory
+
+## Evidence
+
+- Pattern in architecture.configFiles
+
