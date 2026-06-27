@@ -4,6 +4,7 @@
  */
 
 import { NextResponse } from 'next/server';
+import * as admin from 'firebase-admin';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { COLLECTIONS, Proposal, Unit } from '@/lib/models/schema';
 import { analyzeAssetFinancials } from '@/lib/services/roi-service';
@@ -59,7 +60,7 @@ export async function POST(req: Request) {
     await adminDb.collection(COLLECTIONS.proposals).doc(proposalId).update({
       units: updatedUnits,
       financialAnalysis,
-      updatedAt: new Date(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
     return NextResponse.json({
@@ -67,8 +68,8 @@ export async function POST(req: Request) {
       financialAnalysis
     });
 
-  } catch (error: any) {
-    console.error('[Wealth Intelligence] Re-analysis failed:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    console.error('[Wealth Intelligence] Re-analysis failed:', error instanceof Error ? error.message : 'Unknown');
+    return NextResponse.json({ error: 'Financial analysis failed' }, { status: 500 });
   }
 }

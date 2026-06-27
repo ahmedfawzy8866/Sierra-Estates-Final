@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { getAIService } from '@/lib/ai';
+import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
 
 interface SmartFilterParams {
   query: string;  // Natural language search, e.g. "3 bedroom villa in New Cairo under 5 million"
@@ -31,6 +32,8 @@ interface StructuredFilter {
 }
 
 export async function POST(request: NextRequest) {
+  const limited = applyRateLimit(request, publicEndpointLimiter);
+  if (limited) return limited;
   try {
     const { query: userQuery, limit: resultLimit = 20 } = await request.json() as SmartFilterParams;
 
@@ -59,7 +62,35 @@ export async function POST(request: NextRequest) {
       { jsonMode: true }
     );
 
-    console.log('[SMART-FILTER] Parsed filters:', filterResult);
+    console.info('[SMART-FILTER] Parsed filters:', JSON.stringify(filterResult));
+
+    // Validate AI output — prevent injection or unexpected values from reaching Firestore queries
+    const VALID_PROPERTY_TYPES = ['apartment', 'villa', 'townhouse', 'duplex', 'penthouse', 'studio', 'chalet', 'commercial', 'land'];
+    const VALID_OFFERING_TYPES = ['sale', 'rent'];
+
+    if (filterResult.propertyType && !VALID_PROPERTY_TYPES.includes(filterResult.propertyType)) {
+      console.warn('[SMART-FILTER] AI returned invalid propertyType:', filterResult.propertyType);
+      delete filterResult.propertyType;
+    }
+    if (filterResult.offeringType && !VALID_OFFERING_TYPES.includes(filterResult.offeringType)) {
+      console.warn('[SMART-FILTER] AI returned invalid offeringType:', filterResult.offeringType);
+      delete filterResult.offeringType;
+    }
+    if (filterResult.bedrooms !== undefined && (typeof filterResult.bedrooms !== 'number' || filterResult.bedrooms < 0 || filterResult.bedrooms > 20)) {
+      delete filterResult.bedrooms;
+    }
+    if (filterResult.priceMin !== undefined && (typeof filterResult.priceMin !== 'number' || filterResult.priceMin < 0)) {
+      delete filterResult.priceMin;
+    }
+    if (filterResult.priceMax !== undefined && (typeof filterResult.priceMax !== 'number' || filterResult.priceMax < 0)) {
+      delete filterResult.priceMax;
+    }
+    if (filterResult.location && typeof filterResult.location !== 'string') {
+      delete filterResult.location;
+    }
+    if (filterResult.compound && typeof filterResult.compound !== 'string') {
+      delete filterResult.compound;
+    }
 
     // Build Firestore query from structured filters
     let query = adminDb.collection(COLLECTIONS.units);
@@ -78,7 +109,7 @@ export async function POST(request: NextRequest) {
       query = query.where('compound', '==', filterResult.compound);
     }
     if (filterResult.offeringType) {
-      query = query.where('category', '==', filterResult.offeringType === 'rent' ? 'residential' : 'residential');
+      query = query.where('offeringType', '==', filterResult.offeringType);
     }
 
     // Apply ordering and limit
@@ -115,10 +146,9 @@ export async function POST(request: NextRequest) {
       count: results.length,
     });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Unknown filter error';
-    console.error('[SMART-FILTER] Failed:', message);
+    console.error('[SMART-FILTER] Failed:', error instanceof Error ? error.message : 'Unknown filter error');
     return NextResponse.json(
-      { success: false, error: `Smart filter failed: ${message}` },
+      { success: false, error: 'Smart filter failed — please try a different search' },
       { status: 500 }
     );
   }

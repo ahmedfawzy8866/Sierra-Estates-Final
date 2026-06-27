@@ -17,7 +17,7 @@ export class WhatsAppStatusService {
         heartbeatInterval: 60000 // Expected pulse every 60s
       }, { merge: true });
     } catch (error) {
-      console.error("❌ Failed to record WhatsApp pulse:", error);
+      console.error("Failed to record WhatsApp pulse:", error);
     }
   }
 
@@ -33,7 +33,7 @@ export class WhatsAppStatusService {
         errorTimestamp: serverTimestamp()
       });
     } catch (error) {
-      console.error("❌ Failed to record node error:", error);
+      console.error("Failed to record node error:", error);
     }
   }
 }

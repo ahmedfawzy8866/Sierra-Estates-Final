@@ -70,7 +70,7 @@ export default function Navbar({
 
   return (
     <>
-      <header className="hdr" style={{ top: topOffset }}>
+      <header className="hdr" style={{ top: topOffset }} role="navigation" aria-label="Main navigation">
         {/* Scroll Progress Bar */}
         <motion.div
           style={{

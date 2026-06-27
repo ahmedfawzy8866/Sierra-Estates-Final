@@ -4,7 +4,9 @@ import { generateCloserHandoff } from '@/lib/services/handoff-service';
 export async function POST(req: Request) {
   try {
     const { leadId } = await req.json();
-    if (!leadId) return NextResponse.json({ error: 'Missing leadId' }, { status: 400 });
+    if (!leadId || typeof leadId !== 'string' || leadId.length > 128) {
+      return NextResponse.json({ error: 'A valid lead ID is required' }, { status: 400 });
+    }
 
     // 1. Generate the High-Fidelity Executive Summary
     const summary = await generateCloserHandoff(leadId);
@@ -28,8 +30,8 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ success: true, summary });
-  } catch (error: any) {
-    console.error("Handoff API error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    console.error("[Concierge Complete] Error:", error instanceof Error ? error.message : "Unknown");
+    return NextResponse.json({ error: "Handoff processing failed" }, { status: 500 });
   }
 }

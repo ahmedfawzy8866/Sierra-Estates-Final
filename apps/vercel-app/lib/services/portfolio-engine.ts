@@ -222,10 +222,9 @@ ${portfolio.personalNote}
 Ready to explore? Reply "VIEWING" or click the gallery link above! ✨
 `;
 
-  // Send via WhatsApp API (integration with WhatsApp service)
-  // This is a placeholder for actual WhatsApp integration
-  console.log(`📱 Sending WhatsApp to ${phoneNumber}:\n${message}`);
-  
+  const { enqueueWhatsAppMessage } = await import('../server/whatsapp-queue');
+  await enqueueWhatsAppMessage(phoneNumber.replace(/\D/g, ''), message);
+
   // Update lead status
   await updateDoc(doc(db, COLLECTIONS.stakeholders, leadId), {
     'conciergePortfolioSentAt': serverTimestamp(),

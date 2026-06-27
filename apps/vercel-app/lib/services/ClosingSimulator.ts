@@ -81,7 +81,7 @@ export class ClosingSimulator {
       };
 
     } catch (error: any) {
-      console.error("❌ Strategic Simulation Framework Failure:", error);
+      console.error("Strategic Simulation Framework Failure:", error);
       throw error;
     }
   }

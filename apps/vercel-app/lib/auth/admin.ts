@@ -76,7 +76,8 @@ export async function verifyAdminUser(userId: string): Promise<boolean> {
 
     const userRecord = await adminAuth.getUser(userId);
     return userRecord.customClaims?.admin === true || userRecord.customClaims?.role === 'admin';
-  } catch {
+  } catch (err) {
+    console.warn('[Auth] Admin check failed:', err instanceof Error ? err.message : 'Unknown');
     return false;
   }
 }
@@ -90,7 +91,8 @@ export async function setAdminRole(userId: string, isAdmin: boolean): Promise<bo
 
     await adminAuth.setCustomUserClaims(userId, { admin: isAdmin, role: isAdmin ? 'admin' : 'user' });
     return true;
-  } catch {
+  } catch (err) {
+    console.warn('[Auth] Admin check failed:', err instanceof Error ? err.message : 'Unknown');
     return false;
   }
 }

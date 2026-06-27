@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { Timestamp, Query } from 'firebase-admin/firestore';
+import { verifyRequest, unauthorizedResponse } from '@/lib/server/auth-guard';
 
 export async function POST(request: NextRequest) {
   try {
@@ -68,20 +69,33 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     );
-  } catch (error) {
-    console.error('Viewing request creation error:', error);
+  } catch (error: unknown) {
+    console.error('[Viewing Requests] Creation error:', error instanceof Error ? error.message : 'Unknown');
     return NextResponse.json(
-      { error: 'Failed to create viewing request', details: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Failed to create viewing request' },
       { status: 500 }
     );
   }
 }
 
+/**
+ * GET /api/viewing-requests
+ * Requires authentication (Firebase token or SBR secret key).
+ * Supports pagination with ?page=N&limit=N (default limit=20, max=100).
+ */
 export async function GET(request: NextRequest) {
   try {
+    // Auth check — viewing requests contain PII
+    const auth = await verifyRequest(request);
+    if (!auth.authenticated) {
+      return unauthorizedResponse('Authentication required to view requests');
+    }
+
     const { searchParams } = new URL(request.url);
     const propertyCode = searchParams.get('propertyCode');
     const status = searchParams.get('status');
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '20', 10)));
 
     let ref: Query = adminDb.collection('viewing_requests');
 
@@ -92,6 +106,9 @@ export async function GET(request: NextRequest) {
       ref = ref.where('status', '==', status);
     }
 
+    // Apply pagination
+    ref = ref.orderBy('createdAt', 'desc').limit(limit).offset((page - 1) * limit);
+
     const snapshot = await ref.get();
     const requests = snapshot.docs.map(doc => ({
       id: doc.id,
@@ -101,10 +118,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       count: requests.length,
+      page,
+      limit,
       requests
     }, { status: 200 });
-  } catch (error) {
-    console.error('Get viewing requests error:', error);
+  } catch (error: unknown) {
+    console.error('[Viewing Requests] Fetch error:', error instanceof Error ? error.message : 'Unknown');
     return NextResponse.json(
       { error: 'Failed to fetch viewing requests' },
       { status: 500 }

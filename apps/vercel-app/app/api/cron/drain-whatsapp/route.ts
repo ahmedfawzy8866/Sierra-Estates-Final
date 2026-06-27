@@ -5,11 +5,11 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { drainOutboundQueue } from '@/lib/server/twilio-client';
+import { drainWhatsAppQueue } from '@/lib/server/whatsapp-queue';
 
 export async function GET(request: NextRequest) {
   try {
-    const result = await drainOutboundQueue();
+    const result = await drainWhatsAppQueue();
 
     return NextResponse.json({
       success: true,

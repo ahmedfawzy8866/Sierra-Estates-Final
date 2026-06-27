@@ -4,7 +4,8 @@ import { getOpenClawGatewayConfig } from '@/lib/server/openclaw';
 export async function POST(req: Request) {
   try {
     const { text } = await req.json();
-    if (!text) return NextResponse.json({ error: 'Missing text' }, { status: 400 });
+    if (!text || typeof text !== 'string') return NextResponse.json({ error: 'Missing or invalid text' }, { status: 400 });
+    if (text.length > 10000) return NextResponse.json({ error: 'Text too long (max 10000 chars)' }, { status: 400 });
 
     const gateway = getOpenClawGatewayConfig();
     const systemPrompt = `Analyze this real estate listing. Extract as JSON:
@@ -29,8 +30,8 @@ export async function POST(req: Request) {
 
     const json = JSON.parse(content.match(/\{[\s\S]*\}/)?.[0] || '{}');
     return NextResponse.json(json);
-  } catch (err: any) {
-    console.error("AI Analysis API error:", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    console.error("[Concierge Analyze] Error:", err instanceof Error ? err.message : "Unknown");
+    return NextResponse.json({ error: "AI analysis failed" }, { status: 500 });
   }
 }

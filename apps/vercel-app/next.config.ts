@@ -1,6 +1,8 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  // Enable standalone output for Docker deployments
+  output: 'standalone',
   // Enforce type-checking during build (never skip)
   typescript: {
     ignoreBuildErrors: false,

@@ -24,6 +24,8 @@ class PropertyFinderClient {
   private apiSecret: string;
   private accessToken: string | null = null;
   private tokenExpiry: number | null = null;
+  // Mutex to prevent concurrent token refresh in serverless cold starts
+  private tokenRefreshPromise: Promise<string> | null = null;
 
   private constructor() {
     this.baseUrl = process.env.PROPERTY_FINDER_API_GATEWAY || 'https://atlas.propertyfinder.com';
@@ -38,17 +40,41 @@ class PropertyFinderClient {
     return PropertyFinderClient.instance;
   }
 
+  /**
+   * Get a valid auth token. Uses a mutex (tokenRefreshPromise) to prevent
+   * concurrent token refresh requests in serverless environments where
+   * multiple async calls may race on a cold start.
+   */
   private async getAuthToken(): Promise<string> {
     const now = Date.now();
     if (this.accessToken && this.tokenExpiry && now < this.tokenExpiry) {
       return this.accessToken;
     }
 
+    // If a refresh is already in flight, wait for it instead of starting another
+    if (this.tokenRefreshPromise) {
+      return this.tokenRefreshPromise;
+    }
+
+    // Start a new refresh and cache the promise
+    this.tokenRefreshPromise = this.refreshToken().finally(() => {
+      this.tokenRefreshPromise = null;
+    });
+
+    return this.tokenRefreshPromise;
+  }
+
+  private async refreshToken(): Promise<string> {
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10_000); // 10s timeout
+
     const response = await fetch(`${this.baseUrl}/v1/auth/token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify({ apiKey: this.apiKey, apiSecret: this.apiSecret }),
-    });
+      signal: controller.signal,
+    }).finally(() => clearTimeout(timeout));
 
     if (!response.ok) {
       const err = await response.text();
@@ -57,13 +83,18 @@ class PropertyFinderClient {
 
     const data: PFAccessToken = await response.json();
     this.accessToken = data.accessToken;
-    this.tokenExpiry = now + (data.expiresIn - 60) * 1000;
+    // Guard against expiresIn < 60 which would set expiry in the past
+    this.tokenExpiry = now + Math.max(data.expiresIn - 60, 0) * 1000;
     return this.accessToken;
   }
 
   private async request<T = any>(path: string, options: RequestInit = {}): Promise<T> {
     const token = await this.getAuthToken();
     const url = `${this.baseUrl}/v1${path}`;
+
+    // 30s timeout for all PF API requests — prevents hanging on Vercel
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30_000);
 
     const response = await fetch(url, {
       ...options,
@@ -73,7 +104,8 @@ class PropertyFinderClient {
         'Accept': 'application/json',
         ...options.headers,
       },
-    });
+      signal: controller.signal,
+    }).finally(() => clearTimeout(timeout));
 
     if (response.status === 204) return null as T;
 

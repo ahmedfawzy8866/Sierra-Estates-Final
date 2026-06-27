@@ -127,15 +127,15 @@ export function initializeMCPServers(): void {
           toolHandlers
         );
 
-        console.log(`✅ Registered MCP server: ${server.name}`);
+        console.log(`Registered MCP server: ${server.name}`);
       } catch (error) {
-        console.warn(`⚠️ Failed to register ${name}:`, error);
+        console.warn(`Failed to register ${name}:`, error);
       }
     });
 
-    console.log('✅ All MCP servers initialized');
+    console.log('All MCP servers initialized');
   } catch (error) {
-    console.error('❌ Failed to initialize MCP servers:', error);
+    console.error('Failed to initialize MCP servers:', error);
   }
 }
 

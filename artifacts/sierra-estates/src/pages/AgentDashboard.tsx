@@ -18,7 +18,7 @@ export default function AgentDashboard() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("listings");
 
-  const { data: properties } = useProperties("all", [], null, "ai");
+  const { data: properties, isError, refetch } = useProperties("all", [], null, "ai");
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {
@@ -173,7 +173,36 @@ export default function AgentDashboard() {
           }}>+ Add New Property</button>
         </div>
 
-        {activeTab === "listings" ? (
+        {isError ? (
+          <div style={{
+            textAlign: "center",
+            padding: "80px 0",
+            background: "rgba(255,255,255,.03)",
+            border: "1px solid rgba(211,167,71,.1)",
+            borderRadius: 18,
+            maxWidth: 460,
+            margin: "0 auto",
+          }}>
+            <div style={{ fontSize: 40, marginBottom: 12 }}>⚠️</div>
+            <div style={{ fontSize: 17, fontWeight: 600, color: "#fff", marginBottom: 8 }}>Something went wrong</div>
+            <div style={{ fontSize: 13, color: "rgba(255,255,255,.4)", marginBottom: 20 }}>We couldn't load the properties. Please try again.</div>
+            <button
+              onClick={() => refetch()}
+              style={{
+                padding: "10px 28px",
+                borderRadius: 9,
+                background: "linear-gradient(135deg,#C9A96E,#A07840)",
+                border: "none",
+                color: "#07111e",
+                fontSize: 12,
+                fontWeight: 800,
+                cursor: "pointer",
+                fontFamily: "inherit",
+                letterSpacing: ".08em",
+              }}
+            >Try again</button>
+          </div>
+        ) : activeTab === "listings" ? (
           <div style={{
             background: "rgba(255,255,255,.03)",
             border: "1px solid rgba(211,167,71,.08)",

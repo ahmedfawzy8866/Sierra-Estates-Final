@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { adminDb } from '@/lib/server/firebase-admin';
+import { Timestamp } from 'firebase-admin/firestore';
 
 /**
  * POST /api/crm/leads
@@ -61,7 +62,7 @@ export async function POST(request: Request) {
       pipeline_stage: leadScoreValue >= 8 ? 'VIP_QUALIFIED_CORRIDOR' : 'LEAD_SOURCED',
       assigned_specialist: selectedSalesCloserRepId,
       interaction_logs_summary: conversation_summary,
-      timestamp: new Date().toISOString()
+      timestamp: Timestamp.now()
     };
 
     // Safe write using adminDb (compile-safe in Vercel build loops)
@@ -69,15 +70,25 @@ export async function POST(request: Request) {
 
     // Apply the Golden Hour rule notification block: trigger instant webhook to Google Calendar
     if (leadScoreValue >= 8 && process.env.ZAPIER_CALENDAR_WEBHOOK_URL) {
-      await fetch(process.env.ZAPIER_CALENDAR_WEBHOOK_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          event_title: `🔥 VIP Immediate Route [Sierra AI Score: ${leadScoreValue}/10]`,
-          description: `Lead Profile: ${normalizedClientName} | Specialized rep: ${selectedSalesCloserRepId} | Budget: ${extracted_metrics.capital_budget} EGP`,
-          phone_number: normalizedClientMobile
-        })
-      }).catch(() => {});
+      try {
+        const webhookUrl = new URL(process.env.ZAPIER_CALENDAR_WEBHOOK_URL);
+        // Only allow HTTPS URLs to prevent SSRF attacks
+        if (webhookUrl.protocol === 'https:') {
+          await fetch(webhookUrl.toString(), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              event_title: `VIP Immediate Route [Sierra AI Score: ${leadScoreValue}/10]`,
+              description: `Lead Profile: ${normalizedClientName} | Specialized rep: ${selectedSalesCloserRepId} | Budget: ${extracted_metrics.capital_budget} EGP`,
+              phone_number: normalizedClientMobile
+            })
+          }).catch(() => {});
+        } else {
+          console.warn('[CRM Leads] Webhook URL must use HTTPS — skipping:', webhookUrl.protocol);
+        }
+      } catch {
+        console.warn('[CRM Leads] Invalid ZAPIER_CALENDAR_WEBHOOK_URL — skipping webhook');
+      }
     }
 
     return NextResponse.json({ 
@@ -87,9 +98,9 @@ export async function POST(request: Request) {
       rep_owner: selectedSalesCloserRepId 
     });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Unexpected server error while processing lead.';
+    console.error('[CRM Leads] Processing failed:', error instanceof Error ? error.message : 'Unknown');
     return NextResponse.json(
-      { success: false, error: `Lead processing failed: ${message}` },
+      { success: false, error: 'Lead processing failed' },
       { status: 500 }
     );
   }

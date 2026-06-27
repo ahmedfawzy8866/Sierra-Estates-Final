@@ -2,6 +2,7 @@
  * SIERRA ESTATES — CORS Configuration
  * Centralized CORS policy for all API routes.
  */
+import 'server-only';
 
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -9,6 +10,17 @@ const ALLOWED_ORIGINS = [
   process.env.NEXT_PUBLIC_SITE_URL || 'https://sierra-estates.vercel.app',
   'http://localhost:3000',
   'http://localhost:3001',
+];
+
+/**
+ * Additional production origins that are explicitly allowed.
+ * Add any known Vercel deployment URLs here.
+ * We do NOT allow arbitrary *.vercel.app subdomains — that would
+ * let any Vercel preview deployment bypass CORS.
+ */
+const ALLOWED_PRODUCTION_ORIGINS: string[] = [
+  // Add specific Vercel deployment URLs as needed, e.g.:
+  // 'https://sierra-estates-git-main-username.vercel.app',
 ];
 
 const ALLOWED_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'];
@@ -25,7 +37,7 @@ const MAX_AGE = 86400; // 24 hours
 export function applyCors(request: NextRequest, response?: NextResponse): NextResponse {
   const origin = request.headers.get('origin') || '';
   const isAllowed = ALLOWED_ORIGINS.includes(origin) ||
-    (origin.endsWith('.vercel.app') && process.env.NODE_ENV === 'production');
+    ALLOWED_PRODUCTION_ORIGINS.includes(origin);
 
   const headers: Record<string, string> = {
     'Access-Control-Allow-Methods': ALLOWED_METHODS.join(', '),
