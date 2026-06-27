@@ -33,7 +33,7 @@ interface StructuredFilter {
 }
 
 export async function POST(request: NextRequest) {
-  const limited = applyRateLimitAsync(request, publicEndpointLimiter);
+  const limited = await applyRateLimitAsync(request, publicEndpointLimiter);
   if (limited) return limited;
   try {
     const { query: userQuery, limit: resultLimit = 20 } = await request.json() as SmartFilterParams;

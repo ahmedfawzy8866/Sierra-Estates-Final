@@ -11,7 +11,7 @@ interface ViewingRequest {
 }
 
 export const POST = async (req: NextRequest) => {
-  const limited = applyRateLimitAsync(req, publicEndpointLimiter);
+  const limited = await applyRateLimitAsync(req, publicEndpointLimiter);
   if (limited) return limited;
   try {
     const body: ViewingRequest = await req.json();

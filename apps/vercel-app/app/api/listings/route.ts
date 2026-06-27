@@ -146,7 +146,7 @@ const getCachedListings = unstable_cache(
 );
 
 export async function GET(request: NextRequest) {
-  const limited = applyRateLimitAsync(request, publicEndpointLimiter);
+  const limited = await applyRateLimitAsync(request, publicEndpointLimiter);
   if (limited) return limited;
   try {
     const { searchParams } = new URL(request.url);
