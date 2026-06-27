@@ -4,7 +4,7 @@ export interface StatsCardProps {
   label: string;
   value: string | number;
   change?: string;
-  icon: React.ElementType;
+  icon: React.ComponentType<any>;
   color: string;
 }
 

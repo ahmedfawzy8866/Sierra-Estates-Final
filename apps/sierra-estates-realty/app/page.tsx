@@ -402,18 +402,20 @@ export default function UnifiedHomepage() {
         <form onSubmit={handleLeadSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-[10px] uppercase tracking-wider text-[#071422]/60 dark:text-white/60 mb-2 font-mono">
+              <label htmlFor="name-input" className="block text-[10px] uppercase tracking-wider text-[#071422]/60 dark:text-white/60 mb-2 font-mono">
                 {t.inputName}
               </label>
               <input
+                id="name-input"
                 type="text"
                 name="name"
                 required
+                placeholder={t.inputName}
                 className="w-full px-5 py-4 rounded-xl bg-white dark:bg-[#071422] border border-[#071422]/15 dark:border-white/10 focus:border-[#C9A84C] outline-none transition-colors text-sm"
               />
             </div>
             <div>
-              <label className="block text-[10px] uppercase tracking-wider text-[#071422]/60 dark:text-white/60 mb-2 font-mono">
+              <label htmlFor="email-input" className="block text-[10px] uppercase tracking-wider text-[#071422]/60 dark:text-white/60 mb-2 font-mono">
                 {t.inputEmail}
               </label>
               <input

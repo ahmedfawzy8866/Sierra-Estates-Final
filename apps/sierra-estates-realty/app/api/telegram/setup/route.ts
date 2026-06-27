@@ -14,7 +14,12 @@ export async function GET(req: NextRequest) {
 
   try {
     const webhookUrl = `${url}/api/telegram/webhook`;
-    const response = await fetch(`https://api.telegram.org/bot${token}/setWebhook?url=${webhookUrl}`);
+    let setupUrl = `https://api.telegram.org/bot${token}/setWebhook?url=${encodeURIComponent(webhookUrl)}`;
+    const secret = process.env.TELEGRAM_WEBHOOK_SECRET;
+    if (secret) {
+      setupUrl += `&secret_token=${encodeURIComponent(secret)}`;
+    }
+    const response = await fetch(setupUrl);
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error: any) {

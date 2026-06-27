@@ -6,7 +6,7 @@ import { collection, query, where, getCountFromServer } from 'firebase/firestore
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Users, Home, Handshake, DollarSign } from 'lucide-react';
 import { logger } from '@/lib/logger';
-import StatsCard from '@/components/admin/StatsCard';
+import StatsCard from '@/components/Admin/StatsCard';
 
 interface ReportMetric {
   label: string;

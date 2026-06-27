@@ -22,5 +22,5 @@
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "types": ["vitest/globals"],
-  "exclude": ["node_modules", "public"]
+  "exclude": ["node_modules", "public", "**/__tests__/**/*", "**/*.test.ts", "**/*.test.tsx", "vitest.config.ts"]
 }
