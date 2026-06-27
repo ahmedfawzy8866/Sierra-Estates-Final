@@ -5,18 +5,33 @@
  * Seeds the `admins` Firestore collection with initial admin users.
  * This eliminates the need for hardcoded admin emails in firestore.rules.
  *
- * Usage:
+ * USAGE OPTIONS:
+ *
+ * Option A — Run locally with a service account key:
+ *   export GOOGLE_APPLICATION_CREDENTIALS=path/to/serviceAccount.json
  *   node scripts/bootstrap-admins.js
  *
- * Required env vars:
- *   GOOGLE_APPLICATION_CREDENTIALS — path to service account JSON
+ * Option B — Run via Firebase CLI (after firebase login):
+ *   firebase login
+ *   node scripts/bootstrap-admins.js --use-firebase-cli
  *
- * After running this script, you can optionally remove the hardcoded
- * emails from isBootstrappedAdmin() in firestore.rules.
+ * Option C — Deploy as a one-time Cloud Function:
+ *   See the admin-seed function in functions/src/
+ *
+ * Option D — Manual seeding via Firebase Console:
+ *   1. Open Firebase Console → Firestore Database
+ *   2. Create collection "admins"
+ *   3. Add documents with document ID = admin email:
+ *      - Document: A.fawzy8866@gmail.com
+ *        Fields: { email, role: "super_admin", name: "Ahmed Fawzy",
+ *                  createdAt: timestamp, createdBy: "manual-seed" }
+ *      - Document: emeraldestatesegypt@gmail.com
+ *        Fields: { email, role: "admin", name: "Emerald Estates",
+ *                  createdAt: timestamp, createdBy: "manual-seed" }
+ *
+ * After seeding, you can optionally remove the hardcoded emails from
+ * isBootstrappedAdmin() in firestore.rules.
  */
-
-const { initializeApp, applicationDefault } = require('firebase-admin/app');
-const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 
 const ADMIN_EMAILS = [
   { email: 'A.fawzy8866@gmail.com', role: 'super_admin', name: 'Ahmed Fawzy' },
@@ -24,19 +39,60 @@ const ADMIN_EMAILS = [
   { email: 'emeraldestatesegypt@gmail.com', role: 'admin', name: 'Emerald Estates' },
 ];
 
+const useFirebaseCli = process.argv.includes('--use-firebase-cli');
+
 async function main() {
   console.log('🔧 Sierra Estates — Admin Bootstrap\n');
 
-  try {
-    initializeApp({ credential: applicationDefault() });
-  } catch (err) {
-    console.error('❌ Failed to initialize Firebase Admin SDK.');
-    console.error('   Make sure GOOGLE_APPLICATION_CREDENTIALS is set.');
-    console.error('   Example: export GOOGLE_APPLICATION_CREDENTIALS=path/to/serviceAccount.json\n');
-    process.exit(1);
+  let db;
+
+  if (useFirebaseCli) {
+    // Use Firebase CLI's built-in auth
+    try {
+      const { initializeApp } = require('firebase-admin/app');
+      const { getFirestore, FieldValue } = require('firebase-admin/firestore');
+
+      // Firebase CLI sets up ADC when logged in
+      const app = initializeApp({
+        projectId: 'sierra-blu',
+      });
+      db = getFirestore(app);
+      console.log('  📡 Connected via Firebase CLI auth\n');
+    } catch (err) {
+      console.error('❌ Firebase CLI auth failed. Run `firebase login` first.');
+      console.error('   Error:', err.message);
+      process.exit(1);
+    }
+  } else {
+    // Use service account key via GOOGLE_APPLICATION_CREDENTIALS
+    if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+      console.error('❌ Missing GOOGLE_APPLICATION_CREDENTIALS env var.');
+      console.error('');
+      console.error('Choose one of these options:');
+      console.error('  1. export GOOGLE_APPLICATION_CREDENTIALS=path/to/serviceAccount.json');
+      console.error('     Then: node scripts/bootstrap-admins.js');
+      console.error('');
+      console.error('  2. firebase login && node scripts/bootstrap-admins.js --use-firebase-cli');
+      console.error('');
+      console.error('  3. Seed manually via Firebase Console (see script header)');
+      console.error('');
+      process.exit(1);
+    }
+
+    try {
+      const { initializeApp, applicationDefault } = require('firebase-admin/app');
+      const { getFirestore, FieldValue } = require('firebase-admin/firestore');
+
+      initializeApp({ credential: applicationDefault() });
+      db = getFirestore();
+      console.log('  📡 Connected via service account\n');
+    } catch (err) {
+      console.error('❌ Failed to initialize Firebase Admin SDK:', err.message);
+      process.exit(1);
+    }
   }
 
-  const db = getFirestore();
+  const FieldValue = require('firebase-admin/firestore').FieldValue;
   const batch = db.batch();
 
   for (const admin of ADMIN_EMAILS) {
@@ -49,7 +105,6 @@ async function main() {
       createdAt: FieldValue.serverTimestamp(),
       createdBy: 'bootstrap-script',
     });
-
     console.log(`  📧 ${admin.email} → role: ${admin.role}`);
   }
 
