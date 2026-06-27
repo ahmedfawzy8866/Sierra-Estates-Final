@@ -659,3 +659,23 @@
         [data-channel="Referral"] { color: var(--gold); }
         [data-channel="Instagram"] { color: #e11d48; }
         [data-channel="Walk-in"] { color: var(--blue-light); }
+
+        /* Phase metric value colors */
+        .metric-value[data-phase="acquisition"] { color: var(--blue); }
+        .metric-value[data-phase="consultation"] { color: var(--blue-light); }
+        .metric-value[data-phase="inspection"] { color: var(--gold); }
+        .metric-value[data-phase="structuring"] { color: #10b981; }
+        .metric-value[data-phase="settlement"] { color: var(--navy); }
+
+        /* Phase kanban column accent + badge */
+        .kanban-col-premium[data-phase="acquisition"] .kanban-col-header-premium { --accent: var(--blue); }
+        .kanban-col-premium[data-phase="consultation"] .kanban-col-header-premium { --accent: var(--blue-light); }
+        .kanban-col-premium[data-phase="inspection"] .kanban-col-header-premium { --accent: var(--gold); }
+        .kanban-col-premium[data-phase="structuring"] .kanban-col-header-premium { --accent: #10b981; }
+        .kanban-col-premium[data-phase="settlement"] .kanban-col-header-premium { --accent: var(--navy); }
+
+        .kanban-col-premium[data-phase="acquisition"] .col-badge { background: var(--blue); }
+        .kanban-col-premium[data-phase="consultation"] .col-badge { background: var(--blue-light); }
+        .kanban-col-premium[data-phase="inspection"] .col-badge { background: var(--gold); }
+        .kanban-col-premium[data-phase="structuring"] .col-badge { background: #10b981; }
+        .kanban-col-premium[data-phase="settlement"] .col-badge { background: var(--navy); }

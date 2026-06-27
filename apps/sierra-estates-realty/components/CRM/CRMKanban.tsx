@@ -199,15 +199,13 @@ export default function CRMKanban() {
           </div>{" "}
           <div className="metric-trend">Estimated deal volume (EGP)</div>{" "}
         </div>{" "}
-        {PHASE_SEQUENCE.map((phase) => {
-          const phaseColorStyle = { color: PHASE_DEFS[phase].color };
-          return (
+        {PHASE_SEQUENCE.map((phase) => (
           <div key={phase} className="metric-card-glass">
             {" "}
             <div className="metric-label">{PHASE_DEFS[phase].title}</div>{" "}
             <div
               className="metric-value"
-              style={phaseColorStyle}
+              data-phase={phase}
             >
               {" "}
               {visiblePipelineState[phase].length}{" "}
@@ -219,19 +217,17 @@ export default function CRMKanban() {
                 : "Idle Queue"}{" "}
             </div>{" "}
           </div>
-        )})}
+        ))}{" "}
       </div>{" "}
       <div className="kanban-scroller">
         {" "}
         <div className="kanban-board-premium">
           {" "}
-          {PHASE_SEQUENCE.map((phase) => {
-            const accentStyle = { "--accent": PHASE_DEFS[phase].color } as React.CSSProperties;
-            const bgStyle = { background: PHASE_DEFS[phase].color };
-            return (
+          {PHASE_SEQUENCE.map((phase) => (
             <div
               key={phase}
               className={`kanban-col-premium ${phaseTarget === phase ? "drag-over" : ""}`}
+              data-phase={phase}
               onDragOver={(e) => {
                 e.preventDefault();
                 setPhaseTarget(phase);
@@ -242,7 +238,6 @@ export default function CRMKanban() {
               {" "}
               <div
                 className="kanban-col-header-premium"
-                style={accentStyle}
               >
                 {" "}
                 <div className="header-top">
@@ -250,7 +245,6 @@ export default function CRMKanban() {
                   <h3 className="col-title">{PHASE_DEFS[phase].title}</h3>{" "}
                   <span
                     className="col-badge"
-                    style={bgStyle}
                   >
                     {visiblePipelineState[phase].length}
                   </span>{" "}
@@ -288,8 +282,7 @@ export default function CRMKanban() {
                 )}{" "}
               </div>{" "}
             </div>
-          );
-          })}
+          ))}
         </div>{" "}
       </div>{" "}
       {showModal && (
