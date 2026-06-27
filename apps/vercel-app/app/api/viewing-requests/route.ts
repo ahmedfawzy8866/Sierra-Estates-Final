@@ -3,6 +3,7 @@ import { adminDb } from '@/lib/server/firebase-admin';
 import { Timestamp, Query } from 'firebase-admin/firestore';
 import { verifyRequest, unauthorizedResponse } from '@/lib/server/auth-guard';
 import { z } from 'zod';
+import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
 
 // ─── Input Validation Schema ────────────────────────────────────────────────
 
