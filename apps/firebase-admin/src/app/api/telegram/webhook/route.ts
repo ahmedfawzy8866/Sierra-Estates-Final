@@ -1,7 +1,32 @@
 import { NextResponse } from 'next/server';
 import { adminDb, isAdminInitialized } from '@/lib/server/firebase-admin';
 
+/**
+ * POST /api/telegram/webhook
+ *
+ * Handles incoming Telegram bot updates. Verifies the request is genuinely
+ * from Telegram using the X-Telegram-Bot-Api-Secret-Token header before
+ * processing any commands.
+ */
 export async function POST(req: Request) {
+  // ── Webhook signature verification ─────────────────────────────────────
+  const webhookSecret = process.env.TELEGRAM_WEBHOOK_SECRET;
+
+  if (webhookSecret) {
+    const providedSecret = req.headers.get('x-telegram-bot-api-secret-token');
+    if (!providedSecret || providedSecret !== webhookSecret) {
+      console.warn('[Telegram Webhook] Rejected: invalid or missing secret token');
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+  } else {
+    // In development, log a warning but allow through
+    if (process.env.NODE_ENV === 'production') {
+      console.error('[Telegram Webhook] TELEGRAM_WEBHOOK_SECRET not set in production — rejecting all requests');
+      return NextResponse.json({ error: 'Server misconfiguration' }, { status: 500 });
+    }
+    console.warn('[Telegram Webhook] No TELEGRAM_WEBHOOK_SECRET set — skipping verification (dev mode)');
+  }
+
   try {
     const body = await req.json();
     const { message } = body;
@@ -25,16 +50,24 @@ export async function POST(req: Request) {
           }),
         });
       } catch (err) {
-        console.error("Failed to send Telegram message:", err);
+        console.error("Failed to send Telegram message:", err instanceof Error ? err.message : 'Unknown');
       }
     };
+
+    // Sanitize user input for safe inclusion in Telegram HTML
+    const sanitize = (str: string): string =>
+      str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
 
     const isMockMode = !isAdminInitialized;
 
     if (isMockMode && text === '/diag') {
-        // Allow diagnostics even in mock mode
+      // Allow diagnostics even in mock mode
     } else if (isMockMode && (text === '/stats' || text === '/leads' || text === '/listings')) {
-        await sendMessage("💡 <b>System Notice:</b> Operating in <b>MOCK MODE</b> (Firebase Admin not initialized). Showing high-fidelity demonstration data.");
+      await sendMessage("💡 <b>System Notice:</b> Operating in <b>MOCK MODE</b> (Firebase Admin not initialized). Showing high-fidelity demonstration data.");
     }
 
     if (text === '/start') {
@@ -73,7 +106,7 @@ Commands:
       try {
         const snap = await adminDb.collection('listings').limit(100).get();
         const activeCount = snap.size;
-        
+
         const leadsSnap = await adminDb.collection('leads').get();
         const leadCount = leadsSnap.size;
 
@@ -83,8 +116,9 @@ Commands:
 <b>Total Leads:</b> ${leadCount} profiles
 <b>Operational Status:</b> OPTIMUM
         `);
-      } catch (err: any) {
-        await sendMessage(`❌ <b>Database Error:</b> ${err.message}`);
+      } catch (err: unknown) {
+        await sendMessage('❌ <b>Database Error:</b> Failed to fetch stats. Check server logs.');
+        console.error('[Telegram /stats] Error:', err instanceof Error ? err.message : err);
       }
     } else if (text === '/leads') {
       if (isMockMode) {
@@ -124,11 +158,12 @@ Commands:
         snap.forEach((doc: FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData>) => {
             const d = doc.data();
             const dateStr = d.createdAt?.toDate ? d.createdAt.toDate().toLocaleDateString() : 'N/A';
-            leadText += `👤 ${d.name || 'Unknown'} (${d.phone || 'No Phone'})\n📅 ${dateStr}\n---\n`;
+            leadText += `👤 ${sanitize(String(d.name || 'Unknown'))} (${sanitize(String(d.phone || 'No Phone'))})\n📅 ${dateStr}\n---\n`;
         });
         await sendMessage(leadText);
-      } catch (err: any) {
-        await sendMessage(`❌ <b>Database Error:</b> ${err.message}`);
+      } catch (err: unknown) {
+        await sendMessage('❌ <b>Database Error:</b> Failed to fetch leads. Check server logs.');
+        console.error('[Telegram /leads] Error:', err instanceof Error ? err.message : err);
       }
     } else if (text === '/listings') {
       if (isMockMode) {
@@ -167,15 +202,16 @@ Commands:
         let listingText = "<b>Latest 5 Listings:</b>\n\n";
         snap.forEach((doc: FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData>) => {
             const d = doc.data();
-            listingText += `🏢 ${d.title || 'Untitled'} - EGP ${d.price || 0}\n📍 ${d.location || 'Unknown'}\n---\n`;
+            listingText += `🏢 ${sanitize(String(d.title || 'Untitled'))} - EGP ${sanitize(String(d.price || 0))}\n📍 ${sanitize(String(d.location || 'Unknown'))}\n---\n`;
         });
         await sendMessage(listingText);
-      } catch (err: any) {
-        await sendMessage(`❌ <b>Database Error:</b> ${err.message}`);
+      } catch (err: unknown) {
+        await sendMessage('❌ <b>Database Error:</b> Failed to fetch listings. Check server logs.');
+        console.error('[Telegram /listings] Error:', err instanceof Error ? err.message : err);
       }
     } else if (text.startsWith('/ag') || text.includes('antigravity')) {
         const queryText = text.replace('/ag', '').trim();
-        
+
         await fetch(`https://api.telegram.org/bot${token}/sendChatAction`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -188,8 +224,8 @@ Commands:
     }
 
     return NextResponse.json({ ok: true });
-  } catch (error: any) {
-    console.error("Telegram webhook error:", error);
-    return NextResponse.json({ ok: true, error: error.message }); // Always return 200 to Telegram
+  } catch (error: unknown) {
+    console.error("Telegram webhook error:", error instanceof Error ? error.message : error);
+    return NextResponse.json({ ok: true }); // Always return 200 to Telegram
   }
 }

@@ -25,6 +25,12 @@ services:
       - "3000:3000"
     env_file:
       - .env
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   # ─── Firebase Admin App (Admin Panel + API) ──────────────────────
   admin:
@@ -37,6 +43,12 @@ services:
       - "3001:3001"
     env_file:
       - .env
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   # ─── WhatsApp Bot (Long-running Node process) ────────────────────
   whatsapp:
@@ -49,6 +61,12 @@ services:
       - .env
     volumes:
       - whatsapp_session:/app/.wwebjs_auth
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f 'node index.js' || exit 1"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   # ─── n8n Workflow Automation ─────────────────────────────────────
   n8n:
@@ -64,6 +82,12 @@ services:
       - TZ=Africa/Cairo
     volumes:
       - n8n_data:/home/node/.n8n
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:5678/healthz || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
 volumes:
   whatsapp_session:

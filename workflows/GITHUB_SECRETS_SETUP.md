@@ -37,8 +37,9 @@ Runs on every push to `main`.
 | `VERCEL_TOKEN` | **Yes** | Vercel API token |
 | `VERCEL_ORG_ID` | **Yes** | Vercel organization ID |
 | `VERCEL_CLIENT_PROJECT_ID` | **Yes** | Vercel project ID for client portal |
-| `VERCEL_ADMIN_PROJECT_ID` | **Yes** | Vercel project ID for admin dashboard |
 | `FIREBASE_SERVICE_ACCOUNT` | **Yes** | Full Firebase service account JSON |
+| `SENTRY_DSN` | Recommended | Sentry server-side DSN for error monitoring |
+| `NEXT_PUBLIC_SENTRY_DSN` | Recommended | Sentry client-side DSN |
 
 **How to get Vercel credentials:**
 1. Install Vercel CLI: `npm i -g vercel`
