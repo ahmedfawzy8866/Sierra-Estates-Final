@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
       { jsonMode: true }
     );
 
-    console.log('[SMART-FILTER] Parsed filters:', filterResult);
+    console.info('[SMART-FILTER] Parsed filters:', JSON.stringify(filterResult));
 
     // Validate AI output — prevent injection or unexpected values from reaching Firestore queries
     const VALID_PROPERTY_TYPES = ['apartment', 'villa', 'townhouse', 'duplex', 'penthouse', 'studio', 'chalet', 'commercial', 'land'];
