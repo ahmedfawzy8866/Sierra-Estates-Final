@@ -2,10 +2,40 @@ import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { Timestamp, Query } from 'firebase-admin/firestore';
 import { verifyRequest, unauthorizedResponse } from '@/lib/server/auth-guard';
+import { z } from 'zod';
+
+// ─── Input Validation Schema ────────────────────────────────────────────────
+
+const ViewingRequestSchema = z.object({
+  propertyCode: z.string().min(1, 'propertyCode is required').max(50, 'propertyCode too long'),
+  visitorName: z.string().min(1, 'visitorName is required').max(200, 'visitorName too long'),
+  visitorEmail: z.string().email('Invalid email format').max(254, 'Email too long'),
+  visitorPhone: z.string().min(1, 'visitorPhone is required').max(50, 'Phone too long'),
+  preferredDate: z.string().min(1, 'preferredDate is required').refine(
+    (val) => { const d = new Date(val); const today = new Date(); today.setHours(0,0,0,0); return d >= today; },
+    { message: 'Preferred date must be in the future' }
+  ),
+  preferredTime: z.string().max(20).optional(),
+  numberOfPeople: z.number().int().min(1).max(50).optional(),
+  message: z.string().max(2000, 'Message too long').optional(),
+});
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const raw = await request.json();
+
+    // Validate input with Zod
+    const parseResult = ViewingRequestSchema.safeParse(raw);
+    if (!parseResult.success) {
+      const errors = parseResult.error.issues.map(
+        (issue) => `${issue.path.join('.')}: ${issue.message}`
+      );
+      return NextResponse.json(
+        { error: 'Validation failed', details: errors },
+        { status: 400 }
+      );
+    }
+
     const {
       propertyCode,
       visitorName,
@@ -15,36 +45,7 @@ export async function POST(request: NextRequest) {
       preferredTime,
       numberOfPeople,
       message,
-    } = body;
-
-    // Validation
-    if (!propertyCode || !visitorName || !visitorEmail || !visitorPhone || !preferredDate) {
-      return NextResponse.json(
-        { error: 'Missing required fields: propertyCode, visitorName, visitorEmail, visitorPhone, preferredDate' },
-        { status: 400 }
-      );
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(visitorEmail)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      );
-    }
-
-    // Validate date is in future
-    const requestDate = new Date(preferredDate);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    if (requestDate < today) {
-      return NextResponse.json(
-        { error: 'Preferred date must be in the future' },
-        { status: 400 }
-      );
-    }
+    } = parseResult.data;
 
     // Add viewing request to Firestore
     const docRef = await adminDb.collection('viewing_requests').add({

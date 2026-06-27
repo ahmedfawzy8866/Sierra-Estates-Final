@@ -55,6 +55,9 @@ const serverEnvSchema = z.object({
   UPSTASH_REDIS_REST_URL: z.string().url().optional(),
   UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
 
+  // Webhook Security
+  WEBHOOK_SHARED_SECRET: z.string().min(16, 'WEBHOOK_SHARED_SECRET must be at least 16 characters').optional(),
+
   // AI
   GOOGLE_AI_API_KEY: z.string().optional(),
 });
@@ -110,6 +113,7 @@ export function validateServerEnv(): ServerEnv {
       GOOGLE_SHEETS_SPREADSHEET_ID: partial.GOOGLE_SHEETS_SPREADSHEET_ID,
       UPSTASH_REDIS_REST_URL: partial.UPSTASH_REDIS_REST_URL,
       UPSTASH_REDIS_REST_TOKEN: partial.UPSTASH_REDIS_REST_TOKEN,
+      WEBHOOK_SHARED_SECRET: partial.WEBHOOK_SHARED_SECRET,
       GOOGLE_AI_API_KEY: partial.GOOGLE_AI_API_KEY,
     };
   } else {

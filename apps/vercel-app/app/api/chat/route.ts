@@ -1,6 +1,7 @@
-import { applyRateLimit, publicEndpointLimiter } from "@/lib/server/rate-limit";
+import { applyRateLimitAsync, publicEndpointLimiter } from "@/lib/server/rate-limit";
 import { NextRequest, NextResponse } from 'next/server';
 import { OmnichannelChatService } from '@/lib/services/OmnichannelChatService';
+import { z } from 'zod';
 
 /**
  * Sanitize user input to prevent XSS when values are forwarded to
@@ -13,33 +14,37 @@ function sanitizeForOutput(input: string, maxLength: number = 200): string {
     .trim();
 }
 
+// ─── Input Validation Schema ────────────────────────────────────────────────
+
+const ChatMessageSchema = z.object({
+  sessionId: z.string().min(1, 'sessionId is required').max(128, 'sessionId too long'),
+  message: z.string().min(1, 'message is required').max(4000, 'message too long'),
+  name: z.string().max(200, 'name too long').optional(),
+});
+
 /**
  * SIERRA ESTATES WEB CONCIERGE CHAT API
  * Serves as the dynamic gateway between the web-based LeilaConcierge widget and OmnichannelChatService.
  */
 export async function POST(req: NextRequest) {
-  const limited = applyRateLimit(req, publicEndpointLimiter);
+  const limited = await applyRateLimitAsync(req, publicEndpointLimiter);
   if (limited) return limited;
   try {
-    const body = await req.json();
-    const { sessionId, message, name } = body;
+    const raw = await req.json();
 
-    if (!sessionId || !message) {
-      return NextResponse.json({ error: "Missing sessionId or message payload" }, { status: 400 });
+    // Validate input with Zod
+    const parseResult = ChatMessageSchema.safeParse(raw);
+    if (!parseResult.success) {
+      const errors = parseResult.error.issues.map(
+        (issue) => `${issue.path.join('.')}: ${issue.message}`
+      );
+      return NextResponse.json({ error: 'Validation failed', details: errors }, { status: 400 });
     }
 
-    // Validate types
-    if (typeof sessionId !== 'string' || typeof message !== 'string') {
-      return NextResponse.json({ error: "Invalid payload types" }, { status: 400 });
-    }
-
-    // Validate lengths
-    if (sessionId.length > 128 || message.length > 4000) {
-      return NextResponse.json({ error: "Payload exceeds maximum length" }, { status: 400 });
-    }
+    const { sessionId, message, name } = parseResult.data;
 
     // Sanitize name before forwarding (prevents XSS in Telegram notifications)
-    const sanitizedName = name ? sanitizeForOutput(String(name)) : 'Web Guest';
+    const sanitizedName = name ? sanitizeForOutput(name) : 'Web Guest';
 
     const result = await OmnichannelChatService.handleIncomingMessage({
       platform: 'web',
