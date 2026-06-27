@@ -4,6 +4,7 @@ import { Timestamp, Query } from 'firebase-admin/firestore';
 import { verifyRequest, unauthorizedResponse } from '@/lib/server/auth-guard';
 import { z } from 'zod';
 import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
+import { logger } from '@sierra-estates/config';
 
 // ─── Input Validation Schema ────────────────────────────────────────────────
 
@@ -75,7 +76,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error: unknown) {
-    console.error('[Viewing Requests] Creation error:', error instanceof Error ? error.message : 'Unknown');
+    logger.error({ err: error }, '[Viewing Requests] Creation error');
     return NextResponse.json(
       { error: 'Failed to create viewing request' },
       { status: 500 }
@@ -128,7 +129,7 @@ export async function GET(request: NextRequest) {
       requests
     }, { status: 200 });
   } catch (error: unknown) {
-    console.error('[Viewing Requests] Fetch error:', error instanceof Error ? error.message : 'Unknown');
+    logger.error({ err: error }, '[Viewing Requests] Fetch error');
     return NextResponse.json(
       { error: 'Failed to fetch viewing requests' },
       { status: 500 }

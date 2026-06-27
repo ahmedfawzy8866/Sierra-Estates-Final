@@ -3,7 +3,10 @@ import { COLLECTIONS } from '@/lib/models/schema';
 import { adminDb, isAdminInitialized } from '@/lib/server/firebase-admin';
 import type { Query } from 'firebase-admin/firestore';
 import { applyRateLimitAsync, publicEndpointLimiter } from '@/lib/server/rate-limit';
+import { logger } from '@sierra-estates/config';
+import { unstable_cache } from 'next/cache';
 
+export const revalidate = 60;
 const API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
 const PROJECT_ID = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'sierra-estates';
 
@@ -134,6 +137,14 @@ function transformToListing(doc: FirestoreDocument): Record<string, unknown> | n
   };
 }
 
+const getCachedListings = unstable_cache(
+  async (collectionName: string, limit?: number, docId?: string) => {
+    return fetchListings(collectionName, limit, docId);
+  },
+  ['public-listings'],
+  { revalidate: 60, tags: ['listings'] }
+);
+
 export async function GET(request: NextRequest) {
   const limited = applyRateLimitAsync(request, publicEndpointLimiter);
   if (limited) return limited;
@@ -142,7 +153,7 @@ export async function GET(request: NextRequest) {
     const id = searchParams.get('id');
 
     if (id) {
-      const result = await fetchListings(COLLECTIONS.units, undefined, id);
+      const result = await getCachedListings(COLLECTIONS.units, undefined, id);
       if (!result?.doc) {
         return NextResponse.json({ success: false, error: 'Listing not found' }, { status: 404 });
       }
@@ -152,7 +163,7 @@ export async function GET(request: NextRequest) {
     }
 
     const limitParam = parseInt(searchParams.get('limit') || '12', 10);
-    const result = await fetchListings(COLLECTIONS.units, limitParam);
+    const result = await getCachedListings(COLLECTIONS.units, limitParam);
 
     if (!result) {
       return NextResponse.json(
@@ -166,7 +177,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ success: true, listings, count: listings.length });
   } catch (error: unknown) {
-    console.error('[LISTINGS_ERROR] Failed to fetch listings:', error instanceof Error ? error.message : 'Unknown');
+    logger.error({ err: error }, '[LISTINGS_ERROR] Failed to fetch listings');
     return NextResponse.json(
       { success: false, error: 'Failed to fetch listings' },
       { status: 500 }

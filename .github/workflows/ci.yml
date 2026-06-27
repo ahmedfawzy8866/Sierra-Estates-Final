@@ -1,14 +1,14 @@
+<<<<<<< HEAD
 name: CI — Quality, Test & Security
+=======
+name: CI
+>>>>>>> aafba069 (chore: Master refactor complete - modularity, logging, caching, and E2E)
 
 on:
   push:
-    branches: [main, develop]
+    branches: ["main"]
   pull_request:
-    branches: [main]
-
-concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+    branches: ["main"]
 
 env:
   # Public Firebase config (safe to expose; needed for Next.js build)
@@ -25,25 +25,34 @@ env:
   TWILIO_AUTH_TOKEN: ''
 
 jobs:
+<<<<<<< HEAD
   # ─── Job 1: Lint & Type-Check ────────────────────────────────────────────
   quality:
     name: Lint & Type-Check
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
+=======
+  build:
+    runs-on: ubuntu-latest
+    
+>>>>>>> aafba069 (chore: Master refactor complete - modularity, logging, caching, and E2E)
     steps:
       - uses: actions/checkout@v4
-
-      - uses: pnpm/action-setup@v4
+      
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
         with:
           version: 9
-
-      - uses: actions/setup-node@v4
+          
+      - name: Use Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: pnpm
-
+          node-version: 20
+          cache: 'pnpm'
+          
       - name: Install dependencies
+<<<<<<< HEAD
         run: pnpm install --frozen-lockfile
 
       - name: Lint (vercel-app)
@@ -145,3 +154,18 @@ jobs:
           else
             echo "✅ No hardcoded secrets detected in changed files."
           fi
+=======
+        run: pnpm install
+        
+      - name: Lint
+        run: pnpm run lint
+        
+      - name: Type Check
+        run: pnpm run type-check
+        
+      - name: Build
+        run: pnpm run build
+        
+      - name: Test
+        run: pnpm run test
+>>>>>>> aafba069 (chore: Master refactor complete - modularity, logging, caching, and E2E)
