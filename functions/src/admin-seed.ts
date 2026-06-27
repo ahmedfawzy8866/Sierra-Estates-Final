@@ -14,7 +14,7 @@
  * in firestore.rules.
  */
 
-import * as functions from 'firebase-functions';
+import { onRequest } from 'firebase-functions/v2/https';
 import * as admin from 'firebase-admin';
 
 if (!admin.apps.length) {
@@ -29,9 +29,9 @@ const ADMIN_EMAILS = [
   { email: 'emeraldestatesegypt@gmail.com', role: 'admin', name: 'Emerald Estates' },
 ];
 
-export const adminSeed = functions
-  .region('europe-west1')
-  .https.onRequest(async (req, res) => {
+export const adminSeed = onRequest(
+  { region: 'europe-west1' },
+  async (req, res) => {
     // Only allow POST method
     if (req.method !== 'POST') {
       res.status(405).json({ error: 'Method not allowed. Use POST.' });
@@ -60,12 +60,12 @@ export const adminSeed = functions
 
       // Seed the admins collection
       const batch = db.batch();
-      for (const admin of ADMIN_EMAILS) {
-        const ref = db.collection('admins').doc(admin.email);
+      for (const adm of ADMIN_EMAILS) {
+        const ref = db.collection('admins').doc(adm.email);
         batch.set(ref, {
-          email: admin.email,
-          role: admin.role,
-          name: admin.name,
+          email: adm.email,
+          role: adm.role,
+          name: adm.name,
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
           createdBy: 'admin-seed-function',
           seededBy: callerEmail,
@@ -83,4 +83,5 @@ export const adminSeed = functions
       console.error('[adminSeed] Error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
-  });
+  }
+);

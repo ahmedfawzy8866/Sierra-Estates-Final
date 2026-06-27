@@ -22,6 +22,9 @@ const ViewingRequestSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  const limited = applyRateLimit(request, publicEndpointLimiter);
+  if (limited) return limited;
+
   try {
     const raw = await request.json();
 
