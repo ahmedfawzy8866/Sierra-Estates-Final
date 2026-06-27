@@ -376,6 +376,7 @@ function InputStep(props: InputStepProps) {
               const dt = new DataTransfer();
               dt.items.add(file);
               input.files = dt.files;
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               props.handleFileUpload({ target: { files: input.files } } as any);
             }
           }}

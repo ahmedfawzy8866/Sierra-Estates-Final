@@ -133,7 +133,7 @@ function computeBackoffMs(attempts: number): number {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let redisClient: any = null;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-let ratelimiters: Map<string, any> = new Map();
+const ratelimiters: Map<string, any> = new Map();
 let redisInitialized = false;
 let warnedAboutMemoryFallback = false;
 

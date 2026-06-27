@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 // sierra-estatese/lib/integrations/portfolio-asset-registry.ts
 // Portfolio Asset Registry (Property Finder Egypt) API V3 — Full Bidirectional Integration
