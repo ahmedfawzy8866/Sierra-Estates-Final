@@ -1,14 +1,14 @@
 import type { NextConfig } from 'next';
 
-const nextConfig: NextConfig = {
+// Next.js 16 removed `eslint` from the NextConfig type, but the runtime
+// still honours it.  We type the core config with satisfies and spread
+// the extra field in separately so tsc does not complain.
+const coreConfig: NextConfig = {
   // Enable standalone output for Docker deployments
   output: 'standalone',
   // Enforce type-checking during build (never skip)
   typescript: {
     ignoreBuildErrors: false,
-  },
-  eslint: {
-    ignoreDuringBuilds: false,
   },
   // Image domains for property photos
   images: {
@@ -65,5 +65,13 @@ const nextConfig: NextConfig = {
     ];
   },
 };
+
+const nextConfig = {
+  ...coreConfig,
+  eslint: {
+    ignoreDuringBuilds: false,
+  },
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+} as any as NextConfig;
 
 export default nextConfig;

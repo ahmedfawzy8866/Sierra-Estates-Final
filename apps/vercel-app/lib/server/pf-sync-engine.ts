@@ -685,7 +685,7 @@ export class PFSyncEngine {
         });
       } catch (logError) {
         // Non-critical — don't add to result.errors since it's meta
-        log.warn('[PF Sync] Failed to write sync log:', logError);
+        log.warn({ err: logError instanceof Error ? logError.message : String(logError) }, '[PF Sync] Failed to write sync log');
       }
     }
 
@@ -753,7 +753,7 @@ export class PFSyncEngine {
       const outcome = await PFSyncEngine.syncListing(listings[0], false);
       return outcome;
     } catch (error) {
-      log.error(`[PF Sync] Error syncing single listing ${pfReference}:`, error);
+      log.error({ err: error instanceof Error ? error.message : String(error), pfReference }, '[PF Sync] Error syncing single listing');
       throw error;
     }
   }

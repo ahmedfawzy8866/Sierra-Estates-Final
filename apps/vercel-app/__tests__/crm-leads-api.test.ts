@@ -1,3 +1,4 @@
+import { describe, it, expect, vi, beforeEach, afterAll } from 'vitest';
 /**
  * CRM Leads API Tests
  *
@@ -13,34 +14,34 @@
  */
 
 // Mock firebase-admin before any imports
-jest.mock('@/lib/server/firebase-admin', () => {
+vi.mock('@/lib/server/firebase-admin', () => {
   const mockDoc = {
-    get: jest.fn(),
-    set: jest.fn(),
-    update: jest.fn(),
-    delete: jest.fn(),
+    get: vi.fn(),
+    set: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
   };
   const mockCollection = {
-    doc: jest.fn(() => mockDoc),
-    add: jest.fn(() => Promise.resolve({ id: 'mock-id' })),
-    get: jest.fn(),
-    where: jest.fn(() => ({
-      get: jest.fn(),
-      orderBy: jest.fn(() => ({
-        get: jest.fn(),
+    doc: vi.fn(() => mockDoc),
+    add: vi.fn(() => Promise.resolve({ id: 'mock-id' })),
+    get: vi.fn(),
+    where: vi.fn(() => ({
+      get: vi.fn(),
+      orderBy: vi.fn(() => ({
+        get: vi.fn(),
       })),
     })),
-    orderBy: jest.fn(() => ({
-      limit: jest.fn(() => ({
-        get: jest.fn(),
+    orderBy: vi.fn(() => ({
+      limit: vi.fn(() => ({
+        get: vi.fn(),
       })),
-      get: jest.fn(),
+      get: vi.fn(),
     })),
   };
 
   return {
     adminDb: {
-      collection: jest.fn(() => mockCollection),
+      collection: vi.fn(() => mockCollection),
     },
     isAdminInitialized: true,
   };
@@ -48,14 +49,15 @@ jest.mock('@/lib/server/firebase-admin', () => {
 
 // Mock global fetch for Zapier webhook
 const originalFetch = global.fetch;
-const mockFetch = jest.fn(() => Promise.resolve({ ok: true } as Response));
+const mockFetch = vi.fn(() => Promise.resolve({ ok: true } as Response));
 
 describe('CRM Leads API', () => {
   let POST: (request: Request) => Promise<Response>;
-  let adminDb: ReturnType<typeof import('@/lib/server/firebase-admin')>['adminDb'];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let adminDb: any;
 
   beforeEach(async () => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     global.fetch = mockFetch as unknown as typeof fetch;
 
     // Dynamic import to pick up the mock
@@ -95,9 +97,9 @@ describe('CRM Leads API', () => {
         conversation_summary: 'Client is looking for a 3BR villa in Mivida',
       };
 
-      const mockSet = jest.fn(() => Promise.resolve());
-      const mockDoc = { set: mockSet, get: jest.fn() };
-      (adminDb.collection as jest.Mock).mockReturnValue({ doc: () => mockDoc });
+      const mockSet = vi.fn(() => Promise.resolve());
+      const mockDoc = { set: mockSet, get: vi.fn() };
+      (adminDb.collection as unknown as ReturnType<typeof vi.fn>).mockReturnValue({ doc: () => mockDoc });
 
       const response = await POST(makeRequest(validPayload));
       const data = await response.json();
@@ -110,7 +112,7 @@ describe('CRM Leads API', () => {
       expect(mockSet).toHaveBeenCalledTimes(1);
 
       // Verify the document written to Firestore has the right shape
-      const writtenDoc = mockSet.mock.calls[0][0];
+      const writtenDoc = ((mockSet.mock as any).calls as any[][])[0]?.[0] as Record<string, unknown>;
       expect(writtenDoc.name).toBe('Ahmed Mohamed');
       expect(writtenDoc.mobile).toBe('+201012345678');
     });
@@ -127,9 +129,9 @@ describe('CRM Leads API', () => {
         },
       };
 
-      const mockSet = jest.fn(() => Promise.resolve());
-      const mockDoc = { set: mockSet, get: jest.fn() };
-      (adminDb.collection as jest.Mock).mockReturnValue({ doc: () => mockDoc });
+      const mockSet = vi.fn(() => Promise.resolve());
+      const mockDoc = { set: mockSet, get: vi.fn() };
+      (adminDb.collection as unknown as ReturnType<typeof vi.fn>).mockReturnValue({ doc: () => mockDoc });
 
       const response = await POST(makeRequest(highScorePayload));
       const data = await response.json();
@@ -137,7 +139,7 @@ describe('CRM Leads API', () => {
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
 
-      const writtenDoc = mockSet.mock.calls[0][0];
+      const writtenDoc = ((mockSet.mock as any).calls as any[][])[0]?.[0] as Record<string, unknown>;
       expect(writtenDoc.pipeline_stage).toBe('VIP_QUALIFIED_CORRIDOR');
       expect(writtenDoc.sierra_ai_score).toBeGreaterThanOrEqual(8);
     });
@@ -154,9 +156,9 @@ describe('CRM Leads API', () => {
         },
       };
 
-      const mockSet = jest.fn(() => Promise.resolve());
-      const mockDoc = { set: mockSet, get: jest.fn() };
-      (adminDb.collection as jest.Mock).mockReturnValue({ doc: () => mockDoc });
+      const mockSet = vi.fn(() => Promise.resolve());
+      const mockDoc = { set: mockSet, get: vi.fn() };
+      (adminDb.collection as unknown as ReturnType<typeof vi.fn>).mockReturnValue({ doc: () => mockDoc });
 
       const response = await POST(makeRequest(lowScorePayload));
       const data = await response.json();
@@ -164,7 +166,7 @@ describe('CRM Leads API', () => {
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
 
-      const writtenDoc = mockSet.mock.calls[0][0];
+      const writtenDoc = ((mockSet.mock as any).calls as any[][])[0]?.[0] as Record<string, unknown>;
       expect(writtenDoc.pipeline_stage).toBe('LEAD_SOURCED');
     });
 
@@ -180,9 +182,9 @@ describe('CRM Leads API', () => {
         },
       };
 
-      const mockSet = jest.fn(() => Promise.resolve());
-      const mockDoc = { set: mockSet, get: jest.fn() };
-      (adminDb.collection as jest.Mock).mockReturnValue({ doc: () => mockDoc });
+      const mockSet = vi.fn(() => Promise.resolve());
+      const mockDoc = { set: mockSet, get: vi.fn() };
+      (adminDb.collection as unknown as ReturnType<typeof vi.fn>).mockReturnValue({ doc: () => mockDoc });
 
       const response = await POST(makeRequest(payload));
       const data = await response.json();
@@ -202,9 +204,9 @@ describe('CRM Leads API', () => {
         },
       };
 
-      const mockSet = jest.fn(() => Promise.resolve());
-      const mockDoc = { set: mockSet, get: jest.fn() };
-      (adminDb.collection as jest.Mock).mockReturnValue({ doc: () => mockDoc });
+      const mockSet = vi.fn(() => Promise.resolve());
+      const mockDoc = { set: mockSet, get: vi.fn() };
+      (adminDb.collection as unknown as ReturnType<typeof vi.fn>).mockReturnValue({ doc: () => mockDoc });
 
       const response = await POST(makeRequest(payload));
       const data = await response.json();
@@ -224,9 +226,9 @@ describe('CRM Leads API', () => {
         },
       };
 
-      const mockSet = jest.fn(() => Promise.resolve());
-      const mockDoc = { set: mockSet, get: jest.fn() };
-      (adminDb.collection as jest.Mock).mockReturnValue({ doc: () => mockDoc });
+      const mockSet = vi.fn(() => Promise.resolve());
+      const mockDoc = { set: mockSet, get: vi.fn() };
+      (adminDb.collection as unknown as ReturnType<typeof vi.fn>).mockReturnValue({ doc: () => mockDoc });
 
       const response = await POST(makeRequest(payload));
       const data = await response.json();
@@ -374,9 +376,9 @@ describe('CRM Leads API', () => {
         extracted_metrics: { intent: 'BUY', capital_budget: 5000000, timeline_weeks: 2 },
       };
 
-      const mockSet = jest.fn(() => Promise.reject(new Error('Firestore write failed')));
-      const mockDoc = { set: mockSet, get: jest.fn() };
-      (adminDb.collection as jest.Mock).mockReturnValue({ doc: () => mockDoc });
+      const mockSet = vi.fn(() => Promise.reject(new Error('Firestore write failed')));
+      const mockDoc = { set: mockSet, get: vi.fn() };
+      (adminDb.collection as unknown as ReturnType<typeof vi.fn>).mockReturnValue({ doc: () => mockDoc });
 
       const response = await POST(makeRequest(validPayload));
       const data = await response.json();

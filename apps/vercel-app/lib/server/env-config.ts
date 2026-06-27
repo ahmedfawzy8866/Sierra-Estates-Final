@@ -86,7 +86,7 @@ export function validateServerEnv(): ServerEnv {
     // Server env is non-blocking — we log warnings but don't crash.
     // Use the parsed data but ensure all fields have fallback defaults
     // instead of casting partial data as complete ServerEnv (which is unsafe).
-    const partial = result.data as Partial<ServerEnv>;
+    const partial = result.data as unknown as Partial<ServerEnv>;
     _serverEnv = {
       SBR_SECRET_KEY: partial.SBR_SECRET_KEY ?? '',
       CRON_SECRET: partial.CRON_SECRET,

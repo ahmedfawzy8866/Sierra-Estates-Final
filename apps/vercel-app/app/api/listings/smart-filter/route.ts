@@ -7,6 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/server/firebase-admin';
+import type { Query } from 'firebase-admin/firestore';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { getAIService } from '@/lib/ai';
 import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
@@ -93,7 +94,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Build Firestore query from structured filters
-    let query = adminDb.collection(COLLECTIONS.units);
+    let query: Query = adminDb.collection(COLLECTIONS.units);
 
     // Apply equality filters
     if (filterResult.propertyType) {

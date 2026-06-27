@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { COLLECTIONS } from '@/lib/models/schema';
 import { adminDb, isAdminInitialized } from '@/lib/server/firebase-admin';
+import type { Query } from 'firebase-admin/firestore';
 import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
 
 const API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
@@ -59,7 +60,7 @@ async function fetchListings(
         if (!snap.exists) return null;
         return { doc: { id: snap.id, ...snap.data() }, docs: [] };
       }
-      let query = adminDb.collection(collectionName);
+      let query: Query = adminDb.collection(collectionName);
       if (limit) query = query.limit(limit);
       const snapshot = await query.get();
       const docs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));

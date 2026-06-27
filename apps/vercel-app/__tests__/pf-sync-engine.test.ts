@@ -611,8 +611,9 @@ describe('PF Sync Engine', () => {
     });
 
     it('should handle listing with no media gracefully', () => {
-      const noMediaListing = { ...mockPFListing, media: {} };
-      const images = noMediaListing.media?.images?.map((img: { original: { url: string } }) => img.original.url) ?? [];
+      const noMediaListing = { ...mockPFListing, media: {} as Record<string, unknown> };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const images = (noMediaListing.media as any)?.images?.map((img: { original: { url: string } }) => img.original.url) ?? [];
       expect(images).toEqual([]);
     });
 

@@ -117,7 +117,8 @@ export const GoogleAIService = {
         const response = await result.response;
         const text = response.text();
         
-        const functionCalls = response.candidates?.[0].content.parts.filter(p => p.functionCall);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const functionCalls = response.candidates?.[0].content.parts.filter((p: any) => p.functionCall);
 
         return {
           choices: [
@@ -125,7 +126,8 @@ export const GoogleAIService = {
               message: {
                 role: 'assistant',
                 content: text,
-                tool_calls: functionCalls?.map(fc => ({
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                tool_calls: functionCalls?.map((fc: any) => ({
                   id: fc.functionCall?.name,
                   type: 'function',
                   function: {

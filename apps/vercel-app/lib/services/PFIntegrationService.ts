@@ -33,8 +33,8 @@ export class PFIntegrationService {
     const result = await PFSyncEngine.syncLeadsOnly();
     return {
       created: result.leadsSynced,
-      updated: result.updatedRecords,
-      skipped: result.duplicatesSkipped,
+      updated: 0,    // syncLeadsOnly() does not return updated lead count
+      skipped: 0,    // syncLeadsOnly() does not return duplicates-skipped count
     };
   }
 

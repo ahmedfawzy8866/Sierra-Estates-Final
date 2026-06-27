@@ -9,7 +9,6 @@ export type {
   PFListing,
   PFLocation,
   PFAccessToken,
-  PFStakeholderProtocol,
 } from '../../lib/property-finder-client';
 
 export { pfClient } from '../../lib/property-finder-client';

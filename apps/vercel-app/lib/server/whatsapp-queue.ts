@@ -22,7 +22,8 @@
  *   import { enqueueWhatsAppMessage, drainWhatsAppQueue } from '@/lib/server/whatsapp-queue';
  */
 
-import { sendTwilioWhatsAppMessage, logWhatsAppMessage } from '@/lib/server/twilio-client';
+import { sendTwilioWhatsAppMessage, logWhatsAppMessage, type MessageLogEntry } from '@/lib/server/twilio-client';
+import { Timestamp } from 'firebase-admin/firestore';
 
 // ─── Configuration ──────────────────────────────────────────────────────────
 
@@ -343,11 +344,11 @@ async function dispatch(senderNumber: string, to: string, body: string): Promise
 
     if (result.errorCode) {
       console.error(`[whatsapp-queue] Twilio error ${result.errorCode}: ${result.errorMessage}`);
-      await logWhatsAppMessage({ messageSid: '', to, from: senderNumber, body, status: 'failed', senderNumber });
+      await logWhatsAppMessage({ messageSid: '', to, from: senderNumber, body, status: 'failed', senderNumber, createdAt: Timestamp.now() });
       return { success: false, queued: false, senderNumber, errorMessage: result.errorMessage };
     }
 
-    await logWhatsAppMessage({ messageSid: result.sid ?? '', to, from: senderNumber, body, status: 'sent', senderNumber });
+    await logWhatsAppMessage({ messageSid: result.sid ?? '', to, from: senderNumber, body, status: 'sent', senderNumber, createdAt: Timestamp.now() });
     return { success: true, queued: false, senderNumber, messageSid: result.sid };
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown send error';

@@ -1,20 +1,27 @@
 /**
- * SIERRA ESTATES — TWILIO WHATSAPP REST WRAPPER
+ * SIERRA ESTATES — TWILIO WHATSAPP INTEGRATION MODULE
  *
- * Thin wrapper around the Twilio Messages REST API. Designed for Vercel
- * Edge/Serverless — uses native `fetch` instead of the Twilio SDK to avoid
- * bundle-size bloat on cold starts.
+ * Production-grade WhatsApp Business API integration via Twilio REST API.
+ * Designed for Vercel Edge/Serverless — uses native `fetch` instead of the
+ * Twilio SDK to avoid bundle-size bloat on cold starts.
  *
- * This module only knows how to call Twilio and verify/track delivery —
- * it has no opinion on rate limits, operating hours, or queuing. That
- * scheduling logic lives in `lib/server/whatsapp-queue.ts`.
+ * Features:
+ *   - Lazy-initialized REST client (no SDK dependency)
+ *   - Multi-sender load balancing across 4 WABA numbers
+ *   - Per-number rate limiting (30 msg / 2 hr, 120 msg / day)
+ *   - Operating-hours enforcement (12:00–20:00 Africa/Cairo)
+ *   - Outbound message queue with automatic retry
+ *   - Inbound webhook signature verification
+ *   - Delivery-receipt tracking in Firestore
  *
  * Firestore Collections:
+ *   - `whatsapp_sender_stats`  — per-number daily send counters
+ *   - `whatsapp_outbound_queue` — queued messages pending dispatch
  *   - `whatsapp_message_log`   — delivery-status audit trail
  *
  * Usage:
- *   import { sendTwilioWhatsAppMessage, verifyTwilioSignature,
- *            updateMessageStatus } from '@/lib/server/twilio-client';
+ *   import { sendWhatsAppMessage, drainOutboundQueue,
+ *            verifyTwilioSignature, updateMessageStatus } from '@/lib/server/twilio-client';
  */
 import 'server-only';
 
@@ -33,16 +40,79 @@ const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID ?? '';
 /** Twilio Auth Token */
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN ?? '';
 
+/** Pool of WhatsApp Business sender numbers */
+const SENDER_NUMBERS: string[] = [
+  process.env.WABA_NUMBER_1 ?? '',
+  process.env.WABA_NUMBER_2 ?? '',
+  process.env.WABA_NUMBER_3 ?? '',
+  process.env.WABA_NUMBER_4 ?? '',
+].filter(Boolean);
+
 /** Twilio Messages REST endpoint */
 const TWILIO_MESSAGES_URL = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
 
+// ─── Rate Limits ────────────────────────────────────────────────────────────
+
+/** Maximum messages a single sender number may send per 2-hour sliding window */
+const MAX_PER_WINDOW = 30;
+
+/** Maximum messages a single sender number may send per calendar day */
+const MAX_PER_DAY_PER_NUMBER = 120;
+
+/** Maximum messages across all sender numbers per calendar day */
+const MAX_TOTAL_DAILY = 480;
+
+/** 2-hour window in milliseconds */
+const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
+
+// ─── Operating Hours ────────────────────────────────────────────────────────
+
+/** Operating-hour start (hour, 24-h format) in Africa/Cairo */
+const OPS_START_HOUR = 12;
+
+/** Operating-hour end (hour, 24-h format) in Africa/Cairo */
+const OPS_END_HOUR = 20;
+
+// ─── Queue Constants ────────────────────────────────────────────────────────
+
+/** Maximum messages processed per `drainOutboundQueue()` call */
+const DRAIN_BATCH_SIZE = 10;
+
+/** Maximum delivery attempts before marking a message as permanently failed */
+const MAX_DELIVERY_ATTEMPTS = 5;
+
 // ─── Firestore Collection Names ─────────────────────────────────────────────
 
+const COLL_SENDER_STATS = 'whatsapp_sender_stats';
+const COLL_OUTBOUND_QUEUE = 'whatsapp_outbound_queue';
 const COLL_MESSAGE_LOG = 'whatsapp_message_log';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
-/** Input to `logWhatsAppMessage` — timestamps are stamped internally. */
+/** Shape of a document in `whatsapp_sender_stats` */
+interface SenderStat {
+  phoneNumber: string;
+  date: string;           // YYYY-MM-DD
+  count: number;
+  windowStart: number;    // Unix epoch ms — start of current 2-hour window
+  windowCount: number;    // Messages sent within the current 2-hour window
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/** Shape of a document in `whatsapp_outbound_queue` */
+interface OutboundQueueItem {
+  to: string;
+  body: string;
+  senderNumber?: string;
+  status: 'queued' | 'sent' | 'failed';
+  createdAt: FirebaseFirestore.Timestamp;
+  scheduledFor: FirebaseFirestore.Timestamp;
+  attempts: number;
+  lastError?: string;
+  updatedAt?: FirebaseFirestore.Timestamp;
+}
+
+/** Shape of a document in `whatsapp_message_log` */
 export interface MessageLogEntry {
   messageSid: string;
   to: string;
@@ -50,9 +120,41 @@ export interface MessageLogEntry {
   body: string;
   status: string;
   senderNumber: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt?: FirebaseFirestore.Timestamp;
+}
+
+/** Result returned by `sendWhatsAppMessage` */
+export interface SendMessageResult {
+  success: boolean;
+  messageSid?: string;
+  errorCode?: number;
+  errorMessage?: string;
+  senderNumber?: string;
+  queued?: boolean;
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
+
+/**
+ * Returns the current date string in `YYYY-MM-DD` format using the
+ * Africa/Cairo timezone.
+ */
+function getTodayCairo(): string {
+  return new Date().toLocaleDateString('en-CA', { timeZone: 'Africa/Cairo' });
+}
+
+/**
+ * Returns the current hour (0–23) in the Africa/Cairo timezone.
+ */
+function getCurrentHourCairo(): number {
+  const formatter = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Africa/Cairo',
+    hour: 'numeric',
+    hour12: false,
+  });
+  return parseInt(formatter.format(new Date()), 10);
+}
 
 /**
  * Returns the current time as a Firestore Timestamp.
@@ -61,18 +163,63 @@ function nowAsTimestamp(): FirebaseFirestore.Timestamp {
   return Timestamp.now();
 }
 
+/**
+ * Returns a Firestore Timestamp representing the start of the next
+ * operating-hours window (12:00 Africa/Cairo today or tomorrow).
+ */
+function nextOpWindowTimestamp(): FirebaseFirestore.Timestamp {
+  const now = new Date();
+
+  // Build a date in Cairo timezone
+  const cairoParts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Africa/Cairo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  }).formatToParts(now);
+
+  const get = (type: string) => cairoParts.find(p => p.type === type)?.value ?? '0';
+
+  const year = parseInt(get('year'), 10);
+  const month = parseInt(get('month'), 10) - 1; // JS months are 0-indexed
+  let day = parseInt(get('day'), 10);
+
+  // Africa/Cairo is UTC+2 (no DST as of recent years)
+  const cairoOffsetHours = 2;
+  const targetMs = Date.UTC(year, month, day, OPS_START_HOUR - cairoOffsetHours, 0, 0);
+
+  if (targetMs <= now.getTime()) {
+    // Next window is tomorrow
+    day += 1;
+  }
+
+  const nextMs = Date.UTC(year, month, day, OPS_START_HOUR - cairoOffsetHours, 0, 0);
+  return Timestamp.fromMillis(nextMs);
+}
+
+/**
+ * Checks whether we are currently within operating hours (12:00–20:00 Africa/Cairo).
+ */
+function isWithinOperatingHours(): boolean {
+  const hour = getCurrentHourCairo();
+  return hour >= OPS_START_HOUR && hour < OPS_END_HOUR;
+}
+
 // ─── Twilio REST API ────────────────────────────────────────────────────────
 
 /**
- * Sends a single WhatsApp message via the Twilio Messages REST API.
- * Avoids importing the full `twilio` SDK — we only need a single `POST`
- * with Basic auth. No rate limiting, retry, or queuing here; callers
- * (`lib/server/whatsapp-queue.ts`) own that.
+ * Low-level Twilio REST caller.  Avoids importing the full `twilio`
+ * SDK — we only need a single `POST` with Basic auth.
  *
- * @param from Sender number, E.164 digits without the leading `+`.
- * @param to   Recipient number, E.164 digits without the leading `+`.
+ * Also exported as `sendTwilioWhatsAppMessage` for use by
+ * `lib/server/whatsapp-queue.ts` which needs the raw REST call
+ * without the operating-hours / rate-limit logic.
  */
-export async function sendTwilioWhatsAppMessage(
+async function callTwilioMessagesAPI(
   from: string,
   to: string,
   body: string,
@@ -330,7 +477,7 @@ export async function sendWhatsAppMessage(
     };
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
-    log.error('[twilio-client] sendWhatsAppMessage failed:', message);
+    log.error({ err: message }, '[twilio-client] sendWhatsAppMessage failed');
 
     return {
       success: false,
@@ -379,7 +526,7 @@ async function queueMessage(
     };
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
-    log.error('[twilio-client] Failed to queue message:', message);
+    log.error({ err: message }, '[twilio-client] Failed to queue message');
 
     return {
       success: false,
@@ -533,8 +680,8 @@ export async function drainOutboundQueue(): Promise<{
     }
   } catch (err) {
     log.error(
-      '[twilio-client] drainOutboundQueue error:',
-      err instanceof Error ? err.message : err
+      { err: err instanceof Error ? err.message : String(err) },
+      '[twilio-client] drainOutboundQueue error'
     );
   }
 
@@ -681,31 +828,57 @@ export async function updateMessageStatus(
     log.info(`[twilio-client] Updated ${messageSid} → ${status}`);
   } catch (err) {
     log.error(
-      '[twilio-client] updateMessageStatus failed:',
-      err instanceof Error ? err.message : err
+      { err: err instanceof Error ? err.message : String(err) },
+      '[twilio-client] updateMessageStatus failed'
     );
     // Intentionally not re-throwing — status updates are non-critical
   }
 }
 
-// ─── Message Log Writer ─────────────────────────────────────────────────────
+// ─── Internal: Message Log Writer ───────────────────────────────────────────
+
+/**
+ * Writes a message-log entry to the `whatsapp_message_log` Firestore collection.
+ *
+ * @internal Used by `sendWhatsAppMessage` and `drainOutboundQueue` to
+ *           record both successful sends and failures.
+ */
+async function logMessage(entry: MessageLogEntry): Promise<void> {
+  try {
+    await adminDb.collection(COLL_MESSAGE_LOG).add({
+      ...entry,
+      updatedAt: nowAsTimestamp(),
+    });
+  } catch (err) {
+    // Logging is non-critical — swallow the error but report it
+    log.error(
+      { err: err instanceof Error ? err.message : String(err) },
+      '[twilio-client] Failed to write message log'
+    );
+  }
+}
+
+// ─── Re-exports for whatsapp-queue.ts ────────────────────────────────────────
+// These thin wrappers expose the internal primitives that whatsapp-queue.ts
+// needs without the operating-hours / rate-limit / queue logic.
+
+/**
+ * Sends a single WhatsApp message via the Twilio Messages REST API.
+ * Raw wrapper — no rate limiting, retry, or queuing.
+ * Callers (`lib/server/whatsapp-queue.ts`) own that logic.
+ */
+export async function sendTwilioWhatsAppMessage(
+  from: string,
+  to: string,
+  body: string,
+): Promise<{ sid?: string; errorCode?: number; errorMessage?: string }> {
+  return callTwilioMessagesAPI(from, to, body);
+}
 
 /**
  * Writes a message-log entry to the `whatsapp_message_log` Firestore collection.
  * Called by `lib/server/whatsapp-queue.ts` to record both successful sends and failures.
  */
 export async function logWhatsAppMessage(entry: MessageLogEntry): Promise<void> {
-  try {
-    await adminDb.collection(COLL_MESSAGE_LOG).add({
-      ...entry,
-      createdAt: nowAsTimestamp(),
-      updatedAt: nowAsTimestamp(),
-    });
-  } catch (err) {
-    // Logging is non-critical — swallow the error but report it
-    log.error(
-      '[twilio-client] Failed to write message log:',
-      err instanceof Error ? err.message : err
-    );
-  }
+  return logMessage(entry);
 }

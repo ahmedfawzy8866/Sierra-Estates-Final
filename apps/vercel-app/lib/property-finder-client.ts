@@ -14,7 +14,7 @@ import {
 } from './property-finder/types';
 import { EgyptListingValidator } from './property-finder/validation';
 
-export type { PFListing, PFListingRequest, PFLead, PFLocation, PFTranslation, PFUser };
+export type { PFListing, PFListingRequest, PFLead, PFLocation, PFTranslation, PFUser, PFAccessToken };
 
 
 class PropertyFinderClient {
@@ -65,6 +65,7 @@ class PropertyFinderClient {
   }
 
   private async refreshToken(): Promise<string> {
+    const now = Date.now();
 
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 10_000); // 10s timeout

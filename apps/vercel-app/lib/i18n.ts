@@ -6,7 +6,7 @@ export const defaultLocale = 'ar' as const;
 
 export type Locale = (typeof locales)[number];
 
-export default getRequestConfig(async ({ requestLocale }) => {
+export default getRequestConfig(async ({ requestLocale }: { requestLocale: Promise<string | undefined> }) => {
   const requested = await requestLocale;
   const locale = hasLocale(locales, requested) ? requested : defaultLocale;
 

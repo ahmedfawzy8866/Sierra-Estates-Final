@@ -65,7 +65,7 @@ export const POST = async (req: NextRequest) => {
       );
     }
 
-    const portfolio = { id: portfolioSnap.id, ...portfolioSnap.data() };
+    const portfolio: any = { id: portfolioSnap.id, ...portfolioSnap.data() };
 
     // Send via WhatsApp
     await sendPortfolioViaWhatsApp(leadId, portfolio, phone);
