@@ -25,7 +25,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - name: Build Client Portal
-        run: pnpm --filter "@workspace/sierra-estates" build
+        run: pnpm --filter "@sierra-estates/vercel-app" build
         env:
           NODE_ENV: production
 
