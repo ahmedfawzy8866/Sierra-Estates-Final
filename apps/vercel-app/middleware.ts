@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { applyCors, isPreflightRequest } from '@/lib/server/cors';
 import {
-  applyRateLimit,
+  applyRateLimitAsync,
   publicEndpointLimiter,
   webhookLimiter,
   createRateLimiter,
@@ -100,7 +100,7 @@ function checkCsrf(request: NextRequest): NextResponse | null {
   return response;
 }
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // ── CORS: Handle preflight ──────────────────────────────────────────────
@@ -108,9 +108,9 @@ export function middleware(request: NextRequest) {
     return applyCors(request);
   }
 
-  // ── Rate Limiting ───────────────────────────────────────────────────────
+  // ── Rate Limiting (async — uses Upstash Redis when available) ───────────
   const limiter = getLimiterForPath(pathname);
-  const rateLimited = applyRateLimit(request, limiter);
+  const rateLimited = await applyRateLimitAsync(request, limiter);
   if (rateLimited) {
     // Apply CORS headers to rate limit response too
     return applyCors(request, rateLimited);
