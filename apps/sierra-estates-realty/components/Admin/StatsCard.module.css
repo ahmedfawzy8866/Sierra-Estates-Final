@@ -11,10 +11,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: color-mix(in srgb, var(--card-color) 8%, transparent);
+  background-color: var(--card-color);
+  opacity: 1;
+  position: relative;
+}
+
+.iconWrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: white;
+  opacity: 0.92;
 }
 
 .iconWrap :global(svg) {
+  position: relative;
+  color: var(--card-color);
+}
+
+.iconSvg {
+  position: relative;
   color: var(--card-color);
 }
 
