@@ -9,9 +9,13 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
+    "test": "jest",
+    "test:ci": "jest --ci --coverage",
     "clean": "rm -rf .next .turbo node_modules"
   },
   "dependencies": {
+    "@upstash/ratelimit": "^2.0.5",
+    "@upstash/redis": "^1.34.3",
     "firebase": "^12.0.0",
     "firebase-admin": "^13.0.0",
     "next": "^16.0.0",
@@ -27,9 +31,12 @@
     "@upstash/redis": "^1.34.0"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.14",
     "@types/node": "^25.3.3",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5",
     "typescript": "^5.7.2",
     "tailwindcss": "^4.1.14",
     "@tailwindcss/vite": "^4.1.14"
