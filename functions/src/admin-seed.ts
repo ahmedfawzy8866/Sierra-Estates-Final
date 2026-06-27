@@ -16,12 +16,14 @@
 
 import { onRequest } from 'firebase-functions/v2/https';
 import * as admin from 'firebase-admin';
+import { Request, Response } from 'express';
 
 if (!admin.apps.length) {
   admin.initializeApp();
 }
 
 const db = admin.firestore();
+const FieldValue = admin.firestore.FieldValue;
 
 const ADMIN_EMAILS = [
   { email: 'A.fawzy8866@gmail.com', role: 'super_admin', name: 'Ahmed Fawzy' },
@@ -31,7 +33,7 @@ const ADMIN_EMAILS = [
 
 export const adminSeed = onRequest(
   { region: 'europe-west1' },
-  async (req, res) => {
+  async (req: Request, res: Response) => {
     // Only allow POST method
     if (req.method !== 'POST') {
       res.status(405).json({ error: 'Method not allowed. Use POST.' });
@@ -60,13 +62,13 @@ export const adminSeed = onRequest(
 
       // Seed the admins collection
       const batch = db.batch();
-      for (const adm of ADMIN_EMAILS) {
-        const ref = db.collection('admins').doc(adm.email);
+      for (const adminEntry of ADMIN_EMAILS) {
+        const ref = db.collection('admins').doc(adminEntry.email);
         batch.set(ref, {
-          email: adm.email,
-          role: adm.role,
-          name: adm.name,
-          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          email: adminEntry.email,
+          role: adminEntry.role,
+          name: adminEntry.name,
+          createdAt: FieldValue.serverTimestamp(),
           createdBy: 'admin-seed-function',
           seededBy: callerEmail,
         });

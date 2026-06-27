@@ -13,52 +13,53 @@
  */
 
 import * as crypto from 'crypto';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // ─── Mocks ────────────────────────────────────────────────────────────
 
-jest.mock('@/lib/property-finder-client', () => ({
+vi.mock('@/lib/property-finder-client', () => ({
   pfClient: {
-    searchListings: jest.fn(),
-    fetchLeads: jest.fn(),
+    searchListings: vi.fn(),
+    fetchLeads: vi.fn(),
   },
 }));
 
-jest.mock('@/lib/server/firebase-admin', () => {
+vi.mock('@/lib/server/firebase-admin', () => {
   const mockDoc = {
-    get: jest.fn(() => Promise.resolve({ exists: false, data: () => ({}) })),
-    set: jest.fn(() => Promise.resolve()),
-    update: jest.fn(() => Promise.resolve()),
-    delete: jest.fn(() => Promise.resolve()),
+    get: vi.fn(() => Promise.resolve({ exists: false, data: () => ({}) })),
+    set: vi.fn(() => Promise.resolve()),
+    update: vi.fn(() => Promise.resolve()),
+    delete: vi.fn(() => Promise.resolve()),
   };
   const mockCollection = {
-    doc: jest.fn(() => mockDoc),
-    add: jest.fn(() => Promise.resolve({ id: 'mock-id' })),
-    get: jest.fn(() => Promise.resolve({ docs: [], size: 0, empty: true })),
-    where: jest.fn(() => ({
-      get: jest.fn(() => Promise.resolve({ docs: [] })),
-      orderBy: jest.fn(() => ({
-        get: jest.fn(() => Promise.resolve({ docs: [] })),
+    doc: vi.fn(() => mockDoc),
+    add: vi.fn(() => Promise.resolve({ id: 'mock-id' })),
+    get: vi.fn(() => Promise.resolve({ docs: [], size: 0, empty: true })),
+    where: vi.fn(() => ({
+      get: vi.fn(() => Promise.resolve({ docs: [] })),
+      orderBy: vi.fn(() => ({
+        get: vi.fn(() => Promise.resolve({ docs: [] })),
       })),
     })),
-    orderBy: jest.fn(() => ({
-      limit: jest.fn(() => ({
-        get: jest.fn(() => Promise.resolve({ docs: [] })),
+    orderBy: vi.fn(() => ({
+      limit: vi.fn(() => ({
+        get: vi.fn(() => Promise.resolve({ docs: [] })),
       })),
-      get: jest.fn(() => Promise.resolve({ docs: [] })),
+      get: vi.fn(() => Promise.resolve({ docs: [] })),
     })),
   };
 
   return {
     adminDb: {
-      collection: jest.fn(() => mockCollection),
+      collection: vi.fn(() => mockCollection),
     },
     isAdminInitialized: true,
   };
 });
 
-jest.mock('firebase-admin/firestore', () => ({
+vi.mock('firebase-admin/firestore', () => ({
   Timestamp: {
-    now: jest.fn(() => ({ _seconds: 1700000000, _nanoseconds: 0 })),
+    now: vi.fn(() => ({ _seconds: 1700000000, _nanoseconds: 0 })),
   },
 }));
 
@@ -188,7 +189,7 @@ function extractContacts(contacts: Array<{ type: string; value: string }>): { ph
 
 describe('PF Sync Engine', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   // ─── Deduplication ─────────────────────────────────────────────────

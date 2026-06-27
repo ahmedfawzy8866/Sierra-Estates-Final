@@ -105,4 +105,5 @@ back/
 # ─── Internal / tooling ───
 skills/
 upload/
-tool-results/
+tool-results/coverage/
+**/coverage/
