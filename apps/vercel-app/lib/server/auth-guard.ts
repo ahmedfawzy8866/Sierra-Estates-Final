@@ -3,6 +3,7 @@
  * Validates Firebase Auth tokens on API routes.
  * Use: wrap any API handler with `withAuth(handler)` or call `verifyRequest(req)`.
  */
+import 'server-only';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth, adminDb } from './firebase-admin';
@@ -35,8 +36,9 @@ export async function verifyRequest(req: NextRequest): Promise<AuthResult> {
         email: decoded.email,
         method: 'firebase',
       };
-    } catch {
-      // Token invalid or expired — fall through to secret key check
+    } catch (err) {
+      // Token invalid or expired — log for security monitoring, then fall through
+      console.warn('[auth-guard] Firebase token verification failed:', err instanceof Error ? err.message : 'Unknown error');
     }
   }
 
@@ -75,7 +77,8 @@ export async function verifyAdminRequest(req: NextRequest): Promise<AuthResult> 
     if (role !== 'admin' && role !== 'superadmin') {
       return { authenticated: false, method: 'none' };
     }
-  } catch {
+  } catch (err) {
+    console.warn('[auth-guard] Admin role check failed:', err instanceof Error ? err.message : 'Unknown error');
     return { authenticated: false, method: 'none' };
   }
 

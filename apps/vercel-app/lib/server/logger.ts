@@ -11,6 +11,7 @@
  *   logger.warn({ err }, 'Rate limit approaching');
  *   logger.error({ err, route }, 'API handler failed');
  */
+import 'server-only';
 
 import pino from 'pino';
 

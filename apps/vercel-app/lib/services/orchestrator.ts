@@ -106,10 +106,10 @@ export class OrchestratorService {
           }
         }
 
-        console.log(`✅ Orchestration complete for ${docId}`);
+        console.log(`Orchestration complete for ${docId}`);
 
       } catch (error: any) {
-        console.error(`❌ Orchestration failed for ${docId}:`, error);
+        console.error(`Orchestration failed for ${docId}:`, error);
         await this.updateState(docId, collection, currentStage, 'failed', error.message);
 
         // DLQ: write to failed_orchestrations for manual intervention
@@ -127,7 +127,7 @@ export class OrchestratorService {
 
         // Alert admin via Telegram
         const alertMsg =
-          `🚨 <b>Orchestration Failure</b>\n` +
+          `<b>Orchestration Failure</b>\n` +
           `Doc: <code>${docId}</code>\n` +
           `Collection: <code>${collection}</code>\n` +
           `Stage: <b>${currentStage}</b>\n` +

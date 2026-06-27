@@ -1,13 +1,21 @@
 /**
  * Property Finder Integration Service
- * Syncs leads and listings between Sierra Estates CRM and PF Enterprise API (atlas.propertyfinder.com/v1)
+ *
+ * DELEGATION LAYER — all sync operations are now handled by PFSyncEngine
+ * (the canonical, paginated, production-grade sync engine).
+ *
+ * This service exists for backward compatibility with existing callers
+ * (cron routes, admin dashboard) and provides a simplified API surface.
+ *
+ * DO NOT add new sync logic here — add it to PFSyncEngine instead.
  */
 
-import { pfClient, PFListingRequest, PFLead } from '../property-finder-client';
+import { PFSyncEngine, PFSyncResult } from '../server/pf-sync-engine';
 import { adminDb } from '../server/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
-import { Unit, Lead, COLLECTIONS, UserProfile } from '../models/schema';
-import { PFListing, PFPropertyType } from '../property-finder/types';
+import { COLLECTIONS, Unit } from '../models/schema';
+import { pfClient } from '../property-finder-client';
+import { PFListingRequest, PFPropertyType } from '../property-finder/types';
 
 export interface PFLeadSyncSummary {
   created: number;
@@ -17,108 +25,39 @@ export interface PFLeadSyncSummary {
 
 export class PFIntegrationService {
 
+  /**
+   * Sync incoming leads from Property Finder.
+   * Delegates to PFSyncEngine.syncLeadsOnly() for paginated, deduped sync.
+   */
   static async syncIncomingLeads(): Promise<PFLeadSyncSummary> {
-    const summary: PFLeadSyncSummary = { created: 0, updated: 0, skipped: 0 };
-    const pfLeads = await pfClient.fetchLeads({ perPage: '50' });
-
-    for (const lead of pfLeads.data) {
-      const existing = await adminDb.collection(COLLECTIONS.stakeholders)
-        .where('pfLeadId', '==', lead.id)
-        .get();
-
-      const phone = lead.sender?.contacts?.find(c => c.type === 'phone')?.value || '';
-      const email = lead.sender?.contacts?.find(c => c.type === 'email')?.value || '';
-
-      if (!phone && existing.empty) {
-        summary.skipped++;
-        continue;
-      }
-
-      const payload: Partial<Lead> & Record<string, unknown> = {
-        name: lead.sender?.name || 'Property Finder Lead',
-        phone,
-        email,
-        source: 'property-finder',
-        stage: 'inbound',
-        phase: lead.status === 'replied' ? 'consultation' : 'acquisition',
-        originChannel: `Property Finder (${lead.channel})`,
-        pfLeadId: lead.id,
-        pfListingReferenceNumber: lead.listing?.reference || '',
-        updatedAt: Timestamp.now(),
-      };
-
-      if (existing.empty) {
-        await adminDb.collection(COLLECTIONS.stakeholders).add({
-          ...payload,
-          automation: { botInitiated: false, scoringCompleted: false, whatsappFollowupSent: false, viewingReminderSent: false },
-          createdAt: Timestamp.now(),
-        });
-        summary.created++;
-      } else {
-        await existing.docs[0].ref.update(payload);
-        summary.updated++;
-      }
-    }
-
-    return summary;
+    const result = await PFSyncEngine.syncLeadsOnly();
+    return {
+      created: result.leadsSynced,
+      updated: result.updatedRecords,
+      skipped: result.duplicatesSkipped,
+    };
   }
 
+  /**
+   * Sync incoming listings from Property Finder.
+   * Delegates to PFSyncEngine.runFullSync() with leads disabled.
+   */
   static async syncIncomingListings() {
-    let imported = 0;
-    let updated = 0;
-
-    const pfResult = await pfClient.searchListings({ perPage: '100' });
-    console.log('[PF API] Found listings count:', pfResult.data?.length || 0);
-
-    const listings = pfResult.data || [];
-
-    for (const listing of listings) {
-      const ref = listing.reference || String(listing.id);
-      const existing = await adminDb.collection(COLLECTIONS.units)
-        .where('pfReferenceNumber', '==', ref)
-        .get();
-
-      const priceVal = listing.price?.amounts?.sale || listing.price?.amounts?.yearly || listing.price?.amounts?.monthly || 0;
-
-      let beds = 0;
-      if (listing.bedrooms === 'studio') {
-        beds = 0;
-      } else if (listing.bedrooms) {
-        beds = parseInt(listing.bedrooms as string) || 0;
-      }
-
-      let baths = 0;
-      if (listing.bathrooms && listing.bathrooms !== 'none') {
-        baths = parseInt(listing.bathrooms as string) || 0;
-      }
-
-      const payload: Partial<Unit> = {
-        title: listing.title?.en || '',
-        description: listing.description?.en || '',
-        price: priceVal,
-        propertyType: listing.type as any,
-        status: listing.offeringType === 'rent' ? 'rented' : 'available',
-        category: listing.category || 'residential',
-        bedrooms: beds,
-        bathrooms: baths,
-        area: listing.size || 0,
-        pfReferenceNumber: ref,
-        updatedAt: Timestamp.now(),
-        images: listing.media?.images?.map(i => i.original.url) || [],
-      };
-
-      if (existing.empty) {
-        await adminDb.collection(COLLECTIONS.units).add({ ...payload, createdAt: Timestamp.now() });
-        imported++;
-      } else {
-        await existing.docs[0].ref.update(payload);
-        updated++;
-      }
-    }
-
-    return { imported, updated };
+    const result = await PFSyncEngine.runFullSync({
+      syncLeads: false,
+      pageSize: 100,
+    });
+    return {
+      imported: result.newRecords,
+      updated: result.updatedRecords,
+    };
   }
 
+  /**
+   * Publish a local unit listing to Property Finder.
+   * This operation is NOT part of PFSyncEngine (which handles inbound sync),
+   * so it remains implemented here.
+   */
   static async publishListing(unitId: string) {
     const unitSnap = await adminDb.collection(COLLECTIONS.units).doc(unitId).get();
     if (!unitSnap.exists) throw new Error('Unit not found');
@@ -133,7 +72,7 @@ export class PFIntegrationService {
       reference: unit.pfReferenceNumber || `SB-${unitId.slice(0, 8)}`,
       title: { en: unit.title },
       description: { en: unit.description || unit.title },
-      price: { 
+      price: {
         type: isRent ? 'yearly' : 'sale',
         amounts: isRent ? { yearly: unit.price } : { sale: unit.price }
       },
@@ -193,4 +132,3 @@ export class PFIntegrationService {
     return mapping[type?.toLowerCase()] || 'apartment';
   }
 }
-

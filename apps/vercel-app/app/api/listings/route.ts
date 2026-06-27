@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { COLLECTIONS } from '@/lib/models/schema';
+import { adminDb, isAdminInitialized } from '@/lib/server/firebase-admin';
 
-const API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'AIzaSyBZLN2jTTKV34SneGPoWRz1zoRpX5uODjs';
+const API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
 const PROJECT_ID = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'sierra-estates';
 
 interface FirestoreValue {
-  [key: string]: any;
+  stringValue?: string;
+  integerValue?: string;
+  doubleValue?: number;
+  booleanValue?: boolean;
+  arrayValue?: { values: FirestoreValue[] };
+  mapValue?: { fields: Record<string, FirestoreValue> };
 }
 
 interface FirestoreDocument {
@@ -36,13 +42,38 @@ function extractValue(field: FirestoreValue): any {
 }
 
 /**
- * Query Firestore via REST API
+ * Fetch listings using Firebase Admin SDK (preferred) or REST API fallback.
+ * The REST API path is only used when Admin SDK is not initialized.
  */
-async function queryFirestoreRest(
+async function fetchListings(
   collectionName: string,
   limit?: number,
   docId?: string
-): Promise<{ doc?: FirestoreDocument; docs: FirestoreDocument[] } | null> {
+): Promise<{ doc?: any; docs: any[] } | null> {
+  // Prefer Admin SDK — uses proper auth and respects security rules
+  if (isAdminInitialized) {
+    try {
+      if (docId) {
+        const snap = await adminDb.collection(collectionName).doc(docId).get();
+        if (!snap.exists) return null;
+        return { doc: { id: snap.id, ...snap.data() }, docs: [] };
+      }
+      let query = adminDb.collection(collectionName);
+      if (limit) query = query.limit(limit);
+      const snapshot = await query.get();
+      const docs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      return { docs };
+    } catch (error: unknown) {
+      console.error('[LISTINGS_ADMIN_SDK] Error:', error instanceof Error ? error.message : 'Unknown');
+    }
+  }
+
+  // Fallback: REST API (only if Admin SDK is unavailable AND API key is set)
+  if (!API_KEY) {
+    console.error('[LISTINGS] Cannot fetch: Admin SDK not initialized and NEXT_PUBLIC_FIREBASE_API_KEY not set');
+    return null;
+  }
+
   try {
     const url = new URL(
       `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/${collectionName}`
@@ -65,14 +96,12 @@ async function queryFirestoreRest(
     const data = await response.json();
 
     if (docId) {
-      // Single document response
       return { doc: data, docs: [] };
     } else {
-      // Collection query response
       return { docs: data.documents || [] };
     }
-  } catch (error: any) {
-    console.error('[FIRESTORE_REST_ERROR]', error?.message || error);
+  } catch (error: unknown) {
+    console.error('[FIRESTORE_REST_ERROR]', error instanceof Error ? error.message : 'Unknown');
     return null;
   }
 }
@@ -80,7 +109,7 @@ async function queryFirestoreRest(
 /**
  * Transform Firestore document to listing object
  */
-function transformToListing(doc: FirestoreDocument): any {
+function transformToListing(doc: FirestoreDocument): Record<string, unknown> | null {
   if (!doc || !doc.fields) return null;
 
   const fields = doc.fields;
@@ -109,16 +138,17 @@ export async function GET(request: NextRequest) {
     const id = searchParams.get('id');
 
     if (id) {
-      const result = await queryFirestoreRest(COLLECTIONS.units, undefined, id);
+      const result = await fetchListings(COLLECTIONS.units, undefined, id);
       if (!result?.doc) {
         return NextResponse.json({ success: false, error: 'Listing not found' }, { status: 404 });
       }
-      const listing = transformToListing(result.doc);
+      // Admin SDK returns clean objects; REST returns raw Firestore docs needing transform
+      const listing = (result.doc as FirestoreDocument).fields ? transformToListing(result.doc as FirestoreDocument) : result.doc;
       return NextResponse.json({ success: true, listing });
     }
 
     const limitParam = parseInt(searchParams.get('limit') || '12', 10);
-    const result = await queryFirestoreRest(COLLECTIONS.units, limitParam);
+    const result = await fetchListings(COLLECTIONS.units, limitParam);
 
     if (!result) {
       return NextResponse.json(
@@ -127,13 +157,14 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const listings = (result.docs || []).map(transformToListing).filter(Boolean);
+    // Admin SDK returns clean objects; REST API returns raw Firestore documents needing transform
+    const listings = (result.docs || []).map(d => (d as FirestoreDocument).fields ? transformToListing(d as FirestoreDocument) : d).filter(Boolean);
 
     return NextResponse.json({ success: true, listings, count: listings.length });
-  } catch (error: any) {
-    console.error('[LISTINGS_ERROR] Failed to fetch listings:', error?.message || error);
+  } catch (error: unknown) {
+    console.error('[LISTINGS_ERROR] Failed to fetch listings:', error instanceof Error ? error.message : 'Unknown');
     return NextResponse.json(
-      { success: false, error: error?.message || 'Internal Server Error' },
+      { success: false, error: 'Failed to fetch listings' },
       { status: 500 }
     );
   }

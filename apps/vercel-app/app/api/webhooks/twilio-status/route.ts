@@ -2,14 +2,27 @@
  * POST /api/webhooks/twilio-status
  * Receives delivery status callbacks from Twilio.
  * Twilio sends application/x-www-form-urlencoded payloads.
+ *
+ * SECURITY: Verifies the X-Twilio-Signature header using HMAC-SHA1
+ * to prevent forged status updates.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { updateMessageStatus } from '@/lib/server/twilio-client';
+import { updateMessageStatus, verifyTwilioSignature } from '@/lib/server/twilio-client';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.text();
+
+    // Verify Twilio signature to prevent forged status updates
+    const signature = request.headers.get('x-twilio-signature') || '';
+    const url = request.url;
+
+    if (!verifyTwilioSignature(url, body, signature)) {
+      console.warn('[TWILIO-STATUS] Invalid signature — rejecting request');
+      return new NextResponse('Unauthorized', { status: 401 });
+    }
+
     const params = new URLSearchParams(body);
 
     const messageSid = params.get('MessageSid') || '';
@@ -37,7 +50,7 @@ export async function POST(request: NextRequest) {
 
     return new NextResponse('OK', { status: 200 });
   } catch (error: unknown) {
-    console.error('[TWILIO-STATUS] Error:', error);
+    console.error('[TWILIO-STATUS] Error:', error instanceof Error ? error.message : 'Unknown');
     return new NextResponse('OK', { status: 200 }); // Prevent retries
   }
 }

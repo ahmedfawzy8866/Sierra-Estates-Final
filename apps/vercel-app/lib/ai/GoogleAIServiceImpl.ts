@@ -87,7 +87,8 @@ export class GoogleAIServiceImpl implements AIService {
         { model: 'fast' }
       );
       return true;
-    } catch {
+    } catch (err) {
+      console.warn('[GoogleAI] Health check failed:', err instanceof Error ? err.message : 'Unknown');
       return false;
     }
   }

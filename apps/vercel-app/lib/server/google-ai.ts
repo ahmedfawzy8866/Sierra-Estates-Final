@@ -55,7 +55,7 @@ export const GoogleAIService = {
       });
 
       return await instrumentAgent(agentName, stage, "AI_STUDIO_DIRECT", async () => {
-        console.log(`📡 [GoogleAI] Direct Call: ${agentName}:${stage} using ${modelName}`);
+        console.log(`[GoogleAI] Direct Call: ${agentName}:${stage} using ${modelName}`);
         
         const result = await model.generateContent(prompt.user);
         const response = await result.response;
@@ -64,11 +64,11 @@ export const GoogleAIService = {
         return text;
       });
     } catch (err: any) {
-      console.error(`❌ [GoogleAI] Failed with ${modelName}:`, err.message);
+      console.error(`[GoogleAI] Failed with ${modelName}:`, err.message);
       
       // Automatic fallback if the specified model fails with 404
       if (err.message.includes('404') && modelName !== 'gemini-flash-latest') {
-        console.log("🔄 [GoogleAI] Retrying with fallback: gemini-flash-latest");
+        console.log("[GoogleAI] Retrying with fallback: gemini-flash-latest");
         return this.generateContent(agentName, stage, prompt, { ...options, model: 'gemini-flash-latest' });
       }
       throw err;
@@ -138,7 +138,7 @@ export const GoogleAIService = {
           ]
         };
       } catch (err: any) {
-        console.error(`❌ [GoogleAI] Chat Error with ${modelName}:`, err.message);
+        console.error(`[GoogleAI] Chat Error with ${modelName}:`, err.message);
         if (err.message.includes('404') && modelName !== 'gemini-flash-latest') {
           return this.chatCompletions(agentId, unitName, messages, { ...options, model: 'gemini-flash-latest' });
         }

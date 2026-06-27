@@ -1,5 +1,16 @@
 /**
- * SIERRA ESTATES — SYNC ENGINE
+ * SIERRA ESTATES — SYNC ENGINE (LEGACY — DO NOT USE ON SERVER)
+ *
+ * ⚠️ DEPRECATED: This module uses the Firebase Client SDK (`firebase/firestore`)
+ * which requires client-side authentication. It does NOT work in API routes
+ * or server-side contexts (Vercel serverless functions).
+ *
+ * For server-side PF sync, use PFSyncEngine instead:
+ *   import { PFSyncEngine } from '@/lib/server/pf-sync-engine';
+ *
+ * This file is kept only for backward compatibility with any client-side
+ * code that may still import it. DO NOT add new sync logic here.
+ *
  * Property Finder ↔ Firestore synchronization with:
  * 1. Editorial override protection (manual edits never overwritten)
  * 2. Deduplicate queue for ambiguous matches
@@ -20,6 +31,14 @@ import {
   serverTimestamp,
   Timestamp,
 } from 'firebase/firestore';
+
+// Runtime guard: prevent usage on server where Client SDK can't authenticate
+if (typeof window === 'undefined') {
+  console.warn(
+    '[sync-engine] WARNING: This legacy module uses the Firebase Client SDK and should NOT be ' +
+    'used in server-side code. Use PFSyncEngine from @/lib/server/pf-sync-engine instead.'
+  );
+}
 
 // ─── Types ───────────────────────────────────────────────────────────
 

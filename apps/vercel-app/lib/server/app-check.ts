@@ -1,3 +1,4 @@
+import 'server-only';
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAppCheck } from './firebase-admin';
 
@@ -11,7 +12,7 @@ export async function verifyAppCheck(req: NextRequest) {
 
   // Stabilize local development: bypass token requirement if in DEV mode
   if (isDev) {
-    console.log('🛡️ [AppCheck] Development bypass active for:', req.nextUrl.pathname);
+    console.log('[AppCheck] Development bypass active for:', req.nextUrl.pathname);
     return { isValid: true, token: { sub: 'dev-bypass' } };
   }
 

@@ -61,6 +61,34 @@ export async function POST(request: NextRequest) {
 
     console.log('[SMART-FILTER] Parsed filters:', filterResult);
 
+    // Validate AI output — prevent injection or unexpected values from reaching Firestore queries
+    const VALID_PROPERTY_TYPES = ['apartment', 'villa', 'townhouse', 'duplex', 'penthouse', 'studio', 'chalet', 'commercial', 'land'];
+    const VALID_OFFERING_TYPES = ['sale', 'rent'];
+
+    if (filterResult.propertyType && !VALID_PROPERTY_TYPES.includes(filterResult.propertyType)) {
+      console.warn('[SMART-FILTER] AI returned invalid propertyType:', filterResult.propertyType);
+      delete filterResult.propertyType;
+    }
+    if (filterResult.offeringType && !VALID_OFFERING_TYPES.includes(filterResult.offeringType)) {
+      console.warn('[SMART-FILTER] AI returned invalid offeringType:', filterResult.offeringType);
+      delete filterResult.offeringType;
+    }
+    if (filterResult.bedrooms !== undefined && (typeof filterResult.bedrooms !== 'number' || filterResult.bedrooms < 0 || filterResult.bedrooms > 20)) {
+      delete filterResult.bedrooms;
+    }
+    if (filterResult.priceMin !== undefined && (typeof filterResult.priceMin !== 'number' || filterResult.priceMin < 0)) {
+      delete filterResult.priceMin;
+    }
+    if (filterResult.priceMax !== undefined && (typeof filterResult.priceMax !== 'number' || filterResult.priceMax < 0)) {
+      delete filterResult.priceMax;
+    }
+    if (filterResult.location && typeof filterResult.location !== 'string') {
+      delete filterResult.location;
+    }
+    if (filterResult.compound && typeof filterResult.compound !== 'string') {
+      delete filterResult.compound;
+    }
+
     // Build Firestore query from structured filters
     let query = adminDb.collection(COLLECTIONS.units);
 
@@ -78,7 +106,7 @@ export async function POST(request: NextRequest) {
       query = query.where('compound', '==', filterResult.compound);
     }
     if (filterResult.offeringType) {
-      query = query.where('category', '==', filterResult.offeringType === 'rent' ? 'residential' : 'residential');
+      query = query.where('offeringType', '==', filterResult.offeringType);
     }
 
     // Apply ordering and limit
@@ -115,10 +143,9 @@ export async function POST(request: NextRequest) {
       count: results.length,
     });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Unknown filter error';
-    console.error('[SMART-FILTER] Failed:', message);
+    console.error('[SMART-FILTER] Failed:', error instanceof Error ? error.message : 'Unknown filter error');
     return NextResponse.json(
-      { success: false, error: `Smart filter failed: ${message}` },
+      { success: false, error: 'Smart filter failed — please try a different search' },
       { status: 500 }
     );
   }

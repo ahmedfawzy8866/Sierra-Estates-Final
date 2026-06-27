@@ -17,6 +17,7 @@
  *   import { PFSyncEngine } from '@/lib/server/pf-sync-engine';
  *   const result = await PFSyncEngine.runFullSync({ pageSize: 50, delayMs: 500 });
  */
+import 'server-only';
 
 import { pfClient } from '@/lib/property-finder-client';
 import { adminDb } from '@/lib/server/firebase-admin';
@@ -24,6 +25,9 @@ import { COLLECTIONS, Unit, PropertyType, InvestmentStakeholder } from '@/lib/mo
 import { PFListing, PFLead, PFPagination, PFPropertyType } from '@/lib/property-finder/types';
 import { Timestamp } from 'firebase-admin/firestore';
 import * as crypto from 'crypto';
+import { createLogger } from './logger';
+
+const log = createLogger('pf-sync');
 
 // ─── Configuration ───────────────────────────────────────────────────
 
@@ -316,6 +320,9 @@ function mapLeadToStakeholder(lead: PFLead): Omit<InvestmentStakeholder, 'id'> &
  *     avoids hitting PF rate limits.
  */
 export class PFSyncEngine {
+  /** Prevent instantiation — all methods are static. */
+  private constructor() {}
+
   // ── Paginated Listing Fetch ──────────────────────────────────────
 
   /**
@@ -347,7 +354,7 @@ export class PFSyncEngine {
       allListings.push(...listings);
       totalPages = pagination.totalPages ?? 1;
 
-      console.log(
+      log.info(
         `[PF Sync] Fetched page ${currentPage}/${totalPages} — ` +
         `${listings.length} listings (total so far: ${allListings.length})`
       );
@@ -396,7 +403,7 @@ export class PFSyncEngine {
       allLeads.push(...leads);
       totalPages = pagination.totalPages ?? 1;
 
-      console.log(
+      log.info(
         `[PF Sync] Fetched leads page ${currentPage}/${totalPages} — ` +
         `${leads.length} leads (total so far: ${allLeads.length})`
       );
@@ -594,13 +601,13 @@ export class PFSyncEngine {
     };
 
     // ── Phase 1: Sync Listings ────────────────────────────────────
-    console.log(`[PF Sync] Starting listing sync (pageSize=${pageSize}, delayMs=${delayMs}, dryRun=${dryRun})`);
+    log.info(`[PF Sync] Starting listing sync (pageSize=${pageSize}, delayMs=${delayMs}, dryRun=${dryRun})`);
 
     try {
       const allListings = await PFSyncEngine.fetchAllListings(pageSize, delayMs);
       result.totalFetched = allListings.length;
 
-      console.log(`[PF Sync] Fetched ${allListings.length} total listings — processing...`);
+      log.info(`[PF Sync] Fetched ${allListings.length} total listings — processing...`);
 
       for (const listing of allListings) {
         const ref = listing.reference || String(listing.id);
@@ -621,22 +628,22 @@ export class PFSyncEngine {
         } catch (error) {
           const message = error instanceof Error ? error.message : String(error);
           result.errors.push({ reference: ref, message });
-          console.error(`[PF Sync] Error syncing listing ${ref}: ${message}`);
+          log.error(`[PF Sync] Error syncing listing ${ref}: ${message}`);
         }
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       result.errors.push({ reference: '__listings_fetch__', message });
-      console.error(`[PF Sync] Fatal error fetching listings: ${message}`);
+      log.error(`[PF Sync] Fatal error fetching listings: ${message}`);
     }
 
     // ── Phase 2: Sync Leads ──────────────────────────────────────
     if (syncLeads) {
-      console.log('[PF Sync] Starting lead sync...');
+      log.info('[PF Sync] Starting lead sync...');
 
       try {
         const allLeads = await PFSyncEngine.fetchAllLeads(pageSize, delayMs);
-        console.log(`[PF Sync] Fetched ${allLeads.length} total leads — processing...`);
+        log.info(`[PF Sync] Fetched ${allLeads.length} total leads — processing...`);
 
         for (const lead of allLeads) {
           const leadId = lead.id;
@@ -648,20 +655,20 @@ export class PFSyncEngine {
           } catch (error) {
             const message = error instanceof Error ? error.message : String(error);
             result.errors.push({ reference: `lead:${leadId}`, message });
-            console.error(`[PF Sync] Error syncing lead ${leadId}: ${message}`);
+            log.error(`[PF Sync] Error syncing lead ${leadId}: ${message}`);
           }
         }
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         result.errors.push({ reference: '__leads_fetch__', message });
-        console.error(`[PF Sync] Fatal error fetching leads: ${message}`);
+        log.error(`[PF Sync] Fatal error fetching leads: ${message}`);
       }
     }
 
     // ── Finalize ──────────────────────────────────────────────────
     result.durationMs = Date.now() - startTime;
 
-    console.log(
+    log.info(
       `[PF Sync] Complete — fetched: ${result.totalFetched}, ` +
       `new: ${result.newRecords}, updated: ${result.updatedRecords}, ` +
       `skipped: ${result.duplicatesSkipped}, leads: ${result.leadsSynced}, ` +
@@ -678,7 +685,7 @@ export class PFSyncEngine {
         });
       } catch (logError) {
         // Non-critical — don't add to result.errors since it's meta
-        console.warn('[PF Sync] Failed to write sync log:', logError);
+        log.warn('[PF Sync] Failed to write sync log:', logError);
       }
     }
 
@@ -746,7 +753,7 @@ export class PFSyncEngine {
       const outcome = await PFSyncEngine.syncListing(listings[0], false);
       return outcome;
     } catch (error) {
-      console.error(`[PF Sync] Error syncing single listing ${pfReference}:`, error);
+      log.error(`[PF Sync] Error syncing single listing ${pfReference}:`, error);
       throw error;
     }
   }

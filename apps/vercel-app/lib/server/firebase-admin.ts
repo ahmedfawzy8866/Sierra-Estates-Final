@@ -12,9 +12,15 @@
  *
  * NEVER import this file from client-side code.
  */
+import 'server-only';
 import * as admin from 'firebase-admin';
+import { createLogger } from './logger';
 
-// Graceful fallback proxy — prevents hard crashes when Admin SDK is unavailable
+const log = createLogger('firebase-admin');
+
+// Fallback proxy that throws explicit errors when Admin SDK is unavailable.
+// This prevents silent data loss where mock data would have been returned
+// and code downstream would have treated it as real data.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const makeUnavailable = (name: string): any =>
   new Proxy(
@@ -22,22 +28,12 @@ const makeUnavailable = (name: string): any =>
     {
       get(_target, prop) {
         if (prop === 'then') return undefined;
+        if (prop === Symbol.toPrimitive) return undefined;
         return (..._args: any[]) => {
-          console.warn(
-            `[firebase-admin] ${name}.${String(prop)} called but Admin SDK is not available in Vercel. Use Client SDK instead, or call the Firebase Admin API.`
-          );
-          const chainable = {
-            get: () => Promise.resolve({ size: 0, empty: true, forEach: () => {}, exists: false, data: () => ({}) }),
-            set: () => Promise.resolve(),
-            update: () => Promise.resolve(),
-            add: () => Promise.resolve({ id: 'mock-id' }),
-            limit: () => chainable,
-            orderBy: () => chainable,
-            where: () => chainable,
-            doc: () => chainable,
-            collection: () => chainable,
-          };
-          return chainable;
+          const errMsg = `[firebase-admin] ${name}.${String(prop)}() called but Admin SDK is not initialized. ` +
+            `This is expected on Vercel without ADC. Use Client SDK or call Firebase Admin Cloud Functions instead.`;
+          log.error({ service: name, method: String(prop) }, 'Admin SDK called but not initialized');
+          throw new Error(errMsg);
         };
       },
     }
@@ -60,7 +56,7 @@ try {
     // - On Cloud Functions: works automatically (no key needed)
     // - On Vercel: uses ADC if available, otherwise gracefully degrades
     // - Service account keys are blocked by org policy — we don't use them
-    console.log('[Firebase Admin] Initializing with Application Default Credentials');
+    log.info('Initializing with Application Default Credentials');
     admin.initializeApp({
       credential: admin.credential.applicationDefault(),
       projectId: projectId || 'sierra-blu',
@@ -75,14 +71,11 @@ try {
   adminStorage = admin.storage();
   isAdminInitialized = true;
 
-  console.log('[Firebase Admin] Initialized successfully via ADC');
+  log.info('Initialized successfully via ADC');
 } catch (error) {
-  console.warn(
-    '[firebase-admin] Initialization failed — this is expected in Vercel without ADC.\n' +
-    'The Vercel app should use the Client SDK (lib/firebase.ts) for all operations.\n' +
-    'Admin operations are handled by the Firebase Admin App (Cloud Functions).\n' +
-    'Reason:',
-    error instanceof Error ? error.message : 'Unknown error'
+  log.warn(
+    { err: error instanceof Error ? error.message : 'Unknown error' },
+    'Initialization failed — expected on Vercel without ADC. Use Client SDK or Cloud Functions.'
   );
 }
 

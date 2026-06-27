@@ -23,10 +23,14 @@
  *   import { sendWhatsAppMessage, drainOutboundQueue,
  *            verifyTwilioSignature, updateMessageStatus } from '@/lib/server/twilio-client';
  */
+import 'server-only';
 
 import { adminDb } from '@/lib/server/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 import crypto from 'crypto';
+import { createLogger } from './logger';
+
+const log = createLogger('twilio');
 
 // ─── Configuration ──────────────────────────────────────────────────────────
 
@@ -380,8 +384,8 @@ async function selectSenderNumber(): Promise<string | null> {
  * @example
  * ```ts
  * const result = await sendWhatsAppMessage('201012345678', 'Hello from Sierra!');
- * if (result.queued) console.log('Message queued for next operating window');
- * else if (result.success) console.log('Sent:', result.messageSid);
+ * if (result.queued) log.info('Message queued for next operating window');
+ * else if (result.success) log.info('Sent:', result.messageSid);
  * ```
  */
 export async function sendWhatsAppMessage(
@@ -430,7 +434,7 @@ export async function sendWhatsAppMessage(
     const result = await callTwilioMessagesAPI(selectedSender, to, body);
 
     if (result.errorCode) {
-      console.error(
+      log.error(
         `[twilio-client] Twilio API error ${result.errorCode}: ${result.errorMessage}`
       );
 
@@ -471,7 +475,7 @@ export async function sendWhatsAppMessage(
     };
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
-    console.error('[twilio-client] sendWhatsAppMessage failed:', message);
+    log.error('[twilio-client] sendWhatsAppMessage failed:', message);
 
     return {
       success: false,
@@ -509,7 +513,7 @@ async function queueMessage(
 
     const docRef = await adminDb.collection(COLL_OUTBOUND_QUEUE).add(item);
 
-    console.info(
+    log.info(
       `[twilio-client] Message queued (${docRef.id}) for ${scheduledFor.toDate().toISOString()}`
     );
 
@@ -520,7 +524,7 @@ async function queueMessage(
     };
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
-    console.error('[twilio-client] Failed to queue message:', message);
+    log.error('[twilio-client] Failed to queue message:', message);
 
     return {
       success: false,
@@ -569,13 +573,13 @@ export async function drainOutboundQueue(): Promise<{
 
   // ── Respect operating hours ──────────────────────────────────────────
   if (!isWithinOperatingHours()) {
-    console.info('[twilio-client] drainOutboundQueue: outside operating hours — skipping.');
+    log.info('[twilio-client] drainOutboundQueue: outside operating hours — skipping.');
     return summary;
   }
 
   // ── Guard: config ────────────────────────────────────────────────────
   if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || SENDER_NUMBERS.length === 0) {
-    console.warn('[twilio-client] drainOutboundQueue: Twilio not configured — skipping.');
+    log.warn('[twilio-client] drainOutboundQueue: Twilio not configured — skipping.');
     return summary;
   }
 
@@ -673,7 +677,7 @@ export async function drainOutboundQueue(): Promise<{
       }
     }
   } catch (err) {
-    console.error(
+    log.error(
       '[twilio-client] drainOutboundQueue error:',
       err instanceof Error ? err.message : err
     );
@@ -716,7 +720,7 @@ export function verifyTwilioSignature(
   signature: string,
 ): boolean {
   if (!TWILIO_AUTH_TOKEN) {
-    console.error('[twilio-client] Cannot verify signature: TWILIO_AUTH_TOKEN is not set.');
+    log.error('[twilio-client] Cannot verify signature: TWILIO_AUTH_TOKEN is not set.');
     return false;
   }
 
@@ -788,7 +792,7 @@ export async function updateMessageStatus(
   status: string,
 ): Promise<void> {
   if (!messageSid) {
-    console.warn('[twilio-client] updateMessageStatus called with empty messageSid — ignoring.');
+    log.warn('[twilio-client] updateMessageStatus called with empty messageSid — ignoring.');
     return;
   }
 
@@ -808,7 +812,7 @@ export async function updateMessageStatus(
         createdAt: nowAsTimestamp(),
         updatedAt: nowAsTimestamp(),
       });
-      console.info(`[twilio-client] Created message log for ${messageSid} with status: ${status}`);
+      log.info(`[twilio-client] Created message log for ${messageSid} with status: ${status}`);
       return;
     }
 
@@ -819,9 +823,9 @@ export async function updateMessageStatus(
       updatedAt: nowAsTimestamp(),
     });
 
-    console.info(`[twilio-client] Updated ${messageSid} → ${status}`);
+    log.info(`[twilio-client] Updated ${messageSid} → ${status}`);
   } catch (err) {
-    console.error(
+    log.error(
       '[twilio-client] updateMessageStatus failed:',
       err instanceof Error ? err.message : err
     );
@@ -845,7 +849,7 @@ async function logMessage(entry: MessageLogEntry): Promise<void> {
     });
   } catch (err) {
     // Logging is non-critical — swallow the error but report it
-    console.error(
+    log.error(
       '[twilio-client] Failed to write message log:',
       err instanceof Error ? err.message : err
     );

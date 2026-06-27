@@ -30,6 +30,7 @@
  *     // ... handler logic
  *   }
  */
+import 'server-only';
 
 import { NextResponse } from 'next/server';
 
@@ -46,6 +47,21 @@ interface RequestRecord {
 
 // ─── In-memory fallback store ──────────────────────────────────────────────
 const memoryStore = new Map<string, RequestRecord>();
+
+// Periodic cleanup of expired entries (every 5 minutes) to prevent memory leak
+let lastCleanup = Date.now();
+const CLEANUP_INTERVAL_MS = 5 * 60 * 1000;
+
+function cleanupExpiredEntries() {
+  const now = Date.now();
+  if (now - lastCleanup < CLEANUP_INTERVAL_MS) return;
+  lastCleanup = now;
+  for (const [key, record] of memoryStore.entries()) {
+    if (now > record.resetAt) {
+      memoryStore.delete(key);
+    }
+  }
+}
 
 let warnedAboutMemoryFallback = false;
 
@@ -100,6 +116,7 @@ export function getRateLimitKey(request: Request): string {
 
 export function createRateLimiter(config: RateLimitConfig) {
   function memoryLimiter(request: Request): NextResponse | null {
+    cleanupExpiredEntries(); // Periodic eviction of stale entries
     const key = getRateLimitKey(request);
     const now = Date.now();
 

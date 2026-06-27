@@ -63,7 +63,7 @@ Deliverables (JSON):
         // --- Visual Branding Engine ---
         let brandedMediaUrls: string[] = [];
         if (mediaUrls.length > 0) {
-          console.log(`🖼️ [CURATOR] Starting Visual Branding Engine for ${mediaUrls.length} assets...`);
+          console.log(`[CURATOR] Starting Visual Branding Engine for ${mediaUrls.length} assets...`);
           const sourceLimit = mediaUrls.slice(0, 3);
           brandedMediaUrls = await Promise.all(
             sourceLimit.map((url: string, index: number) =>
@@ -79,7 +79,7 @@ Deliverables (JSON):
           'brandedMediaUrls': brandedMediaUrls,
           'automation.isBranded': true,
         });
-        console.log(`✅ [CURATOR] S3 Branding completed for ${docId}`);
+        console.log(`[CURATOR] S3 Branding completed for ${docId}`);
       } catch (error) {
         console.error(`[CURATOR] S3 Error for ${docId}:`, error);
         await StateManager.failStage(docId, collection, stage, 'Branding AI failed');

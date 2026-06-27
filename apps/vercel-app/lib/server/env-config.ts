@@ -2,6 +2,7 @@
  * SIERRA ESTATES — Environment Configuration Validation
  * Validates all required env vars at startup and provides typed access.
  */
+import 'server-only';
 
 import { z } from 'zod';
 
@@ -82,8 +83,35 @@ export function validateServerEnv(): ServerEnv {
   const result = serverEnvSchema.safeParse(process.env);
   if (!result.success) {
     console.warn('[env] Server env validation warnings:', result.error.flatten().fieldErrors);
-    // Server env is non-blocking — we log warnings but don't crash
-    _serverEnv = result.data as ServerEnv; // partial data is ok
+    // Server env is non-blocking — we log warnings but don't crash.
+    // Use the parsed data but ensure all fields have fallback defaults
+    // instead of casting partial data as complete ServerEnv (which is unsafe).
+    const partial = result.data as Partial<ServerEnv>;
+    _serverEnv = {
+      SBR_SECRET_KEY: partial.SBR_SECRET_KEY ?? '',
+      CRON_SECRET: partial.CRON_SECRET,
+      FIREBASE_PROJECT_ID: partial.FIREBASE_PROJECT_ID,
+      FIREBASE_CLIENT_EMAIL: partial.FIREBASE_CLIENT_EMAIL,
+      FIREBASE_PRIVATE_KEY: partial.FIREBASE_PRIVATE_KEY,
+      PROPERTY_FINDER_API_GATEWAY: partial.PROPERTY_FINDER_API_GATEWAY ?? 'https://atlas.propertyfinder.com',
+      PROPERTY_FINDER_API_KEY: partial.PROPERTY_FINDER_API_KEY,
+      PROPERTY_FINDER_API_SECRET: partial.PROPERTY_FINDER_API_SECRET,
+      PROPERTY_FINDER_CLIENT_ID: partial.PROPERTY_FINDER_CLIENT_ID,
+      PROPERTY_FINDER_CLIENT_SECRET: partial.PROPERTY_FINDER_CLIENT_SECRET,
+      TWILIO_ACCOUNT_SID: partial.TWILIO_ACCOUNT_SID,
+      TWILIO_AUTH_TOKEN: partial.TWILIO_AUTH_TOKEN,
+      WABA_NUMBER_1: partial.WABA_NUMBER_1,
+      WABA_NUMBER_2: partial.WABA_NUMBER_2,
+      WABA_NUMBER_3: partial.WABA_NUMBER_3,
+      WABA_NUMBER_4: partial.WABA_NUMBER_4,
+      TELEGRAM_BOT_TOKEN: partial.TELEGRAM_BOT_TOKEN,
+      TELEGRAM_CHAT_ID: partial.TELEGRAM_CHAT_ID,
+      GOOGLE_SHEETS_CREDENTIALS: partial.GOOGLE_SHEETS_CREDENTIALS,
+      GOOGLE_SHEETS_SPREADSHEET_ID: partial.GOOGLE_SHEETS_SPREADSHEET_ID,
+      UPSTASH_REDIS_REST_URL: partial.UPSTASH_REDIS_REST_URL,
+      UPSTASH_REDIS_REST_TOKEN: partial.UPSTASH_REDIS_REST_TOKEN,
+      GOOGLE_AI_API_KEY: partial.GOOGLE_AI_API_KEY,
+    };
   } else {
     _serverEnv = result.data;
   }
