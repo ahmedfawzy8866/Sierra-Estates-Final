@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 name: CI — Quality, Test & Security
-=======
-name: CI
->>>>>>> aafba069 (chore: Master refactor complete - modularity, logging, caching, and E2E)
 
 on:
   push:
@@ -25,18 +21,11 @@ env:
   TWILIO_AUTH_TOKEN: ''
 
 jobs:
-<<<<<<< HEAD
-  # ─── Job 1: Lint & Type-Check ────────────────────────────────────────────
   quality:
     name: Lint & Type-Check
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
-=======
-  build:
-    runs-on: ubuntu-latest
-    
->>>>>>> aafba069 (chore: Master refactor complete - modularity, logging, caching, and E2E)
     steps:
       - uses: actions/checkout@v4
       
@@ -52,16 +41,14 @@ jobs:
           cache: 'pnpm'
           
       - name: Install dependencies
-<<<<<<< HEAD
         run: pnpm install --frozen-lockfile
 
-      - name: Lint (vercel-app)
-        run: pnpm --filter @sierra-estates/vercel-app lint
+      - name: Lint
+        run: pnpm run lint
 
       - name: Type-check (all packages)
         run: pnpm run type-check
 
-  # ─── Job 2: Unit Tests ──────────────────────────────────────────────────
   test:
     name: Tests
     runs-on: ubuntu-latest
@@ -83,10 +70,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run vercel-app tests
-        run: pnpm --filter @sierra-estates/vercel-app test:ci
+      - name: Run tests
+        run: pnpm run test
 
-  # ─── Job 3: Build Verification ──────────────────────────────────────────
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -108,10 +94,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build vercel-app
-        run: pnpm --filter @sierra-estates/vercel-app build
+      - name: Build
+        run: pnpm run build
 
-  # ─── Job 4: Security Audit ──────────────────────────────────────────────
   security:
     name: Security Audit
     runs-on: ubuntu-latest
@@ -154,18 +139,3 @@ jobs:
           else
             echo "✅ No hardcoded secrets detected in changed files."
           fi
-=======
-        run: pnpm install
-        
-      - name: Lint
-        run: pnpm run lint
-        
-      - name: Type Check
-        run: pnpm run type-check
-        
-      - name: Build
-        run: pnpm run build
-        
-      - name: Test
-        run: pnpm run test
->>>>>>> aafba069 (chore: Master refactor complete - modularity, logging, caching, and E2E)

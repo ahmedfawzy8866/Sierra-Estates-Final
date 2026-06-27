@@ -1,13 +1,13 @@
-﻿"use client";
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Wand2, 
-  Copy, 
-  Download, 
-  CheckCircle2, 
-  AlertCircle, 
-  Phone, 
+"use client";
+import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Wand2,
+  Copy,
+  Download,
+  CheckCircle2,
+  AlertCircle,
+  Phone,
   Image as ImageIcon,
   Save,
   FileSpreadsheet,
@@ -15,43 +15,45 @@ import {
   Trash2,
   TrendingUp,
   History,
-  Layers, Map as MapIcon, Rotate3d as Rotate3D
-} from 'lucide-react';
-import BrokerFeed from './BrokerFeed';
-import dynamic from 'next/dynamic';
-import { useEasyListingForm } from './useEasyListingForm';
+  Layers,
+  Map as MapIcon,
+  Rotate3d as Rotate3D,
+} from "lucide-react";
+import BrokerFeed from "./BrokerFeed";
+import dynamic from "next/dynamic";
+import { useEasyListingForm } from "./useEasyListingForm";
 
-const MapExplorer = dynamic(() => import('./MapExplorer'), { ssr: false });
-const VirtualTourViewer = dynamic(() => import('../Shared/VirtualTourViewer'), { ssr: false });
+const MapExplorer = dynamic(() => import("./MapExplorer"), { ssr: false });
+const VirtualTourViewer = dynamic(() => import("../Shared/VirtualTourViewer"), {
+  ssr: false,
+});
 
 export default function EasyListing() {
   const {
-    t, locale,
-    description, setDescription,
-    phone, setPhone,
-    imageFile, handleImageChange,
+    t,
     previewUrl,
     extractedData,
     generatedCode,
-    inventory,
     isProcessing,
     isSaving,
-    searchTerm, setSearchTerm,
-    errorMessage, setErrorMessage,
-    successMessage, setSuccessMessage,
-    activeTab, setActiveTab,
-    activeTour, setActiveTour,
+    searchTerm,
+    setSearchTerm,
+    errorMessage,
+    successMessage,
+    activeTab,
+    setActiveTab,
+    activeTour,
+    setActiveTour,
     canvasRef,
     _isArabic,
     processListing,
     saveToFirebase,
-    generateBrandedImage,
     copyToClipboard,
     simulateRealWebhook,
     removeInventoryItem,
     exportToExcel,
     filteredInventory,
-    stats
+    stats,
   } = useEasyListingForm();
   return (
     <div className="p-8 max-w-[1600px] mx-auto min-h-screen">
@@ -61,56 +63,66 @@ export default function EasyListing() {
             <div className="bg-gold/10 p-3 rounded-2xl">
               <Wand2 className="text-gold" size={32} />
             </div>
-            {t('easyListing.title')}
+            {t("easyListing.title")}
           </h1>
           <p className="text-slate-400 font-medium tracking-tight max-w-xl">
-             Luxury portfolio management powered by Sierra Estates Artificial Intelligence. 
-             Forge specific listings or tap into the global broker nexus.
+            Luxury portfolio management powered by Sierra Estates Artificial
+            Intelligence. Forge specific listings or tap into the global broker
+            nexus.
           </p>
         </div>
-        
+
         <div className="flex items-center gap-4">
           <div className="flex bg-slate-100/50 p-1.5 rounded-3xl backdrop-blur-md border border-slate-200">
-             <button 
-               onClick={() => setActiveTab('forge')}
-               className={`px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all ${
-                 activeTab === 'forge' ? 'bg-navy text-white shadow-xl' : 'text-slate-400 hover:text-navy'
-               }`}
-             >
-               Manual Forge
-             </button>
-             <button 
-               onClick={() => setActiveTab('nexus')}
-               className={`px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all ${
-                 activeTab === 'nexus' ? 'bg-navy text-white shadow-xl' : 'text-slate-400 hover:text-navy'
-               }`}
-             >
-               Nexus Stream
-             </button>
-             <button 
-               onClick={() => setActiveTab('spatial')}
-               className={`px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 ${
-                 activeTab === 'spatial' ? 'bg-navy text-white shadow-xl' : 'text-slate-400 hover:text-navy'
-               }`}
-             >
-               <MapIcon size={14} />
-               Spatial Grid
-             </button>
+            <button
+              onClick={() => setActiveTab("forge")}
+              className={`px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all ${
+                activeTab === "forge"
+                  ? "bg-navy text-white shadow-xl"
+                  : "text-slate-400 hover:text-navy"
+              }`}
+            >
+              Manual Forge
+            </button>
+            <button
+              onClick={() => setActiveTab("nexus")}
+              className={`px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all ${
+                activeTab === "nexus"
+                  ? "bg-navy text-white shadow-xl"
+                  : "text-slate-400 hover:text-navy"
+              }`}
+            >
+              Nexus Stream
+            </button>
+            <button
+              onClick={() => setActiveTab("spatial")}
+              className={`px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 ${
+                activeTab === "spatial"
+                  ? "bg-navy text-white shadow-xl"
+                  : "text-slate-400 hover:text-navy"
+              }`}
+            >
+              <MapIcon size={14} />
+              Spatial Grid
+            </button>
           </div>
 
-          <button 
+          <button
             onClick={exportToExcel}
             className="w-12 h-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-gold hover:border-gold/50 transition-all shadow-sm group"
             title="Export Inventory (Excel)"
           >
-            <FileSpreadsheet size={20} className="group-hover:scale-110 transition-transform" />
+            <FileSpreadsheet
+              size={20}
+              className="group-hover:scale-110 transition-transform"
+            />
           </button>
         </div>
       </header>
 
       <AnimatePresence mode="wait">
-        {activeTab === 'forge' ? (
-          <motion.div 
+        {activeTab === "forge" ? (
+          <motion.div
             key="forge-view"
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -126,8 +138,10 @@ export default function EasyListing() {
 
               <div className="space-y-6">
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">{t('easyListing.placeholder')}</label>
-                  <textarea 
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">
+                    {t("easyListing.placeholder")}
+                  </label>
+                  <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     rows={6}
@@ -137,10 +151,15 @@ export default function EasyListing() {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">{t('easyListing.form.phone')}</label>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">
+                    {t("easyListing.form.phone")}
+                  </label>
                   <div className="relative">
-                    <Phone size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400" />
-                    <input 
+                    <Phone
+                      size={18}
+                      className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400"
+                    />
+                    <input
                       type="tel"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
@@ -151,21 +170,27 @@ export default function EasyListing() {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">{t('easyListing.form.uploadImages')}</label>
-                  <input 
-                    type="file" 
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">
+                    {t("easyListing.form.uploadImages")}
+                  </label>
+                  <input
+                    type="file"
                     accept="image/*"
                     onChange={handleImageChange}
-                    className="hidden" 
-                    id="listing-image" 
+                    className="hidden"
+                    id="listing-image"
                   />
-                  <label 
+                  <label
                     htmlFor="listing-image"
                     className="flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-[32px] p-12 hover:border-gold hover:bg-gold/5 cursor-pointer transition-all group overflow-hidden"
                   >
                     {previewUrl ? (
                       <div className="relative group">
-                        <img src={previewUrl} alt="Preview" className="h-40 w-auto rounded-2xl shadow-2xl transition-transform group-hover:scale-105" />
+                        <img
+                          src={previewUrl}
+                          alt="Preview"
+                          className="h-40 w-auto rounded-2xl shadow-2xl transition-transform group-hover:scale-105"
+                        />
                         <div className="absolute inset-0 bg-navy/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl flex items-center justify-center">
                           <ImageIcon className="text-white" size={32} />
                         </div>
@@ -173,9 +198,14 @@ export default function EasyListing() {
                     ) : (
                       <div className="text-center">
                         <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4 group-hover:bg-gold/20 group-hover:scale-110 transition-all">
-                          <ImageIcon className="text-slate-300 group-hover:text-gold" size={28} />
+                          <ImageIcon
+                            className="text-slate-300 group-hover:text-gold"
+                            size={28}
+                          />
                         </div>
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-tighter">{t('easyListing.waiting')}</span>
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-tighter">
+                          {t("easyListing.waiting")}
+                        </span>
                       </div>
                     )}
                   </label>
@@ -187,7 +217,19 @@ export default function EasyListing() {
                     disabled={isProcessing || !description}
                     className="btn-orb flex-1 h-14"
                   >
-                    {isProcessing ? <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }}><Wand2 size={24} /></motion.div> : <Wand2 size={24} className="group-hover:scale-125 transition-transform" />}
+                    {isProcessing ? (
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ repeat: Infinity, duration: 1 }}
+                      >
+                        <Wand2 size={24} />
+                      </motion.div>
+                    ) : (
+                      <Wand2
+                        size={24}
+                        className="group-hover:scale-125 transition-transform"
+                      />
+                    )}
                     <span>Manifest Code</span>
                   </button>
 
@@ -208,46 +250,64 @@ export default function EasyListing() {
             <section className="lg:col-span-5 glass-panel p-8 flex flex-col bezel">
               <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
                 <TrendingUp size={20} className="text-gold" />
-                {t('easyListing.outputTitle')}
+                {t("easyListing.outputTitle")}
               </h2>
 
               <AnimatePresence mode="wait">
                 {!extractedData ? (
-                  <motion.div 
+                  <motion.div
                     key="empty"
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
                     className="flex-1 flex flex-col items-center justify-center text-slate-400 text-center"
                   >
                     <div className="w-24 h-24 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center mb-6">
                       <History size={40} className="text-slate-200" />
                     </div>
-                    <p className="font-serif italic text-lg">{t('easyListing.waiting')}</p>
-                    <p className="text-[10px] uppercase tracking-widest mt-2">Awaiting Intelligence Feed</p>
+                    <p className="font-serif italic text-lg">
+                      {t("easyListing.waiting")}
+                    </p>
+                    <p className="text-[10px] uppercase tracking-widest mt-2">
+                      Awaiting Intelligence Feed
+                    </p>
                   </motion.div>
                 ) : (
-                  <motion.div 
+                  <motion.div
                     key="results"
-                    initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
                     className="space-y-8 flex-1"
                   >
                     {/* Internal Code Display */}
                     <div className="bg-navy rounded-[40px] p-8 text-center shadow-2xl border-2 border-gold/30 relative overflow-hidden group">
                       <div className="absolute inset-0 bg-gold/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <span className="text-gold font-black text-[10px] tracking-[0.4em] uppercase mb-3 block">{t('easyListing.internalCode')}</span>
-                      <div className="text-5xl font-mono font-black text-white tracking-[0.2em] relative z-10">{generatedCode}</div>
+                      <span className="text-gold font-black text-[10px] tracking-[0.4em] uppercase mb-3 block">
+                        {t("easyListing.internalCode")}
+                      </span>
+                      <div className="text-5xl font-mono font-black text-white tracking-[0.2em] relative z-10">
+                        {generatedCode}
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="bg-white/80 border border-slate-100 rounded-[32px] p-6 shadow-sm">
-                        <span className="text-[10px] font-black text-gold block mb-2 uppercase tracking-tighter">{t('easyListing.compound')}</span>
+                        <span className="text-[10px] font-black text-gold block mb-2 uppercase tracking-tighter">
+                          {t("easyListing.compound")}
+                        </span>
                         <span className="text-lg font-bold text-navy truncate block">
-                           {extractedData.compound || "Custom Asset"}
+                          {extractedData.compound || "Custom Asset"}
                         </span>
                       </div>
                       <div className="bg-white/80 border border-slate-100 rounded-[32px] p-6 shadow-sm">
-                        <span className="text-[10px] font-black text-gold block mb-2 uppercase tracking-tighter">{t('easyListing.price')}</span>
+                        <span className="text-[10px] font-black text-gold block mb-2 uppercase tracking-tighter">
+                          {t("easyListing.price")}
+                        </span>
                         <span className="text-lg font-bold text-navy">
-                          {extractedData.price?.toLocaleString()} <span className="text-xs font-medium text-slate-400">{extractedData.currency}</span>
+                          {extractedData.price?.toLocaleString()}{" "}
+                          <span className="text-xs font-medium text-slate-400">
+                            {extractedData.currency}
+                          </span>
                         </span>
                       </div>
                     </div>
@@ -255,26 +315,34 @@ export default function EasyListing() {
                     {/* Templates */}
                     <div className="space-y-6">
                       <div className="group relative">
-                        <button 
-                          onClick={() => copyToClipboard(extractedData.whatsappContent || '')}
+                        <button
+                          onClick={() =>
+                            copyToClipboard(extractedData.whatsappContent || "")
+                          }
                           className="absolute right-6 top-10 p-3 bg-white rounded-2xl shadow-lg border border-slate-100 hover:text-gold hover:scale-110 active:scale-90 transition-all z-10"
                         >
                           <Copy size={16} />
                         </button>
-                        <label className="text-[10px] font-black text-slate-400 mb-2 block uppercase tracking-widest">{t('easyListing.content.whatsapp')}</label>
+                        <label className="text-[10px] font-black text-slate-400 mb-2 block uppercase tracking-widest">
+                          {t("easyListing.content.whatsapp")}
+                        </label>
                         <div className="bg-emerald-500/5 border border-emerald-500/10 text-slate-600 text-sm p-6 rounded-[32px] whitespace-pre-wrap max-h-32 overflow-y-auto leading-relaxed">
                           {extractedData.whatsappContent}
                         </div>
                       </div>
 
                       <div className="group relative">
-                        <button 
-                          onClick={() => copyToClipboard(extractedData.facebookContent || '')}
+                        <button
+                          onClick={() =>
+                            copyToClipboard(extractedData.facebookContent || "")
+                          }
                           className="absolute right-6 top-10 p-3 bg-white rounded-2xl shadow-lg border border-slate-100 hover:text-gold hover:scale-110 active:scale-90 transition-all z-10"
                         >
                           <Copy size={16} />
                         </button>
-                        <label className="text-[10px] font-black text-slate-400 mb-2 block uppercase tracking-widest">{t('easyListing.content.facebook')}</label>
+                        <label className="text-[10px] font-black text-slate-400 mb-2 block uppercase tracking-widest">
+                          {t("easyListing.content.facebook")}
+                        </label>
                         <div className="bg-blue-500/5 border border-blue-500/10 text-slate-600 text-sm p-6 rounded-[32px] whitespace-pre-wrap max-h-32 overflow-y-auto leading-relaxed">
                           {extractedData.facebookContent}
                         </div>
@@ -282,18 +350,25 @@ export default function EasyListing() {
                     </div>
 
                     <div className="pt-6 mt-auto flex gap-4">
-                      <button 
+                      <button
                         onClick={saveToFirebase}
                         disabled={isSaving}
                         className="flex-1 h-16 bg-gold text-navy rounded-full font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:brightness-110 disabled:opacity-50 transition-all shadow-xl shadow-gold/20"
                       >
-                        {isSaving ? "Synchronizing..." : t('easyListing.btnGenerateSave')}
+                        {isSaving
+                          ? "Synchronizing..."
+                          : t("easyListing.btnGenerateSave")}
                         <Save size={20} />
                       </button>
-                      
+
                       {(extractedData.virtualTourUrl || previewUrl) && (
-                        <button 
-                          onClick={() => setActiveTour(extractedData.virtualTourUrl || 'https://pannellum.org/images/alma.jpg')}
+                        <button
+                          onClick={() =>
+                            setActiveTour(
+                              extractedData.virtualTourUrl ||
+                                "https://pannellum.org/images/alma.jpg",
+                            )
+                          }
                           className="w-16 h-16 bg-navy text-white rounded-full flex items-center justify-center hover:bg-slate-800 transition-all shadow-xl border border-gold/30"
                           title="Neural 360 View"
                         >
@@ -310,64 +385,90 @@ export default function EasyListing() {
             <section className="lg:col-span-3 space-y-6">
               <div className="glass-panel p-8 bg-navy text-white relative overflow-hidden group">
                 <div className="absolute top-0 end-0 w-32 h-32 bg-gold/10 rounded-full blur-3xl -me-16 -mt-16 transition-transform group-hover:scale-150 duration-700" />
-                <h3 className="text-gold font-black mb-6 text-[10px] uppercase tracking-[0.3em] relative z-10">Portfolio Pulse</h3>
+                <h3 className="text-gold font-black mb-6 text-[10px] uppercase tracking-[0.3em] relative z-10">
+                  Portfolio Pulse
+                </h3>
                 <div className="space-y-6 relative z-10">
-                   <div>
-                      <span className="text-5xl font-serif font-bold block mb-1">{stats.total}</span>
-                      <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{t('easyListing.dashboard.activeUnits')}</span>
-                   </div>
-                   <div className="pt-6 border-t border-white/5">
-                      <span className="text-xl font-bold block text-gold truncate">{stats.topCompound}</span>
-                      <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Leading District</span>
-                   </div>
+                  <div>
+                    <span className="text-5xl font-serif font-bold block mb-1">
+                      {stats.total}
+                    </span>
+                    <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">
+                      {t("easyListing.dashboard.activeUnits")}
+                    </span>
+                  </div>
+                  <div className="pt-6 border-t border-white/5">
+                    <span className="text-xl font-bold block text-gold truncate">
+                      {stats.topCompound}
+                    </span>
+                    <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">
+                      Leading District
+                    </span>
+                  </div>
                 </div>
               </div>
 
               <div className="glass-panel p-8">
-                <h4 className="font-black mb-6 text-[10px] text-slate-400 uppercase tracking-widest">Market Vectors</h4>
+                <h4 className="font-black mb-6 text-[10px] text-slate-400 uppercase tracking-widest">
+                  Market Vectors
+                </h4>
                 <div className="space-y-4">
-                  {['Mivida', 'CFC', 'Hyde Park'].map((item, i) => (
-                    <div key={item} className="flex items-center justify-between p-4 bg-slate-50/50 rounded-2xl border border-slate-100 group hover:border-gold/30 transition-all">
-                      <span className="text-sm font-bold text-navy">{item}</span>
-                      <div className={`px-3 py-1 rounded-full text-[9px] font-black ${
-                        i === 0 ? 'bg-gold/10 text-gold' : 'bg-slate-200/50 text-slate-500'
-                      }`}>
-                        TOP #{i+1}
+                  {["Mivida", "CFC", "Hyde Park"].map((item, i) => (
+                    <div
+                      key={item}
+                      className="flex items-center justify-between p-4 bg-slate-50/50 rounded-2xl border border-slate-100 group hover:border-gold/30 transition-all"
+                    >
+                      <span className="text-sm font-bold text-navy">
+                        {item}
+                      </span>
+                      <div
+                        className={`px-3 py-1 rounded-full text-[9px] font-black ${
+                          i === 0
+                            ? "bg-gold/10 text-gold"
+                            : "bg-slate-200/50 text-slate-500"
+                        }`}
+                      >
+                        TOP #{i + 1}
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
-              
+
               <div className="pt-4">
-                 <div className="relative rounded-[40px] overflow-hidden shadow-2xl border-4 border-white group">
-                    <canvas ref={canvasRef} className="w-full h-auto transition-transform duration-700 group-hover:scale-105" />
-                    {!previewUrl && (
-                      <div className="absolute inset-0 bg-slate-50 flex flex-col items-center justify-center p-8 text-center">
-                        <ImageIcon size={40} className="text-slate-200 mb-4" />
-                        <p className="text-xs text-slate-400 font-bold uppercase tracking-tighter">Waiting for visual asset</p>
-                      </div>
-                    )}
-                 </div>
-                 {previewUrl && (
-                   <button 
+                <div className="relative rounded-[40px] overflow-hidden shadow-2xl border-4 border-white group">
+                  <canvas
+                    ref={canvasRef}
+                    className="w-full h-auto transition-transform duration-700 group-hover:scale-105"
+                  />
+                  {!previewUrl && (
+                    <div className="absolute inset-0 bg-slate-50 flex flex-col items-center justify-center p-8 text-center">
+                      <ImageIcon size={40} className="text-slate-200 mb-4" />
+                      <p className="text-xs text-slate-400 font-bold uppercase tracking-tighter">
+                        Waiting for visual asset
+                      </p>
+                    </div>
+                  )}
+                </div>
+                {previewUrl && (
+                  <button
                     onClick={() => {
-                      const link = document.createElement('a');
+                      const link = document.createElement("a");
                       link.download = `sierra-estates-${generatedCode}.png`;
-                      link.href = canvasRef.current?.toDataURL() || '';
+                      link.href = canvasRef.current?.toDataURL() || "";
                       link.click();
                     }}
                     className="w-full mt-6 h-14 bg-white border border-slate-200 text-slate-600 rounded-full flex items-center justify-center gap-3 hover:bg-slate-50 transition-all text-sm font-black uppercase tracking-widest shadow-sm"
-                   >
-                     <Download size={18} className="text-gold" />
-                     {t('easyListing.btnDownload')}
-                   </button>
-                 )}
+                  >
+                    <Download size={18} className="text-gold" />
+                    {t("easyListing.btnDownload")}
+                  </button>
+                )}
               </div>
             </section>
           </motion.div>
-        ) : activeTab === 'nexus' ? (
-          <motion.div 
+        ) : activeTab === "nexus" ? (
+          <motion.div
             key="nexus-view"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -378,37 +479,41 @@ export default function EasyListing() {
               <BrokerFeed />
             </div>
           </motion.div>
-        ) : activeTab === 'spatial' ? (
-          <motion.div 
+        ) : activeTab === "spatial" ? (
+          <motion.div
             key="spatial-view"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             className="mb-12"
           >
-             <MapExplorer onViewTour={setActiveTour} />
+            <MapExplorer onViewTour={setActiveTour} />
           </motion.div>
         ) : null}
       </AnimatePresence>
 
       <AnimatePresence>
         {activeTour && (
-          <VirtualTourViewer 
-            sceneUrl={activeTour} 
-            title="Sierra Estates Neural Tour" 
-            onClose={() => setActiveTour(null)} 
+          <VirtualTourViewer
+            sceneUrl={activeTour}
+            title="Sierra Estates Neural Tour"
+            onClose={() => setActiveTour(null)}
           />
         )}
       </AnimatePresence>
 
-
       {/* --- Phase 4: Big Inventory --- */}
       <section className="glass-panel overflow-hidden">
         <div className="p-8 border-b border-slate-100 flex flex-col md:flex-row justify-between items-center gap-6 bg-white/30">
-          <h2 className="text-2xl font-serif font-bold text-navy">Global Inventory Ledger</h2>
+          <h2 className="text-2xl font-serif font-bold text-navy">
+            Global Inventory Ledger
+          </h2>
           <div className="relative w-full md:w-96">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-            <input 
+            <Search
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+              size={18}
+            />
+            <input
               type="text"
               placeholder="Filter by code, compound, or price..."
               value={searchTerm}
@@ -417,7 +522,7 @@ export default function EasyListing() {
             />
           </div>
         </div>
-        
+
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
@@ -432,7 +537,7 @@ export default function EasyListing() {
             <tbody className="divide-y divide-slate-50">
               <AnimatePresence>
                 {filteredInventory.map((item) => (
-                  <motion.tr 
+                  <motion.tr
                     key={item.id}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -443,22 +548,31 @@ export default function EasyListing() {
                         {item.code}
                       </span>
                     </td>
-                    <td className="px-8 py-6 text-sm font-medium text-slate-600">{item.compound}</td>
+                    <td className="px-8 py-6 text-sm font-medium text-slate-600">
+                      {item.compound}
+                    </td>
                     <td className="px-8 py-6">
-                      <span className="text-xs font-bold text-slate-400">{item.bedrooms} BR</span>
+                      <span className="text-xs font-bold text-slate-400">
+                        {item.bedrooms} BR
+                      </span>
                     </td>
                     <td className="px-8 py-6 text-right font-serif font-bold text-navy">
-                      {item.price.toLocaleString()} <span className="text-[10px] text-gold">{item.currency}</span>
+                      {item.price.toLocaleString()}{" "}
+                      <span className="text-[10px] text-gold">
+                        {item.currency}
+                      </span>
                     </td>
                     <td className="px-8 py-6 text-center">
-                       <div className="flex justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button 
-                            onClick={() => item.id && removeInventoryItem(item.id)}
-                            className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                       </div>
+                      <div className="flex justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={() =>
+                            item.id && removeInventoryItem(item.id)
+                          }
+                          className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </td>
                   </motion.tr>
                 ))}
@@ -471,29 +585,33 @@ export default function EasyListing() {
       {/* Popups */}
       <AnimatePresence>
         {successMessage && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9 }}
             className="fixed bottom-12 right-12 bg-emerald-500 text-white px-8 py-4 rounded-3xl shadow-2xl z-[100] flex items-center gap-3 backdrop-blur-md border border-white/20"
           >
             <CheckCircle2 size={24} />
-            <span className="font-bold text-sm tracking-wide">{successMessage}</span>
+            <span className="font-bold text-sm tracking-wide">
+              {successMessage}
+            </span>
           </motion.div>
         )}
         {errorMessage && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9 }}
             className="fixed bottom-12 right-12 bg-red-500 text-white px-8 py-4 rounded-3xl shadow-2xl z-[100] flex items-center gap-3 backdrop-blur-md border border-white/20"
           >
             <AlertCircle size={24} />
-            <span className="font-bold text-sm tracking-wide">{errorMessage}</span>
+            <span className="font-bold text-sm tracking-wide">
+              {errorMessage}
+            </span>
           </motion.div>
         )}
       </AnimatePresence>
-      
+
       <style>{`
         .glass-panel {
           background: rgba(255, 255, 255, 0.4);
