@@ -35,7 +35,6 @@ packages:
   # ─── SUPPORTING APPS ───
   - "apps/api"              # Python FastAPI (Cloud Run)
   - "apps/agents"           # WhatsApp scraper + deal orchestration
-  - "apps/admin-dashboard"  # Legacy Vite SPA (redirects to /admin)
   - "apps/mass-blast"       # WhatsApp bulk messaging
   # ─── SHARED PACKAGES (used by BOTH apps) ───
   - "packages/*"
