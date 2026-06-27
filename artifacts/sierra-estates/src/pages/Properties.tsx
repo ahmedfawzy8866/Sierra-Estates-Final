@@ -28,7 +28,7 @@ export default function Properties() {
   const [sort, setSort] = useState("ai");
   const [view, setView] = useState<"grid" | "list">("grid");
 
-  const { data: allProps, loading } = useProperties(mode, compound ? [compound] : [], rooms, sort);
+  const { data: allProps, loading, isError, refetch } = useProperties(mode, compound ? [compound] : [], rooms, sort);
 
   const filtered = useMemo(() => {
     let res = [...allProps];
@@ -150,8 +150,37 @@ export default function Properties() {
           </div>
         </div>
 
-        {/* Properties grid / list */}
-        {loading ? (
+        {/* Error state */}
+        {isError ? (
+          <div style={{
+            textAlign: "center",
+            padding: "80px 0",
+            background: "rgba(255,255,255,.03)",
+            border: "1px solid rgba(211,167,71,.1)",
+            borderRadius: 18,
+            maxWidth: 460,
+            margin: "0 auto",
+          }}>
+            <div style={{ fontSize: 40, marginBottom: 12 }}>⚠️</div>
+            <div style={{ fontSize: 17, fontWeight: 600, color: "#fff", marginBottom: 8 }}>Something went wrong</div>
+            <div style={{ fontSize: 13, color: "rgba(255,255,255,.4)", marginBottom: 20 }}>We couldn't load the properties. Please try again.</div>
+            <button
+              onClick={() => refetch()}
+              style={{
+                padding: "10px 28px",
+                borderRadius: 9,
+                background: "linear-gradient(135deg,#C9A96E,#A07840)",
+                border: "none",
+                color: "#07111e",
+                fontSize: 12,
+                fontWeight: 800,
+                cursor: "pointer",
+                fontFamily: "inherit",
+                letterSpacing: ".08em",
+              }}
+            >Try again</button>
+          </div>
+        ) : loading ? (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 20 }}>
             {[...Array(6)].map((_, i) => (
               <div key={i} style={{ height: 380, borderRadius: 18, background: "rgba(255,255,255,.04)", overflow: "hidden" }}>

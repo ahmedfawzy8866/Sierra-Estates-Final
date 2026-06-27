@@ -31,12 +31,21 @@ service firebase.storage {
       return isSignedIn() && request.auth.uid == uid;
     }
 
+    function isStaff() {
+      return isSignedIn() &&
+        request.auth.token.email_verified == true &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
+          in ['admin', 'manager', 'agent'];
+    }
+
     function isAdmin() {
       return isSignedIn() &&
         request.auth.token.email_verified == true &&
         (
           request.auth.token.email == 'a.fawzy8866@gmail.com' ||
-          request.auth.token.email == 'A.fawzy8866@gmail.com'
+          request.auth.token.email == 'A.fawzy8866@gmail.com' ||
+          request.auth.token.email == 'emeraldestatesegypt@gmail.com'
         );
     }
 
@@ -46,7 +55,7 @@ service firebase.storage {
 
     match /listings/{listingId}/{allPaths=**} {
       allow read: if true;  // Public: anyone can view property images
-      allow write: if isAdmin();
+      allow write: if isStaff() || isAdmin();
     }
 
     // ─── User profile images (owner read/write) ────────────────────

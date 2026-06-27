@@ -325,8 +325,11 @@ function InputStep(props: InputStepProps) {
 
       {/* Country code selector */}
       <div className="flex items-center gap-3">
-        <label className="text-[12px] font-medium text-[var(--muted-foreground)]">Default country code:</label>
+        <label htmlFor="country-code-select" className="text-[12px] font-medium text-[var(--muted-foreground)]">Default country code:</label>
         <select
+          id="country-code-select"
+          title="Default country code"
+          aria-label="Default country code"
           value={props.defaultCountryCode}
           onChange={(e) => props.setDefaultCountryCode(e.target.value)}
           className="bg-[var(--muted)] border border-[var(--border)] rounded-md px-2.5 h-8 text-[13px] font-mono focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
@@ -376,6 +379,7 @@ function InputStep(props: InputStepProps) {
               const dt = new DataTransfer();
               dt.items.add(file);
               input.files = dt.files;
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               props.handleFileUpload({ target: { files: input.files } } as any);
             }
           }}
@@ -390,6 +394,8 @@ function InputStep(props: InputStepProps) {
             Supports .csv, .txt — auto-detects phone column
           </p>
           <input
+            title="Upload file"
+            aria-label="Upload file"
             ref={fileRef}
             type="file"
             accept=".csv,.txt"
@@ -419,6 +425,8 @@ function InputStep(props: InputStepProps) {
               />
               {props.manualNumbers.length > 1 && (
                 <button
+                  title="Remove row"
+                  aria-label="Remove row"
                   onClick={() => props.handleRemoveManualRow(i)}
                   className="p-2 text-[var(--muted-foreground)] hover:text-red-500 hover:bg-red-500/10 rounded-md transition"
                 >
@@ -604,7 +612,7 @@ function ComposeStep({ messageTemplate, setMessageTemplate, validCount, onBack, 
             />
           </div>
           {/* WhatsApp-style chat bubble */}
-          <div className="bg-[#0a0f1d] rounded-xl p-4 min-h-[300px]" style={{ backgroundImage: 'radial-gradient(circle at 30% 40%, rgba(37,211,102,0.05) 0%, transparent 50%), radial-gradient(circle at 70% 60%, rgba(18,140,126,0.05) 0%, transparent 50%)' }}>
+          <div className="bg-[#0a0f1d] rounded-xl p-4 min-h-[300px] whatsapp-bg">
             <div className="flex items-center gap-2.5 pb-3 border-b border-slate-800 mb-3">
               <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-[11px] font-semibold text-white">
                 {previewName.slice(0, 2).toUpperCase()}
@@ -708,10 +716,11 @@ function PreviewStep(props: PreviewStepProps) {
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-[11px] font-medium text-[var(--muted-foreground)] mb-1.5">
+            <label htmlFor="batch-size-input" className="block text-[11px] font-medium text-[var(--muted-foreground)] mb-1.5">
               Batch size (tabs per batch)
             </label>
             <input
+              id="batch-size-input"
               type="number"
               value={props.batchSize}
               onChange={(e) => props.setBatchSize(Math.max(1, Math.min(20, parseInt(e.target.value) || 5)))}
@@ -722,10 +731,11 @@ function PreviewStep(props: PreviewStepProps) {
             <p className="text-[10px] text-[var(--muted-foreground)] mt-1">Max 20 — browsers block more</p>
           </div>
           <div>
-            <label className="block text-[11px] font-medium text-[var(--muted-foreground)] mb-1.5">
+            <label htmlFor="batch-delay-input" className="block text-[11px] font-medium text-[var(--muted-foreground)] mb-1.5">
               Delay between batches (seconds)
             </label>
             <input
+              id="batch-delay-input"
               type="number"
               value={props.batchDelay}
               onChange={(e) => props.setBatchDelay(Math.max(1, parseInt(e.target.value) || 3))}
@@ -777,8 +787,8 @@ function PreviewStep(props: PreviewStepProps) {
           </div>
           <div className="h-2 bg-[var(--muted)] rounded-full overflow-hidden">
             <div
-              className="h-full bg-[var(--primary)] rounded-full transition-all duration-300"
-              style={{ width: `${progress}%` }}
+              className="h-full bg-[var(--primary)] rounded-full transition-all duration-300 progress-fill"
+              ref={(el) => { if (el) el.style.width = `${progress}%`; }}
             />
           </div>
           <p className="text-[11px] text-[var(--muted-foreground)]">
