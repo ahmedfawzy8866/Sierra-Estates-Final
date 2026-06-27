@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 /**
  * SIERRA ESTATES — ASSET ENCODING SERVICE
  * Implements the "Encoding Program" logic for rapid unit registration via copy-paste.
@@ -50,7 +51,7 @@ FORMAT: Return ONLY a JSON object.`;
 
     return JSON.parse(jsonMatch[0]) as Partial<Unit>;
   } catch (err) {
-    console.error('[AssetEncoding] Extraction error:', err);
+    logger.error('[AssetEncoding] Extraction error:', err);
     throw err;
   }
 }

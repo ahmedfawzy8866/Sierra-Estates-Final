@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 import sharp from 'sharp';
 import axios from 'axios';
 import { StorageService } from './StorageService';
@@ -83,7 +84,7 @@ export class BrandingService {
 
       return brandedUrl;
     } catch (error) {
-      console.error('Branding Engine Failure:', error);
+      logger.error('Branding Engine Failure:', error);
       return sourceUrl; // Fallback to original if branding fails
     }
   }

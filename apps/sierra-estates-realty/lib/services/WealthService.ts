@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 /**
  * SIERRA ESTATES — WEALTH SERVICE BRIDGE
  * Orchestrates between raw Inventory and Neural Intelligence.
@@ -49,7 +50,7 @@ export const WealthService = {
             reasoning: financials.valuationAnalysis,
           };
         } catch (e) {
-          console.error(`Wealth Intelligence failed for asset ${asset.id}`, e);
+          logger.error(`Wealth Intelligence failed for asset ${asset.id}`, e);
           return {
             id: asset.id,
             title: asset.title,

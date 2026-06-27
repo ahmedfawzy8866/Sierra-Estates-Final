@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 /**
  * SIERRA ESTATES — STAGE 6: AI MATCHING ENGINE
  * Orchestrates cross-referencing Leads with Listings/Units
@@ -189,7 +190,7 @@ Output: Return ONLY a JSON array of objects:
     return parsed.sort((a, b) => b.matchScore - a.matchScore).slice(0, 5);
 
   } catch (err) {
-    console.error('[MatchingEngine] AI scoring failed:', err);
+    logger.error('[MatchingEngine] AI scoring failed:', err);
     return fallbackScoring(lead, units);
   }
 }

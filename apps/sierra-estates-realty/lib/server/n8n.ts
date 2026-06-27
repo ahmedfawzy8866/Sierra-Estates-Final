@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 export async function triggerNewListingNotification(data: {
   id: string;
   title: string;
@@ -6,7 +7,7 @@ export async function triggerNewListingNotification(data: {
 }) {
   const url = process.env.N8N_WEBHOOK_URL;
   if (!url) {
-    console.warn('[n8n] N8N_WEBHOOK_URL is not configured, skipping listing notification');
+    logger.warn('[n8n] N8N_WEBHOOK_URL is not configured, skipping listing notification');
     return;
   }
   try {
@@ -18,9 +19,9 @@ export async function triggerNewListingNotification(data: {
       body: JSON.stringify(data),
     });
     if (!res.ok) {
-      console.error(`[n8n] Failed to trigger notification webhook: ${res.statusText}`);
+      logger.error(`[n8n] Failed to trigger notification webhook: ${res.statusText}`);
     }
   } catch (err) {
-    console.error('[n8n] Error triggering notification webhook:', err);
+    logger.error('[n8n] Error triggering notification webhook:', err);
   }
 }

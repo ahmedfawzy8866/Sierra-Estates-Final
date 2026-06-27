@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAppCheck } from './firebase-admin';
 
@@ -11,12 +12,12 @@ export async function verifyAppCheck(req: NextRequest) {
 
   // Stabilize local development: bypass token requirement if in DEV mode
   if (isDev) {
-    console.log('🛡️ [AppCheck] Development bypass active for:', req.nextUrl.pathname);
+    logger.info('🛡️ [AppCheck] Development bypass active for:', req.nextUrl.pathname);
     return { isValid: true, token: { sub: 'dev-bypass' } };
   }
 
   if (!appCheckToken) {
-    console.warn('[AppCheck] Missing token from:', req.nextUrl.pathname);
+    logger.warn('[AppCheck] Missing token from:', req.nextUrl.pathname);
     return { 
       isValid: false, 
       errorResponse: NextResponse.json(
@@ -30,7 +31,7 @@ export async function verifyAppCheck(req: NextRequest) {
     const decodedToken = await adminAppCheck.verifyToken(appCheckToken);
     return { isValid: true, token: decodedToken };
   } catch (err) {
-    console.error('[AppCheck] Verification failed:', err);
+    logger.error('[AppCheck] Verification failed:', err);
     return { 
       isValid: false, 
       errorResponse: NextResponse.json(

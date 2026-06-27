@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 import 'server-only';
 import { COLLECTIONS } from '../models/schema';
 import { instrumentAgent } from '../arize';
@@ -18,14 +19,14 @@ export const runCloser = async (
 ) => {
   return instrumentAgent('closer', stage, docId, async () => {
     if (stage === 'S9') {
-      console.log(`[CLOSER] S9: Asset Finalization for ${docId}`);
+      logger.info(`[CLOSER] S9: Asset Finalization for ${docId}`);
       await StateManager.completeStage(docId, collection, 'S10', {
         'status': 'published',
       });
     }
 
     if (stage === 'S10') {
-      console.log(`[CLOSER] S10: Optimization Feedback for ${docId}`);
+      logger.info(`[CLOSER] S10: Optimization Feedback for ${docId}`);
 
       if (collection === 'stakeholders') {
         const leadData = await StateManager.getDocument(docId, collection);

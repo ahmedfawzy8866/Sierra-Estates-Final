@@ -1,4 +1,5 @@
 'use client';
+import { logger } from '@/lib/logger';
 
 /**
  * SIERRA ESTATES — UNIFIED HOMEPAGE
@@ -122,7 +123,7 @@ export default function UnifiedHomepage() {
       const unsub = onSnapshot(q, snap => {
         setProperties(snap.docs.map(d => ({ id: d.id, ...d.data() } as Property)));
       }, err => {
-        console.error('Firestore sync error:', err);
+        logger.error('Firestore sync error:', err);
       });
       return () => unsub();
     } catch {

@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 import { adminDb } from '../server/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 
@@ -13,7 +14,7 @@ export class ImageLinkHub {
    * Registers a new image or media asset from WhatsApp.
    */
   static async registerWhatsAppMedia(mediaId: string, signalId: string, imageUrl: string) {
-    console.log(`🖼️ [ImageLinkHub] Registering media ${mediaId} for signal ${signalId}`);
+    logger.info(`🖼️ [ImageLinkHub] Registering media ${mediaId} for signal ${signalId}`);
     
     const docRef = adminDb.collection(this.COLLECTION).doc(mediaId);
     await docRef.set({
@@ -31,7 +32,7 @@ export class ImageLinkHub {
    * Links a WhatsApp image to a specific portal listing (Stage 5 Sync).
    */
   static async linkToPortalListing(mediaId: string, portalListingId: string, portal: 'PF' | 'BAYUT') {
-    console.log(`🔗 [ImageLinkHub] Linking media ${mediaId} to ${portal} listing ${portalListingId}`);
+    logger.info(`🔗 [ImageLinkHub] Linking media ${mediaId} to ${portal} listing ${portalListingId}`);
     
     await adminDb.collection(this.COLLECTION).doc(mediaId).update({
       portalId: portalListingId,

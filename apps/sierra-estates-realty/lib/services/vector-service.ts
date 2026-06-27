@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 /**
  * SIERRA ESTATES — VECTOR INTELLIGENCE SERVICE
  * Bridge to Gemini text-embedding-004 for Semantic Memory.
@@ -14,7 +15,7 @@ const genAI = new GoogleGenerativeAI(API_KEY);
  */
 export async function generateEmbedding(text: string): Promise<number[]> {
   if (!API_KEY) {
-    console.warn("[VectorService] No API key configured. Returning zero vector.");
+    logger.warn("[VectorService] No API key configured. Returning zero vector.");
     return new Array(768).fill(0);
   }
 
@@ -23,7 +24,7 @@ export async function generateEmbedding(text: string): Promise<number[]> {
     const result = await model.embedContent(text);
     return Array.from(result.embedding.values);
   } catch (err) {
-    console.error("[VectorService] Embedding failed:", err);
+    logger.error("[VectorService] Embedding failed:", err);
     return new Array(768).fill(0);
   }
 }

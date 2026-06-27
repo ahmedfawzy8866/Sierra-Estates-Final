@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 import { NextResponse, NextRequest } from 'next/server';
 import { verifyAdminRequest, unauthorizedResponse } from '@/lib/server/auth-guard';
 import { GoogleAIService } from '@/lib/server/google-ai';
@@ -76,7 +77,7 @@ async function handleScribe(message: string) {
       vipAlert: isVIP,
     });
   } catch (error) {
-    console.error('Scribe Error:', error);
+    logger.error('Scribe Error:', error);
     return NextResponse.json({
       success: true,
       response: 'أهلاً بك. ليلى غير متوفرة حالياً بسبب تحديثات تقنية. يرجى الانتظار قليلاً.',

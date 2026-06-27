@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore, collection, getDocs, query, where } from 'firebase/firestore';
 
@@ -42,7 +43,7 @@ export async function fetchPropertiesFromDB(typeFilter: 'Rent' | 'Resale'): Prom
     
     return properties;
   } catch (error) {
-    console.error("Firestore database fetching failed: ", error);
+    logger.error("Firestore database fetching failed: ", error);
     // Fallback Mock data matching New Cairo Context if database is empty during init
     return ([
       {

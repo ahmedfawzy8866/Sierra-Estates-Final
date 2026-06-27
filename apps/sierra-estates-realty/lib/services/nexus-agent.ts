@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 /**
  * SIERRA ESTATES — THE NEXUS AGENT (V11.0)
  * The Master Core: Persona + Intelligence + External Skills.
@@ -87,7 +88,7 @@ export class NexusAgent {
         success: true
       };
     } catch (err: any) {
-      console.error("Nexus Execution Failure:", err);
+      logger.error("Nexus Execution Failure:", err);
       return { message: "Nexus Core Disruption: Tool synchronization failed.", toolsUsed: [], success: false };
     }
   }

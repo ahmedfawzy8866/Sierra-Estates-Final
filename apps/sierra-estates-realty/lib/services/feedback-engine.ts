@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 /**
  * SIERRA ESTATES — STAGE 10: FEEDBACK LOOP
  * Closes the circle by capturing stakeholder satisfaction and triggering re-match logic.
@@ -12,7 +13,7 @@ import { sendTelegramMessage } from './telegram-controller';
  * Triggers the post-sale feedback process.
  */
 export async function initiateFeedbackLoop(leadId: string, saleId: string) {
-  console.log(`[FeedbackLoop] Initiating for Lead: ${leadId}`);
+  logger.info(`[FeedbackLoop] Initiating for Lead: ${leadId}`);
   
   // 1. Send Survey (Simulated via automated log)
   await updateDoc(doc(db, COLLECTIONS.stakeholders, leadId), {

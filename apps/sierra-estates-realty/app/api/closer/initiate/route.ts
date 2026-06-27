@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 import { NextResponse } from 'next/server';
 import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
 
@@ -91,7 +92,7 @@ Sierra Estates Intelligence OS
     });
 
   } catch (error) {
-    console.error('[API Closer] Initiation Error:', error);
+    logger.error('[API Closer] Initiation Error:', error);
     return NextResponse.json({ 
       error: 'Failed to synchronize with the Closer Agent.',
       details: (error as Error).message 

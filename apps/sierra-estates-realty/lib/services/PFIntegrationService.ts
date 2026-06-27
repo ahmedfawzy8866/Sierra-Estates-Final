@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 /**
  * Property Finder Integration Service
  * Syncs leads and listings between Sierra Estates CRM and PF Enterprise API (atlas.propertyfinder.com/v1)
@@ -69,7 +70,7 @@ export class PFIntegrationService {
     let updated = 0;
 
     const pfResult = await pfClient.searchListings({ perPage: '100' });
-    console.log('[PF API] Found listings count:', pfResult.data?.length || 0);
+    logger.info('[PF API] Found listings count:', pfResult.data?.length || 0);
 
     const listings = pfResult.data || [];
 

@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 import { google } from 'googleapis';
 
 /**
@@ -8,7 +9,7 @@ export const GoogleSheetsSync = {
    * Appends a new lead or property to the master log.
    */
   async appendRow(sheetName: 'Leads' | 'Inventory', data: Record<string, any>) {
-    console.log(`[GoogleSheetsSync] Syncing to ${sheetName}...`);
+    logger.info(`[GoogleSheetsSync] Syncing to ${sheetName}...`);
 
     try {
       const auth = new google.auth.GoogleAuth({
@@ -37,7 +38,7 @@ export const GoogleSheetsSync = {
         timestamp: new Date().toISOString(),
       };
     } catch (error: any) {
-      console.error(`[GoogleSheetsSync] Error:`, error.message);
+      logger.error(`[GoogleSheetsSync] Error:`, error.message);
       return { success: false, error: error.message };
     }
   }

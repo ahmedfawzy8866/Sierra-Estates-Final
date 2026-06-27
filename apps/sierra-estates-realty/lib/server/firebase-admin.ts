@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 /**
  * SIERRA ESTATES — FIREBASE ADMIN SERVICE (V12.1 Hardened)
  *
@@ -13,7 +14,7 @@ const makeUnavailable = (name: string): any =>
       get(_target, prop) {
         if (prop === 'then') return undefined;
         return (..._args: any[]) => {
-          console.warn(`⚠️ [firebase-admin] ${name}.${String(prop)} called but not initialized.`);
+          logger.warn(`⚠️ [firebase-admin] ${name}.${String(prop)} called but not initialized.`);
           const chainable = {
             get: () => Promise.resolve({ size: 0, empty: true, forEach: () => {}, exists: false, data: () => ({}) }),
             set: () => Promise.resolve(),
@@ -55,21 +56,21 @@ async function loadAndInitializeAdmin() {
         const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace?.(/\\n/g, '\n');
 
         if (serviceAccount) {
-          console.log('🔐 [Firebase] Initializing with service account JSON');
+          logger.info('🔐 [Firebase] Initializing with service account JSON');
           admin.initializeApp({
             credential: admin.credential.cert(JSON.parse(serviceAccount)),
             projectId: projectId,
             storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
           });
         } else if (projectId && clientEmail && privateKey) {
-          console.log('🔐 [Firebase] Initializing with individual env variables');
+          logger.info('🔐 [Firebase] Initializing with individual env variables');
           admin.initializeApp({
             credential: admin.credential.cert({ projectId, clientEmail, privateKey }),
             projectId: projectId,
             storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
           });
         } else {
-          console.log('🔐 [Firebase] No credentials provided — running in limited mode');
+          logger.info('🔐 [Firebase] No credentials provided — running in limited mode');
           return;
         }
       }
@@ -83,7 +84,7 @@ async function loadAndInitializeAdmin() {
         isAdminInitialized = true;
       }
     } catch (error) {
-      console.warn(
+      logger.warn(
         '[firebase-admin] Initialization failed — Admin features limited.\n' +
         'Reason:', error instanceof Error ? error.message : 'Unknown error'
       );

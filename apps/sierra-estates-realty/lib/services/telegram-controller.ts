@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 /**
  * SIERRA ESTATES — TELEGRAM COMMAND OS
  * Enables real-time backend interaction via Telegram.
@@ -19,10 +20,10 @@ const DEFAULT_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
  * Sends a message to the primary Telegram chat.
  */
 export async function sendTelegramMessage(text: string, chatId?: string) {
-  if (!BOT_TOKEN) return console.warn("[Telegram] Token not found in env.");
+  if (!BOT_TOKEN) return logger.warn("[Telegram] Token not found in env.");
   
   const targetId = chatId || DEFAULT_CHAT_ID;
-  if (!targetId) return console.warn("[Telegram] No chat ID specified.");
+  if (!targetId) return logger.warn("[Telegram] No chat ID specified.");
 
   try {
     await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -35,7 +36,7 @@ export async function sendTelegramMessage(text: string, chatId?: string) {
       })
     });
   } catch (err) {
-    console.error("[Telegram] Send failed:", err);
+    logger.error("[Telegram] Send failed:", err);
   }
 }
 

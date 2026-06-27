@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { WhatsAppStatusService } from '@/lib/services/WhatsAppStatusService';
 import { WhatsAppParserService } from '@/lib/services/WhatsAppParserService';
@@ -23,7 +24,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     
     // Log incoming payload for audit
-    console.log("📥 Incoming Webhook Payload:", JSON.stringify(body, null, 2));
+    logger.info("📥 Incoming Webhook Payload:", JSON.stringify(body, null, 2));
 
     // Update Node Connectivity Heartbeat
     await WhatsAppStatusService.recordHeartbeat('syncing');
@@ -49,7 +50,7 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error) {
-    console.error("🚨 Webhook Critical Failure:", error);
+    logger.error("🚨 Webhook Critical Failure:", error);
     return NextResponse.json({ error: "Internal processing error" }, { status: 500 });
   }
 }

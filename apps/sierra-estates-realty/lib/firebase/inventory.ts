@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 import { 
   collection, 
   addDoc, 
@@ -174,7 +175,7 @@ export async function addProperty(property: Omit<Property, 'id' | 'created_at' |
   const snap = await getDocs(q);
   
   if (!snap.empty) {
-    console.warn("Potential duplicate detected for key:", normKey);
+    logger.warn("Potential duplicate detected for key:", normKey);
   }
 
   const docRef = await addDoc(collection(db, 'properties'), {

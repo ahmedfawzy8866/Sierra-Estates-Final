@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 /**
  * SIERRA ESTATES — PROFILING SERVICE (STAGE 6)
  * Extracts stakeholder intelligence using generative AI.
@@ -61,7 +62,7 @@ export async function extractProfileFromChat(history: string): Promise<Extracted
 
     return profile;
   } catch (error) {
-    console.error("Profiling Error:", error);
+    logger.error("Profiling Error:", error);
     return {
       isQualified: false,
       summary: "Manual profiling required due to analysis error."
@@ -165,7 +166,7 @@ export async function extractFeedbackAndSentiment(transcript: string) {
     if (!jsonMatch) return null;
     return JSON.parse(jsonMatch[0]);
   } catch (error) {
-    console.error("Feedback Extraction Error:", error);
+    logger.error("Feedback Extraction Error:", error);
     return null;
   }
 }
@@ -201,7 +202,7 @@ export async function conductPrecisionInterview(leadId: string, transcript: stri
 
   // If high quality lead, trigger Concierge Page (S8)
   if (profile.score && profile.score >= 8) {
-    console.log(`🔥 HIGH VALUE LEAD DETECTED: ${leadId} (Score: ${profile.score}). Triggering S8 Concierge.`);
+    logger.info(`🔥 HIGH VALUE LEAD DETECTED: ${leadId} (Score: ${profile.score}). Triggering S8 Concierge.`);
   }
 
   return profile;

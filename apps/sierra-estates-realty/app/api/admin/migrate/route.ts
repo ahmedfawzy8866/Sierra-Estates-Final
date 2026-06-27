@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 /**
  * Admin Data Migration API Endpoint
  * Provides REST API for triggering and monitoring data migrations
@@ -55,7 +56,7 @@ export async function POST(req: NextRequest) {
         };
 
         // Log migration to audit trail
-        console.log('[Admin Migration]', {
+        logger.info('[Admin Migration]', {
           user: authResult.userId || 'unknown',
           status: result.success ? 'success' : 'failed',
           recordsMigrated: result.results.reduce(
@@ -82,7 +83,7 @@ export async function POST(req: NextRequest) {
           { status: result.success ? 200 : 207 }
         );
       } catch (error) {
-        console.error('[Admin Migration Error]', error);
+        logger.error('[Admin Migration Error]', error);
         return NextResponse.json(
           {
             success: false,
@@ -110,7 +111,7 @@ export async function POST(req: NextRequest) {
       );
     }
   } catch (error) {
-    console.error('[Admin Migration API Error]', error);
+    logger.error('[Admin Migration API Error]', error);
     return NextResponse.json(
       {
         error: 'Internal server error',
@@ -157,7 +158,7 @@ export async function GET(req: NextRequest) {
       );
     }
   } catch (error) {
-    console.error('[Admin Migration API Error]', error);
+    logger.error('[Admin Migration API Error]', error);
     return NextResponse.json(
       {
         error: 'Internal server error',

@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 /**
  * SIERRA ESTATES — STAGE 9: CLOSER PROTOCOL (HANDOFF)
  * Generates the Executive Intelligence Summary for human closers.
@@ -101,7 +102,7 @@ PERSONA ALIGNMENT: Align the intelligence with "Sierra's" Editorial Luxury stand
 
     return data.choices[0].message.content || "Stakeholder ready for closer engagement based on curated portfolio interaction.";
   } catch (err) {
-    console.error("[HandoffService] AI Summary failed:", err);
+    logger.error("[HandoffService] AI Summary failed:", err);
     return "Stakeholder ready for closer engagement.";
   }
 }

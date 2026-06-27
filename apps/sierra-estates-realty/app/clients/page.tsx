@@ -1,4 +1,5 @@
 'use client';
+import { logger } from '@/lib/logger';
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -60,7 +61,7 @@ export default function ClientRequest() {
       setSuccess(true);
     } catch (err: any) {
       setError('حدث خطأ أثناء إرسال الطلب، برجاء المحاولة لاحقاً.');
-      console.error(err);
+      logger.error(err);
     } finally {
       setLoading(false);
     }
