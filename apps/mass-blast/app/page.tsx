@@ -612,7 +612,7 @@ function ComposeStep({ messageTemplate, setMessageTemplate, validCount, onBack, 
             />
           </div>
           {/* WhatsApp-style chat bubble */}
-          <div className="bg-[#0a0f1d] rounded-xl p-4 min-h-[300px]" style={{ backgroundImage: 'radial-gradient(circle at 30% 40%, rgba(37,211,102,0.05) 0%, transparent 50%), radial-gradient(circle at 70% 60%, rgba(18,140,126,0.05) 0%, transparent 50%)' }}>
+          <div className="bg-[#0a0f1d] rounded-xl p-4 min-h-[300px] whatsapp-bg">
             <div className="flex items-center gap-2.5 pb-3 border-b border-slate-800 mb-3">
               <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-[11px] font-semibold text-white">
                 {previewName.slice(0, 2).toUpperCase()}

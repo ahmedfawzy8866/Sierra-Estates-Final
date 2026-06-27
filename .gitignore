@@ -107,3 +107,8 @@ skills/
 upload/
 tool-results/coverage/
 **/coverage/
+
+# ─── Playwright ───
+playwright-report/
+test-results/
+

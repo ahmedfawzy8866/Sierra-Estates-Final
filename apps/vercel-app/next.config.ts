@@ -66,12 +66,4 @@ const coreConfig: NextConfig = {
   },
 };
 
-const nextConfig = {
-  ...coreConfig,
-  eslint: {
-    ignoreDuringBuilds: false,
-  },
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-} as any as NextConfig;
-
-export default nextConfig;
+export default coreConfig;

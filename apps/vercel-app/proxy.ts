@@ -100,7 +100,7 @@ function checkCsrf(request: NextRequest): NextResponse | null {
   return response;
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // ── CORS: Handle preflight ──────────────────────────────────────────────

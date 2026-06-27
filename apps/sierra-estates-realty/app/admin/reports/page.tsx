@@ -161,14 +161,14 @@ export default function AdminReportsPage() {
   }, [timeRange]);
 
   return (
-    <div className="space-y-8" style={{ fontFamily: 'var(--font-body)' }}>
+    <div className="space-y-8 font-sans">
       {/* ══ Header ══ */}
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
         <div>
           <span className="text-[10px] tracking-[0.25em] font-semibold text-[#C9A84C] uppercase font-mono block mb-2">
             Business Intelligence
           </span>
-          <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-[#071422]" style={{ fontFamily: 'var(--font-display)' }}>
+          <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-[#071422] font-serif">
             Analytics & Reports
           </h1>
           <p className="text-[#3a5570] text-sm mt-1">Real-time performance metrics and insights</p>
@@ -212,7 +212,7 @@ export default function AdminReportsPage() {
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Deal Trends */}
         <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] overflow-hidden">
-          <h2 className="text-lg font-bold text-[#071422] mb-6" style={{ fontFamily: 'var(--font-display)' }}>
+          <h2 className="text-lg font-bold text-[#071422] mb-6 font-serif">
             Deal Trends
           </h2>
           {!loading && chartData.length > 0 ? (
@@ -239,7 +239,7 @@ export default function AdminReportsPage() {
 
         {/* Pipeline Distribution */}
         <div className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] overflow-hidden">
-          <h2 className="text-lg font-bold text-[#071422] mb-6" style={{ fontFamily: 'var(--font-display)' }}>
+          <h2 className="text-lg font-bold text-[#071422] mb-6 font-serif">
             Pipeline Breakdown
           </h2>
           {!loading && pieData.length > 0 ? (
@@ -272,7 +272,7 @@ export default function AdminReportsPage() {
 
       {/* ══ Top Agents ══ */}
       <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)]">
-        <h2 className="text-lg sm:text-xl font-bold text-[#071422] mb-6" style={{ fontFamily: 'var(--font-display)' }}>
+        <h2 className="text-lg sm:text-xl font-bold text-[#071422] mb-6 font-serif">
           Top Agents
         </h2>
         <div className="space-y-3">

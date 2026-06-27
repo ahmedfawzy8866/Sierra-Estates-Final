@@ -116,6 +116,7 @@ export default function CRMKanban() {
           />{" "}
         </div>{" "}
         <select
+          title="Filter by priority"
           value={filters.intensity}
           onChange={(event) =>
             setFilters((prev) => ({
@@ -131,6 +132,7 @@ export default function CRMKanban() {
           <option value="cold">Cold only</option>{" "}
         </select>{" "}
         <select
+          title="Filter by channel"
           value={filters.channel}
           onChange={(event) =>
             setFilters((prev) => ({ ...prev, channel: event.target.value }))
@@ -145,6 +147,7 @@ export default function CRMKanban() {
           ))}{" "}
         </select>{" "}
         <select
+          title="Filter by advisor"
           value={filters.partnerId}
           onChange={(event) =>
             setFilters((prev) => ({ ...prev, partnerId: event.target.value }))
@@ -364,6 +367,7 @@ export default function CRMKanban() {
                 {" "}
                 <label>Engagement Velocity</label>{" "}
                 <select
+                  title="Engagement Velocity"
                   value={stakeholderDraft.strategicIntensity}
                   onChange={(e) =>
                     setStakeholderDraft((p) => ({
@@ -413,6 +417,7 @@ export default function CRMKanban() {
                 {" "}
                 <label>Assigned Executive Partner</label>{" "}
                 <select
+                  title="Assigned Executive Partner"
                   value={stakeholderDraft.assignedPartnerId}
                   onChange={(e) =>
                     setStakeholderDraft((p) => ({

@@ -316,6 +316,7 @@ export default function EasyListing() {
                     <div className="space-y-6">
                       <div className="group relative">
                         <button
+                          title="Copy WhatsApp Content"
                           onClick={() =>
                             copyToClipboard(extractedData.whatsappContent || "")
                           }
@@ -333,6 +334,7 @@ export default function EasyListing() {
 
                       <div className="group relative">
                         <button
+                          title="Copy Facebook Content"
                           onClick={() =>
                             copyToClipboard(extractedData.facebookContent || "")
                           }
@@ -565,6 +567,7 @@ export default function EasyListing() {
                     <td className="px-8 py-6 text-center">
                       <div className="flex justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
+                          title="Remove item"
                           onClick={() =>
                             item.id && removeInventoryItem(item.id)
                           }
