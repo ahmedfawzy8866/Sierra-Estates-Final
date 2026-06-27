@@ -4,6 +4,7 @@
   "private": true,
   "description": "Sierra Estates — Luxury PropTech Platform for New Cairo (Two-App Architecture)",
   "workspaces": [
+    "apps/sierra-estates-realty",
     "apps/vercel-app",
     "apps/firebase-admin",
     "apps/api",

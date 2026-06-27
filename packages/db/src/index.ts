@@ -42,6 +42,7 @@ export type {
 } from './schema';
 
 export { COLLECTIONS } from './schema';
+import { COLLECTIONS } from './schema';
 
 // ─── Collection Registry ───────────────────────────────────────────
 //

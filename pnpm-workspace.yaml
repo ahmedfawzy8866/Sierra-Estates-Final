@@ -25,6 +25,8 @@ minimumReleaseAgeExclude:
   - typescript
 
 packages:
+  # ─── RESTORED FLAGSHIP APP ───
+  - "apps/sierra-estates-realty"
   # ─── TWO-APP ARCHITECTURE ───
   # Vercel App: public client site + light dashboard (read-only)
   - "apps/vercel-app"
