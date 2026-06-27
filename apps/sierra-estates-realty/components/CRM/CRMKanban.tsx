@@ -167,7 +167,7 @@ export default function CRMKanban() {
         <div className="metric-card-glass">
           {" "}
           <div className="metric-label">Visible Pipeline</div>{" "}
-          <div className="metric-value" style={{ color: "var(--navy)" }}>
+          <div className="metric-value text-[var(--navy)]">
             {visibleStakeholders.length}
           </div>{" "}
           <div className="metric-trend">Filtered operating view</div>{" "}
@@ -175,7 +175,7 @@ export default function CRMKanban() {
         <div className="metric-card-glass">
           {" "}
           <div className="metric-label">Hot Prospects</div>{" "}
-          <div className="metric-value" style={{ color: "#dc2626" }}>
+          <div className="metric-value text-[#dc2626]">
             {hotStakeholders}
           </div>{" "}
           <div className="metric-trend">Immediate follow-up priority</div>{" "}
@@ -183,7 +183,7 @@ export default function CRMKanban() {
         <div className="metric-card-glass">
           {" "}
           <div className="metric-label">Close Ready</div>{" "}
-          <div className="metric-value" style={{ color: "var(--gold)" }}>
+          <div className="metric-value text-[var(--gold)]">
             {closeReady}
           </div>{" "}
           <div className="metric-trend">Structuring + settlement</div>{" "}
@@ -191,7 +191,7 @@ export default function CRMKanban() {
         <div className="metric-card-glass">
           {" "}
           <div className="metric-label">Pipeline Value</div>{" "}
-          <div className="metric-value" style={{ color: "var(--success)" }}>
+          <div className="metric-value text-[var(--success)]">
             {" "}
             {pipelineValue > 0
               ? `${(pipelineValue / 1000000).toFixed(1)}M`
@@ -199,13 +199,15 @@ export default function CRMKanban() {
           </div>{" "}
           <div className="metric-trend">Estimated deal volume (EGP)</div>{" "}
         </div>{" "}
-        {PHASE_SEQUENCE.map((phase) => (
+        {PHASE_SEQUENCE.map((phase) => {
+          const phaseColorStyle = { color: PHASE_DEFS[phase].color };
+          return (
           <div key={phase} className="metric-card-glass">
             {" "}
             <div className="metric-label">{PHASE_DEFS[phase].title}</div>{" "}
             <div
               className="metric-value"
-              style={{ color: PHASE_DEFS[phase].color }}
+              style={phaseColorStyle}
             >
               {" "}
               {visiblePipelineState[phase].length}{" "}
@@ -217,13 +219,16 @@ export default function CRMKanban() {
                 : "Idle Queue"}{" "}
             </div>{" "}
           </div>
-        ))}{" "}
+        )})}
       </div>{" "}
       <div className="kanban-scroller">
         {" "}
         <div className="kanban-board-premium">
           {" "}
-          {PHASE_SEQUENCE.map((phase) => (
+          {PHASE_SEQUENCE.map((phase) => {
+            const accentStyle = { "--accent": PHASE_DEFS[phase].color } as React.CSSProperties;
+            const bgStyle = { background: PHASE_DEFS[phase].color };
+            return (
             <div
               key={phase}
               className={`kanban-col-premium ${phaseTarget === phase ? "drag-over" : ""}`}
@@ -237,9 +242,7 @@ export default function CRMKanban() {
               {" "}
               <div
                 className="kanban-col-header-premium"
-                style={
-                  { "--accent": PHASE_DEFS[phase].color } as React.CSSProperties
-                }
+                style={accentStyle}
               >
                 {" "}
                 <div className="header-top">
@@ -247,7 +250,7 @@ export default function CRMKanban() {
                   <h3 className="col-title">{PHASE_DEFS[phase].title}</h3>{" "}
                   <span
                     className="col-badge"
-                    style={{ background: PHASE_DEFS[phase].color }}
+                    style={bgStyle}
                   >
                     {visiblePipelineState[phase].length}
                   </span>{" "}

@@ -54,10 +54,12 @@ function StakeholderCard({ stakeholder, phase, onProgress, onDragStart }: {
         <div className="stakeholder-name-wrap">
           <div className="stakeholder-name-main serif">{stakeholder.name}</div>
           <div className="stakeholder-origin">
-            <span style={{ color: CHANNEL_METADATA[stakeholder.originChannel]?.color }}>
+            <span style={(() => { const s = { color: CHANNEL_METADATA[stakeholder.originChannel]?.color }; return s; })()}>
               {CHANNEL_METADATA[stakeholder.originChannel]?.icon}
             </span>
-            <span style={{ letterSpacing: '0.5px' }}>{stakeholder.originChannel.toUpperCase()}</span>
+            <span className="tracking-wide uppercase text-[9px] font-bold">
+              {stakeholder.originChannel}
+            </span>
           </div>
         </div>
         

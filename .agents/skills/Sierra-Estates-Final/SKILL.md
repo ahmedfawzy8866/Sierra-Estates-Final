@@ -1,27 +1,37 @@
-```markdown
+---
+name: Sierra-Estates-Final Development Patterns
+description: Auto-generated skill from repository analysis
+---
+
 # Sierra-Estates-Final Development Patterns
 
 > Auto-generated skill from repository analysis
 
 ## Overview
+
 This skill provides guidance on the development patterns, coding conventions, and workflows used in the Sierra-Estates-Final TypeScript codebase. It covers file organization, code style, commit practices, and testing patterns to ensure consistency and maintainability across the project.
 
 ## Coding Conventions
 
 ### File Naming
+
 - Use **camelCase** for file names.
   - Example: `userProfile.ts`, `propertyList.ts`
 
 ### Import Style
+
 - Use **alias imports** for modules.
   - Example:
+
     ```typescript
     import { getUserDetails } from 'services/userService';
     ```
 
 ### Export Style
+
 - Use **named exports** for functions, constants, and classes.
   - Example:
+
     ```typescript
     // In userProfile.ts
     export function getUserProfile(id: string) { ... }
@@ -29,8 +39,10 @@ This skill provides guidance on the development patterns, coding conventions, an
     ```
 
 ### Commit Messages
+
 - Follow **Conventional Commits** with the `feat` prefix for new features.
   - Example:
+
     ```
     feat: add property search functionality
     ```
@@ -38,6 +50,7 @@ This skill provides guidance on the development patterns, coding conventions, an
 ## Workflows
 
 ### Feature Development
+
 **Trigger:** When adding a new feature to the codebase  
 **Command:** `/feature`
 
@@ -49,6 +62,7 @@ This skill provides guidance on the development patterns, coding conventions, an
 6. Open a pull request for review.
 
 ### Code Testing
+
 **Trigger:** When verifying code correctness  
 **Command:** `/test`
 
@@ -62,6 +76,7 @@ This skill provides guidance on the development patterns, coding conventions, an
 - Test files follow the `*.test.*` naming convention (e.g., `userProfile.test.ts`).
 - The specific testing framework is not detected; refer to project documentation or existing test files for framework usage.
 - Example test file:
+
   ```typescript
   // userProfile.test.ts
   import { getUserProfile } from './userProfile';
@@ -74,8 +89,8 @@ This skill provides guidance on the development patterns, coding conventions, an
   ```
 
 ## Commands
+
 | Command    | Purpose                                 |
 |------------|-----------------------------------------|
 | /feature   | Start a new feature development workflow|
 | /test      | Run or write tests for the codebase     |
-```

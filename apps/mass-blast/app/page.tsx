@@ -788,7 +788,10 @@ function PreviewStep(props: PreviewStepProps) {
           <div className="h-2 bg-[var(--muted)] rounded-full overflow-hidden">
             <div
               className="h-full bg-[var(--primary)] rounded-full transition-all duration-300"
-              style={{ width: `${progress}%` }}
+              style={(() => {
+                const s = { width: `${progress}%` };
+                return s;
+              })()}
             />
           </div>
           <p className="text-[11px] text-[var(--muted-foreground)]">
