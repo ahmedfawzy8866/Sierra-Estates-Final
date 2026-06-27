@@ -43,7 +43,7 @@ This skill provides guidance on the development patterns, coding conventions, an
 - Follow **Conventional Commits** with the `feat` prefix for new features.
   - Example:
 
-    ```
+    ```text
     feat: add property search functionality
     ```
 
