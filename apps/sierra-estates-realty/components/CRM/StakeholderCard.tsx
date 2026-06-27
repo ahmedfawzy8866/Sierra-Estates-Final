@@ -54,7 +54,7 @@ function StakeholderCard({ stakeholder, phase, onProgress, onDragStart }: {
         <div className="stakeholder-name-wrap">
           <div className="stakeholder-name-main serif">{stakeholder.name}</div>
           <div className="stakeholder-origin">
-            <span style={(() => { const s = { color: CHANNEL_METADATA[stakeholder.originChannel]?.color }; return s; })()}>
+            <span data-channel={stakeholder.originChannel}>
               {CHANNEL_METADATA[stakeholder.originChannel]?.icon}
             </span>
             <span className="tracking-wide uppercase text-[9px] font-bold">

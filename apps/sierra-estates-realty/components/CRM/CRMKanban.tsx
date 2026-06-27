@@ -288,6 +288,7 @@ export default function CRMKanban() {
                 )}{" "}
               </div>{" "}
             </div>
+          );
           })}
         </div>{" "}
       </div>{" "}

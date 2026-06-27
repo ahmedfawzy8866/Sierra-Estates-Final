@@ -652,3 +652,10 @@
         .animate-fade-in {
           animation: fade-in 0.4s ease forwards;
         }
+
+        /* Channel icon colors */
+        [data-channel="WhatsApp"] { color: #25D366; }
+        [data-channel="Website"] { color: var(--blue); }
+        [data-channel="Referral"] { color: var(--gold); }
+        [data-channel="Instagram"] { color: #e11d48; }
+        [data-channel="Walk-in"] { color: var(--blue-light); }
