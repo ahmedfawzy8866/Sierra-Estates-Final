@@ -44,6 +44,44 @@ function StakeholderCard({ stakeholder, phase, onProgress, onDragStart }: {
       draggable
       onDragStart={() => onDragStart(stakeholder.id, phase)}
       style={{
+        animationDelay: `${Math.random() * 0.3}s`
+      }}
+    >
+      {stakeholder.strategicIntensity === 'hot' && <div className="strategic-pulse"></div>}
+      <div className="stakeholder-card-gloss"></div>
+      
+      <div className="stakeholder-card-header-premium">
+        <div className="stakeholder-name-wrap">
+          <div className="stakeholder-name-main serif">{stakeholder.name}</div>
+          <div className="stakeholder-origin">
+            <span style={{ color: CHANNEL_METADATA[stakeholder.originChannel]?.color }}>
+              {CHANNEL_METADATA[stakeholder.originChannel]?.icon}
+            </span>
+            <span style={{ letterSpacing: '0.5px' }}>{stakeholder.originChannel.toUpperCase()}</span>
+          </div>
+        </div>
+        
+        {stakeholder.intelligenceScore !== undefined && (
+          <LeadScoreBadge score={stakeholder.intelligenceScore} />
+        )}
+      </div>
+      
+      <div className="stakeholder-card-body-premium">
+        <div className="stakeholder-info-grid">
+          <div className="info-item">
+            <span className="info-label">Portfolio Focus</span>
+            <span className="info-val">{stakeholder.portfolioPreference || 'General Inventory'}</span>
+          </div>
+          <div className="info-item">
+            <span className="info-label">Investment Capacity</span>
+            <span className="info-val gold-text">{stakeholder.capitalAllocation || 'N/A'}</span>
+          </div>
+        </div>
+
+        {/* Neural Matching (Stage 6) Display */}
+        {stakeholder.aiProfiling?.topMatches && stakeholder.aiProfiling.topMatches.length > 0 && (
+          <div className="neural-matches-mini">
+            <div className="neural-header">
               <span className="neural-icon">⚡</span>
               <span className="neural-title">Neural Matches</span>
             </div>
@@ -116,4 +154,5 @@ function StakeholderCard({ stakeholder, phase, onProgress, onDragStart }: {
     </motion.div>
   );
 }
+
 export default StakeholderCard;
