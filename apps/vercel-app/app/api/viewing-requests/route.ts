@@ -2,43 +2,38 @@ import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { Timestamp, Query } from 'firebase-admin/firestore';
 import { verifyRequest, unauthorizedResponse } from '@/lib/server/auth-guard';
-import { z } from 'zod';
 import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
-import { logger } from '@sierra-estates/config';
+import { z } from 'zod';
 
-// ─── Input Validation Schema ────────────────────────────────────────────────
-
-const ViewingRequestSchema = z.object({
-  propertyCode: z.string().min(1, 'propertyCode is required').max(50, 'propertyCode too long'),
-  visitorName: z.string().min(1, 'visitorName is required').max(200, 'visitorName too long'),
-  visitorEmail: z.string().email('Invalid email format').max(254, 'Email too long'),
-  visitorPhone: z.string().min(1, 'visitorPhone is required').max(50, 'Phone too long'),
-  preferredDate: z.string().min(1, 'preferredDate is required').refine(
-    (val) => { const d = new Date(val); const today = new Date(); today.setHours(0,0,0,0); return d >= today; },
-    { message: 'Preferred date must be in the future' }
-  ),
-  preferredTime: z.string().max(20).optional(),
-  numberOfPeople: z.number().int().min(1).max(50).optional(),
-  message: z.string().max(2000, 'Message too long').optional(),
+// ── Input Validation Schema ────────────────────────────────────────────
+const viewingRequestSchema = z.object({
+  propertyCode: z.string().trim().min(1, 'Property code is required').max(50),
+  visitorName: z.string().trim().min(1, 'Name is required').max(200),
+  visitorEmail: z.string().email('Invalid email format').max(200),
+  visitorPhone: z.string().trim().min(1, 'Phone is required').max(50),
+  preferredDate: z.string().min(1, 'Preferred date is required'),
+  preferredTime: z.string().max(20).optional().default(''),
+  numberOfPeople: z.number().int().min(1).max(50).optional().default(1),
+  message: z.string().max(2000).optional().default(''),
 });
 
+/**
+ * POST /api/viewing-requests
+ * Public endpoint (for website forms) — validates input with Zod.
+ */
 export async function POST(request: NextRequest) {
+  // Rate limit public form submissions
   const limited = applyRateLimit(request, publicEndpointLimiter);
   if (limited) return limited;
 
   try {
-    const raw = await request.json();
+    const body = await request.json();
 
-    // Validate input with Zod
-    const parseResult = ViewingRequestSchema.safeParse(raw);
-    if (!parseResult.success) {
-      const errors = parseResult.error.issues.map(
-        (issue) => `${issue.path.join('.')}: ${issue.message}`
-      );
-      return NextResponse.json(
-        { error: 'Validation failed', details: errors },
-        { status: 400 }
-      );
+    // ── Validate with Zod ────────────────────────────────────────────
+    const parsed = viewingRequestSchema.safeParse(body);
+    if (!parsed.success) {
+      const firstError = parsed.error.issues[0]?.message || 'Invalid input';
+      return NextResponse.json({ error: firstError }, { status: 400 });
     }
 
     const {
@@ -50,7 +45,19 @@ export async function POST(request: NextRequest) {
       preferredTime,
       numberOfPeople,
       message,
-    } = parseResult.data;
+    } = parsed.data;
+
+    // Validate date is in the future
+    const requestDate = new Date(preferredDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (requestDate < today) {
+      return NextResponse.json(
+        { error: 'Preferred date must be in the future' },
+        { status: 400 }
+      );
+    }
 
     // Add viewing request to Firestore
     const docRef = await adminDb.collection('viewing_requests').add({
@@ -59,9 +66,9 @@ export async function POST(request: NextRequest) {
       visitorEmail,
       visitorPhone,
       preferredDate,
-      preferredTime: preferredTime || '',
-      numberOfPeople: numberOfPeople || 1,
-      message: message || '',
+      preferredTime,
+      numberOfPeople,
+      message,
       status: 'pending',
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
@@ -76,7 +83,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error: unknown) {
-    logger.error({ err: error }, '[Viewing Requests] Creation error');
+    console.error('[Viewing Requests] Creation error:', error instanceof Error ? error.message : 'Unknown');
     return NextResponse.json(
       { error: 'Failed to create viewing request' },
       { status: 500 }
@@ -129,7 +136,7 @@ export async function GET(request: NextRequest) {
       requests
     }, { status: 200 });
   } catch (error: unknown) {
-    logger.error({ err: error }, '[Viewing Requests] Fetch error');
+    console.error('[Viewing Requests] Fetch error:', error instanceof Error ? error.message : 'Unknown');
     return NextResponse.json(
       { error: 'Failed to fetch viewing requests' },
       { status: 500 }

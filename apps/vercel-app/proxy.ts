@@ -37,7 +37,16 @@ function getLimiterForPath(pathname: string) {
 /**
  * Routes that require the SBR secret key
  */
-const PROTECTED_ROUTES = ['/api/orchestrate', '/api/cron/', '/api/admin/'];
+const PROTECTED_ROUTES = [
+  '/api/orchestrate',
+  '/api/cron/',
+  '/api/admin/',
+  '/api/concierge/complete',
+  '/api/concierge/analyze',
+  '/api/concierge/send-whatsapp',
+  '/api/crm/',
+  '/api/wealth/',
+];
 
 /**
  * Routes that are public (no auth required)
