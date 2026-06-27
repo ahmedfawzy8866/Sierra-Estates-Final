@@ -2,20 +2,22 @@ name: Deploy Sierra Estates 3.0
 
 on:
   push:
-    branches: [main]
+    branches: ["main"]
   workflow_dispatch:
 
 jobs:
   # ─────────────────────────────────────────────────
-  # JOB 1: CLIENT PORTAL → Vercel
+  # JOB 1: CLIENT SITE → Vercel (sierra-estates-realty)
   # ─────────────────────────────────────────────────
   deploy-client:
-    name: "Client Portal to Vercel"
+    name: "Client Site to Vercel"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
+        with:
+          version: 9.14.4
 
       - uses: actions/setup-node@v4
         with:
@@ -24,72 +26,59 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Build Client Portal
-        run: pnpm --filter "@sierra-estates/vercel-app" build
+      - name: Build Client Site
+        run: pnpm --filter sierra-estates-realty build
         env:
           NODE_ENV: production
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-          NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY || 'ci-placeholder' }}
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'ci-placeholder' }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'ci-placeholder' }}
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'ci-placeholder' }}
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || 'ci-placeholder' }}
+          NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID || 'ci-placeholder' }}
 
-      - name: Deploy Client Portal to Vercel
+      - name: Deploy to Vercel
         uses: amondnet/vercel-action@v25
+        if: ${{ secrets.VERCEL_TOKEN != '' }}
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_CLIENT_PROJECT_ID }}
-          working-directory: ./apps/vercel-app
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./apps/sierra-estates-realty
           vercel-args: --prod
 
   # ─────────────────────────────────────────────────
   # JOB 2: FIRESTORE + STORAGE RULES → Firebase
   # ─────────────────────────────────────────────────
   deploy-firestore-rules:
-    name: "Firestore & Storage Rules to Firebase"
+    name: "Firestore & Storage Rules"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy Firestore Rules
+      - name: Deploy Rules
         uses: w9jds/firebase-action@master
+        if: ${{ secrets.FIREBASE_SERVICE_ACCOUNT != '' }}
         with:
           args: deploy --only firestore:rules,firestore:indexes,storage
         env:
           GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
 
   # ─────────────────────────────────────────────────
-  # JOB 3: ADMIN APP → Firebase Hosting
-  # (Admin dashboard deploys to Firebase, not Vercel)
+  # JOB 3: ADMIN PANEL → Firebase Hosting
+  # Uses pre-built admin-panel/dist/ (no build needed)
   # ─────────────────────────────────────────────────
-  deploy-admin-firebase:
-    name: "Admin App to Firebase Hosting"
+  deploy-admin:
+    name: "Admin Panel to Firebase Hosting"
     runs-on: ubuntu-latest
     needs: deploy-firestore-rules
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
-
-      - run: pnpm install --frozen-lockfile
-
-      - name: Build Admin App
-        run: pnpm --filter "@sierra-estates/firebase-admin" build
-        env:
-          NODE_ENV: production
-
       - name: Deploy Admin to Firebase Hosting
         uses: w9jds/firebase-action@master
+        if: ${{ secrets.FIREBASE_SERVICE_ACCOUNT != '' }}
         with:
-          args: deploy --only hosting:sierra-estates-admin
+          args: deploy --only hosting
         env:
           GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
-          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
-          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
-          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
-          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
-          NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
