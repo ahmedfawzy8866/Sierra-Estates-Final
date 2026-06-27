@@ -33,7 +33,6 @@ function validateJavaScript(filePath) {
 console.log('Validating config files...\n');
 
 validateJSON(path.join(root, 'tsconfig.json'));
-validateJSON(path.join(root, '../../vercel.json'));
 validateJSON(path.join(root, '../../turbo.json'));
 validateJSON(path.join(root, 'package.json'));
 

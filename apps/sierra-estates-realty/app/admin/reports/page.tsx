@@ -6,6 +6,7 @@ import { collection, query, where, getCountFromServer } from 'firebase/firestore
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Users, Home, Handshake, DollarSign } from 'lucide-react';
 import { logger } from '@/lib/logger';
+import StatsCard from '@/components/admin/StatsCard';
 
 interface ReportMetric {
   label: string;
@@ -194,35 +195,15 @@ export default function AdminReportsPage() {
               <div key={i} className="bg-white rounded-2xl p-6 h-40 sm:h-36 animate-pulse" />
             ))
           : metrics.map(metric => {
-              const Icon = metric.icon;
               return (
-                <div
+                <StatsCard
                   key={metric.label}
-                  className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] hover:shadow-[0_8px_32px_-4px_rgba(3,22,50,0.1)] transition-all border-l-[3px]"
-                  style={{ borderLeftColor: metric.color }}
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div
-                      className="w-10 h-10 rounded-xl flex items-center justify-center"
-                      style={{ backgroundColor: `${metric.color}14` }}
-                    >
-                      <Icon size={18} style={{ color: metric.color }} />
-                    </div>
-                    {metric.change && (
-                      <div className="flex items-center gap-0.5 text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg">
-                        <span>↑</span>
-                        {metric.change}
-                      </div>
-                    )}
-                  </div>
-                  <div
-                    className="text-3xl sm:text-2xl font-bold tracking-tight mb-2"
-                    style={{ color: metric.color, fontFamily: 'var(--font-mono)' }}
-                  >
-                    {metric.value}
-                  </div>
-                  <div className="text-xs sm:text-xs font-semibold text-[#071422]">{metric.label}</div>
-                </div>
+                  label={metric.label}
+                  value={metric.value}
+                  change={metric.change}
+                  icon={metric.icon}
+                  color={metric.color}
+                />
               );
             })}
       </div>

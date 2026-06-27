@@ -18,81 +18,16 @@ import {
   History
 } from 'lucide-react';
 import { db, storage } from '../../lib/firebase';
-import { collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, Timestamp, deleteDoc, doc } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { getDownloadURL, ref as storageRef, uploadBytes } from 'firebase/storage';
 import BrokerFeed from './BrokerFeed';
 import dynamic from 'next/dynamic';
-import { COLLECTIONS, PropertyType } from '../../lib/models/schema';
+import { COLLECTIONS } from '../../lib/models/schema';
+import { COMPOUND_DICT, FURNISHED_DICT, PRICE_MULTIPLIERS, Property, sanitizeFileName, inferPropertyType } from './EasyListingLogic';
+
 const MapExplorer = dynamic(() => import('./MapExplorer'), { ssr: false });
 const VirtualTourViewer = dynamic(() => import('../Shared/VirtualTourViewer'), { ssr: false });
 import { Layers, Map as MapIcon, Rotate3d as Rotate3D } from 'lucide-react';
-
-// --- Configuration & Dictionaries ---
-const COMPOUND_DICT: Record<string, string> = {
-  'Mivida': 'MI', 'ميفيدا': 'MI',
-  'Mountain View': 'MV', 'ماونتن فيو': 'MV',
-  'Hyde Park': 'HP', 'هايد بارك': 'HP',
-  'Lake View': 'LV', 'ليك فيو': 'LV',
-  'Cairo Festival': 'CFC', 'كايرو فيستيفال': 'CFC',
-  'Gardenia': 'GC', 'جاردينيا': 'GC',
-  'Rehab': 'RH', 'الرحاب': 'RH',
-  'El Shorouk': 'ES', 'الشروق': 'ES'
-};
-
-const FURNISHED_DICT: Record<string, string> = {
-  'Fully furnished': 'F', 'مفروش': 'F',
-  'Semi-furnished': 'S', 'نصف مفروش': 'S',
-  'Kitchen only': 'K', 'مطبخ فقط': 'K',
-  'Unfurnished': 'U', 'غير مفروش': 'U'
-};
-
-const PRICE_MULTIPLIERS: Record<string, number> = {
-  'k': 1000,
-  'm': 1000000,
-  'M': 1000000,
-  'ألف': 1000,
-  'مليون': 1000000
-};
-
-// --- Interfaces ---
-interface Property {
-  id?: string;
-  code: string;
-  compound: string;
-  bedrooms: number;
-  price: number;
-  currency: string;
-  furnished: string;
-  phone: string;
-  whatsappContent?: string;
-  facebookContent?: string;
-  images?: string[];
-  views?: number;
-  createdAt?: Timestamp;
-  updatedAt?: Timestamp;
-  virtualTourUrl?: string;
-  coordinates?: { lat: number; lng: number };
-  type?: string;
-}
-
-const normalizeText = (value: string | undefined) => value?.trim().toLowerCase() || '';
-
-const sanitizeFileName = (value: string) => value.replace(/[^a-zA-Z0-9._-]/g, '-');
-
-const inferPropertyType = (value: string): PropertyType => {
-  const text = normalizeText(value);
-
-  if (text.includes('villa')) return 'villa';
-  if (text.includes('townhouse')) return 'townhouse';
-  if (text.includes('duplex')) return 'duplex';
-  if (text.includes('penthouse')) return 'penthouse';
-  if (text.includes('studio')) return 'studio';
-  if (text.includes('chalet')) return 'chalet';
-  if (text.includes('office') || text.includes('shop') || text.includes('clinic')) return 'commercial';
-  if (text.includes('land')) return 'land';
-
-  return 'apartment';
-};
 
 export default function EasyListing() {
   const { t, locale } = useI18n();
@@ -507,7 +442,7 @@ export default function EasyListing() {
             className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12"
           >
             {/* --- Phase 1: Ingestion --- */}
-            <section className="lg:col-span-4 glass-panel p-8">
+            <section className="lg:col-span-4 glass-panel p-8 bezel">
               <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
                 <ImageIcon size={20} className="text-gold" />
                 Inventory Ingestion
@@ -574,7 +509,7 @@ export default function EasyListing() {
                   <button
                     onClick={() => processListing()}
                     disabled={isProcessing || !description}
-                    className="flex-1 h-14 bg-navy text-white rounded-2xl font-black uppercase tracking-widest hover:bg-gold hover:text-navy transition-all flex items-center justify-center gap-3 disabled:opacity-50 group border border-gold/30 shadow-xl"
+                    className="btn-orb flex-1 h-14"
                   >
                     {isProcessing ? <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }}><Wand2 size={24} /></motion.div> : <Wand2 size={24} className="group-hover:scale-125 transition-transform" />}
                     <span>Manifest Code</span>
@@ -583,7 +518,7 @@ export default function EasyListing() {
                   <button
                     onClick={simulateRealWebhook}
                     disabled={isProcessing}
-                    className="h-14 px-8 bg-slate-900 text-gold rounded-2xl font-black uppercase tracking-widest hover:bg-gold hover:text-navy transition-all flex items-center justify-center gap-3 disabled:opacity-50 border border-gold/20 shadow-xl"
+                    className="btn-orb h-14 px-8"
                     title="Test Real-Time Neural Bridge"
                   >
                     <Layers size={24} />
@@ -594,7 +529,7 @@ export default function EasyListing() {
             </section>
 
             {/* --- Phase 2: Results & Ad --- */}
-            <section className="lg:col-span-5 glass-panel p-8 flex flex-col">
+            <section className="lg:col-span-5 glass-panel p-8 flex flex-col bezel">
               <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
                 <TrendingUp size={20} className="text-gold" />
                 {t('easyListing.outputTitle')}

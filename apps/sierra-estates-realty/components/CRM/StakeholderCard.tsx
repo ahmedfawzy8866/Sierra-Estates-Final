@@ -4,7 +4,7 @@ import { Briefcase, Ticket } from 'lucide-react';
 import { logger } from '@/lib/logger';
 import { cinematicEntrance, cinematicHover } from '@/lib/animations';
 import { InvestmentStakeholder, PipelinePhase, PHASE_SEQUENCE, CHANNEL_METADATA } from './types';
-// import LeadScoreBadge from './LeadScoreBadge';
+import LeadScoreBadge from './LeadScoreBadge';
 
 function StakeholderCard({ stakeholder, phase, onProgress, onDragStart }: { 
   stakeholder: InvestmentStakeholder; 
@@ -44,49 +44,6 @@ function StakeholderCard({ stakeholder, phase, onProgress, onDragStart }: {
       draggable
       onDragStart={() => onDragStart(stakeholder.id, phase)}
       style={{
-        animationDelay: `${Math.random() * 0.3}s`
-      }}
-    >
-      {stakeholder.strategicIntensity === 'hot' && <div className="strategic-pulse"></div>}
-      <div className="stakeholder-card-gloss"></div>
-      
-      <div className="stakeholder-card-header-premium">
-        <div className="stakeholder-name-wrap">
-          <div className="stakeholder-name-main serif">{stakeholder.name}</div>
-          <div className="stakeholder-origin">
-            <span style={{ color: CHANNEL_METADATA[stakeholder.originChannel]?.color }}>
-              {CHANNEL_METADATA[stakeholder.originChannel]?.icon}
-            </span>
-            <span style={{ letterSpacing: '0.5px' }}>{stakeholder.originChannel.toUpperCase()}</span>
-          </div>
-        </div>
-        
-        {stakeholder.intelligenceScore !== undefined && (
-          <div className={`intel-score ${stakeholder.intelligenceScore > 80 ? 'intel-high' : stakeholder.intelligenceScore > 50 ? 'intel-mid' : 'intel-low'}`}>
-            <svg width="34" height="34" viewBox="0 0 34 34" className="intel-svg">
-              <circle cx="17" cy="17" r="15" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="94" strokeDashoffset={94 - (94 * stakeholder.intelligenceScore / 100)} />
-            </svg>
-            <span className="intel-score-val">{stakeholder.intelligenceScore}</span>
-          </div>
-        )}
-      </div>
-      
-      <div className="stakeholder-card-body-premium">
-        <div className="stakeholder-info-grid">
-          <div className="info-item">
-            <span className="info-label">Portfolio Focus</span>
-            <span className="info-val">{stakeholder.portfolioPreference || 'General Inventory'}</span>
-          </div>
-          <div className="info-item">
-            <span className="info-label">Investment Capacity</span>
-            <span className="info-val gold-text">{stakeholder.capitalAllocation || 'N/A'}</span>
-          </div>
-        </div>
-
-        {/* Neural Matching (Stage 6) Display */}
-        {stakeholder.aiProfiling?.topMatches && stakeholder.aiProfiling.topMatches.length > 0 && (
-          <div className="neural-matches-mini">
-            <div className="neural-header">
               <span className="neural-icon">⚡</span>
               <span className="neural-title">Neural Matches</span>
             </div>

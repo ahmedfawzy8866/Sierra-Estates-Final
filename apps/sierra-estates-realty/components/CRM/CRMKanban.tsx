@@ -10,20 +10,17 @@ import {
   updateDoc, 
   doc, 
   serverTimestamp, 
-  orderBy,
-  Timestamp
+  orderBy
 } from 'firebase/firestore';
-import { Briefcase, Ticket, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { logEvent } from 'firebase/analytics';
 import { useAuth } from '@/lib/AuthContext';
 import { getDoc } from 'firebase/firestore';
 import { UserProfile, COLLECTIONS } from '@/lib/models/schema';
-import { motion } from 'framer-motion';
-import { cinematicEntrance, cinematicHover } from '@/lib/animations';
 import { logger } from '@/lib/logger';
 
 
-import { InvestmentStakeholder, StakeholderDraft, StakeholderFilters, PipelinePhase, PhaseMetadata, PHASE_DEFS, PHASE_SEQUENCE, CHANNEL_METADATA, INITIAL_STAKEHOLDER_STATE } from './types';
+import { InvestmentStakeholder, StakeholderDraft, StakeholderFilters, PipelinePhase, PHASE_DEFS, PHASE_SEQUENCE, CHANNEL_METADATA, INITIAL_STAKEHOLDER_STATE } from './types';
 import StakeholderCard from './StakeholderCard';
 const DEFAULT_FILTERS: StakeholderFilters = {
   search: '',
