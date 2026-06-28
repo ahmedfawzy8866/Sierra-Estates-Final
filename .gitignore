@@ -47,6 +47,7 @@ docs/secrets.local.md
 # ─── Firebase service accounts (NEVER commit) ───
 *serviceAccount*.json
 firebase-adminsdk-*.json
+service-account.json
 
 # ─── Misc ───
 /.sass-cache
