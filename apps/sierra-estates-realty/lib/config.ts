@@ -18,7 +18,7 @@ export const SiteConfig = {
     // Will update as soon as they provide the new data.
     phone: "+20 10 61399688", 
     email: "EmeraldEstatesegypt@gmail.com",
-    telegramBot: "https://t.me/Sierrablurealtybot",
+    telegramBot: "https://t.me/sierraestatesrealtybot",
   },
   contact: {
     whatsapp: "https://wa.me/201061399688",

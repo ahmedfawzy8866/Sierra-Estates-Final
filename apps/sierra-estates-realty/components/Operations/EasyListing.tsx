@@ -31,6 +31,11 @@ const VirtualTourViewer = dynamic(() => import("../Shared/VirtualTourViewer"), {
 export default function EasyListing() {
   const {
     t,
+    description,
+    setDescription,
+    phone,
+    setPhone,
+    handleImageChange,
     previewUrl,
     extractedData,
     generatedCode,
