@@ -129,7 +129,8 @@ export const LuxuryCard = ({
         ${t.card} ${t.cardHover}
         ${className}`}
     >
-      {children}
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any -- framer-motion children type is incompatible with current @types/react */}
+      {children as any}
     </motion.div>
   );
 };
@@ -156,7 +157,8 @@ export const PremiumCard = ({
         ${t.cardPremium} ${t.cardPremiumH}
         ${className}`}
     >
-      {children}
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any -- framer-motion children type is incompatible with current @types/react */}
+      {children as any}
     </motion.div>
   );
 };

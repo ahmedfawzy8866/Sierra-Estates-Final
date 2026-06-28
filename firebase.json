@@ -20,7 +20,7 @@
   "hosting": [
     {
       "target": "sierra-estates-admin",
-      "public": "apps/firebase-admin/dist",
+      "public": "apps/admin-dashboard/dist",
       "ignore": [
         "firebase.json",
         "**/.*",
@@ -28,10 +28,6 @@
         "**/src/**"
       ],
       "rewrites": [
-        {
-          "source": "/api/**",
-          "function": "api"
-        },
         {
           "source": "**",
           "destination": "/index.html"

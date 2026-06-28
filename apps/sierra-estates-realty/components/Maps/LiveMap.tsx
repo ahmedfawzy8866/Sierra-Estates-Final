@@ -81,7 +81,7 @@ export default function LiveMap({ mode = 'dark' }: LiveMapProps) {
 
   return (
     <div className="w-full h-full relative">
-      <style jsx global>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         .sierra-popup-custom .leaflet-popup-content-wrapper {
           background: rgba(255, 255, 255, 0.95);
           backdrop-filter: blur(8px);
@@ -95,7 +95,7 @@ export default function LiveMap({ mode = 'dark' }: LiveMapProps) {
         .leaflet-container {
           background: transparent !important;
         }
-      `}</style>
+      ` }} />
       <div ref={mapRef} className="w-full h-full" />
     </div>
   );

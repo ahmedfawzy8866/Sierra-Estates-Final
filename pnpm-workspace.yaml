@@ -85,6 +85,10 @@ overrides:
   js-yaml: "^4.2.0"
   markdown-it: "^14.2.0"
   "@babel/core": "^7.29.6"
+  # Force a single @types/react across the workspace — duplicate 18.x/19.x
+  # copies caused framer-motion's children prop to fail type-checking.
+  "@types/react": "^19"
+  "@types/react-dom": "^19"
 
 allowBuilds:
   '@firebase/util': true

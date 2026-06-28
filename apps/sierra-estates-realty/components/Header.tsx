@@ -14,7 +14,6 @@ const NAV_ITEMS_EN: NavItem[] = [
   { label: 'Rent',         href: '/listings?purpose=rent' },
   { label: 'Buy',          href: '/listings?purpose=resale' },
   { label: 'New Projects', href: '/projects' },
-  { label: 'Admin',        href: '/admin' },
   { label: 'Clients',      href: '/clients' },
 ];
 
@@ -22,7 +21,6 @@ const NAV_ITEMS_AR: NavItem[] = [
   { label: 'إيجار',         href: '/listings?purpose=rent' },
   { label: 'شراء',          href: '/listings?purpose=resale' },
   { label: 'مشروعات جديدة',  href: '/projects' },
-  { label: 'الإدارة',        href: '/admin' },
   { label: 'العملاء',        href: '/clients' },
 ];
 

@@ -1,0 +1,10 @@
+.expo
+.git
+.gitignore
+.env.example
+*.md
+node_modules
+.tsbuildinfo
+.replit*
+pnpm-lock.yaml
+yarn.lock
