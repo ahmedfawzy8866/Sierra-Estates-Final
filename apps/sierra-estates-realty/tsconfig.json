@@ -32,6 +32,12 @@
       ],
       "@obedian/*": [
         "../../packages/obedian/src/*"
+      ],
+      "@sierra-estates/obedian": [
+        "../../packages/obedian/src/index.ts"
+      ],
+      "@sierra-estates/memory-engine": [
+        "../../packages/memory-engine/src/index.ts"
       ]
     }
   },
