@@ -1,0 +1,83 @@
+# ─── Dependencies ────────────────────────────────────────────────
+node_modules
+.pnpm-store
+
+# ─── Build outputs ───────────────────────────────────────────────
+.next
+dist
+build
+out
+.turbo
+*.tsbuildinfo
+
+# ─── Environment & secrets ───────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ─── Git ─────────────────────────────────────────────────────────
+.git
+.gitignore
+
+# ─── IDE & editor ────────────────────────────────────────────────
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ─── Docker (prevent recursive copies) ───────────────────────────
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+
+# ─── Firebase ────────────────────────────────────────────────────
+.firebase
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+*-service-account*.json
+
+# ─── Artifacts & legacy code ────────────────────────────────────
+artifacts/
+packages/open-memory/
+scripts/legacy-logic-archive/
+_archive/
+back/
+upload/
+tool-results/
+
+# ─── Docs (not needed in Docker images) ─────────────────────────
+docs/
+*.md
+!packages/*/README.md
+CLAUDE.md
+CLAUDE_CODE_HANDOFF.md
+CODEOWNERS
+
+# ─── CI/CD ──────────────────────────────────────────────────────
+.github/
+SECURITY_KEY_ROTATION.md
+
+# ─── Testing & coverage ─────────────────────────────────────────
+coverage/
+.nyc_output/
+*.test.ts
+*.test.tsx
+__tests__/
+__snapshots__/
+
+# ─── WhatsApp auth sessions (persisted via volume) ──────────────
+.wwebjs_auth/
+
+# ─── Misc ───────────────────────────────────────────────────────
+*.log
+*.zip
+*.tar.gz
+pnpm-lock.yaml
+LICENSE
+RECOMMENDATIONS.md
+TODO.md
+NEXT_STEPS.md
+replit.md

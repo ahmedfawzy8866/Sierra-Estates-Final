@@ -246,7 +246,7 @@ export function useProperties(
 
   // Initial data load — tries REST API, falls back to sample data so the
   // UI always shows listings even if the backend is down or not configured.
-  const { data: rawListings, isLoading } = useQuery<Property[]>({
+  const { data: rawListings, isLoading, isError, refetch } = useQuery<Property[]>({
     queryKey: LISTINGS_QUERY_KEY,
     queryFn: async () => {
       try {
@@ -315,5 +315,5 @@ export function useProperties(
   }, [rawListings, mode, selCmps, rooms, sort]);
 
   const hasData = rawListings != null && rawListings.length > 0;
-  return { data, total, loading: isLoading && !hasData };
+  return { data, total, loading: isLoading && !hasData, isError, refetch };
 }

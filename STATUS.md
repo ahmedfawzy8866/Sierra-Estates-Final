@@ -1,45 +1,40 @@
-# Project Status — Sierra Estates (as of 2026-06-08)
+# Project Status — Sierra Estates (Two-App Architecture)
+
+Updated: 2026-06-25
 
 ## ✅ Complete
-- **Security**: Firestore/Storage rules deployed with staff-gating via `users/{uid}.role` (admin|manager|agent)
-- **API Auth**: 5 high-risk routes locked with `verifyAdminRequest` (viewing-requests, concierge/send-whatsapp, telegram/setup, wealth/roi, admin/ingest)
-- **Webhooks**: Conditional secret verification on telegram/webhook, whatsapp/webhook, ingest/whatsapp
-- **Dependencies**: Cleaned (removed ffmpeg suite, deprecated react-beautiful-dnd); upgraded key packages
-- **Build Gates**: Type-check enforced (`ignoreBuildErrors: false`); ESLint integrated with unused-imports detection; Workspace aliases fixed (`@sierra-estates/*`)
-- **Tests**: All 54 unit tests passing. Build fully traces without any missing type references.
-- **Tooling**: Turbo 2.9.16 migrated to v2 task schema; OpenTelemetry observability wired
-- **Config Validation**: CI now validates JSON syntax on vercel.json, tsconfig.json, turbo.json, package.json
-- **Rate-Limiting**: 7 public endpoints protected (listings, leads, request-viewing, closer/initiate, concierge, wealth/portfolio, whatsapp/heartbeat)
-- **Git Repo**: Nested duplicates cleaned up; branches cleanly merged into main.
+- **Two-app architecture**: Vercel (public + light dashboard) + Firebase Admin (bots + admin + workflows)
+- **Shared data layer**: `packages/db` — single source of truth for both apps
+- **Shared auth**: `packages/auth` — one Firebase Auth with custom claims
+- **Route separation**: Public/read APIs in Vercel, heavy/write APIs in Firebase Admin
+- **Next.js rewrites**: Heavy routes proxied from Vercel → Firebase Admin
+- **Security**: Firestore/Storage rules, auth guards, rate limiting, HMAC verification
+- **Build gates**: Type-check enforced, ESLint with unused-imports detection
+- **Repo cleanup**: Removed 340MB of bloat (back/, vendor/, _archive/, legacy files)
+- **LICENSE**: Proprietary — Sierra Estates Inc.
+- **Pino logger**: Structured logging with sensitive field redaction
+- **Deployment scripts**: pre-deploy-check.sh, generate-secrets.sh, setup-branch-protection.sh
 
 ## 🔄 In Progress / Manual
-- **Firebase Rules Deployment**: User must run `firebase deploy --only firestore:rules,storage` with local credentials
-- **Environment Secrets**: ~45 vars must be set in Vercel + Firebase Secret Manager (never in chat/git)
-  - Vercel: NEXT_PUBLIC_FIREBASE_*, SBR_SECRET_KEY, JWT_SECRET, ENCRYPTION_KEY, third-party API keys
-  - Firebase: Firebase admin JSON key + Google Secret Manager for functions
+- **Firebase Rules Deployment**: `firebase deploy --only firestore:rules,storage`
+- **Environment Secrets**: ~45 vars must be set in Vercel + Firebase Secret Manager
+- **Firebase Admin App deployment**: Wire Cloud Functions to handle admin API routes
+- **Custom claims setup**: Set `role` custom claim on existing Firebase Auth users
 
-## 📋 Optional / Future
-- **Rate-limiting at edge**: Current implementation is in-memory per-instance; consider Upstash Redis for multi-instance consistency
-- **Refresh public endpoint schema validation**: Add request/response validation (zod, etc.) to prevent API contract drift
-- **Consolidate to Firebase Hosting**: Move web app from Vercel to Firebase Hosting + Functions for unified secrets/deployment
-- **Staging environment**: Stand up separate Firebase/Vercel projects for smoke-testing before production
-
-## Pre-Deployment Checklist
+## 📋 Pre-Deployment Checklist
 - [ ] Firestore rules deployed to production
-- [ ] All 45 environment secrets set in Vercel/Firebase
-- [ ] Every staff user has `users/{uid}` doc with role in {admin, manager, agent}
-- [ ] Staging environment tested (or skip if confidence is high)
-- [x] CI green on main (type-check, lint, tests)
-- [x] vercel.json valid JSON (CI validation confirms)
+- [ ] All environment secrets set in Vercel/Firebase
+- [ ] Every staff user has `users/{uid}` doc with role ∈ {admin, agent, employee}
+- [ ] Custom claims set on all Firebase Auth users
+- [ ] Vercel project configured (Root Directory = `apps/vercel-app`)
+- [ ] Firebase Admin API URL set in Vercel env (`FIREBASE_ADMIN_URL`)
+- [x] CI green on main (type-check, lint)
+- [x] Two-app architecture in place
+- [x] Shared data contract in `packages/db`
+- [x] Shared auth in `packages/auth`
 
 ## Known Gaps / Tech Debt
-- i18n: next-intl wired but not fully used
-- Older docs: Orphaned TODO/STATUS refs in PR descriptions and closed issues (audit when needed)
-
-## Architecture Notes
-- **Monorepo**: pnpm + Turborepo; web (Vercel), admin (Vite SPA), functions (Firebase)
-- **Auth**: Firebase (client + admin SDKs); custom role model via Firestore docs
-- **Data**: Firestore (schema in `packages/db`); Airtable + Google Sheets ingestion (functions)
-- **Observability**: OpenTelemetry → Arize; Telegram alerts (high-priority events)
-- **Maps**: Leaflet + Mapbox GL (real-estate-specific viewports)
-- **i18n**: en/ar via next-intl
+- i18n: next-intl removed but custom i18n underutilized
+- Test coverage: needs expansion for critical paths
+- `apps/admin-dashboard` still exists as legacy (redirect only)
+- Python API needs Cloud Run deployment configuration
