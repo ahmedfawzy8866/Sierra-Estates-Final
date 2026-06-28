@@ -126,7 +126,7 @@ export function routeMessage(intent: MessageIntent, urgency: string, isNewClient
   if (intent === 'closing') {
     return {
       primaryAgent: 'closer',
-      supportingAgents: ['liela', 'hermes'],
+      supportingAgents: ['hermes'],
       intent,
       urgency: 'critical',
     }
@@ -136,7 +136,7 @@ export function routeMessage(intent: MessageIntent, urgency: string, isNewClient
   if (intent === 'complaint' || urgency === 'critical') {
     return {
       primaryAgent: 'human',
-      supportingAgents: ['liela', 'hermes'],
+      supportingAgents: ['hermes'],
       intent,
       urgency: 'high',
     }
@@ -145,8 +145,8 @@ export function routeMessage(intent: MessageIntent, urgency: string, isNewClient
   // Property data needed
   if (['availability_check', 'property_inquiry', 'property_search', 'price_inquiry'].includes(intent)) {
     return {
-      primaryAgent: 'liela',
-      supportingAgents: ['sierra', 'openclaw', 'hermes'],
+      primaryAgent: 'hermes',
+      supportingAgents: ['openclaw', 'sierra'],
       intent,
       urgency: urgency as RouteDecision['urgency'],
     }
@@ -155,17 +155,17 @@ export function routeMessage(intent: MessageIntent, urgency: string, isNewClient
   // Viewing coordination
   if (intent === 'viewing_request') {
     return {
-      primaryAgent: 'liela',
-      supportingAgents: ['sierra', 'hermes'],
+      primaryAgent: 'hermes',
+      supportingAgents: ['openclaw', 'sierra'],
       intent,
       urgency: 'high',
     }
   }
 
-  // Default: Liela handles with Hermes for delivery
+  // Default: Hermes handles with OpenClaw for operations/data
   return {
-    primaryAgent: 'liela',
-    supportingAgents: ['hermes'],
+    primaryAgent: 'hermes',
+    supportingAgents: ['openclaw'],
     intent,
     urgency: urgency as RouteDecision['urgency'],
   }
@@ -271,15 +271,15 @@ export class WhatsAppBotRouter {
       }
     }
 
-    // Liela always generates the final client-facing response
-    const lielResult = await this.orchestrator.runAgentTask(
-      'liela',
+    // Hermes always generates the final client-facing response
+    const hermesResult = await this.orchestrator.runAgentTask(
+      'hermes',
       `Generate a warm, professional WhatsApp response in Egyptian Arabic to this client message: "${userMessage}"`,
       enrichedContext
     )
 
-    if (lielResult.status === 'success') {
-      return lielResult.output
+    if (hermesResult.status === 'success') {
+      return hermesResult.output
     }
 
     return 'أهلاً! سيتواصل معك أحد مستشارينا في أقرب وقت.'

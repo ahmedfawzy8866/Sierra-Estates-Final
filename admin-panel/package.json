@@ -1,0 +1,10 @@
+{
+  "name": "sierra-estates-admin-panel",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Admin operations panel for Sierra Estates — deployed to Firebase Hosting",
+  "scripts": {
+    "build": "echo 'Admin panel is built from the -19-6-AI repo. Run: cd ../-19-6-AI && npm run build && cp -r dist/* ../Sierra-Estates-Final/admin-panel/dist/'",
+    "deploy": "npm run build && firebase deploy --only hosting"
+  }
+}

@@ -1,5 +1,5 @@
 """
-Sierra Estates AI Real Estate Bot - Complete Implementation
+Sierra Estatese AI Real Estate Bot - Complete Implementation
 Version: 2026
 Purpose: Automate customer journey from inquiry to human handover
 """
@@ -63,9 +63,31 @@ class PropertyData:
             "furnishing_level": self.furnishing_level.value,
             "location": self.location,
             "status": self.status.value,
-            "last_updated": self.last_updated.isoformat(),
+            "last_updated": self.last_updated.isoformat() if self.last_updated else None,
             "price": self.price
         }
+
+
+def _redact_phone(phone_number: Optional[str]) -> Optional[str]:
+    if not phone_number:
+        return None
+    visible_digits = 4 if len(phone_number) >= 4 else len(phone_number)
+    return f"{'*' * max(len(phone_number) - visible_digits, 0)}{phone_number[-visible_digits:]}"
+
+
+def _redact_email(email: Optional[str]) -> Optional[str]:
+    if not email or "@" not in email:
+        return email
+    local_part, domain = email.split("@", 1)
+    visible_local = local_part[:2]
+    return f"{visible_local}{'*' * max(len(local_part) - len(visible_local), 0)}@{domain}"
+
+
+def _sanitize_lead_summary(summary: Dict) -> Dict:
+    sanitized = dict(summary)
+    sanitized["phone_number"] = _redact_phone(summary.get("phone_number"))
+    sanitized["email"] = _redact_email(summary.get("email"))
+    return sanitized
 
 @dataclass
 class CustomerPreferences:
@@ -114,10 +136,10 @@ class LeadProfile:
 # STEP 2: SYSTEM PROMPT (Bot Persona)
 # ============================================================================
 
-SIERRA_ESTATES_SYSTEM_PROMPT = """أنت مستشار عقاري ذكي في شركة سييرا إستيتس. 
+sierra_estatesE_SYSTEM_PROMPT = """أنت مستشار عقاري ذكي في شركة سييرا بلو. 
 
 **هويتك:**
-- الاسم: Sierra Estates AI Advisor
+- الاسم: Sierra Estatese AI Advisor
 - اللغة: اللهجة المصرية الاحترافية المهذبة
 - الفلسفة: ما وراء الوساطة - نحن لا نبيع، نحن نساعدك على اتخاذ القرار الأفضل
 
@@ -237,8 +259,7 @@ class WhatsAppAPI:
     @staticmethod
     def send_message(phone_number: str, message: str, message_type: str = "text") -> bool:
         """Send WhatsApp message"""
-        print(f"📱 WhatsApp -> {phone_number}")
-        print(f"   {message[:80]}...")
+        print(f"📱 WhatsApp message queued ({message_type})")
         return True
     
     @staticmethod
@@ -282,7 +303,7 @@ class GoogleCalendarAPI:
 # STEP 4: CORE BOT LOGIC (6-Step Workflow)
 # ============================================================================
 
-class SierraEstatesBot:
+class SierraEstateseBot:
     """Main Bot Engine - Orchestrates entire customer journey"""
     
     def __init__(self):
@@ -314,7 +335,7 @@ class SierraEstatesBot:
         self.current_lead = lead
         
         # Bot greeting message
-        greeting = f"""أهلاً بحضرتك في سييرا إستيتس، مستشارك العقاري الذكي. 
+        greeting = f"""أهلاً بحضرتك في سييرا بلو، مستشارك العقاري الذكي. 
 ثواني هراجع السيستم حالاً عشان أتأكدلك إذا كانت الوحدة دي (كود: {reference_code}) لسه متاحة ولا لأ.
 
 وبستأذنك عقبال ما أراجع، أعرف من حضرتك: 
@@ -360,7 +381,7 @@ class SierraEstatesBot:
 🛋️ الفرش: {property_data.furnishing_level.value}
 💰 السعر: {property_data.price:,} جنيه
 
-وعموماً، إحنا في سييرا إستيتس بنعمل مسح شامل للماركت كله بالذكاء الاصطناعي، 
+وعموماً، إحنا في سييرا بلو بنعمل مسح شامل للماركت كله بالذكاء الاصطناعي، 
 وكل الوحدات اللي بنرشحها حقيقية 100% ونزلنا عاينّاها بنفسنا."""
         
         print("🤖 BOT:", report)
@@ -508,7 +529,7 @@ class SierraEstatesBot:
             "title": f"معاينة عقارات - {self.current_lead.phone_number}",
             "date": selected_slot["date"],
             "time": selected_slot["time"],
-            "location": "سييرا إستيتس - مكتب التجمع"
+            "location": "سييرا بلو - مكتب التجمع"
         })
         
         self.current_lead.scheduled_viewing = {
@@ -529,7 +550,7 @@ class SierraEstatesBot:
 الوقت: {selected_slot['time']}
 
 📍 **الموقع:**
-سييرا إستيتس - مكتب التجمع الخامس
+سييرا بلو - مكتب التجمع الخامس
 
 📱 في أي سؤال، تواصل معنا على الواتس!"""
         
@@ -561,7 +582,7 @@ class SierraEstatesBot:
 المستشار العقاري المتخصص بتاعنا هيراجع الاختيارات دي شخصياً 
 وهيكلم حضرتك خلال ساعة بالكتير عشان يأكد معاك كل التفاصيل وخطة المعاينة.
 
-يومك سعيد ونتمنى لك رحلة بحث مريحة مع سييرا إستيتس! 🎉"""
+يومك سعيد ونتمنى لك رحلة بحث مريحة مع سييرا بلو! 🎉"""
         
         print("🤖 BOT:", final_message)
         
@@ -601,7 +622,7 @@ class SierraEstatesBot:
         print("\n" + "🔔 "*10)
         print("⚡ AGENT NOTIFICATION - NEW QUALIFIED LEAD")
         print("🔔 "*10)
-        print(json.dumps(lead_summary, ensure_ascii=False, indent=2))
+        print("A redacted lead summary has been prepared for the assigned agent.")
         print("\n✓ Agent will contact customer within 1 hour\n")
 
 # ============================================================================
@@ -656,11 +677,11 @@ class BotAnalytics:
 
 if __name__ == "__main__":
     print("\n" + "█"*70)
-    print("SIERRA ESTATES AI BOT - COMPLETE WORKFLOW DEMONSTRATION")
+    print("🏢 sierra estatesE AI BOT - COMPLETE WORKFLOW DEMONSTRATION")
     print("█"*70)
     
     # Initialize bot and analytics
-    bot = SierraEstatesBot()
+    bot = SierraEstateseBot()
     analytics = BotAnalytics()
     
     # Simulate customer inquiry
@@ -705,8 +726,4 @@ if __name__ == "__main__":
     print("\n" + "="*70)
     print("📋 FINAL LEAD PROFILE (Ready for Agent Handoff)")
     print("="*70)
-    print(json.dumps(
-        bot._generate_lead_summary(),
-        ensure_ascii=False,
-        indent=2
-    ))
+    print("Redacted lead summary generated for handoff review.")

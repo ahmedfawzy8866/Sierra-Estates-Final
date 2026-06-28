@@ -1,7 +1,7 @@
-# 🌌 Sierra Estates 2027 — Local One-Command Setup Script (Windows PowerShell)
+# Sierra Estates — Local Setup Script (Windows PowerShell)
 
 Write-Host "==========================================================" -ForegroundColor Cyan
-Write-Host "    🪐 sierra estates 2027 PROPTECH OS LOCAL SETUP ENGINE" -ForegroundColor Cyan
+Write-Host "    SIERRA ESTATES — LOCAL SETUP" -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -28,13 +28,13 @@ if ($null -eq $dockerCheck) {
 # 3. Environment check
 Write-Host ""
 Write-Host "[3/5] Verifying environment configurations..." -ForegroundColor Yellow
-$envPath = "apps/web/.env.local"
+$envPath = "apps/vercel-app/.env.local"
 if (Test-Path $envPath) {
-    Write-Host "✅ apps/web/.env.local found!" -ForegroundColor Green
+    Write-Host "✅ apps/vercel-app/.env.local found!" -ForegroundColor Green
 } else {
-    Write-Host "⚠️  apps/web/.env.local not found. Copying from .env.local.example..." -ForegroundColor Magenta
-    Copy-Item "apps/web/.env.local.example" $envPath
-    Write-Host "👉 Created apps/web/.env.local. Please enter your Firebase and Gemini API keys inside it." -ForegroundColor Gray
+    Write-Host "⚠️  .env.local not found. Copying from .env.local.example..." -ForegroundColor Magenta
+    Copy-Item "apps/vercel-app/.env.local.example" $envPath
+    Write-Host "👉 Created apps/vercel-app/.env.local. Please enter your Firebase and API keys." -ForegroundColor Gray
 }
 
 # 4. Install dependencies
@@ -50,20 +50,18 @@ Write-Host "✅ Dependencies installed successfully!" -ForegroundColor Green
 # 5. Provide launch commands
 Write-Host ""
 Write-Host "==========================================================" -ForegroundColor Green
-Write-Host " 🎉 sierra estates IS READY FOR LOCAL DEVELOPMENT!" -ForegroundColor Green
+Write-Host " ✅ SIERRA ESTATES IS READY FOR LOCAL DEVELOPMENT!" -ForegroundColor Green
 Write-Host "==========================================================" -ForegroundColor Green
 Write-Host ""
-Write-Host "To start the client-facing portal & admin dashboard:" -ForegroundColor Cyan
-Write-Host "👉 pnpm exec turbo run dev --parallel" -ForegroundColor Yellow
+Write-Host "Two-App Architecture:" -ForegroundColor Cyan
+Write-Host "  Vercel App (public + dashboard):  pnpm dev:vercel" -ForegroundColor Yellow
+Write-Host "  Firebase Admin (bots + workflows): pnpm dev:admin" -ForegroundColor Yellow
+Write-Host "  Both at once:                      pnpm dev" -ForegroundColor Yellow
 Write-Host ""
-Write-Host "To start the self-hosted n8n workflow automation engine:" -ForegroundColor Cyan
-Write-Host "👉 docker-compose -f docker-compose.n8n.yml up -d" -ForegroundColor Yellow
-Write-Host ""
-Write-Host "To run the automated tests suite to verify operations:" -ForegroundColor Cyan
-Write-Host "👉 pnpm test" -ForegroundColor Yellow
+Write-Host "Self-hosted n8n:" -ForegroundColor Cyan
+Write-Host "  docker-compose -f docker-compose.n8n.yml up -d" -ForegroundColor Yellow
 Write-Host ""
 Write-Host "URLs:" -ForegroundColor Cyan
-Write-Host "🔗 Luxury Portal:   http://localhost:3000" -ForegroundColor Gray
-Write-Host "🔗 Admin CRM:       http://localhost:5173" -ForegroundColor Gray
-Write-Host "🔗 n8n Dashboard:   http://localhost:5678" -ForegroundColor Gray
+Write-Host "  Public site:    http://localhost:3000" -ForegroundColor Gray
+Write-Host "  n8n Dashboard:  http://localhost:5678" -ForegroundColor Gray
 Write-Host "==========================================================" -ForegroundColor Green

@@ -102,7 +102,7 @@ describe('WhatsApp Bot Router', () => {
     it('should route closing to closer agent', () => {
       const route = routeMessage('closing', 'critical', false)
       expect(route.primaryAgent).toBe('closer')
-      expect(route.supportingAgents).toContain('liela')
+      expect(route.supportingAgents).toContain('hermes')
     })
 
     it('should route complaint to human', () => {
@@ -110,30 +110,31 @@ describe('WhatsApp Bot Router', () => {
       expect(route.primaryAgent).toBe('human')
     })
 
-    it('should route property search to liela with sierra and openclaw support', () => {
+    it('should route property search to hermes with sierra and openclaw support', () => {
       const route = routeMessage('property_search', 'medium', true)
-      expect(route.primaryAgent).toBe('liela')
+      expect(route.primaryAgent).toBe('hermes')
       expect(route.supportingAgents).toContain('sierra')
       expect(route.supportingAgents).toContain('openclaw')
     })
 
-    it('should route availability check to liela with data agents', () => {
+    it('should route availability check to hermes with data agents', () => {
       const route = routeMessage('availability_check', 'medium', false)
-      expect(route.primaryAgent).toBe('liela')
+      expect(route.primaryAgent).toBe('hermes')
       expect(route.supportingAgents).toContain('openclaw')
     })
 
-    it('should route viewing request to liela with sierra', () => {
+    it('should route viewing request to hermes with sierra', () => {
       const route = routeMessage('viewing_request', 'high', false)
-      expect(route.primaryAgent).toBe('liela')
+      expect(route.primaryAgent).toBe('hermes')
       expect(route.supportingAgents).toContain('sierra')
     })
 
-    it('should always include hermes in support', () => {
+    it('should always use hermes as primary or support', () => {
       const intents: MessageIntent[] = ['greeting', 'property_search', 'viewing_request', 'price_inquiry']
       intents.forEach((intent) => {
         const route = routeMessage(intent, 'low', false)
-        expect(route.supportingAgents).toContain('hermes')
+        const hasHermes = route.primaryAgent === 'hermes' || route.supportingAgents.includes('hermes')
+        expect(hasHermes).toBe(true)
       })
     })
 

@@ -25,9 +25,11 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - name: Build Client Portal
-        run: pnpm --filter "@workspace/sierra-estates" build
+        run: pnpm --filter "@sierra-estates/vercel-app" build
         env:
           NODE_ENV: production
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
 
       - name: Deploy Client Portal to Vercel
         uses: amondnet/vercel-action@v25
@@ -35,15 +37,33 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_CLIENT_PROJECT_ID }}
-          working-directory: ./artifacts/sierra-estates
+          working-directory: ./apps/vercel-app
           vercel-args: --prod
 
   # ─────────────────────────────────────────────────
-  # JOB 2: ADMIN DASHBOARD → Vercel
+  # JOB 2: FIRESTORE + STORAGE RULES → Firebase
   # ─────────────────────────────────────────────────
-  deploy-admin:
-    name: "Admin Dashboard to Vercel"
+  deploy-firestore-rules:
+    name: "Firestore & Storage Rules to Firebase"
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy Firestore Rules
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only firestore:rules,firestore:indexes,storage
+        env:
+          GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+  # ─────────────────────────────────────────────────
+  # JOB 3: ADMIN APP → Firebase Hosting
+  # (Admin dashboard deploys to Firebase, not Vercel)
+  # ─────────────────────────────────────────────────
+  deploy-admin-firebase:
+    name: "Admin App to Firebase Hosting"
+    runs-on: ubuntu-latest
+    needs: deploy-firestore-rules
     steps:
       - uses: actions/checkout@v4
 
@@ -56,33 +76,20 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Build Admin Dashboard
-        run: pnpm --filter admin-dashboard build
+      - name: Build Admin App
+        run: pnpm --filter "@sierra-estates/firebase-admin" build
         env:
           NODE_ENV: production
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
 
-      - name: Deploy Admin Dashboard to Vercel
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_ADMIN_PROJECT_ID }}
-          working-directory: ./apps/admin-dashboard
-          vercel-args: --prod
-
-  # ─────────────────────────────────────────────────
-  # JOB 3: FIRESTORE RULES → Firebase
-  # ─────────────────────────────────────────────────
-  deploy-firestore-rules:
-    name: "Firestore Rules to Firebase"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Deploy Firestore Rules
+      - name: Deploy Admin to Firebase Hosting
         uses: w9jds/firebase-action@master
         with:
-          args: deploy --only firestore:rules,firestore:indexes,storage
+          args: deploy --only hosting:sierra-estates-admin
         env:
           GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+          NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}

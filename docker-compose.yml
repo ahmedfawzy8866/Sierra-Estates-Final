@@ -1,0 +1,96 @@
+version: '3.8'
+
+# Sierra Estates — Full Local Development Stack
+# Usage: docker-compose up -d
+#
+# Services:
+#   - vercel-app:  Public client site (port 3000)
+#   - admin:       Firebase admin panel + API (port 3001)
+#   - whatsapp:    WhatsApp bot (standalone, long-running)
+#   - n8n:         Workflow automation (port 5678)
+#
+# Prerequisites:
+#   1. Copy .env.example to .env and fill in all values
+#   2. Run: docker-compose up -d
+
+services:
+  # ─── Public Client Site (Vercel App) ─────────────────────────────
+  vercel-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.vercel
+    container_name: sierra-vercel-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ─── Firebase Admin App (Admin Panel + API) ──────────────────────
+  admin:
+    build:
+      context: .
+      dockerfile: Dockerfile.admin
+    container_name: sierra-admin
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ─── WhatsApp Bot (Long-running Node process) ────────────────────
+  whatsapp:
+    build:
+      context: ./apps/agents/whatsapp-scraper
+      dockerfile: Dockerfile
+    container_name: sierra-whatsapp-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - whatsapp_session:/app/.wwebjs_auth
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f 'node index.js' || exit 1"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ─── n8n Workflow Automation ─────────────────────────────────────
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: sierra-n8n
+    restart: always
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_PORT=5678
+      - N8N_SECURE_COOKIE=false
+      - GENERIC_TIMEZONE=Africa/Cairo
+      - TZ=Africa/Cairo
+    volumes:
+      - n8n_data:/home/node/.n8n
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:5678/healthz || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  whatsapp_session:
+    name: sierra_whatsapp_session
+  n8n_data:
+    name: sierra_n8n_data

@@ -16,6 +16,10 @@ service cloud.firestore {
       return isSignedIn() && request.auth.token.email_verified == true;
     }
 
+    // BOOTSTRAP: Retained as a safety net for initial admin seeding.
+    // After seeding the `admins` collection via the admin-setup script,
+    // these hardcoded emails can be removed. The primary check is
+    // isRegisteredAdmin() which looks up the `admins` Firestore collection.
     function isBootstrappedAdmin() {
       return isEmailVerified() && (
         request.auth.token.email == "A.fawzy8866@gmail.com" || 
@@ -25,13 +29,17 @@ service cloud.firestore {
     }
 
     function isRegisteredAdmin() {
-      return isEmailVerified()
-        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'superadmin'];
+      return isEmailVerified() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    // Also allow admin access via registered email in the admins collection
+    // (supports bootstrapping before the user's UID is known)
+    function isRegisteredAdminByEmail() {
+      return isEmailVerified() && exists(/databases/$(database)/documents/admins/$(request.auth.token.email));
     }
 
     function isAdmin() {
-      return isBootstrappedAdmin() || isRegisteredAdmin();
+      return isRegisteredAdmin() || isRegisteredAdminByEmail() || isBootstrappedAdmin();
     }
 
     function isStaff() {
@@ -232,11 +240,12 @@ service cloud.firestore {
       allow read, write: if isStaff() || isAdmin();
     }
 
-    match /admins/{userId} {
+    match /admins/{adminId} {
+      // Allow anyone to check if a specific admin exists (needed for isRegisteredAdminByEmail)
       allow get: if true;
       allow list: if isAdmin();
       allow create, update: if isAdmin()
-        && isValidId(userId)
+        && isValidId(adminId)
         && isValidAdminEntry(incoming())
         && incoming().createdAt <= request.time + duration.value(24, 'h');
       allow delete: if isAdmin();
@@ -281,11 +290,40 @@ service cloud.firestore {
     match /system_health/{id} {
       allow read, write: if isStaff() || isAdmin();
     }
-    match /bots/{id} {
-      allow read, write: if isStaff() || isAdmin();
+
+    // ── Two-App Architecture: Bot & Admin Collections ──
+    // Written by Firebase Admin App only. Never by Vercel.
+    match /bot_jobs/{id} {
+      allow read: if isStaff() || isAdmin();
+      allow write: if isStaff() || isAdmin();
     }
-    match /bot_commands/{id} {
-      allow read, write: if isStaff() || isAdmin();
+    match /exchange/{id} {
+      allow read: if isStaff() || isAdmin();
+      allow write: if isStaff() || isAdmin();
+    }
+    match /owner_negotiations/{id} {
+      allow read: if isStaff() || isAdmin();
+      allow write: if isStaff() || isAdmin();
+    }
+    match /rawScrapeData/{id} {
+      allow read: if isStaff() || isAdmin();
+      allow write: if isStaff() || isAdmin();
+    }
+    match /processedData/{id} {
+      allow read: if isStaff() || isAdmin();
+      allow write: if isStaff() || isAdmin();
+    }
+    match /broker_listings/{id} {
+      allow read: if isStaff() || isAdmin();
+      allow write: if isStaff() || isAdmin();
+    }
+
+    // ── Public write: lead capture forms ──
+    // These collections allow unauthenticated creates (for public forms)
+    // but reads are staff-only
+    match /viewing_requests/{id} {
+      allow create: if true;
+      allow read, update, delete: if isStaff() || isAdmin();
     }
   }
 }

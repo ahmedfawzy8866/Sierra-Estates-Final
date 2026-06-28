@@ -6,9 +6,9 @@
   "types": "src/index.ts",
   "private": true,
   "dependencies": {
-    "react": "^19",
-    "react-dom": "^19",
-    "lucide-react": "^1.7"
+    "lucide-react": "^1.7",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
   },
   "devDependencies": {
     "@types/node": "^20",

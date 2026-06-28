@@ -1,5 +1,5 @@
 """
-SIERRA ESTATES AI BOT - SYSTEM PROMPT & DEPLOYMENT GUIDE
+sierra estates AI BOT - SYSTEM PROMPT & DEPLOYMENT GUIDE
 Complete Implementation Ready for Production
 """
 
@@ -7,8 +7,8 @@ Complete Implementation Ready for Production
 # PART 1: COMPLETE SYSTEM PROMPT (For LLM/Claude)
 # ============================================================================
 
-SIERRA_ESTATES_COMPLETE_SYSTEM_PROMPT = """
-أنت مستشار عقاري ذكي في شركة سييرا إستيتس (Sierra Estates Real Estate).
+sierra_estatesE_COMPLETE_SYSTEM_PROMPT = """
+أنت مستشار عقاري ذكي في شركة سييرا بلو (Sierra Estates Real Estate).
 
 ═══════════════════════════════════════════════════════════════════════════
 📋 IDENTITY & PERSONA
@@ -18,7 +18,7 @@ SIERRA_ESTATES_COMPLETE_SYSTEM_PROMPT = """
 الدور: مستشار عقاري ذكي متخصص في إدارة رحلة العميل من الاستفسار حتى المعاينة
 اللغة: اللهجة المصرية الاحترافية المهذبة
 مستوى الخبرة: خبير في سوق العقارات المصري
-التوقيع: "مع سييرا إستيتس... أسهل، أسرع، وأصدق"
+التوقيع: "مع سييرا بلو... أسهل، أسرع، وأصدق 🎯"
 
 ═══════════════════════════════════════════════════════════════════════════
 🎯 CORE PHILOSOPHY
@@ -304,7 +304,7 @@ IMPLEMENTATION_CHECKLIST = {
     ],
     
     "Phase 2: Development": [
-        "✓ Implement bot core logic (sierra_estates_bot_implementation.py)",
+        "✓ Implement bot core logic (sierra_estatese_bot_implementation.py)",
         "✓ Integrate Property Finder API",
         "✓ Integrate HubSpot CRM",
         "✓ Integrate WhatsApp API",
@@ -371,46 +371,46 @@ set -e
 ENVIRONMENT=${1:-staging}
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-echo "Deploying Sierra Estates Bot to $ENVIRONMENT environment..."
+echo "🚀 Deploying Sierra Estates Bot to $ENVIRONMENT environment..."
 
 # 1. Validate environment
-echo "Validating environment..."
+echo "1️⃣ Validating environment..."
 if [ ! -f ".env.$ENVIRONMENT" ]; then
-    echo "env.$ENVIRONMENT file not found"
+    echo "❌ .env.$ENVIRONMENT file not found"
     exit 1
 fi
 
 # 2. Install dependencies
-echo "Installing dependencies..."
+echo "2️⃣ Installing dependencies..."
 pip install -r requirements.txt
 
 # 3. Load environment variables
-echo "Loading environment variables..."
+echo "3️⃣ Loading environment variables..."
 export $(cat .env.$ENVIRONMENT | xargs)
 
 # 4. Run tests
-echo "Running tests..."
+echo "4️⃣ Running tests..."
 python -m pytest tests/ -v
 
 # 5. Validate API connections
-echo "Validating API connections..."
+echo "5️⃣ Validating API connections..."
 python scripts/validate_apis.py
 
 # 6. Database migration
-echo "Running database migrations..."
+echo "6️⃣ Running database migrations..."
 python scripts/migrate_db.py
 
 # 7. Deploy bot
-echo "Deploying bot service..."
-docker build -t sierra-estates-bot:latest .
-docker tag sierra-estates-bot:latest sierra-estates-bot:$ENVIRONMENT
+echo "7️⃣ Deploying bot service..."
+docker build -t sierra-estatese-bot:latest .
+docker tag sierra-estatese-bot:latest sierra-estatese-bot:$ENVIRONMENT
 
 if [ "$ENVIRONMENT" = "production" ]; then
-    docker push sierra-estates-bot:latest
+    docker push sierra-estatese-bot:latest
     # Deploy to Kubernetes or your hosting solution
-    kubectl apply -f k8s/sierra-estates-bot-$ENVIRONMENT.yaml
+    kubectl apply -f k8s/sierra-estatese-bot-$ENVIRONMENT.yaml
 else
-    docker run -d --name sierra-estates-bot-$ENVIRONMENT sierra-estates-bot:$ENVIRONMENT
+    docker run -d --name sierra-estatese-bot-$ENVIRONMENT sierra-estatese-bot:$ENVIRONMENT
 fi
 
 # 8. Health check
@@ -590,8 +590,8 @@ if __name__ == "__main__":
     print("Sierra Estates Bot - Complete System Implementation")
     print("=" * 70)
     print("\nGenerated Files:")
-    print("1. sierra_estates_bot_implementation.py - Core bot logic")
-    print("2. sierra_estates_api_integration.py - API integrations")
+    print("1. sierra_estatese_bot_implementation.py - Core bot logic")
+    print("2. sierra_estatese_api_integration.py - API integrations")
     print("3. system_prompt_and_deployment.py - This file")
     print("\nNext Steps:")
     print("1. Install requirements: pip install -r requirements.txt")
@@ -599,3 +599,4 @@ if __name__ == "__main__":
     print("3. Run tests: python -m pytest")
     print("4. Deploy using provided deployment script")
     print("5. Monitor metrics via dashboard")
+"""

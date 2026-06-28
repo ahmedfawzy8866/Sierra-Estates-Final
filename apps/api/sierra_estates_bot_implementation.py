@@ -1,5 +1,5 @@
 """
-Sierra Estates AI Real Estate Bot - Complete Implementation
+Sierra Estatese AI Real Estate Bot - Complete Implementation
 Version: 2026
 Purpose: Automate customer journey from inquiry to human handover
 """
@@ -114,10 +114,10 @@ class LeadProfile:
 # STEP 2: SYSTEM PROMPT (Bot Persona)
 # ============================================================================
 
-SIERRA_ESTATES_SYSTEM_PROMPT = """أنت مستشار عقاري ذكي في شركة سييرا إستيتس. 
+SIERRA_BLUE_SYSTEM_PROMPT = """أنت مستشار عقاري ذكي في شركة سييرا إستيتس. 
 
 **هويتك:**
-- الاسم: Sierra Estates AI Advisor
+- الاسم: Sierra Estatese AI Advisor
 - اللغة: اللهجة المصرية الاحترافية المهذبة
 - الفلسفة: ما وراء الوساطة - نحن لا نبيع، نحن نساعدك على اتخاذ القرار الأفضل
 
@@ -282,7 +282,7 @@ class GoogleCalendarAPI:
 # STEP 4: CORE BOT LOGIC (6-Step Workflow)
 # ============================================================================
 
-class SierraEstatesBot:
+class SierraEstateseBot:
     """Main Bot Engine - Orchestrates entire customer journey"""
     
     def __init__(self):
@@ -656,11 +656,11 @@ class BotAnalytics:
 
 if __name__ == "__main__":
     print("\n" + "█"*70)
-    print("SIERRA ESTATES AI BOT - COMPLETE WORKFLOW DEMONSTRATION")
+    print("🏢 SIERRA ESTATESE AI BOT - COMPLETE WORKFLOW DEMONSTRATION")
     print("█"*70)
     
     # Initialize bot and analytics
-    bot = SierraEstatesBot()
+    bot = SierraEstateseBot()
     analytics = BotAnalytics()
     
     # Simulate customer inquiry

@@ -41,9 +41,9 @@ describe('Integration: Full WhatsApp Message Flow', () => {
 
     // Default: all agent tasks succeed
     mockRunAgentTask.mockImplementation((agentName: string) => {
-      if (agentName === 'liela') {
+      if (agentName === 'hermes') {
         return Promise.resolve({
-          agentName: 'liela',
+          agentName: 'hermes',
           status: 'success',
           output: 'أهلاً يا فندم، سأساعدك في إيجاد الشقة المثالية. ما هو نوع الوحدة التي تبحث عنها؟',
         })
@@ -97,7 +97,7 @@ describe('Integration: Full WhatsApp Message Flow', () => {
       const calledAgents = mockRunAgentTask.mock.calls.map((c: string[]) => c[0])
       expect(calledAgents).toContain('openclaw')
       expect(calledAgents).toContain('sierra')
-      expect(calledAgents).toContain('liela')
+      expect(calledAgents).toContain('hermes')
 
       expect(response).toBeTruthy()
     })
@@ -173,9 +173,9 @@ describe('Integration: Full WhatsApp Message Flow', () => {
 
 describe('Intent → Route → Urgency pipeline', () => {
   const scenarios = [
-    { body: 'SE001 available?', expectedIntent: 'availability_check', expectedPrimary: 'liela' },
+    { body: 'SE001 available?', expectedIntent: 'availability_check', expectedPrimary: 'hermes' },
     { body: 'عايز اوقع العقد', expectedIntent: 'closing', expectedPrimary: 'closer' },
-    { body: 'اهلا', expectedIntent: 'greeting', expectedPrimary: 'liela' },
+    { body: 'اهلا', expectedIntent: 'greeting', expectedPrimary: 'hermes' },
     { body: 'I am very disappointed with your service', expectedIntent: 'complaint', expectedPrimary: 'human' },
   ]
 

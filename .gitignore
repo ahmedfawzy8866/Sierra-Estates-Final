@@ -1,47 +1,114 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+# ============================================================
+# Sierra Estates — Comprehensive Gitignore
+# ============================================================
 
-# dependencies
-node_modules/
-
-# Expo
-.expo/
+# ─── Compiled output ───
 dist/
-web-build/
-expo-env.d.ts
-
-# Native
-ios/
-android/
-*.orig.*
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
-
-# Metro
-.metro-health-check*
-
-# debug
-npm-debug.*
-yarn-debug.*
-yarn-error.*
-
-# macOS
-.DS_Store
-*.pem
-
-# local env files
-.env*.local
-
-# typescript
+packages/*/dist/
+tmp/
+out-tsc/
 *.tsbuildinfo
-.vercel
+.expo/
+.expo-shared/
+.next/
+out/
+build/
+.turbo/
 
+# ─── Dependencies ───
+node_modules/
+.pnp
+.pnp.js
+
+# ─── IDEs and editors ───
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# ─── Environment variables and secrets ───
 .env
-coverage/
-obedian-store.json
-.agents/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.production
+*.pem
+docs/secrets.local.md
+
+# ─── Firebase service accounts (NEVER commit) ───
+*serviceAccount*.json
+firebase-adminsdk-*.json
+
+# ─── Misc ───
+/.sass-cache
+/connect.lock
+/coverage/
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+
+# ─── WhatsApp scraper session data ───
 .wwebjs_auth/
 .wwebjs_cache/
+
+# ─── System Files ───
+.DS_Store
+Thumbs.db
+
+# ─── Cursor / AI rules ───
+.cursor/rules/nx-rules.mdc
+.github/instructions/nx.instructions.md
+
+# ─── Replit ───
+.cache/
+.local/
+
+# ─── Agent skills ───
+.agents/
+skills-lock.json
+
+# ─── Firebase cache & logs ───
+.firebase/
+firebase-debug.log
+firestore-debug.log
+
+# ─── Vercel ───
+.vercel
+
+# ─── Logs ───
+*.log
+
+# ─── Archive (local only) ───
+_archive/
+back/
+
+# ─── Large binary assets (use Firebase Storage instead) ───
+*.zip
+*.tar.gz
+*.bin
+
+# ─── Internal / tooling ───
+skills/
+upload/
+tool-results/coverage/
+**/coverage/
+
+# ─── Playwright ───
+playwright-report/
+test-results/
 

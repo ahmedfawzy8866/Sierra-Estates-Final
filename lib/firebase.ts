@@ -1,136 +1,97 @@
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, setDoc } from "firebase/firestore";
+/**
+ * sierra estates — FIREBASE CLIENT SINGLETON
+ * Central Firebase initialization for the frontend.
+ * Admin SDK (service-account.json) is for server/scripts only.
+ */
+import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
+import { getAuth, Auth } from 'firebase/auth';
+import { getFirestore, Firestore } from 'firebase/firestore';
+import { getStorage, FirebaseStorage } from 'firebase/storage';
 
-// Credentials from apps/admin-dashboard/firebase-applet-config.json
-const firebaseConfig = {
-  projectId: "sierra-blu",
-  appId: "1:941030513456:web:7ea785e8287741967086f5",
-  apiKey: "AIzaSyBZLN2jTTKV34SneGPoWRz1zoRpX5uODjs",
-  authDomain: "sierra-blu.firebaseapp.com",
-  storageBucket: "sierra-blu.firebasestorage.app",
-  messagingSenderId: "941030513456",
-  measurementId: "G-ZP054BPJ8Q"
+const isDummyKey = (key?: string) => {
+  if (!key) return true;
+  return key.includes('Dummy') || key === 'AIzaSyDummyKey123456789';
 };
 
-// Initialize Firebase
-const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const hasValidFirebaseConfig = Boolean(
+  process.env.NEXT_PUBLIC_FIREBASE_API_KEY &&
+  process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN &&
+  process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID &&
+  process.env.NEXT_PUBLIC_FIREBASE_APP_ID &&
+  !isDummyKey(process.env.NEXT_PUBLIC_FIREBASE_API_KEY)
+);
 
-export { app, db };
+const canUsePlaceholderConfig = !hasValidFirebaseConfig && typeof window === 'undefined';
 
-// Helper to seed the Admin Tasks to Firebase
-export const seedAdminTasksToFirebase = async () => {
-  const TASKS = [
-    {
-      id: "phase1",
-      phase: "Phase 1: Dynamic Data (Firebase)",
-      items: [
-        { title: "Initialize Firebase client connection", completed: true },
-        { title: "Create Firestore collections: Properties & Agents", completed: true },
-        { title: "Migrate static property data to Firestore", completed: false },
-        { title: "Implement real-time availability updates", completed: false },
-      ],
-    },
-    {
-      id: "phase2",
-      phase: "Phase 2: AI Search & Matchmaking (OpenClaw)",
-      items: [
-        { title: "Initialize OpenClaw gateway + vector index", completed: true },
-        { title: "Feed property descriptions to OpenClaw for semantic search", completed: false },
-        { title: "Build natural language search UI on home screen", completed: false },
-        { title: "Handle fuzzy queries (e.g. 'villa with pool under 10M EGP')", completed: false },
-        { title: "Add AI property comparison feature", completed: false },
-      ],
-    },
-    {
-      id: "phase3",
-      phase: "Phase 3: WhatsApp Automation & CRM",
-      items: [
-        { title: "Configure WhatsApp Business API webhook endpoint", completed: false },
-        { title: "Wire incoming messages to Hermes AI agent", completed: true },
-        { title: "Auto-log leads to Firestore crm_leads collection", completed: true },
-        { title: "Build CRM lead dashboard in Admin page", completed: true },
-        { title: "Enable agent assignment & WhatsApp notifications", completed: false },
-      ],
-    },
-    {
-      id: "phase4",
-      phase: "Phase 4: Hermes AI Direct Assistant",
-      items: [
-        { title: "Deploy Hermes agent with Communication skill", completed: true },
-        { title: "Equip Hermes with SPIN Selling methodology", completed: true },
-        { title: "Equip Hermes with BATNA Negotiation framework", completed: true },
-        { title: "Enable bilingual responses (Arabic / English)", completed: true },
-        { title: "Connect Hermes to live property inventory for queries", completed: false },
-        { title: "Add voice message support via ECC encryption", completed: false },
-      ],
-    },
-    {
-      id: "phase5",
-      phase: "Phase 5: Market Expansion & Analytics",
-      items: [
-        { title: "Add investment ROI calculator for buyers", completed: false },
-        { title: "Implement referral tracking program", completed: false },
-        { title: "Build agent performance leaderboard", completed: false },
-        { title: "Integrate market valuation API for New Cairo areas", completed: false },
-        { title: "Add push notifications for price drops & new listings", completed: false },
-      ],
-    },
-  ];
+if (!hasValidFirebaseConfig && !canUsePlaceholderConfig && typeof window !== 'undefined') {
+  console.warn('[firebase] Using development mock - real Firebase not configured.');
+}
 
-  const tasksRef = collection(db, "admin_tasks");
-  for (const taskGroup of TASKS) {
-    await setDoc(doc(db, "admin_tasks", taskGroup.id), taskGroup);
-  }
-  console.log("Admin tasks successfully seeded to Firebase!");
-};
+const firebaseConfig = hasValidFirebaseConfig
+  ? {
+      apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+      authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+      storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+      messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+      appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    }
+  : {
+      apiKey: 'dev-mode-placeholder',
+      authDomain: 'dev.firebaseapp.com',
+      projectId: 'dev-project',
+      storageBucket: 'dev.appspot.com',
+      messagingSenderId: '000000000000',
+      appId: '1:000000000000:web:dev',
+    };
 
-// Helper to fetch Admin Tasks from Firebase
-export const fetchAdminTasks = async () => {
-  const tasksRef = collection(db, "admin_tasks");
-  const snapshot = await getDocs(tasksRef);
-  if (snapshot.empty) {
-    return [];
-  }
-  const tasks: any[] = [];
-  snapshot.forEach((doc) => {
-    tasks.push({ id: doc.id, ...doc.data() });
+let app: FirebaseApp;
+try {
+  app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+} catch (error) {
+  console.warn('[firebase] Failed to initialize app:', error);
+  app = getApps()[0];
+}
+
+export const isFirebaseClientConfigured = hasValidFirebaseConfig;
+
+const createMockAuth = (): Auth => {
+  return new Proxy({} as any, {
+    get(target, prop) {
+      if (prop === '_isProxy') return true;
+      if (prop === 'currentUser') return null;
+      return () => Promise.resolve(null);
+    },
   });
-  // Sort by phase id simple comparison
-  return tasks.sort((a, b) => a.id.localeCompare(b.id));
 };
 
-// Helper to toggle a task's completion status
-export const toggleAdminTaskCompletion = async (groupId: string, taskIndex: number, currentItems: any[]) => {
-  const docRef = doc(db, "admin_tasks", groupId);
-  const newItems = [...currentItems];
-  newItems[taskIndex].completed = !newItems[taskIndex].completed;
-  await updateDoc(docRef, { items: newItems });
-  return newItems;
-};
+const unavailableClientService = <T>(serviceName: string): T =>
+  new Proxy(
+    {},
+    {
+      get() {
+        throw new Error(
+          `Firebase client ${serviceName} is unavailable - use real Firebase credentials in production.`
+        );
+      },
+    }
+  ) as T;
 
-// Seed properties
-export const seedPropertiesToFirebase = async (staticProperties: any[]) => {
-  const propsRef = collection(db, "properties");
-  for (const prop of staticProperties) {
-    const { image, ...firestoreData } = prop; 
-    // We remove the `image` (require module) and store an imageId based on the id so we can map it locally
-    await setDoc(doc(db, "properties", prop.id), { ...firestoreData, imageId: prop.id });
+export const auth: Auth = getAuth(app);
+
+export const db: Firestore = getFirestore(app);
+
+export const storage: FirebaseStorage = getStorage(app);
+
+export async function getAnalyticsInstance() {
+  if (typeof window === 'undefined') return null;
+  if (!hasValidFirebaseConfig) return null;
+  try {
+    const { getAnalytics } = await import('firebase/analytics');
+    return getAnalytics(app);
+  } catch {
+    return null;
   }
-  console.log("Properties successfully seeded to Firebase!");
-};
+}
 
-import { PROPERTIES } from "../data/properties";
-
-// Fetch properties
-export const fetchProperties = async () => {
-  const propsRef = collection(db, "properties");
-  const snapshot = await getDocs(propsRef);
-  if (snapshot.empty) {
-    await seedPropertiesToFirebase(PROPERTIES);
-    return fetchProperties();
-  }
-  const properties: any[] = [];
-  snapshot.forEach(doc => properties.push({ id: doc.id, ...doc.data() }));
-  return properties;
-};
+export default app;

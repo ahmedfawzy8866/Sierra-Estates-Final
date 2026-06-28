@@ -1,17 +1,20 @@
 {
   "name": "@sierra-estates/auth",
-  "version": "1.0.0",
-  "description": "Firebase Auth wrapper and JWT management",
+  "version": "2.0.0",
+  "description": "Shared auth layer — ONE Firebase Auth with custom claims for both apps",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "private": true,
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  },
   "dependencies": {
-    "firebase": "^12.11",
-    "jsonwebtoken": "^9.0"
+    "@sierra-estates/db": "workspace:*"
   },
   "devDependencies": {
-    "@types/jsonwebtoken": "^9.0",
-    "@types/node": "^20",
-    "typescript": "^5.3"
+    "@types/node": "^25.3.3",
+    "typescript": "^5.7.2"
   }
 }

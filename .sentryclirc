@@ -1,0 +1,14 @@
+# Sierra Estates — Sentry Configuration
+# https://docs.sentry.io/platforms/javascript/guides/nextjs/
+
+[auth]
+token=
+
+[projects]
+vercel-app=sierra-estates
+firebase-admin=sierra-estates-admin
+
+# Disable to avoid uploading source maps during local dev
+[defaults]
+project=sierra-estates
+org=sierra-estates

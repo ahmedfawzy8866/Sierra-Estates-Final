@@ -1,4 +1,3 @@
-// @ts-nocheck
 export const leilaTemplates = {
   viewingFollowUp: {
     en: (name: string, property: string) =>
