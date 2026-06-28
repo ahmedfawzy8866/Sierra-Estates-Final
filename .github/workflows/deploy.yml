@@ -12,6 +12,8 @@ jobs:
   deploy-client:
     name: "Client Site to Vercel"
     runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
@@ -39,7 +41,7 @@ jobs:
 
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v25
-        if: secrets.VERCEL_TOKEN != ''
+        if: env.VERCEL_TOKEN != ''
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
@@ -53,12 +55,14 @@ jobs:
   deploy-firestore-rules:
     name: "Firestore & Storage Rules"
     runs-on: ubuntu-latest
+    env:
+      FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Deploy Rules
         uses: w9jds/firebase-action@master
-        if: secrets.FIREBASE_SERVICE_ACCOUNT != ''
+        if: env.FIREBASE_SERVICE_ACCOUNT != ''
         with:
           args: deploy --only firestore:rules,firestore:indexes,storage
         env:
@@ -72,12 +76,14 @@ jobs:
     name: "Admin Panel to Firebase Hosting"
     runs-on: ubuntu-latest
     needs: deploy-firestore-rules
+    env:
+      FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Deploy Admin to Firebase Hosting
         uses: w9jds/firebase-action@master
-        if: secrets.FIREBASE_SERVICE_ACCOUNT != ''
+        if: env.FIREBASE_SERVICE_ACCOUNT != ''
         with:
           args: deploy --only hosting
         env:
