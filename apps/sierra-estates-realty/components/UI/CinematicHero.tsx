@@ -1,178 +1,162 @@
-"use client";
+﻿'use client';
 
-import React, { useRef } from 'react';
-import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
-import BrandLogo from './BrandLogo';
+/**
+ * SIERRA ESTATES — CINEMATIC HERO SECTION
+ * Quiet Luxury / Apple-Style Interactive Node
+ * Design: Deep Navy (#0A1628) + Gold (#C9A24D) + Ivory (#F4F0E8)
+ * Bilingual (EN / AR) · Framer Motion · Fully self-contained
+ */
 
-export default function CinematicHero() {
-  const containerRef = useRef<HTMLDivElement>(null);
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Search, Sparkles, SlidersHorizontal } from 'lucide-react';
 
-  // Motion values for mouse coordinates
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
+interface CinematicHeroProps {
+  onSearch?: (query: string) => void;
+  isArabic?: boolean;
+}
 
-  // Smooth springs for the parallax effect
-  const springConfig = { damping: 50, stiffness: 400 };
-  const smoothX = useSpring(mouseX, springConfig);
-  const smoothY = useSpring(mouseY, springConfig);
+export default function CinematicHero({ onSearch, isArabic = false }: CinematicHeroProps) {
+  const [searchQuery, setSearchQuery] = useState('');
 
-  // Parallax shifts:
-  // Video moves slightly in the counter-direction of the mouse (simulating it being far away)
-  const videoX = useTransform(smoothX, [-0.5, 0.5], ['2%', '-2%']);
-  const videoY = useTransform(smoothY, [-0.5, 0.5], ['2%', '-2%']);
-
-  // Text moves slightly in the same direction of the mouse (simulating it being close)
-  const textX = useTransform(smoothX, [-0.5, 0.5], ['-15px', '15px']);
-  const textY = useTransform(smoothY, [-0.5, 0.5], ['-15px', '15px']);
-
-  // Mouse move handler
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!containerRef.current) return;
-    const { clientX, clientY, currentTarget } = e;
-    const { width, height, left, top } = currentTarget.getBoundingClientRect();
-
-    // Normalize mouse position between -0.5 and 0.5
-    const x = (clientX - left) / width - 0.5;
-    const y = (clientY - top) / height - 0.5;
-    
-    mouseX.set(x);
-    mouseY.set(y);
+  const handleSearch = () => {
+    if (onSearch) onSearch(searchQuery);
   };
 
-  const handleMouseLeave = () => {
-    // Reset to center smoothly
-    mouseX.set(0);
-    mouseY.set(0);
-  };
-
-  // SVG "Build from nothing" path variants
-  const pathVariants: import('framer-motion').Variants = {
-    hidden: { pathLength: 0, opacity: 0 },
-    visible: { 
-      pathLength: 1, 
-      opacity: 1, 
-      transition: { duration: 2, ease: "easeInOut", delay: 0.5 }
-    }
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') handleSearch();
   };
 
   return (
-    <div 
-      ref={containerRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      className="relative w-full h-[90vh] overflow-hidden bg-[#030712] flex items-center justify-center font-serif text-[#F4F0E8]"
-      style={{ perspective: 1000 }}
+    <section
+      dir={isArabic ? 'rtl' : 'ltr'}
+      className="relative min-h-[90vh] w-full flex flex-col justify-center items-center text-center px-6 overflow-hidden border-b border-[#C9A24D]/10 bg-gradient-to-b from-[#0A1628] via-[#0D1E36] to-[#0A1628]"
     >
-      {/* 1. LAYER ONE: The Dark Space/Earth Video (Deep Background) */}
-      <motion.div 
-        className="absolute inset-0 z-0 scale-[1.05]"
-        style={{ x: videoX, y: videoY }}
-      >
-        <video 
-          autoPlay 
-          loop 
-          muted 
-          playsInline
-          className="object-cover w-full h-full opacity-60 mix-blend-screen"
-        >
-          {/* Placeholder: Working royalty-free subtle video. You will replace this with your actual space-to-earth video */}
-          <source src="https://storage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4" type="video/mp4" />
-        </video>
-        
-        {/* Gradients to blend video smoothly into the UI */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent z-10" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#020617]/50 via-transparent to-transparent z-10" />
-      </motion.div>
+      {/* Gold radial glow + geometric grid */}
+      <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,rgba(201,162,77,0.07)_0%,transparent_65%)]" />
+      <div className="absolute inset-0 z-0 opacity-5 bg-[linear-gradient(to_right,#C9A24D_1px,transparent_1px),linear-gradient(to_bottom,#C9A24D_1px,transparent_1px)] bg-[size:4rem_4rem]" />
 
-      {/* 2. LAYER TWO: Sierra Estates Subtle Watermark (Top Right) */}
-      <motion.div 
-        className="absolute top-8 right-12 z-20 opacity-20 pointer-events-none"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.2 }}
-        transition={{ delay: 2, duration: 2 }}
+      {/* Content block with cinematic entrance */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+        className="z-10 max-w-5xl space-y-8 relative flex flex-col items-center"
       >
-        <BrandLogo size="md" />
-      </motion.div>
-
-      {/* 3. LAYER THREE: Foreground Text & UI (Floating Parallax) */}
-      <motion.div 
-        className="relative z-30 flex flex-col items-center text-center px-4"
-        style={{ x: textX, y: textY }}
-      >
-        
-        {/* Animated "Build from nowhere" Decorative SVG */}
-        <div className="mb-6">
-          <svg width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <motion.path 
-              d="M50 5 L95 50 L50 95 L5 50 Z" 
-              stroke="#C9A24D" 
-              strokeWidth="1"
-              variants={pathVariants}
-              initial="hidden"
-              animate="visible"
-              className="drop-shadow-[0_0_8px_rgba(201,162,77,0.8)]"
-            />
-            <motion.circle 
-              cx="50" cy="50" r="10" 
-              fill="#C9A24D" 
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 2, duration: 1, ease: "easeOut" }}
-            />
-          </svg>
+        {/* Ghosted serif monogram watermark */}
+        <div className="absolute -top-16 w-48 h-48 rounded-full border border-[#C9A24D]/5 flex items-center justify-center bg-gradient-to-b from-[#C9A24D]/[0.02] to-transparent pointer-events-none select-none blur-[1px]">
+          <span className="font-serif font-light text-[#C9A24D]/10 text-9xl tracking-tighter">S</span>
         </div>
 
-        <motion.h1 
-          className="text-5xl md:text-7xl lg:text-8xl font-black mb-4 tracking-tighter"
-          initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          transition={{ duration: 1.5, ease: "easeOut", delay: 1 }}
+        {/* Specialty badge */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2, duration: 0.6 }}
+          className="inline-flex items-center space-x-2 bg-[#C9A24D]/5 border border-[#C9A24D]/20 backdrop-blur-md px-4 py-1.5 rounded-full shadow-inner"
         >
-          Smarter Decisions, <br/>
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-[#C9A24D] to-white">
-            AI-Driven.
+          <Sparkles className="w-3.5 h-3.5 text-[#C9A24D] animate-pulse" />
+          <span className="text-[#C9A24D] tracking-[0.2em] uppercase text-[10px] font-mono font-semibold">
+            {isArabic
+              ? 'الوجهة الحصرية الأولى لعقارات القاهرة الجديدة'
+              : 'First & only website in Egypt designed specially for New Cairo'}
           </span>
-        </motion.h1>
-        
-        <motion.p 
-          className="text-lg md:text-xl font-sans tracking-widest text-[#F4F0E8]/70 uppercase mb-12 max-w-2xl"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 2, delay: 2 }}
-        >
-          Curated Luxury Real Estate in New Cairo, <br/>Powered by Disciplined Intelligence.
-        </motion.p>
-        
-        {/* Action Buttons */}
-        <motion.div 
-          className="flex flex-col sm:flex-row items-center gap-6 font-sans"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 2.5 }}
-        >
-          <button className="px-8 py-4 bg-transparent border border-[#C9A24D] text-[#C9A24D] text-sm uppercase tracking-[0.2em] font-bold hover:bg-[#C9A24D] hover:text-black transition-all duration-500 rounded-sm">
-            Explore Listings
-          </button>
-          
-          <button className="px-8 py-4 bg-white text-black text-sm uppercase tracking-[0.2em] font-bold hover:bg-transparent hover:text-white hover:border-white border border-transparent transition-all duration-500 rounded-sm relative overflow-hidden group">
-            <span className="relative z-10 w-full h-full flex items-center justify-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#0B1A3E] group-hover:bg-white transition-colors" />
-              Contact an Advisor
-            </span>
-          </button>
         </motion.div>
 
+        {/* Serif luxury headline */}
+        <h2 className="font-serif text-4xl sm:text-5xl md:text-7xl text-[#F4F0E8] leading-[1.1] font-extralight tracking-tight max-w-4xl">
+          {isArabic ? (
+            <>
+              الوجهة الحصرية الأولى لعقارات <br />
+              <span className="font-normal text-transparent bg-clip-text bg-gradient-to-r from-[#C9A24D] via-[#e5c37e] to-[#C9A24D]">
+                القاهرة الجديدة.
+              </span>{' '}
+              <span className="font-light text-gray-400">إيجار وإعادة بيع.</span>
+            </>
+          ) : (
+            <>
+              The First Exclusive Destination for <br />
+              <span className="font-normal text-transparent bg-clip-text bg-gradient-to-r from-[#C9A24D] via-[#e5c37e] to-[#C9A24D] relative">
+                New Cairo Properties.
+              </span>{' '}
+              <span className="font-light text-gray-400">Rent &amp; Resale.</span>
+            </>
+          )}
+        </h2>
+
+        {/* Tagline + Arabic identity divider */}
+        <div className="flex flex-col items-center space-y-2 pt-2">
+          <p className="text-[11px] uppercase tracking-[0.4em] text-[#C9A24D]/80 font-mono">
+            Best-in-Class Design. AI-Driven Excellence.
+          </p>
+          <div className="flex justify-center items-center space-x-3 w-full">
+            <span className="h-[1px] w-16 bg-gradient-to-l from-[#C9A24D]/30 to-transparent" />
+            <p className="font-serif text-lg text-gray-300 font-light tracking-wide">التميز العقاري برؤية ذكية</p>
+            <span className="h-[1px] w-16 bg-gradient-to-r from-[#C9A24D]/30 to-transparent" />
+          </div>
+        </div>
+
+        {/* 1,500-broker network descriptor */}
+        <p className="text-sm md:text-base text-gray-400 max-w-2xl mx-auto leading-relaxed font-light font-sans tracking-wide">
+          {isArabic ? (
+            <>
+              نقدم أرقى الفرص العقارية في سوق القاهرة الجديدة، بدمج الذكاء الاصطناعي مع شبكة حصرية تضم أكثر من{' '}
+              <span className="text-[#C9A24D] font-medium">1,500 وسيط ووكالة نخبة</span>{' '}
+              عبر القاهرة الجديدة ومدينتي والشروق.
+            </>
+          ) : (
+            <>
+              We curate the finest opportunities across the New Cairo market. By combining advanced AI intelligence
+              with an exclusive network of over{' '}
+              <span className="text-[#C9A24D] font-medium">1,500 elite brokers and agencies</span>{' '}
+              across New Cairo, Madinaty, and El Shorouk, we deliver unmatched value tailored precisely to your needs.
+            </>
+          )}
+        </p>
+
+        {/* AI compound search bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.6 }}
+          className="pt-6 w-full max-w-xl mx-auto"
+        >
+          <div className="bg-[#071322]/80 border border-[#C9A24D]/30 p-2.5 rounded-2xl flex items-center shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] backdrop-blur-xl hover:border-[#C9A24D]/60 transition-all group">
+            <div className="p-2 bg-[#C9A24D]/5 rounded-xl ml-2 group-hover:bg-[#C9A24D]/10 transition-colors">
+              <Search className="w-4 h-4 text-[#C9A24D]" />
+            </div>
+            <input
+              type="text"
+              placeholder={
+                isArabic
+                  ? 'ابحث باسم الكمباوند (ميفيدا، إيستاون، فيليت، تاج سيتي...)'
+                  : 'Search by compound name (Mivida, Eastown, Villette, Taj City...)'
+              }
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="w-full bg-transparent border-none outline-none px-2 text-sm text-white placeholder-gray-500 font-sans tracking-wide"
+            />
+            <button
+              onClick={handleSearch}
+              className="bg-gradient-to-r from-[#C9A24D] to-[#b38f40] text-[#0A1628] px-5 py-2.5 rounded-xl text-xs font-bold font-sans flex items-center space-x-1.5 shadow-lg active:scale-95 transition-transform"
+            >
+              <SlidersHorizontal className="w-3.5 h-3.5" />
+              <span>{isArabic ? 'بحث' : 'Filter'}</span>
+            </button>
+          </div>
+        </motion.div>
       </motion.div>
-      
-      {/* 4. Mouse Scroll Indicator */}
-      <motion.div 
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 4, duration: 1 }}
-      >
-        <div className="w-[1px] h-16 bg-gradient-to-b from-[#C9A24D] to-transparent animate-pulse" />
-      </motion.div>
-    </div>
+
+      {/* Animated scroll-down indicator */}
+      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10 flex flex-col items-center space-y-1 opacity-40 hover:opacity-80 transition-opacity cursor-pointer">
+        <p className="text-[9px] font-mono tracking-widest uppercase text-gray-400">Explore Catalog</p>
+        <motion.div
+          animate={{ y: [0, 5, 0] }}
+          transition={{ repeat: Infinity, duration: 1.5 }}
+          className="w-1 h-3 rounded-full bg-[#C9A24D]"
+        />
+      </div>
+    </section>
   );
 }

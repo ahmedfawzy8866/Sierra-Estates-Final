@@ -1,5 +1,5 @@
 # Instincts generated from https://github.com/ahmedfawzy8866/Sierra-Estates-Final
-# Generated: 2026-06-26T22:25:20.048Z
+# Generated: 2026-06-25T05:21:13.330Z
 # Version: 2.0
 # NOTE: This file supplements (does not replace) any existing curated instincts.
 # High-confidence manually curated instincts should be preserved alongside these.
@@ -17,13 +17,13 @@ source_repo: https://github.com/ahmedfawzy8866/Sierra-Estates-Final
 
 ## Action
 
-Use conventional commit format with prefixes: feat
+Use conventional commit format with prefixes: feat, fix, chore, docs, refactor
 
 ## Evidence
 
-- 2 commits analyzed
+- 100 commits analyzed
 - Detected conventional commit pattern
-- Examples: feat(security): rate-limit public listings endpoints, feat(whatsapp): rebuild outbound queue on Upstash Redis
+- Examples: feat: Unified Sierra Blu monorepo - consolidated architecture with clean structure, docs: Add comprehensive integration completion report
 
 ---
 id: Sierra-Estates-Final-commit-length
@@ -38,12 +38,12 @@ source_repo: https://github.com/ahmedfawzy8866/Sierra-Estates-Final
 
 ## Action
 
-Write moderate-length commit messages (~54 characters)
+Write moderate-length commit messages (~64 characters)
 
 ## Evidence
 
-- Average commit message length: 54 chars
-- Based on 2 commits
+- Average commit message length: 64 chars
+- Based on 100 commits
 
 ---
 id: Sierra-Estates-Final-naming-files
@@ -66,24 +66,24 @@ Use camelCase naming convention
 - Dominant pattern: camelCase
 
 ---
-id: Sierra-Estates-Final-import-alias
+id: Sierra-Estates-Final-import-relative
 trigger: "when importing modules"
-confidence: 0.85
+confidence: 0.75
 domain: code-style
 source: repo-analysis
 source_repo: https://github.com/ahmedfawzy8866/Sierra-Estates-Final
 ---
 
-# Sierra Estates Final Import Alias
+# Sierra Estates Final Import Relative
 
 ## Action
 
-Use path aliases (@/, ~/) instead of relative imports
+Use relative imports for project files
 
 ## Evidence
 
-- Import analysis shows alias pattern
-- Example: import { x } from '@/lib/x'
+- Import analysis shows relative import pattern
+- Example: import { x } from '../lib/x'
 
 ---
 id: Sierra-Estates-Final-export-style
@@ -106,64 +106,374 @@ Prefer named exports
 - Dominant style: named
 
 ---
-id: sierra-estates-final-instinct-file-naming
-trigger: "When creating a new file"
+id: Sierra-Estates-Final-arch-type-based
+trigger: "when adding new code"
+confidence: 0.8
+domain: architecture
+source: repo-analysis
+source_repo: https://github.com/ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Arch Type Based
+
+## Action
+
+Place code in the appropriate type folder (components/, services/, utils/, etc.)
+
+## Evidence
+
+- Type-based module organization detected
+- Folders: 
+
+---
+id: Sierra-Estates-Final-test-framework
+trigger: "when writing tests"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Test Framework
+
+## Action
+
+Use jest as the test framework
+
+## Evidence
+
+- Test framework detected: jest
+- File pattern: *.test.ts
+
+---
+id: Sierra-Estates-Final-test-naming
+trigger: "when creating a test file"
+confidence: 0.85
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Test Naming
+
+## Action
+
+Name test files using the pattern: *.test.ts
+
+## Evidence
+
+- File pattern: *.test.ts
+- Consistent across test files
+
+---
+id: Sierra-Estates-Final-test-types
+trigger: "when planning tests for a feature"
+confidence: 0.7
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Test Types
+
+## Action
+
+Write unit, integration tests to match project standards
+
+## Evidence
+
+- Test types detected: unit, integration
+- Coverage config: no
+
+---
+id: Sierra-Estates-Final-workflow-database-migration
+trigger: "when modifying the database schema or adding tables"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Workflow Database Migration
+
+## Action
+
+Follow the database-migration workflow:
+1. Create migration file
+2. Update schema definitions
+3. Generate/update types
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: migrations/*, **/schema.*, **/types.ts
+
+---
+id: Sierra-Estates-Final-workflow-feature-development
+trigger: "when implementing a new feature"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Workflow Feature Development
+
+## Action
+
+Follow the feature-development workflow:
+1. Add feature implementation
+2. Add tests for feature
+3. Update documentation
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~16x per month
+- Files: apps/admin/src/*, apps/admin/src/config/*, apps/admin/src/context/*
+
+---
+id: Sierra-Estates-Final-workflow-refactoring
+trigger: "when refactoring code"
+confidence: 0.65
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Workflow Refactoring
+
+## Action
+
+Follow the refactoring workflow:
+1. Ensure tests pass before refactor
+2. Refactor code structure
+3. Verify tests still pass
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~3x per month
+- Files: src/**/*
+
+---
+id: Sierra-Estates-Final-workflow-add-or-update-api-endpoint
+trigger: "when doing add or update api endpoint"
+confidence: 0.65
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Workflow Add Or Update Api Endpoint
+
+## Action
+
+Follow the add-or-update-api-endpoint workflow:
+1. Create or modify route handler in apps/web/app/api/[...]/route.ts
+2. Update or create related service(s) in apps/web/lib/services/
+3. Update or create related TypeScript types in apps/web/lib/models/schema.ts or apps/web/lib/property-finder/types.ts
+4. Update or add tests in apps/web/__tests__/
+5. Verify build and run tests
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~3x per month
+- Files: apps/web/app/api/*/route.ts, apps/web/lib/services/*.ts, apps/web/lib/models/schema.ts
+
+---
+id: Sierra-Estates-Final-workflow-feature-development-with-component-and-page
+trigger: "when doing feature development with component and page"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Workflow Feature Development With Component And Page
+
+## Action
+
+Follow the feature-development-with-component-and-page workflow:
+1. Create or update page in apps/web/app/[feature]/page.tsx or apps/admin/src/pages/[Feature].tsx
+2. Create or update supporting component(s) in apps/web/components/[Feature]/*.tsx
+3. Update shared styles or Tailwind config if needed
+4. Add or update documentation (e.g., REFINEMENTS.md, DESIGN_SPEC.md)
+5. Test locally and verify in browser
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: apps/web/app/*/page.tsx, apps/admin/src/pages/*.tsx, apps/web/components/**/*.tsx
+
+---
+id: Sierra-Estates-Final-workflow-infrastructure-or-ci-cd-workflow-update
+trigger: "when doing infrastructure or ci cd workflow update"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Workflow Infrastructure Or Ci Cd Workflow Update
+
+## Action
+
+Follow the infrastructure-or-ci-cd-workflow-update workflow:
+1. Add or update GitHub Actions workflow files in .github/workflows/
+2. Update deployment configs (vercel.json, turbo.json, etc.)
+3. Update environment variable examples or secrets setup docs
+4. Update Firebase/firestore/storage rules as needed
+5. Test pipeline or deployment and verify changes
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: .github/workflows/*.yml, vercel.json, turbo.json
+
+---
+id: Sierra-Estates-Final-workflow-type-safety-and-typescript-error-fix
+trigger: "when doing type safety and typescript error fix"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Workflow Type Safety And Typescript Error Fix
+
+## Action
+
+Follow the type-safety-and-typescript-error-fix workflow:
+1. Identify TypeScript errors in build output
+2. Update or fix type definitions in relevant files (e.g., *.ts, *.tsx, types/*.ts)
+3. Update next-env.d.ts or tsconfig as needed
+4. Remove or fix problematic code patterns
+5. Verify build passes with zero TypeScript errors
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: apps/web/lib/types/*.ts, apps/web/lib/models/schema.ts, apps/web/lib/property-finder/types.ts
+
+---
+id: Sierra-Estates-Final-workflow-test-infrastructure-and-coverage-expansion
+trigger: "when doing test infrastructure and coverage expansion"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Workflow Test Infrastructure And Coverage Expansion
+
+## Action
+
+Follow the test-infrastructure-and-coverage-expansion workflow:
+1. Add or update Jest/test config files (jest.config.js, setup.ts)
+2. Write or update test files in __tests__/
+3. Add mocks or stubs for external dependencies
+4. Run tests and ensure all pass
+5. Update documentation if needed
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: apps/web/jest.config.js, apps/web/__tests__/*.test.ts, apps/web/__tests__/setup.ts
+
+---
+id: Sierra-Estates-Final-workflow-documentation-and-onboarding-update
+trigger: "when doing documentation and onboarding update"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Workflow Documentation And Onboarding Update
+
+## Action
+
+Follow the documentation-and-onboarding-update workflow:
+1. Create or update documentation files (README.md, DEPLOYMENT_GUIDE.md, ARCHITECTURE.md, CONTRIBUTING.md, etc.)
+2. Document environment variables, setup steps, and workflow guides
+3. Add or update diagrams, status dashboards, or checklists
+4. Commit and share with team
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: README.md, DEPLOYMENT_GUIDE.md, ARCHITECTURE.md
+
+---
+id: sierra-estates-final-camelcase-files
+trigger: "When creating or renaming a file"
 confidence: 0.8
 domain: code-style
 source: repo-analysis
 source_repo: ahmedfawzy8866/Sierra-Estates-Final
 ---
 
-# Sierra Estates Final Instinct File Naming
+# Sierra Estates Final Camelcase Files
 
 ## Action
 
-Name the file using camelCase
+Use camelCase for file names
 
 ## Evidence
 
 - Pattern in namingConventions.files
+- apps/web/components/ui/LuxuryVirtualViewport.tsx
 
 ---
-id: sierra-estates-final-instinct-function-naming
+id: sierra-estates-final-camelcase-functions
 trigger: "When defining a function"
-confidence: 0.8
+confidence: 0.85
 domain: code-style
 source: repo-analysis
 source_repo: ahmedfawzy8866/Sierra-Estates-Final
 ---
 
-# Sierra Estates Final Instinct Function Naming
+# Sierra Estates Final Camelcase Functions
 
 ## Action
 
-Name the function using camelCase
+Use camelCase for function names
 
 ## Evidence
 
 - Pattern in namingConventions.functions
+- apps/web/lib/services/*.ts
 
 ---
-id: sierra-estates-final-instinct-class-naming
+id: sierra-estates-final-pascalcase-classes
 trigger: "When defining a class"
-confidence: 0.8
+confidence: 0.85
 domain: code-style
 source: repo-analysis
 source_repo: ahmedfawzy8866/Sierra-Estates-Final
 ---
 
-# Sierra Estates Final Instinct Class Naming
+# Sierra Estates Final Pascalcase Classes
 
 ## Action
 
-Name the class using PascalCase
+Use PascalCase for class names
 
 ## Evidence
 
 - Pattern in namingConventions.classes
+- apps/web/lib/models/schema.ts
 
 ---
-id: sierra-estates-final-instinct-constant-naming
+id: sierra-estates-final-screaming-snake-constants
 trigger: "When defining a constant"
 confidence: 0.8
 domain: code-style
@@ -171,45 +481,47 @@ source: repo-analysis
 source_repo: ahmedfawzy8866/Sierra-Estates-Final
 ---
 
-# Sierra Estates Final Instinct Constant Naming
+# Sierra Estates Final Screaming Snake Constants
 
 ## Action
 
-Name the constant using SCREAMING_SNAKE_CASE
+Use SCREAMING_SNAKE_CASE for constant names
 
 ## Evidence
 
 - Pattern in namingConventions.constants
+- apps/web/lib/property-finder/types.ts
 
 ---
-id: sierra-estates-final-instinct-import-style
+id: sierra-estates-final-relative-imports
 trigger: "When importing modules"
-confidence: 0.7
+confidence: 0.8
 domain: code-style
 source: repo-analysis
 source_repo: ahmedfawzy8866/Sierra-Estates-Final
 ---
 
-# Sierra Estates Final Instinct Import Style
+# Sierra Estates Final Relative Imports
 
 ## Action
 
-Use alias import style
+Use relative import paths
 
 ## Evidence
 
 - Pattern in importStyle
+- apps/web/components/**/*.tsx
 
 ---
-id: sierra-estates-final-instinct-export-style
-trigger: "When exporting modules or functions"
-confidence: 0.7
+id: sierra-estates-final-named-exports
+trigger: "When exporting from a module"
+confidence: 0.8
 domain: code-style
 source: repo-analysis
 source_repo: ahmedfawzy8866/Sierra-Estates-Final
 ---
 
-# Sierra Estates Final Instinct Export Style
+# Sierra Estates Final Named Exports
 
 ## Action
 
@@ -218,9 +530,71 @@ Use named exports
 ## Evidence
 
 - Pattern in exportStyle
+- apps/web/lib/services/*.ts
 
 ---
-id: sierra-estates-final-instinct-git-commit-format
+id: sierra-estates-final-jest-test-pattern
+trigger: "When writing tests"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Jest Test Pattern
+
+## Action
+
+Place test files in __tests__ directories and use *.test.ts naming
+
+## Evidence
+
+- Pattern in testing.filePattern
+- apps/web/__tests__/*.test.ts
+
+---
+id: sierra-estates-final-unit-integration-tests
+trigger: "When adding tests for a feature"
+confidence: 0.85
+domain: testing
+source: repo-analysis
+source_repo: ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Unit Integration Tests
+
+## Action
+
+Write both unit and integration tests as appropriate
+
+## Evidence
+
+- Pattern in testing.testTypes
+- apps/web/__tests__/*.test.ts
+
+---
+id: sierra-estates-final-jest-config
+trigger: "When configuring or updating test infrastructure"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Jest Config
+
+## Action
+
+Update jest.config.js and setup.ts as needed
+
+## Evidence
+
+- Pattern in test-infrastructure-and-coverage-expansion.filesInvolved
+- apps/web/jest.config.js
+- apps/web/__tests__/setup.ts
+
+---
+id: sierra-estates-final-conventional-commits
 trigger: "When writing a commit message"
 confidence: 0.9
 domain: git
@@ -228,90 +602,143 @@ source: repo-analysis
 source_repo: ahmedfawzy8866/Sierra-Estates-Final
 ---
 
-# Sierra Estates Final Instinct Git Commit Format
+# Sierra Estates Final Conventional Commits
 
 ## Action
 
-Use the conventional commit format with a 'feat' prefix for features
+Use conventional commit prefixes (feat, fix, chore, docs, refactor) and keep messages concise (~64 chars)
 
 ## Evidence
 
-- Seen in commit: feat(security): rate-limit public listings endpoints
-- Seen in commit: feat(whatsapp): rebuild outbound queue on Upstash Redis
+- Pattern in commits.prefixes
+- feat: Unified Sierra Blu monorepo - consolidated architecture with clean structure
 
 ---
-id: sierra-estates-final-instinct-git-commit-length
-trigger: "When composing a commit message"
-confidence: 0.7
-domain: git
+id: sierra-estates-final-api-endpoint-workflow
+trigger: "When exposing new backend functionality or fixing an API route"
+confidence: 0.95
+domain: workflow
 source: repo-analysis
 source_repo: ahmedfawzy8866/Sierra-Estates-Final
 ---
 
-# Sierra Estates Final Instinct Git Commit Length
+# Sierra Estates Final Api Endpoint Workflow
 
 ## Action
 
-Keep the commit message concise, around 54 characters on average
+Create/modify route handler, update related services/types, add/update tests, and verify build/tests
 
 ## Evidence
 
-- Pattern in commits.averageLength
+- Workflow: add-or-update-api-endpoint
+- apps/web/app/api/*/route.ts
+- apps/web/lib/services/*.ts
+- apps/web/__tests__/*.test.ts
 
 ---
-id: sierra-estates-final-instinct-error-handling
-trigger: "When handling errors in code"
-confidence: 0.8
-domain: code-style
+id: sierra-estates-final-feature-component-page-workflow
+trigger: "When adding a new UI feature, page, or major component"
+confidence: 0.9
+domain: workflow
 source: repo-analysis
 source_repo: ahmedfawzy8866/Sierra-Estates-Final
 ---
 
-# Sierra Estates Final Instinct Error Handling
+# Sierra Estates Final Feature Component Page Workflow
 
 ## Action
 
-Use try-catch blocks for error handling
+Create/update page, supporting components, shared styles, documentation, and test locally
 
 ## Evidence
 
-- Pattern in errorHandling.style
+- Workflow: feature-development-with-component-and-page
+- apps/web/app/*/page.tsx
+- apps/web/components/**/*.tsx
 
 ---
-id: sierra-estates-final-instinct-testing-location
-trigger: "When adding new tests"
-confidence: 0.6
-domain: testing
+id: sierra-estates-final-infrastructure-ci-cd-workflow
+trigger: "When improving or fixing CI/CD, deployment, or infrastructure automation"
+confidence: 0.9
+domain: workflow
 source: repo-analysis
 source_repo: ahmedfawzy8866/Sierra-Estates-Final
 ---
 
-# Sierra Estates Final Instinct Testing Location
+# Sierra Estates Final Infrastructure Ci Cd Workflow
 
 ## Action
 
-Place test files in mixed locations (not strictly separated from source files)
+Update workflow files, deployment configs, env examples, security rules, and test pipeline/deployment
 
 ## Evidence
 
-- Pattern in architecture.folderStructure.testLocation
+- Workflow: infrastructure-or-ci-cd-workflow-update
+- .github/workflows/*.yml
+- vercel.json
+- turbo.json
 
 ---
-id: sierra-estates-final-instinct-testing-config
-trigger: "When configuring tests for an app"
-confidence: 0.7
-domain: testing
+id: sierra-estates-final-typescript-type-safety-workflow
+trigger: "When fixing build errors, improving type safety, or after major merges"
+confidence: 0.88
+domain: workflow
 source: repo-analysis
 source_repo: ahmedfawzy8866/Sierra-Estates-Final
 ---
 
-# Sierra Estates Final Instinct Testing Config
+# Sierra Estates Final Typescript Type Safety Workflow
 
 ## Action
 
-Use a Jest config file (e.g., jest.config.js) in the app's directory
+Update/fix type definitions, next-env.d.ts, tsconfig, remove problematic code, and verify build passes
 
 ## Evidence
 
-- Pattern in architecture.configFiles
+- Workflow: type-safety-and-typescript-error-fix
+- apps/web/lib/types/*.ts
+- apps/web/next-env.d.ts
+
+---
+id: sierra-estates-final-test-infrastructure-workflow
+trigger: "When improving testing reliability or covering new code with tests"
+confidence: 0.85
+domain: workflow
+source: repo-analysis
+source_repo: ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Test Infrastructure Workflow
+
+## Action
+
+Update Jest config, write/update tests, add mocks, run tests, and update docs if needed
+
+## Evidence
+
+- Workflow: test-infrastructure-and-coverage-expansion
+- apps/web/jest.config.js
+- apps/web/__tests__/*.test.ts
+
+---
+id: sierra-estates-final-documentation-onboarding-workflow
+trigger: "When improving team onboarding, deployment clarity, or documenting architecture"
+confidence: 0.85
+domain: workflow
+source: repo-analysis
+source_repo: ahmedfawzy8866/Sierra-Estates-Final
+---
+
+# Sierra Estates Final Documentation Onboarding Workflow
+
+## Action
+
+Update documentation files, environment/setup guides, diagrams, and share with team
+
+## Evidence
+
+- Workflow: documentation-and-onboarding-update
+- README.md
+- DEPLOYMENT_GUIDE.md
+- ARCHITECTURE.md
 
