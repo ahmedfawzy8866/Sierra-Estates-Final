@@ -39,7 +39,7 @@ jobs:
 
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v25
-        if: ${{ secrets.VERCEL_TOKEN != '' }}
+        if: secrets.VERCEL_TOKEN != ''
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
@@ -58,7 +58,7 @@ jobs:
 
       - name: Deploy Rules
         uses: w9jds/firebase-action@master
-        if: ${{ secrets.FIREBASE_SERVICE_ACCOUNT != '' }}
+        if: secrets.FIREBASE_SERVICE_ACCOUNT != ''
         with:
           args: deploy --only firestore:rules,firestore:indexes,storage
         env:
@@ -77,7 +77,7 @@ jobs:
 
       - name: Deploy Admin to Firebase Hosting
         uses: w9jds/firebase-action@master
-        if: ${{ secrets.FIREBASE_SERVICE_ACCOUNT != '' }}
+        if: secrets.FIREBASE_SERVICE_ACCOUNT != ''
         with:
           args: deploy --only hosting
         env:
