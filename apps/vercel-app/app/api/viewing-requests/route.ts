@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { Timestamp, Query } from 'firebase-admin/firestore';
 import { verifyRequest, unauthorizedResponse } from '@/lib/server/auth-guard';
-import { applyRateLimit, publicEndpointLimiter } from '@/lib/server/rate-limit';
+import { applyRateLimitAsync, publicEndpointLimiter } from '@/lib/server/rate-limit';
 import { z } from 'zod';
 
 // ── Input Validation Schema ────────────────────────────────────────────
@@ -23,7 +23,7 @@ const viewingRequestSchema = z.object({
  */
 export async function POST(request: NextRequest) {
   // Rate limit public form submissions
-  const limited = applyRateLimit(request, publicEndpointLimiter);
+  const limited = await applyRateLimitAsync(request, publicEndpointLimiter);
   if (limited) return limited;
 
   try {

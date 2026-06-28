@@ -1,4 +1,4 @@
-import { applyRateLimit, publicEndpointLimiter } from "@/lib/server/rate-limit";
+import { applyRateLimitAsync, publicEndpointLimiter } from "@/lib/server/rate-limit";
 import { NextResponse } from 'next/server';
 import { adminDb } from '@/lib/server/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
@@ -29,7 +29,7 @@ function sanitizeForTelegram(str: string): string {
 }
 
 export async function POST(req: Request) {
-  const limited = applyRateLimit(req, publicEndpointLimiter);
+  const limited = await applyRateLimitAsync(req, publicEndpointLimiter);
   if (limited) return limited;
 
   try {

@@ -132,7 +132,7 @@ export default function UnifiedHomepage() {
     }
   }, []);
 
-  const handleSearch = (f: typeof filters) => {
+  const _handleSearch = (f: typeof filters) => {
     setFilters(f);
     const el = document.getElementById('inventory');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
