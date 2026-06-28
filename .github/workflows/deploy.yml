@@ -60,13 +60,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy Rules
-        uses: w9jds/firebase-action@master
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
         if: env.FIREBASE_SERVICE_ACCOUNT != ''
         with:
-          args: deploy --only firestore:rules,firestore:indexes,storage
-        env:
-          GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: Deploy Rules
+        if: env.FIREBASE_SERVICE_ACCOUNT != ''
+        run: npx firebase-tools deploy --only firestore:rules,firestore:indexes,storage --non-interactive
 
   # ─────────────────────────────────────────────────
   # JOB 3: ADMIN PANEL → Firebase Hosting
@@ -81,10 +87,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy Admin to Firebase Hosting
-        uses: w9jds/firebase-action@master
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
         if: env.FIREBASE_SERVICE_ACCOUNT != ''
         with:
-          args: deploy --only hosting
-        env:
-          GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: Deploy Admin to Firebase Hosting
+        if: env.FIREBASE_SERVICE_ACCOUNT != ''
+        run: npx firebase-tools deploy --only hosting --non-interactive
