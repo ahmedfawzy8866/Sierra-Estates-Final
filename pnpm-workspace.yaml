@@ -32,12 +32,14 @@ packages:
   - "apps/vercel-app"
   # Firebase Admin App: admin panel + bots + scrapers + workflows (write)
   - "apps/firebase-admin"
+  - "apps/mobile-app"
   # ─── SUPPORTING APPS ───
   - "apps/api"              # Python FastAPI (Cloud Run)
   - "apps/agents"           # WhatsApp scraper + deal orchestration
   - "apps/mass-blast"       # WhatsApp bulk messaging
   # ─── SHARED PACKAGES (used by BOTH apps) ───
   - "packages/*"
+  - "lib/*"
   # ─── INFRASTRUCTURE ───
   - "functions"
   - "scripts"
