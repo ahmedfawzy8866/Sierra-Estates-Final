@@ -16,6 +16,15 @@
   font-family: 'Jost', sans-serif;
 }
 
+:global(.dark) .container {
+  --bg: #0D2035;
+  --text: #EFF8F7;
+  --text-sub: rgba(239,248,247,0.78);
+  --border: rgba(233,193,118,0.18);
+  --card: #122A47;
+  --bg2: #0A1520;
+}
+
 .header {
   height: 72px;
   display: flex;
@@ -23,6 +32,7 @@
   justify-content: space-between;
   padding: 0 2rem;
   border-bottom: 1px solid var(--border);
+  -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   z-index: 100;
 }

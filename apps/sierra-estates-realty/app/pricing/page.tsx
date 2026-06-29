@@ -2,23 +2,8 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useTheme } from 'next-themes';
 import { ArrowLeft, Percent, Layers, Home } from 'lucide-react';
 import styles from './page.module.css';
-
-const G = '#E9C176';
-const G2 = '#C8961A';
-
-const THEMES = {
-  dark: {
-    bg: '#0D2035', text: '#EFF8F7', textSub: 'rgba(239,248,247,0.78)',
-    border: 'rgba(233,193,118,0.18)', card: '#122A47', bg2: '#0A1520',
-  },
-  light: {
-    bg: '#EEF2F4', text: '#0C1B2E', textSub: 'rgba(12,27,46,0.74)',
-    border: 'rgba(12,27,46,0.14)', card: '#FFFFFF', bg2: '#DCE4E8',
-  },
-};
 
 const BASE_SQM_PRICES: Record<string, number> = {
   'lake-view': 68000,
@@ -30,10 +15,6 @@ const BASE_SQM_PRICES: Record<string, number> = {
 };
 
 export default function UnitPricingPage() {
-  const { theme } = useTheme();
-  const mode = (theme === 'light' ? 'light' : 'dark') as 'light' | 'dark';
-  const th = THEMES[mode];
-
   // Parameters
   const [compound, setCompound] = useState('lake-view');
   const [area, setArea] = useState(180);
@@ -58,19 +39,8 @@ export default function UnitPricingPage() {
   const rangeMax = calculatedBase * 1.07;
   const calculatedSqmPrice = calculatedBase / area;
 
-  const styleVars = {
-    '--bg': th.bg,
-    '--text': th.text,
-    '--text-sub': th.textSub,
-    '--border': th.border,
-    '--card': th.card,
-    '--bg2': th.bg2,
-    '--g': G,
-    '--g2': G2,
-  } as React.CSSProperties;
-
   return (
-    <div className={styles.container} style={styleVars}>
+    <div className={styles.container}>
       {/* Header */}
       <div className={styles.header}>
         <div className={styles.headerLeft}>
