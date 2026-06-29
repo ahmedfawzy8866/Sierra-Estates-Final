@@ -1,0 +1,6 @@
+# Ignore markdown linting for leaked system prompts as they must preserve raw whitespace/formatting
+system_prompts_leaks/
+node_modules/
+.next/
+dist/
+_archive/
