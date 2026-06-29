@@ -23,7 +23,14 @@ except ImportError:  # pragma: no cover - optional dependency
     credentials = None
     firestore = None
 
-load_dotenv()
+# Load environment variables, prioritizing .env.local
+if os.path.exists('.env.local'):
+    load_dotenv('.env.local')
+elif os.path.exists('../../.env.local'):
+    load_dotenv('../../.env.local')
+else:
+    load_dotenv()
+
 
 DEFAULT_PF_BASE_URL = 'https://api.property-finder.eg/v2'
 
