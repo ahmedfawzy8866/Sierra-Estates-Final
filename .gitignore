@@ -113,3 +113,6 @@ tool-results/coverage/
 playwright-report/
 test-results/
 
+# ─── Expo env file ───
+expo-env.d.ts
+

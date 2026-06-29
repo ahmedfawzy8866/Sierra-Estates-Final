@@ -1,7 +1,7 @@
 import tseslint from 'typescript-eslint'
 
 export default [
-  { ignores: ['**/.next/**', '**/out/**', '**/build/**', '**/coverage/**', '**/*.d.ts', '**/public/design/**', '**/*.config.mjs', '**/*.config.cjs'] },
+  { ignores: ['**/.next/**', '**/out/**', '**/build/**', '**/coverage/**', '**/*.d.ts', '**/public/design/**', '**/*.config.mjs', '**/*.config.cjs', 'scripts/*.ts'] },
   ...tseslint.configs.recommended,
   {
     files: ['**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
