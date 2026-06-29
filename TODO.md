@@ -133,3 +133,9 @@ Aligned with STATUS.md. Sorted by deployment-readiness (pre-deploy → post-depl
 - [ ] Wire LeadScoreBadge into CRM dashboard
 - [ ] Add StatsCard to admin analytics page
 - [ ] Mobile responsive pass for PremiumHero
+
+## 🤖 WhatsApp Bot
+
+- [x] **Client Whitelist Filter**: Implemented whitelist checking (`whitelist.json`) in `apps/agents/whatsapp-bot/index.ts` to prevent responding to personal contacts.
+- [x] **Admin Commands**: Added `!whitelist <on|off|add|remove|list|status>` commands for real-time whitelist management.
+- [x] **Excel/CSV Import Utility**: Created `import-whitelist.ts` script to batch-import client numbers from `clients.csv`.

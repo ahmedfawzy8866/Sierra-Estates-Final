@@ -19,6 +19,8 @@ module.exports = {
         OPENCLAW_BASE_URL: 'http://127.0.0.1:18789/v1',
         OPENCLAW_TOKEN: '02b25ffca992d1128741c5fb58a34f8b680cfef51bfbec02',
         SBR_SECRET_KEY: 'sierra-secure-2028',
+        ALLOWED_CLIENTS_ONLY: process.env.ALLOWED_CLIENTS_ONLY || 'true',
+        ADMIN_PHONES: process.env.ADMIN_PHONES || '',
       },
       log_file: 'H:/Sierra-Estates-Final/logs/whatsapp-bot.log',
       out_file: 'H:/Sierra-Estates-Final/logs/whatsapp-bot-out.log',
