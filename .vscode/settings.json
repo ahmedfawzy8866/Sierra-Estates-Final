@@ -2,5 +2,8 @@
   "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
   "python.analysis.extraPaths": [
     "${workspaceFolder}/scripts/python"
+  ],
+  "pylint.args": [
+    "--disable=unknown-option-value"
   ]
 }
