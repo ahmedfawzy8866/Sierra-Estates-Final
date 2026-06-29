@@ -3,6 +3,7 @@
 Aligned with STATUS.md. Sorted by deployment-readiness (pre-deploy → post-deploy).
 
 ## ✅ Sierra Estates 2026 Completed
+
 - [x] Split-Hero with Virtual Tour
 - [x] AI Smart Filter
 - [x] CRM Leads API
@@ -24,12 +25,14 @@ Aligned with STATUS.md. Sorted by deployment-readiness (pre-deploy → post-depl
 - [x] Sidebar updated with Negotiations nav item
 
 ## 🆕 Next Logical Steps
+
 - [x] Connect AI Smart Filter to frontend UI component
 - [ ] Integrate real Virtual Tour SDK
 - [ ] Add more unit tests for PF sync engine edge cases
 - [ ] Wire LeadScoreBadge into LeadsPage lead cards
 
 ## 🚨 Pre-Deployment (blocking)
+
 - [ ] **Deploy Firestore rules** to production: `firebase deploy --only firestore:rules,storage` (requires local Firebase credentials; user action)
 - [ ] **Set environment secrets** in Vercel + Google Secret Manager (never in chat/git)
   - [ ] NEXT_PUBLIC_FIREBASE_* (public; safe to commit)
@@ -42,12 +45,14 @@ Aligned with STATUS.md. Sorted by deployment-readiness (pre-deploy → post-depl
 - [ ] **CI green**: type-check, lint (including config validation), tests all pass
 
 ## 📦 Post-Deployment (operational)
+
 - [ ] **Monitor**: Set up alerts in OpenTelemetry/Arize for error rates, latency, custom metrics
 - [ ] **Rate-limit tuning**: Monitor public endpoints for false-positives; adjust windowMs/maxRequests if needed
 - [ ] **Log retention**: Set Firestore/Storage backup cadence; archive old logs
 - [ ] **Rotate credentials**: Quarterly rotation of SBR_SECRET_KEY, JWT_SECRET, Firebase admin key
 
 ## 💡 Enhancement Candidates (safe, high-value, not blocking)
+
 - [x] **Edge rate-limiting**: Upstash Redis support built into rate-limit.ts (auto-detects env vars)
 - [x] **Request/response validation**: Zod env config validation in lib/server/env-config.ts
 - [ ] **Refresh stale docs**: Audit issue/PR descriptions for outdated TODO/STATUS refs
@@ -55,15 +60,18 @@ Aligned with STATUS.md. Sorted by deployment-readiness (pre-deploy → post-depl
 - [ ] **Consolidate secrets**: Move web app from Vercel to Firebase Hosting + Functions for unified secrets/deployment (lower priority)
 
 ## 🐛 Known Issues (low-priority)
+
 - i18n: next-intl wired but underutilized in some flows
 - Test coverage: 47+ tests passing; expand for critical paths
 
 ## 📚 Documentation
+
 - [ ] Update CLAUDE.md if stack/conventions change
 - [ ] Keep STATUS.md + TODO.md in sync with actual state
 - [ ] Archive closed issues/PRs if their TODO/STATUS refs become confusing
 
 ## 📱 WhatsApp Outreach — 4 real Twilio numbers provisioned (Egypt)
+
 - [x] Service layer wired: `lib/server/whatsapp-queue.ts` (load-balanced
       per-number claim, 30/2hr window + 120/day/number + 480/day total,
       12pm-8pm Africa/Cairo gate), `lib/server/twilio-client.ts` (REST send +
@@ -105,6 +113,7 @@ Aligned with STATUS.md. Sorted by deployment-readiness (pre-deploy → post-depl
 - [x] Build an admin UI page for owner negotiations (OwnerNegotiationsPage.tsx with chat threads)
 
 ## 🧹 Repo Cleanup
+
 - [x] Divergent `firestore.rules` resolved: `firebase.json` now deploys the
       staff-gated `apps/sierra-estates-realty/firestore.rules`
       (`users/{uid}.role`); the legacy root `admins/{uid}` rules file is deleted.
@@ -113,12 +122,14 @@ Aligned with STATUS.md. Sorted by deployment-readiness (pre-deploy → post-depl
 - [x] `apps/frontend` does not exist — was already cleaned up.
 
 ## 🐍 Python
+
 - [ ] Schedule analytics-report.py via GitHub Actions cron
 - [ ] Add unit tests for LeadScorer class
 - [ ] Connect lead-scorer.py to live Firestore in production
 - [ ] WhatsApp template message approval workflow
 
 ## 🎨 Frontend
+
 - [ ] Wire LeadScoreBadge into CRM dashboard
 - [ ] Add StatsCard to admin analytics page
 - [ ] Mobile responsive pass for PremiumHero

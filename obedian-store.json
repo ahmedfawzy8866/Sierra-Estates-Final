@@ -412,5 +412,35 @@
     ],
     "createdAt": "2026-06-28T21:57:05.592Z",
     "updatedAt": "2026-06-28T21:57:05.592Z"
+  },
+  "insight-repo-recovery-2026": {
+    "id": "insight-repo-recovery-2026",
+    "value": {
+      "_meta": {
+        "author": "system"
+      },
+      "data": {
+        "event": "laptop-shutdown-recovery",
+        "timestamp": "2026-06-29T00:22:24.266Z",
+        "status": "success",
+        "actionsTaken": [
+          "fixed syntax typo in eas.json",
+          "restored missing landing/page.tsx to satisfy realty tests",
+          "resolved eslint project service parsing error for ecosystem.config.cjs",
+          "verified monorepo linting, type-checks, and all 142 unit tests pass successfully",
+          "staged and committed all changes, making the git repository clean"
+        ]
+      }
+    },
+    "tags": [
+      "shared",
+      "system",
+      "agent-insight",
+      "recovery",
+      "insight",
+      "system-log"
+    ],
+    "createdAt": "2026-06-29T00:22:24.269Z",
+    "updatedAt": "2026-06-29T00:22:24.269Z"
   }
 }
