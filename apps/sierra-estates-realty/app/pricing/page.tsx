@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { ArrowLeft, Percent, Layers, Home } from 'lucide-react';
+import styles from './page.module.css';
 
 const G = '#E9C176';
 const G2 = '#C8961A';
@@ -57,46 +58,57 @@ export default function UnitPricingPage() {
   const rangeMax = calculatedBase * 1.07;
   const calculatedSqmPrice = calculatedBase / area;
 
+  const styleVars = {
+    '--bg': th.bg,
+    '--text': th.text,
+    '--text-sub': th.textSub,
+    '--border': th.border,
+    '--card': th.card,
+    '--bg2': th.bg2,
+    '--g': G,
+    '--g2': G2,
+  } as React.CSSProperties;
+
   return (
-    <div style={{ background: th.bg, color: th.text, minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: "'Jost', sans-serif" }}>
+    <div className={styles.container} style={styleVars}>
       {/* Header */}
-      <div style={{ height: 72, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 2rem', borderBottom: `1px solid ${th.border}`, backdropFilter: 'blur(20px)', zIndex: 100 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div className={styles.header}>
+        <div className={styles.headerLeft}>
           <Link href="/">
-            <button title="Go Back" aria-label="Go Back" style={{ background: 'transparent', border: `1px solid ${th.border}`, color: th.text, width: 40, height: 40, borderRadius: '12px', display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer' }}>
+            <button title="Go Back" aria-label="Go Back" className={styles.backButton}>
               <ArrowLeft size={18} />
             </button>
           </Link>
           <div>
-            <h1 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 500, fontFamily: "'Cormorant Garamond', serif", letterSpacing: '0.02em' }}>Precise Pricing Index</h1>
-            <p style={{ margin: 0, fontSize: '0.75rem', color: th.textSub }}>AI valuation models calibrated to Egypt resale parameters</p>
+            <h1 className={styles.title}>Precise Pricing Index</h1>
+            <p className={styles.subtitle}>AI valuation models calibrated to Egypt resale parameters</p>
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(233,193,118,0.1)', border: `1px solid ${G}`, borderRadius: '24px', padding: '6px 16px', fontSize: '0.8rem', color: G }}>
+        <div className={styles.calibratorBadge}>
           <Percent size={14} />
           <span>Fuzzy Valuation Calibrator</span>
         </div>
       </div>
 
       {/* Main Grid Content */}
-      <div style={{ maxWidth: 1200, margin: '2rem auto', width: '100%', padding: '0 2rem', display: 'grid', gridTemplateColumns: '420px 1fr', gap: '2rem', flex: 1 }}>
+      <div className={styles.mainGrid}>
         
         {/* Left Pane: Parameter Form */}
-        <div style={{ background: th.card, border: `1px solid ${th.border}`, borderRadius: '24px', padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          <h3 style={{ margin: 0, fontSize: '1.25rem', fontFamily: "'Cormorant Garamond', serif", display: 'flex', alignItems: 'center', gap: '0.5rem', color: G }}>
+        <div className={styles.leftPane}>
+          <h3 className={styles.attributesHeading}>
             <Layers size={18} />
             Unit Attributes
           </h3>
 
           {/* Selector 1: Compound */}
           <div>
-            <label style={{ fontSize: '0.8rem', color: th.textSub, display: 'block', marginBottom: '0.4rem' }}>Target Compound</label>
+            <label className={styles.fieldLabel}>Target Compound</label>
             <select
               title="Target Compound"
               aria-label="Target Compound"
               value={compound}
               onChange={(e) => setCompound(e.target.value)}
-              style={{ width: '100%', padding: '10px', background: th.bg, color: th.text, border: `1px solid ${th.border}`, borderRadius: '10px', outline: 'none', cursor: 'pointer' }}
+              className={styles.selectInput}
             >
               <option value="lake-view">Lake View Residence (Golden Square)</option>
               <option value="mivida">Mivida Emaar (Golden Square)</option>
@@ -109,9 +121,9 @@ export default function UnitPricingPage() {
 
           {/* Selector 2: Area */}
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.8rem' }}>
-              <span style={{ color: th.textSub }}>Built-Up Area (m²)</span>
-              <span style={{ fontWeight: 600, color: G }}>{area} m²</span>
+            <div className={styles.rangeLabelRow}>
+              <span className={styles.subtitle}>Built-Up Area (m²)</span>
+              <span className={styles.rangeLabelValue}>{area} m²</span>
             </div>
             <input
               type="range"
@@ -123,29 +135,19 @@ export default function UnitPricingPage() {
               step={10}
               value={area}
               onChange={(e) => setArea(Number(e.target.value))}
-              style={{ width: '100%', accentColor: G }}
+              className={styles.rangeSliderInput}
             />
           </div>
 
           {/* Selector 3: Bedrooms */}
           <div>
-            <label style={{ fontSize: '0.8rem', color: th.textSub, display: 'block', marginBottom: '0.4rem' }}>Bedrooms</label>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.5rem' }}>
+            <label className={styles.fieldLabel}>Bedrooms</label>
+            <div className={styles.bedroomButtonContainer}>
               {[1, 2, 3, 4, 5].map((bed) => (
                 <button
                   key={bed}
                   onClick={() => setBedrooms(bed)}
-                  style={{
-                    padding: '8px 0',
-                    border: `1px solid ${bedrooms === bed ? G : th.border}`,
-                    background: bedrooms === bed ? `linear-gradient(135deg, ${G2}, ${G})` : 'transparent',
-                    color: bedrooms === bed ? '#000' : th.text,
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: 600,
-                    transition: 'all 0.2s ease',
-                  }}
+                  className={bedrooms === bed ? styles.bedroomButtonActive : styles.bedroomButton}
                 >
                   {bed} B
                 </button>
@@ -155,13 +157,13 @@ export default function UnitPricingPage() {
 
           {/* Selector 4: Finishing Type */}
           <div>
-            <label style={{ fontSize: '0.8rem', color: th.textSub, display: 'block', marginBottom: '0.4rem' }}>Finishing Type</label>
+            <label className={styles.fieldLabel}>Finishing Type</label>
             <select
               title="Finishing Type"
               aria-label="Finishing Type"
               value={finishing}
               onChange={(e) => setFinishing(e.target.value)}
-              style={{ width: '100%', padding: '10px', background: th.bg, color: th.text, border: `1px solid ${th.border}`, borderRadius: '10px', outline: 'none', cursor: 'pointer' }}
+              className={styles.selectInput}
             >
               <option value="core-shell">Core & Shell (Semi-Finished)</option>
               <option value="fully-finished">Fully Finished (High-End)</option>
@@ -171,23 +173,13 @@ export default function UnitPricingPage() {
 
           {/* Selector 5: Furnished Status */}
           <div>
-            <label style={{ fontSize: '0.8rem', color: th.textSub, display: 'block', marginBottom: '0.4rem' }}>Furnishing Status</label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+            <label className={styles.fieldLabel}>Furnishing Status</label>
+            <div className={styles.furnishingButtonContainer}>
               {['unfurnished', 'fully-furnished'].map((f) => (
                 <button
                   key={f}
                   onClick={() => setFurnished(f)}
-                  style={{
-                    padding: '8px 0',
-                    border: `1px solid ${furnished === f ? G : th.border}`,
-                    background: furnished === f ? `linear-gradient(135deg, ${G2}, ${G})` : 'transparent',
-                    color: furnished === f ? '#000' : th.text,
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontSize: '0.8rem',
-                    fontWeight: 600,
-                    textTransform: 'capitalize',
-                  }}
+                  className={furnished === f ? styles.furnishingButtonActive : styles.furnishingButton}
                 >
                   {f === 'unfurnished' ? 'Unfurnished' : 'Fully Furnished'}
                 </button>
@@ -197,60 +189,60 @@ export default function UnitPricingPage() {
         </div>
 
         {/* Right Pane: AI Valuation Output */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        <div className={styles.rightPane}>
           {/* Main Pricing Output Block */}
-          <div style={{ background: th.card, border: `1px solid ${th.border}`, borderRadius: '24px', padding: '2.5rem', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: `linear-gradient(90deg, ${G2}, ${G})` }} />
+          <div className={styles.outputBlock}>
+            <div className={styles.accentBar} />
             
-            <span style={{ fontSize: '0.85rem', color: G, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.15em', display: 'block', marginBottom: '0.5rem' }}>
+            <span className={styles.outputTitle}>
               Sierra Valuation Estimate Range
             </span>
 
-            <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3.25rem)', fontWeight: 600, margin: '0.5rem 0', fontFamily: "'DM Mono', monospace", color: '#fff' }}>
+            <h2 className={styles.estimateRange}>
               EGP {(rangeMin / 1000000).toFixed(2)}M - {(rangeMax / 1000000).toFixed(2)}M
             </h2>
 
-            <p style={{ margin: 0, fontSize: '0.9rem', color: th.textSub }}>
-              Estimated average cost: <strong style={{ color: G }}>EGP {calculatedBase.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong>
+            <p className={styles.avgCost}>
+              Estimated average cost: <strong className={styles.goldText}>EGP {calculatedBase.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong>
             </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '2rem', borderTop: `1px solid ${th.border}`, paddingTop: '1.5rem' }}>
-              <div style={{ textAlign: 'left' }}>
-                <span style={{ display: 'block', fontSize: '0.75rem', color: th.textSub }}>AVG PRICE / SQM</span>
-                <span style={{ fontSize: '1.2rem', fontWeight: 600, fontFamily: "'DM Mono', monospace", color: G }}>EGP {calculatedSqmPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+            <div className={styles.statsGrid}>
+              <div className={styles.statLeft}>
+                <span className={styles.statLabel}>AVG PRICE / SQM</span>
+                <span className={styles.statValueGold}>EGP {calculatedSqmPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
               </div>
-              <div style={{ textAlign: 'right' }}>
-                <span style={{ display: 'block', fontSize: '0.75rem', color: th.textSub }}>VALUATION CONFIDENCE</span>
-                <span style={{ fontSize: '1.2rem', fontWeight: 600, fontFamily: "'DM Mono', monospace", color: '#22c55e' }}>96% (High Confidence)</span>
+              <div className={styles.statRight}>
+                <span className={styles.statLabel}>VALUATION CONFIDENCE</span>
+                <span className={styles.statValueGreen}>96% (High Confidence)</span>
               </div>
             </div>
           </div>
 
           {/* Premium Market Comparison List */}
-          <div style={{ background: th.card, border: `1px solid ${th.border}`, borderRadius: '24px', padding: '2rem' }}>
-            <h3 style={{ margin: '0 0 1.25rem 0', fontSize: '1.1rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Home size={16} color={G} />
+          <div className={styles.comparableCard}>
+            <h3 className={styles.comparableHeading}>
+              <Home size={16} className={styles.goldText} />
               Recent Comparable Verified Matches
             </h3>
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div className={styles.comparableList}>
               {Array.from({ length: 2 }).map((_, i) => {
                 const compPrice = calculatedBase * (1 + (i === 0 ? 0.03 : -0.04));
                 return (
-                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: 'rgba(255,255,255,0.01)', border: `1px solid ${th.border}`, borderRadius: '14px' }}>
+                  <div key={i} className={styles.comparableItem}>
                     <div>
-                      <span style={{ fontSize: '0.85rem', fontWeight: 500, display: 'block', color: '#fff' }}>
+                      <span className={styles.compItemTitle}>
                         {bedrooms}B Finished Apartment
                       </span>
-                      <span style={{ fontSize: '0.75rem', color: th.textSub }}>
+                      <span className={styles.compItemDetails}>
                         {area} m² · {compound.replace('-', ' ').toUpperCase()}
                       </span>
                     </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <span style={{ display: 'block', fontSize: '1rem', fontWeight: 600, color: G, fontFamily: "'DM Mono', monospace" }}>
+                    <div className={styles.compItemRight}>
+                      <span className={styles.compItemPrice}>
                         EGP {(compPrice / 1000000).toFixed(2)}M
                       </span>
-                      <span style={{ fontSize: '0.7rem', color: '#22c55e', background: 'rgba(34,197,94,0.1)', padding: '2px 6px', borderRadius: '4px' }}>
+                      <span className={styles.compItemTag}>
                         Direct Owner
                       </span>
                     </div>
@@ -262,7 +254,7 @@ export default function UnitPricingPage() {
 
           {/* Gold Button to start a request */}
           <Link href={`/?priceRange=${(calculatedBase / 1000000).toFixed(0)}&compound=${encodeURIComponent(compound)}#listings`}>
-            <button style={{ width: '100%', padding: '14px', background: `linear-gradient(135deg,${G2},${G})`, color: '#000', border: 'none', borderRadius: '12px', cursor: 'pointer', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <button className={styles.exploreButton}>
               Explore Matching Units
             </button>
           </Link>

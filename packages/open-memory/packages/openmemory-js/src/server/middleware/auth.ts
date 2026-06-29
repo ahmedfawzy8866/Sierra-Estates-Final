@@ -94,11 +94,17 @@ function is_public_endpoint(path: string): boolean {
 
 function extract_api_key(req: AuthRequest): string | null {
     const x_api_key = req.headers[auth_config.api_key_header];
-    if (x_api_key) return x_api_key;
+    if (typeof x_api_key === "string") return x_api_key;
+    if (Array.isArray(x_api_key) && x_api_key[0]) return x_api_key[0];
+
     const auth_header = req.headers["authorization"];
-    if (auth_header) {
+    if (typeof auth_header === "string") {
         if (auth_header.startsWith("Bearer ")) return auth_header.slice(7);
         if (auth_header.startsWith("ApiKey ")) return auth_header.slice(7);
+    } else if (Array.isArray(auth_header) && auth_header[0]) {
+        const first = auth_header[0];
+        if (first.startsWith("Bearer ")) return first.slice(7);
+        if (first.startsWith("ApiKey ")) return first.slice(7);
     }
     return null;
 }
@@ -154,13 +160,13 @@ function check_rate_limit(client_id: string): {
 }
 
 export function authenticate_api_request(req: AuthRequest, res: AuthResponse, next: AuthNext) {
-    const path = req.path || req.url;
+    const path = req.path || req.url || "";
     if (is_public_endpoint(path)) return next();
 
     if (!auth_config.api_key || auth_config.api_key === "") {
         if (DEV_ALLOW_NO_AUTH) {
             // Synthetic tenant for local dev only — never reachable in prod.
-            (req as any).tenant = "dev-no-auth";
+            req.tenant = "dev-no-auth";
             return next();
         }
         return res.status(503).json({
@@ -180,7 +186,7 @@ export function authenticate_api_request(req: AuthRequest, res: AuthResponse, ne
         return res.status(403).json({ error: "invalid_api_key" });
 
     const tenant = derive_tenant_id(provided);
-    (req as any).tenant = tenant;
+    req.tenant = tenant;
 
     const rl = check_rate_limit(tenant);
     if (auth_config.rate_limit_enabled) {
@@ -197,7 +203,7 @@ export function authenticate_api_request(req: AuthRequest, res: AuthResponse, ne
 }
 
 export function log_authenticated_request(req: AuthRequest, res: AuthResponse, next: AuthNext) {
-    const tenant = (req as any).tenant;
+    const tenant = req.tenant;
     if (tenant) console.log(`[AUTH] ${req.method} ${req.path} [${tenant}]`);
     next();
 }

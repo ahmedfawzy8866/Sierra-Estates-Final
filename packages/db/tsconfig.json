@@ -14,7 +14,8 @@
     "declarationMap": true,
     "sourceMap": true,
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": ".",
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["src/**/*", "lib/**/*"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]
