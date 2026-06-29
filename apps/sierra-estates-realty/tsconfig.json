@@ -1,12 +1,7 @@
 {
   "compilerOptions": {
-    "forceConsistentCasingInFileNames": true,
     "target": "ES2017",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -24,21 +19,7 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./*"
-      ],
-      "@agents-core/*": [
-        "../../packages/agents-core/src/*"
-      ],
-      "@obedian/*": [
-        "../../packages/obedian/src/*"
-      ],
-      "@sierra-estates/obedian": [
-        "../../packages/obedian/src/index.ts"
-      ],
-      "@sierra-estates/memory-engine": [
-        "../../packages/memory-engine/src/index.ts"
-      ]
+      "@/*": ["./src/*"]
     }
   },
   "include": [
@@ -49,12 +30,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": [
-    "node_modules",
-    "agents/**/*",
-    "apps/**/*",
-    "bots/**/*",
-    "functions/**/*",
-    "public/**/*"
-  ]
+  "exclude": ["node_modules"]
 }
