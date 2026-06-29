@@ -13,6 +13,42 @@ import { WhatsAppBotRouter } from './router';
 // Create router AFTER dotenv is loaded so GOOGLE_AI_API_KEY is available
 const router = new WhatsAppBotRouter(process.env.GOOGLE_AI_API_KEY);
 
+// Whitelist configuration management
+const whitelistPath = path.resolve(__dirname, 'whitelist.json');
+
+interface WhitelistConfig {
+  enabled: boolean;
+  numbers: string[];
+}
+
+function normalizePhone(phoneStr: string): string {
+  return phoneStr.replace(/\D/g, '');
+}
+
+function loadWhitelist(): WhitelistConfig {
+  try {
+    if (fs.existsSync(whitelistPath)) {
+      return JSON.parse(fs.readFileSync(whitelistPath, 'utf8'));
+    }
+  } catch (err) {
+    console.error('⚠️ Failed to read whitelist.json:', err);
+  }
+  return { enabled: true, numbers: [] };
+}
+
+function saveWhitelist(config: WhitelistConfig) {
+  try {
+    fs.writeFileSync(whitelistPath, JSON.stringify(config, null, 2), 'utf8');
+  } catch (err) {
+    console.error('⚠️ Failed to write whitelist.json:', err);
+  }
+}
+
+const adminPhones = (process.env.ADMIN_PHONES || '')
+  .split(',')
+  .map(p => normalizePhone(p))
+  .filter(Boolean);
+
 // Verify that the Gemini API Key is present
 const apiKey = process.env.GOOGLE_AI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 if (!apiKey) {
@@ -163,8 +199,79 @@ client.on('message', async (msg) => {
       return;
     }
 
-    const phone = msg.from.replace('@c.us', '');
+    const phone = msg.from.replace('@c.us', '').replace('@g.us', '');
     const clientName = chat.name || phone;
+    const cleanSender = normalizePhone(phone);
+    const isAdmin = adminPhones.includes(cleanSender);
+
+    // Whitelist Admin Commands
+    if (isAdmin && msg.body.trim().startsWith('!whitelist')) {
+      const parts = msg.body.trim().split(/\s+/);
+      const cmd = parts[1]?.toLowerCase();
+      const config = loadWhitelist();
+
+      if (cmd === 'on') {
+        config.enabled = true;
+        saveWhitelist(config);
+        await msg.reply('✅ Whitelist mode enabled. The bot will only respond to whitelisted clients.');
+        return;
+      } else if (cmd === 'off') {
+        config.enabled = false;
+        saveWhitelist(config);
+        await msg.reply('⚠️ Whitelist mode disabled. The bot will respond to all direct messages.');
+        return;
+      } else if (cmd === 'add') {
+        const target = parts.slice(2).join('').trim();
+        if (!target) {
+          await msg.reply('❌ Please specify a phone number: `!whitelist add <number>`');
+          return;
+        }
+        const cleanTarget = normalizePhone(target);
+        if (!config.numbers.includes(cleanTarget)) {
+          config.numbers.push(cleanTarget);
+          saveWhitelist(config);
+          await msg.reply(`✅ Added +${cleanTarget} to the whitelist.`);
+        } else {
+          await msg.reply(`ℹ️ +${cleanTarget} is already whitelisted.`);
+        }
+        return;
+      } else if (cmd === 'remove') {
+        const target = parts.slice(2).join('').trim();
+        if (!target) {
+          await msg.reply('❌ Please specify a phone number: `!whitelist remove <number>`');
+          return;
+        }
+        const cleanTarget = normalizePhone(target);
+        const index = config.numbers.indexOf(cleanTarget);
+        if (index !== -1) {
+          config.numbers.splice(index, 1);
+          saveWhitelist(config);
+          await msg.reply(`✅ Removed +${cleanTarget} from the whitelist.`);
+        } else {
+          await msg.reply(`ℹ️ +${cleanTarget} was not found in the whitelist.`);
+        }
+        return;
+      } else if (cmd === 'list') {
+        const listStr = config.numbers.length > 0 
+          ? config.numbers.map((n, i) => `${i + 1}. +${n}`).join('\n')
+          : 'No numbers in the whitelist.';
+        await msg.reply(`📋 *Sierra Whitelist (Mode: ${config.enabled ? 'ON' : 'OFF'})*\n\n${listStr}`);
+        return;
+      } else if (cmd === 'status') {
+        await msg.reply(`ℹ️ Whitelist mode: ${config.enabled ? 'ON' : 'OFF'}\nWhitelisted contacts count: ${config.numbers.length}`);
+        return;
+      } else {
+        await msg.reply('❌ Unknown command. Available commands:\n`!whitelist on`\n`!whitelist off`\n`!whitelist add <number>`\n`!whitelist remove <number>`\n`!whitelist list`\n`!whitelist status`');
+        return;
+      }
+    }
+
+    // Whitelist check for clients
+    const config = loadWhitelist();
+    if (config.enabled && !isAdmin && !config.numbers.includes(cleanSender)) {
+      console.log(`🔕 [Ignored] Message from non-whitelisted number: +${cleanSender}`);
+      return;
+    }
 
     console.log(`\n📥 [Message Received] From: ${clientName} (${phone})`);
     console.log(`   Content: "${msg.body}"`);
