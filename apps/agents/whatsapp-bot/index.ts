@@ -49,6 +49,52 @@ const adminPhones = (process.env.ADMIN_PHONES || '')
   .map(p => normalizePhone(p))
   .filter(Boolean);
 
+// Initialize Firebase Admin SDK for Firestore Lead Verification
+import * as admin from 'firebase-admin';
+
+if (admin.apps.length === 0) {
+  try {
+    admin.initializeApp();
+    console.log('🔥 Firebase Admin SDK initialized in WhatsApp Bot.');
+  } catch (err) {
+    console.warn('⚠️ Failed to initialize Firebase Admin SDK. Firestore lead check will be bypassed:', err instanceof Error ? err.message : err);
+  }
+}
+
+const db = admin.apps.length > 0 ? admin.firestore() : null;
+
+async function checkFirestoreLead(phoneStr: string): Promise<boolean> {
+  if (!db) return false;
+  try {
+    const cleanPhone = normalizePhone(phoneStr);
+    const leadsRef = db.collection('leads');
+
+    // 1. Check exact match
+    const q1 = await leadsRef.where('phone', '==', phoneStr).get();
+    if (!q1.empty) return true;
+
+    // 2. Check normalized clean phone
+    const q2 = await leadsRef.where('phone', '==', cleanPhone).get();
+    if (!q2.empty) return true;
+
+    // 3. Check clean phone with leading +
+    const q3 = await leadsRef.where('phone', '==', `+${cleanPhone}`).get();
+    if (!q3.empty) return true;
+
+    // 4. Check local Egypt format (replace country code 20 with leading 0)
+    if (cleanPhone.startsWith('20')) {
+      const localPhone = '0' + cleanPhone.slice(2);
+      const q4 = await leadsRef.where('phone', '==', localPhone).get();
+      if (!q4.empty) return true;
+    }
+
+    return false;
+  } catch (err) {
+    console.error('⚠️ Firestore query error during lead verification:', err);
+    return false;
+  }
+}
+
 // Verify that the Gemini API Key is present
 const apiKey = process.env.GOOGLE_AI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 if (!apiKey) {
@@ -268,7 +314,20 @@ client.on('message', async (msg) => {
 
     // Whitelist check for clients
     const config = loadWhitelist();
-    if (config.enabled && !isAdmin && !config.numbers.includes(cleanSender)) {
+    let isAllowed = config.numbers.includes(cleanSender);
+
+    if (!isAllowed && !isAdmin && config.enabled) {
+      // Check if this contact exists as a lead in Firestore
+      const isLead = await checkFirestoreLead(phone);
+      if (isLead) {
+        console.log(`✅ [Auto-Whitelist] Lead found in Firestore for +${cleanSender}. Adding to whitelist.`);
+        config.numbers.push(cleanSender);
+        saveWhitelist(config);
+        isAllowed = true;
+      }
+    }
+
+    if (config.enabled && !isAdmin && !isAllowed) {
       console.log(`🔕 [Ignored] Message from non-whitelisted number: +${cleanSender}`);
       return;
     }
