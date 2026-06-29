@@ -1,6 +1,19 @@
 import { env } from "../../core/cfg";
 import crypto from "crypto";
-import type { Request, Response, NextFunction } from "express";
+
+export interface AuthRequest {
+    path?: string;
+    url?: string;
+    method?: string;
+    headers: Record<string, string | string[] | undefined>;
+    tenant?: string;
+}
+export interface AuthResponse {
+    status: (code: number) => AuthResponse;
+    json: (data: unknown) => void;
+    setHeader: (name: string, value: string | number) => void;
+}
+export type AuthNext = () => void;
 
 /**
  * SECURITY: Authentication is fail-closed by default.
@@ -79,7 +92,7 @@ function is_public_endpoint(path: string): boolean {
     );
 }
 
-function extract_api_key(req: Request): string | null {
+function extract_api_key(req: AuthRequest): string | null {
     const x_api_key = req.headers[auth_config.api_key_header];
     if (x_api_key) return x_api_key;
     const auth_header = req.headers["authorization"];
@@ -140,7 +153,7 @@ function check_rate_limit(client_id: string): {
     };
 }
 
-export function authenticate_api_request(req: Request, res: Response, next: NextFunction) {
+export function authenticate_api_request(req: AuthRequest, res: AuthResponse, next: AuthNext) {
     const path = req.path || req.url;
     if (is_public_endpoint(path)) return next();
 
@@ -183,7 +196,7 @@ export function authenticate_api_request(req: Request, res: Response, next: Next
     next();
 }
 
-export function log_authenticated_request(req: Request, res: Response, next: NextFunction) {
+export function log_authenticated_request(req: AuthRequest, res: AuthResponse, next: AuthNext) {
     const tenant = (req as any).tenant;
     if (tenant) console.log(`[AUTH] ${req.method} ${req.path} [${tenant}]`);
     next();
