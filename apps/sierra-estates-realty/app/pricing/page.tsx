@@ -254,7 +254,7 @@ export default function UnitPricingPage() {
           </div>
 
           {/* Gold Button to start a request */}
-          <Link href={`/?priceRange=${(calculatedBase / 1000000).toFixed(0)}&compound=${compound}#listings`}>
+          <Link href={`/?priceRange=${(calculatedBase / 1000000).toFixed(0)}&compound=${encodeURIComponent(compound)}#listings`}>
             <button style={{ width: '100%', padding: '14px', background: `linear-gradient(135deg,${G2},${G})`, color: '#000', border: 'none', borderRadius: '12px', cursor: 'pointer', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Explore Matching Units
             </button>

@@ -29,8 +29,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // Restrict email length to prevent ReDoS on excessively long input
+    if (visitorEmail.length > 254) {
+      return NextResponse.json(
+        { error: 'Email address exceeds maximum length' },
+        { status: 400 }
+      );
+    }
+
+    // Validate email format with a ReDoS-resistant regex
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
     if (!emailRegex.test(visitorEmail)) {
       return NextResponse.json(
         { error: 'Invalid email format' },

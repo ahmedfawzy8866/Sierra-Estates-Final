@@ -55,6 +55,7 @@ export type MessageIntent =
   | 'complaint'             // Expressing frustration / complaint
   | 'closing'               // Ready to sign / close
   | 'general_info'          // General question about the company
+  | 'owner_offering'        // Property owner adding/selling/renting unit
   | 'unknown'
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -64,6 +65,10 @@ export type MessageIntent =
 const PROPERTY_CODE_PATTERN = /\b(SE|SB|SBE|PROP)[- ]?(\d{3,6})\b/i
 
 const INTENT_PATTERNS: Array<{ intent: MessageIntent; patterns: RegExp[] }> = [
+  {
+    intent: 'owner_offering',
+    patterns: [/مالك|ملاك|عندي شقة|عندي فيلا|عايز ابيع|عايز أبيع|عايز أأجر|للإيجار|للايجار|للبيع|للبدل/i],
+  },
   {
     intent: 'closing',
     patterns: [/عقد|contract|توقيع|sign|هاخد|confirmed|بدفع|دفع|عربون|حجز|deposit|downpayment/i],
@@ -115,6 +120,7 @@ export function classifyIntent(body: string): MessageIntent {
 export function determineUrgency(intent: MessageIntent, history: unknown[]): 'low' | 'medium' | 'high' | 'critical' {
   if (intent === 'closing') return 'critical'
   if (intent === 'complaint') return 'high'
+  if (intent === 'owner_offering') return 'high'
   if (intent === 'viewing_request') return 'high'
   if (intent === 'availability_check' || intent === 'property_inquiry') return 'medium'
   if (history.length === 0) return 'medium' // New client always medium+
@@ -122,6 +128,16 @@ export function determineUrgency(intent: MessageIntent, history: unknown[]): 'lo
 }
 
 export function routeMessage(intent: MessageIntent, urgency: string, isNewClient: boolean): RouteDecision {
+  // Owner offering properties
+  if (intent === 'owner_offering') {
+    return {
+      primaryAgent: 'openclaw',
+      supportingAgents: [],
+      intent,
+      urgency: 'high',
+    }
+  }
+
   // Critical path: ready to close
   if (intent === 'closing') {
     return {
@@ -243,6 +259,16 @@ export class WhatsAppBotRouter {
     userMessage: string,
     phone: string
   ): Promise<string> {
+    // If the primary agent is OpenClaw (handling owners directly)
+    if (route.primaryAgent === 'openclaw') {
+      const openclawResult = await this.orchestrator.runAgentTask(
+        'openclaw',
+        `You are talking directly to a property owner. Extract property details (if any), encourage them to provide more info, and generate a warm, professional WhatsApp response in Egyptian Arabic: "${userMessage}"`,
+        context
+      )
+      return openclawResult.status === 'success' ? openclawResult.output : 'أهلاً بك يا فندم. قسم الملاك هيتواصل مع حضرتك فوراً بخصوص وحدتك.';
+    }
+
     // If supporting agents include openclaw or sierra, run them first
     const needsData = route.supportingAgents.includes('openclaw')
     const needsAnalysis = route.supportingAgents.includes('sierra')

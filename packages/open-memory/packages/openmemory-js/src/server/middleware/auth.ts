@@ -96,15 +96,15 @@ function validate_api_key(provided: string, expected: string): boolean {
 }
 
 /**
- * Map a raw API key to a stable tenant id. Currently a SHA-256 prefix —
+ * Map a raw API key to a stable tenant id. Currently derived via PBKDF2 with 10,000 iterations —
  * one tenant per key. Replace with a config lookup if/when the project
  * needs many keys to share a tenant.
  */
 function derive_tenant_id(api_key: string): string {
+    const salt = crypto.createHash("sha256").update("sierra-estates-salt").digest();
     return crypto
-        .createHash("sha256")
-        .update(api_key)
-        .digest("hex")
+        .pbkdf2Sync(api_key, salt, 10000, 32, "sha256")
+        .toString("hex")
         .slice(0, 16);
 }
 

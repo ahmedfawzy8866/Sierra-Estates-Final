@@ -9,7 +9,9 @@ import { z } from 'zod';
  */
 function sanitizeForOutput(input: string, maxLength: number = 200): string {
   return input
-    .replace(/<[^>]*>/g, '')  // Strip HTML tags
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
     .slice(0, maxLength)
     .trim();
 }

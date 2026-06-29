@@ -295,15 +295,17 @@ describe('Environment Config Validation', () => {
 describe('Input Validation', () => {
   function sanitizeForOutput(input: string, maxLength: number = 200): string {
     return input
-      .replace(/<[^>]*>/g, '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
       .slice(0, maxLength)
       .trim();
   }
 
-  it('strips HTML tags from user input', () => {
-    expect(sanitizeForOutput('<script>alert("xss")</script>Hello')).toBe('alert("xss")Hello');
-    expect(sanitizeForOutput('<b>Bold</b> text')).toBe('Bold text');
-    expect(sanitizeForOutput('<img src=x onerror=alert(1)>')).toBe('');
+  it('escapes HTML tags from user input', () => {
+    expect(sanitizeForOutput('<script>alert("xss")</script>Hello')).toBe('&lt;script&gt;alert("xss")&lt;/script&gt;Hello');
+    expect(sanitizeForOutput('<b>Bold</b> text')).toBe('&lt;b&gt;Bold&lt;/b&gt; text');
+    expect(sanitizeForOutput('<img src=x onerror=alert(1)>')).toBe('&lt;img src=x onerror=alert(1)&gt;');
   });
 
   it('truncates input to maxLength', () => {
