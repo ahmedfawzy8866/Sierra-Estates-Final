@@ -27,13 +27,6 @@
             "args": "${command:pickArgs}"
         },
         {
-            "name": "Launch Edge",
-            "request": "launch",
-            "type": "msedge",
-            "url": "http://localhost:8080",
-            "webRoot": "${workspaceFolder}"
-        },
-        {
             "name": "Attach to Firefox",
             "type": "firefox",
             "request": "attach"
@@ -43,19 +36,6 @@
             "type": "node",
             "request": "attach",
             "remoteRoot": "/usr/src/app"
-        },
-        {
-            "name": "Run npm start",
-            "command": "npm start",
-            "request": "launch",
-            "type": "node-terminal"
-        },
-        {
-            "name": "Docker: Build",
-            "type": "dockerfile",
-            "request": "launch",
-            "dockerfile": "Dockerfile",
-            "contextPath": "${workspaceFolder}"
         }
     ]
 }
