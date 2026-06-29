@@ -9,12 +9,13 @@
             "request": "attach",
             "name": "Attach"
         },
-        "type": "dockerfile",
-        "request": "launch",
-        "name": "Docker: Build",
-        "dockerfile": "Dockerfile",
-        "contextPath": "${workspaceFolder}"
-    },
+        {
+            "type": "dockerfile",
+            "request": "launch",
+            "name": "Docker: Build",
+            "dockerfile": "Dockerfile",
+            "contextPath": "${workspaceFolder}"
+        },
     {
         "type": "node",
         "request": "attach",
