@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>Sierra Estates · Luxury Real Estate Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin></script>
+<style>
+/* ════════════════════════════════════════════════════════════════════
+   SIERRA ESTATES — DESIGN SYSTEM
+   ════════════════════════════════════════════════════════════════════ */
+:root {
+  /* Dark mode (default) */
+  --bg: #060B12;
+  --bg-elev: #0C1422;
+  --bg-card: #0F1B2D;
+  --bg-glass: rgba(12, 20, 34, 0.72);
+  --navy: #002D62;
+  --pepsi: #004B93;
+  --royal: #4169E1;
+  --gold: #D3A747;
+  --gold-lt: #E8CC88;
+  --text: #F0EBE0;
+  --text-mid: rgba(240, 235, 224, 0.65);
+  --text-faint: rgba(240, 235, 224, 0.35);
+  --border: rgba(211, 167, 71, 0.12);
+  --border-strong: rgba(211, 167, 71, 0.28);
+  --white: #FFFFFF;
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-gold: 0 4px 24px rgba(211, 167, 71, 0.15);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-lg: 24px;
+  --font-head: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-ar: 'Cairo', 'Inter', sans-serif;
+}
+[data-theme="light"] {
+  --bg: #F8F6F0;
+  --bg-elev: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-glass: rgba(255, 255, 255, 0.78);
+  --text: #0A0F1A;
+  --text-mid: rgba(10, 15, 26, 0.6);
+  --text-faint: rgba(10, 15, 26, 0.35);
+  --border: rgba(0, 45, 98, 0.08);
+  --border-strong: rgba(0, 45, 98, 0.16);
+  --shadow: 0 8px 32px rgba(0, 45, 98, 0.08);
+  --shadow-gold: 0 4px 24px rgba(211, 167, 71, 0.12);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+[dir="rtl"] body { font-family: var(--font-ar); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+
+/* ═══ SHIMMER TEXT ═══ */
+.shimmer-text {
+  background: linear-gradient(90deg, var(--gold) 0%, var(--gold-lt) 30%, #FFF 50%, var(--gold-lt) 70%, var(--gold) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmerSweep 4s linear infinite;
+}
+@keyframes shimmerSweep { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+
+/* ═══ GLASS HEADER ═══ */
+.glass-header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: var(--bg-glass);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: all 0.3s ease;
+}
+.glass-header.scrolled { padding: 6px 16px; box-shadow: var(--shadow); }
+
+/* ═══ BOTTOM NAV ═══ */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  background: var(--bg-glass);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-around; align-items: center;
+  padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.bottom-nav.hidden { transform: translateY(100%); }
+.nav-item {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  background: none; border: none; color: var(--text-faint);
+  font-size: 10px; font-weight: 600; cursor: pointer; padding: 4px 12px;
+  border-radius: 12px; transition: all 0.25s ease;
+}
+.nav-item.active { color: var(--gold); }
+.nav-item:active { transform: scale(0.92); }
+.nav-item svg { width: 22px; height: 22px; }
+
+/* ═══ BUTTONS ═══ */
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold), var(--gold-lt));
+  color: #060B12; border: none; padding: 12px 28px; border-radius: 30px;
+  font-size: 13px; font-weight: 700; letter-spacing: 0.04em; cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 20px rgba(211, 167, 71, 0.3);
+}
+.btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(211, 167, 71, 0.45); }
+.btn-gold:active { transform: scale(0.96); }
+
+.btn-ghost {
+  background: transparent; color: var(--text); border: 1px solid var(--border-strong);
+  padding: 12px 28px; border-radius: 30px; font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: all 0.25s ease;
+}
+.btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+/* ═══ CARDS ═══ */
+.card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card:hover { border-color: var(--border-strong); transform: translateY(-4px); box-shadow: var(--shadow); }
+
+/* ═══ BOTTOM SHEET ═══ */
+.sheet-overlay {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px); z-index: 200; opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.sheet-overlay.open { opacity: 1; pointer-events: auto; }
+.sheet {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 201;
+  background: var(--bg-elev); border-radius: 28px 28px 0 0;
+  border-top: 1px solid var(--border-strong);
+  max-height: 85vh; overflow-y: auto; transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 8px 20px 40px;
+}
+.sheet.open { transform: translateY(0); }
+.sheet-handle { width: 40px; height: 4px; background: var(--border-strong); border-radius: 2px; margin: 0 auto 16px; }
+
+/* ═══ FORM INPUTS ═══ */
+.input-group { margin-bottom: 16px; }
+.input-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-mid); margin-bottom: 6px; display: block; }
+.input-field {
+  width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 12px 14px; font-size: 14px; color: var(--text); font-family: inherit; outline: none;
+  transition: border-color 0.25s ease;
+}
+.input-field:focus { border-color: var(--gold); }
+select.input-field { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23D3A747' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; }
+
+/* ═══ TOGGLE ═══ */
+.toggle-group { display: flex; background: var(--bg); border-radius: 30px; padding: 4px; gap: 4px; }
+.toggle-btn { flex: 1; padding: 10px; border: none; border-radius: 26px; background: transparent; color: var(--text-mid); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.25s ease; }
+.toggle-btn.active { background: linear-gradient(135deg, var(--gold), var(--gold-lt)); color: #060B12; }
+
+/* ═══ MAP ═══ */
+.map-container { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); position: relative; }
+.leaflet-container { background: var(--bg-elev) !important; font-family: var(--font-body) !important; }
+[data-theme="dark"] .leaflet-tile-pane { filter: invert(1) hue-rotate(200deg) brightness(0.85) contrast(1.1) saturate(0.8); }
+.leaflet-control-attribution { display: none !important; }
+.leaflet-control-zoom { display: none !important; }
+.map-pin {
+  display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer;
+  animation: pinDrop 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes pinDrop { 0% { opacity: 0; transform: translateY(-20px) scale(0.8); } 60% { opacity: 1; transform: translateY(3px) scale(1.02); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+.map-pin-count {
+  background: linear-gradient(135deg, var(--navy), var(--pepsi));
+  color: var(--gold); font-family: var(--font-mono); font-size: 10px; font-weight: 800;
+  padding: 4px 10px; border-radius: 20px; white-space: nowrap;
+  border: 1.5px solid var(--gold); box-shadow: 0 4px 16px rgba(0, 45, 98, 0.5);
+  transition: all 0.2s ease;
+}
+.map-pin-count:hover { transform: scale(1.1); box-shadow: 0 6px 24px rgba(211, 167, 71, 0.4); }
+.map-pin-dot { width: 8px; height: 8px; background: var(--gold); border-radius: 50%; box-shadow: 0 0 0 3px rgba(211, 167, 71, 0.25); }
+
+/* Custom zoom controls */
+.map-zoom-controls { position: absolute; right: 12px; bottom: 12px; z-index: 400; display: flex; flex-direction: column; gap: 6px; }
+.map-zoom-btn {
+  width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--border-strong);
+  background: var(--bg-glass); backdrop-filter: blur(12px); color: var(--text);
+  font-size: 20px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s ease;
+}
+.map-zoom-btn:hover { border-color: var(--gold); color: var(--gold); }
+.map-zoom-btn:active { transform: scale(0.9); }
+
+/* ═══ VIRTUAL TOUR ═══ */
+.tour-container { position: relative; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); aspect-ratio: 16/10; }
+.tour-scene { position: absolute; inset: 0; background-size: cover; background-position: center; transition: background-position 0.1s linear, transform 0.3s ease; }
+.tour-dpad { position: absolute; bottom: 16px; right: 16px; display: grid; grid-template-columns: repeat(3, 36px); grid-template-rows: repeat(3, 36px); gap: 4px; z-index: 10; }
+.dpad-btn { background: var(--bg-glass); backdrop-filter: blur(12px); border: 1px solid var(--border-strong); border-radius: 8px; color: var(--gold); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s ease; }
+.dpad-btn:active { background: var(--gold); color: #060B12; transform: scale(0.9); }
+.dpad-btn.empty { visibility: hidden; }
+.tour-label { position: absolute; top: 12px; left: 12px; background: var(--bg-glass); backdrop-filter: blur(12px); border: 1px solid var(--border-strong); border-radius: 8px; padding: 6px 12px; font-size: 11px; font-weight: 600; color: var(--gold); }
+
+/* ═══ ANIMATIONS ═══ */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+@keyframes glowPulse { 0%, 100% { opacity: 0.4; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.05); } }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+@keyframes scanLine { 0% { top: -2%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 102%; opacity: 0; } }
+@keyframes orbFloat { 0%, 100% { transform: translate(0, 0); } 33% { transform: translate(30px, -20px); } 66% { transform: translate(-20px, 20px); } }
+
+.fade-up { animation: fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.float-anim { animation: float 3s ease-in-out infinite; }
+.breathe-anim { animation: breathe 4s ease-in-out infinite; }
+
+/* Scroll reveal */
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+.reveal.in { opacity: 1; transform: none; }
+.reveal-d1 { transition-delay: 0.1s; }
+.reveal-d2 { transition-delay: 0.2s; }
+.reveal-d3 { transition-delay: 0.3s; }
+.reveal-d4 { transition-delay: 0.4s; }
+
+/* Section divider */
+.gold-divider { height: 1px; background: linear-gradient(90deg, transparent, var(--gold) 30%, var(--gold-lt) 50%, var(--gold) 70%, transparent); opacity: 0.35; }
+
+/* Section orbs */
+.orb { position: absolute; border-radius: 50%; pointer-events: none; filter: blur(60px); opacity: 0.15; animation: orbFloat 20s ease-in-out infinite; }
+
+/* Compound chips */
+.chip { display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border-strong); font-size: 11px; font-weight: 600; color: var(--text-mid); cursor: pointer; transition: all 0.2s ease; background: transparent; }
+.chip.active, .chip:hover { background: var(--gold); color: #060B12; border-color: var(--gold); }
+
+/* Admin */
+.admin-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+.admin-stat { font-size: 28px; font-weight: 800; color: var(--gold); }
+.admin-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-mid); }
+
+/* Responsive */
+@media (min-width: 768px) {
+  .bottom-nav { display: none; }
+  .desktop-nav { display: flex !important; }
+  .hero-title { font-size: 48px !important; }
+  .section-pad { padding: 80px 40px !important; }
+}
+.desktop-nav { display: none; align-items: center; gap: 24px; }
+.desktop-nav a { color: var(--text-mid); text-decoration: none; font-size: 13px; font-weight: 600; transition: color 0.2s; }
+.desktop-nav a:hover { color: var(--gold); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback, useMemo, createContext, useContext } = React;
+
+/* ═══ CONTEXT ═══ */
+const AppCtx = createContext({ theme: 'dark', lang: 'en', toggleTheme: () => {}, toggleLang: () => {} });
+const useApp = () => useContext(AppCtx);
+
+/* ═══ COMPOUNDS DATA (25) ═══ */
+const COMPOUNDS = [
+  { name: "Mivida", nameAr: "ميفيدا", lat: 30.018, lng: 31.49, units: 142 },
+  { name: "Hyde Park", nameAr: "هايد بارك", lat: 30.01, lng: 31.51, units: 98 },
+  { name: "Mountain View iCity", nameAr: "ماونتن فيو", lat: 30.03, lng: 31.49, units: 76 },
+  { name: "Palm Hills New Cairo", nameAr: "بالم هيلز", lat: 30.02, lng: 31.47, units: 64 },
+  { name: "Eastown", nameAr: "إيست تاون", lat: 30.015, lng: 31.52, units: 53 },
+  { name: "Villette", nameAr: "فيليت", lat: 30.025, lng: 31.48, units: 47 },
+  { name: "ZED East", nameAr: "زد إيست", lat: 30.022, lng: 31.50, units: 41 },
+  { name: "Taj City", nameAr: "تاج سيتي", lat: 30.08, lng: 31.46, units: 38 },
+  { name: "Madinaty", nameAr: "مدينتي", lat: 30.11, lng: 31.48, units: 156 },
+  { name: "Al Rehab", nameAr: "الرحاب", lat: 30.13, lng: 31.47, units: 112 },
+  { name: "El Shorouk", nameAr: "الشروق", lat: 30.15, lng: 31.50, units: 89 },
+  { name: "Sarai", nameAr: "سراي", lat: 30.07, lng: 31.47, units: 34 },
+  { name: "Uptown Cairo", nameAr: "أبتاون", lat: 29.97, lng: 31.40, units: 28 },
+  { name: "The Square", nameAr: "ذا سكوير", lat: 30.02, lng: 31.51, units: 22 },
+  { name: "Stone Residence", nameAr: "ستون ريزيدنس", lat: 30.03, lng: 31.50, units: 19 },
+  { name: "Layan", nameAr: "ليان", lat: 30.04, lng: 31.49, units: 17 },
+  { name: "Amorada", nameAr: "أمورادا", lat: 30.05, lng: 31.48, units: 15 },
+  { name: "Creek Town", nameAr: "كريك تاون", lat: 30.06, lng: 31.47, units: 14 },
+  { name: "Il Bosco", nameAr: "إل بوسكو", lat: 30.04, lng: 31.51, units: 12 },
+  { name: "Capital Heights", nameAr: "كابيتال هايتس", lat: 30.00, lng: 31.74, units: 26 },
+  { name: "New Capital", nameAr: "العاصمة الإدارية", lat: 30.02, lng: 31.75, units: 45 },
+  { name: "Marakez D5", nameAr: "ماراكيز", lat: 30.01, lng: 31.53, units: 31 },
+  { name: "The Brooks", nameAr: "ذا بروكس", lat: 29.98, lng: 31.42, units: 18 },
+  { name: "SODIC East", nameAr: "سوديك إيست", lat: 30.02, lng: 31.52, units: 24 },
+  { name: "Tag Sultan", nameAr: "تاج سلطان", lat: 30.06, lng: 31.49, units: 20 },
+];
+
+/* ═══ TOUR SCENES ═══ */
+const TOUR_SCENES = [
+  { label: "Living Area", labelAr: "غرفة المعيشة", bg: "https://images.unsplash.com/photo-1600210492493-0946911123ea?w=1200&q=80" },
+  { label: "Master Suite", labelAr: "الجناح الرئيسي", bg: "https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=1200&q=80" },
+  { label: "Pool Deck", labelAr: "المسبح", bg: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=1200&q=80" },
+  { label: "Garden", labelAr: "الحديقة", bg: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&q=80" },
+  { label: "Villa Exterior", labelAr: "واجهة الفيلا", bg: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1200&q=80" },
+];
+
+/* ═══ T ═══ TRANSLATIONS ═══ */
+const T = {
+  en: {
+    brand: "Sierra Estates", tagline: "Luxury Real Estate · AI Engine",
+    heroTitle: "Find Your Dream Home", heroTitleGold: "Driven by AI",
+    heroSub: "26 premium compounds · instant AI-powered matching across 500+ agencies",
+    stats: [{ v: "1,500+", l: "Luxury Listings" }, { v: "98%", l: "AI Match Rate" }, { v: "26", l: "Compounds" }, { v: "<4s", l: "Response" }],
+    claimOff: "Claim 25% OFF Service", requestNow: "Request Now",
+    listTitle: "Curated Inventory", listSub: "Luxury Property Portfolio · AI-Ranked",
+    viewAll: "View All →", aiScore: "AI Score", verified: "Verified",
+    intOS: "Intelligence OS", intOSSub: "Powered by AI Engine 3.0",
+    avm: "AVM Precision Pricing", avmDesc: "Real-time automated valuation trained on 12,000+ Cairo transactions",
+    roi: "ROI Yield Index", roiDesc: "Tracking growth trends and historical price appreciation",
+    dreamHome: "AI Dream Home Finder", dreamHomeAr: "اعثر على بيت أحلامك",
+    dreamDesc: "Searches 500+ agencies & 1,500+ brokers for the absolute best properties in the 5th Settlement",
+    mapTitle: "New Cairo Compound Map", mapSub: "Add required specs to show your dream home based on the most accurate search in the largest real estate inventory for New Cairo in Egypt.",
+    tourTitle: "Virtual Experience", tourSub: "Explore Every Corner · Fully Interactive",
+    whyTitle: "Why Sierra Estates", whySub: "The First AI Real Estate Engine in New Cairo",
+    features: [
+      { icon: "cpu", title: "Cairo's First AI Engine", desc: "The only platform fully specialized in New Cairo compound mapping, tracking 26+ communities in real time." },
+      { icon: "database", title: "Live Compound Database", desc: "26 compounds tracked with verified unit availability, pricing data, and developer updates refreshed every 24 hours." },
+      { icon: "trending-up", title: "AVM Predictive Pricing", desc: "Proprietary valuation model with 94% accuracy trained on 12,000+ New Cairo transactions." },
+      { icon: "shield", title: "White-Glove Service", desc: "Dedicated concierge from first tour to final closing. 24/7 availability, seven days a week." },
+    ],
+    nav: { home: "Home", map: "Map", listings: "Listings", tour: "Tour", contact: "Contact" },
+    filter: { compound: "Select Compounds", bedrooms: "Bedrooms", any: "Any", buy: "Buy", rent: "Rent", budget: "Budget (Optional)", name: "Full Name", whatsapp: "WhatsApp Number", submit: "Find My Dream Home", sort: "Sort", priceUp: "Price ↑", priceDown: "Price ↓" },
+    admin: { title: "Admin Control Panel", stats: "Platform Statistics", leads: "Total Leads", units: "Available Units", agents: "Active Agents", revenue: "Revenue (M)" },
+  },
+  ar: {
+    brand: "سييرا إستيتس", tagline: "العقارات الفاخرة · محرك ذكاء اصطناعي",
+    heroTitle: "اعثر على بيت أحلامك", heroTitleGold: "بالذكاء الاصطناعي",
+    heroSub: "٢٦ كمبوند راقي · مطابقة فورية بالذكاء الاصطناعي عبر ٥٠٠+ وكالة",
+    stats: [{ v: "+١٥٠٠", l: "عقار فاخر" }, { v: "٪٩٨", l: "معدل المطابقة" }, { v: "٢٦", l: "كمبوند" }, { v: "ث٤", l: "استجابة" }],
+    claimOff: "احصل على ٢٥٪ خصم", requestNow: "اطلب الآن",
+    listTitle: "مختارات حصرية", listSub: "محفظة العقارات الفاخرة · مرتبة بالذكاء الاصطناعي",
+    viewAll: "عرض الكل ←", aiScore: "تقييم AI", verified: "موثّق",
+    intOS: "نظام الذكاء", intOSSub: "مدعوم بمحرك AI 3.0",
+    avm: "تقييم دقيق AVM", avmDesc: "تقييم آلي فوري مدرّب على +١٢٠٠٠ معاملة بالقاهرة",
+    roi: "مؤشر العائد", roiDesc: "تتبع اتجاهات النمو والارتفاع التاريخي للأسعار",
+    dreamHome: "اعثر على بيت أحلامك", dreamHomeAr: "اعثر على بيت أحلامك",
+    dreamDesc: "يبحث في ٥٠٠+ وكالة و ١٥٠٠+ وسيط لأفضل العقارات في التجمع الخامس",
+    mapTitle: "خريطة كمبوندات القاهرة الجديدة", mapSub: "أضف المواصفات المطلوبة لإظهار بيت أحلامك بناءً على أدق بحث في أكبر مخزون عقاري للقاهرة الجديدة في مصر.",
+    tourTitle: "تجربة افتراضية", tourSub: "استكشف كل ركن · تفاعلي بالكامل",
+    whyTitle: "لماذا سييرا إستيتس", whySub: "أول محرك عقارات بالذكاء الاصطناعي في القاهرة الجديدة",
+    features: [
+      { icon: "cpu", title: "أول محرك AI في القاهرة", desc: "المنصة الوحيدة المتخصصة بالكامل في رسم خرائط كمبوندات القاهرة الجديدة، تتبع ٢٦+ مجتمع في الوقت الفعلي." },
+      { icon: "database", title: "قاعدة بيانات حية", desc: "٢٦ كمبوند مع توافر وحدات موثّق وبيانات أسعار محدّثة كل ٢٤ ساعة." },
+      { icon: "trending-up", title: "تسعير تنبؤي AVM", desc: "نموذج تقييم بدقة ٩٤٪ مدرّب على +١٢٠٠٠ معاملة في القاهرة الجديدة." },
+      { icon: "shield", title: "خدمة راقية", desc: "كونسيرج مخصص من أول جولة حتى التسليم النهائي. متاح ٢٤/٧ طوال أيام الأسبوع." },
+    ],
+    nav: { home: "الرئيسية", map: "الخريطة", listings: "العقارات", tour: "جولة", contact: "اتصل" },
+    filter: { compound: "اختر الكمبوندات", bedrooms: "غرف نوم", any: "الكل", buy: "شراء", rent: "إيجار", budget: "الميزانية (اختياري)", name: "الاسم الكامل", whatsapp: "رقم واتساب", submit: "ابحث عن بيت أحلامي", sort: "ترتيب", priceUp: "السعر ↑", priceDown: "السعر ↓" },
+    admin: { title: "لوحة تحكم الإدارة", stats: "إحصائيات المنصة", leads: "إجمالي العملاء", units: "العقارات المتاحة", agents: "وكلاء نشطون", revenue: "الإيرادات (م)" },
+  }
+};
+
+/* ═══ ICONS ═══ */
+const Icon = ({ name, size = 20 }) => {
+  const icons = {
+    home: <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/>,
+    map: <><path d="M9 20l-5.5-2V5L9 7M9 20l6-2M9 20V7M15 18l5.5-2V5L15 7M15 18V7M15 18l-6-2"/><path d="M3.5 5L9 7M15 7l5.5-2"/></>,
+    listings: <><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></>,
+    tour: <><circle cx="12" cy="12" r="10"/><path d="M12 2a15 15 0 0 1 0 20M2 12h20M12 2a10 10 0 0 0 0 20"/></>,
+    contact: <><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></>,
+    sun: <><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></>,
+    moon: <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>,
+    cpu: <><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></>,
+    database: <><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></>,
+    'trending-up': <><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></>,
+    shield: <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>,
+    check: <polyline points="20 6 9 17 4 12"/>,
+    chevronUp: <polyline points="18 15 12 9 6 15"/>,
+    chevronDown: <polyline points="6 9 12 15 18 9"/>,
+    chevronLeft: <polyline points="15 18 9 12 15 6"/>,
+    chevronRight: <polyline points="9 18 15 12 9 6"/>,
+    heart: <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>,
+    arrowRight: <><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></>,
+    plus: <><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></>,
+    minus: <line x1="5" y1="12" x2="19" y2="12"/>,
+    x: <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>,
+  };
+  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{icons[name]}</svg>;
+};
+
+/* ═══ LOGO ═══ */
+const LOGO_B64 = `LOGO_PLACEHOLDER`;
+
+const Logo = ({ size = 36 }) => (
+  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+    <div style={{
+      width: size, height: size, borderRadius: 10, overflow: 'hidden',
+      background: 'linear-gradient(135deg, #002D62, #004B93)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      border: '1.5px solid rgba(211, 167, 71, 0.3)',
+      boxShadow: '0 4px 16px rgba(0, 45, 98, 0.4)',
+    }}>
+      <svg width={size * 0.55} height={size * 0.55} viewBox="0 0 24 24" fill="none">
+        <path d="M4 20L12 4L20 20H4Z" stroke="#D3A747" strokeWidth="2" strokeLinejoin="round" fill="rgba(211, 167, 71, 0.15)"/>
+        <path d="M9 14H15" stroke="#D3A747" strokeWidth="1.5" strokeLinecap="round"/>
+        <circle cx="12" cy="12" r="1.5" fill="#E8CC88"/>
+      </svg>
+    </div>
+    <div>
+      <div style={{ fontFamily: 'var(--font-head)', fontSize: size * 0.4, fontWeight: 700, color: 'var(--text)', lineHeight: 1, letterSpacing: '0.02em' }}>Sierra Estates</div>
+      <div style={{ fontSize: size * 0.18, color: 'var(--gold)', fontFamily: 'var(--font-mono)', letterSpacing: '0.15em', textTransform: 'uppercase', marginTop: 2 }}>AI Engine</div>
+    </div>
+  </div>
+);
+
+/* ═══ GLASS HEADER ═══ */
+function Header({ onRequest, activeSection, scrollToSection }) {
+  const { theme, toggleTheme, lang, toggleLang } = useApp();
+  const [scrolled, setScrolled] = useState(false);
+  const t = T[lang];
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  return (
+    <header className={`glass-header ${scrolled ? 'scrolled' : ''}`} dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+      <Logo size={scrolled ? 30 : 36} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div className="desktop-nav">
+          {['home', 'listings', 'map', 'tour', 'contact'].map(s => (
+            <a key={s} onClick={() => scrollToSection(s)} style={{ cursor: 'pointer', color: activeSection === s ? 'var(--gold)' : 'var(--text-mid)' }}>
+              {t.nav[s]}
+            </a>
+          ))}
+        </div>
+        <button onClick={toggleLang} style={{ background: 'none', border: '1px solid var(--border-strong)', borderRadius: 8, padding: '6px 10px', color: 'var(--text-mid)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
+          {lang === 'en' ? 'ع' : 'EN'}
+        </button>
+        <button onClick={toggleTheme} style={{ background: 'none', border: '1px solid var(--border-strong)', borderRadius: 8, padding: 6, color: 'var(--gold)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+          <Icon name={theme === 'dark' ? 'sun' : 'moon'} size={16} />
+        </button>
+        <button className="btn-gold" onClick={onRequest} style={{ padding: '8px 18px', fontSize: 12 }}>
+          {t.requestNow}
+        </button>
+      </div>
+    </header>
+  );
+}
+
+/* ═══ HERO ═══ */
+function Hero({ onRequest, scrollToSection }) {
+  const { lang } = useApp();
+  const t = T[lang];
+  return (
+    <section id="home" style={{ position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', paddingTop: 80 }}>
+      <div className="orb" style={{ width: 500, height: 500, background: 'var(--gold)', top: '-15%', right: '-10%' }} />
+      <div className="orb" style={{ width: 400, height: 400, background: 'var(--royal)', bottom: '5%', left: '-12%', animationDelay: '5s' }} />
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 0%, var(--bg) 90%)', zIndex: 1 }} />
+
+      <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', padding: '0 24px', maxWidth: 900 }}>
+        <div className="fade-up" style={{ marginBottom: 16 }}>
+          <span style={{ display: 'inline-block', padding: '6px 16px', borderRadius: 20, border: '1px solid var(--border-strong)', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: 'var(--gold)', fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}>
+            {t.tagline}
+          </span>
+        </div>
+        <h1 className="hero-title fade-up reveal-d1" style={{ fontSize: 36, fontWeight: 700, fontFamily: 'var(--font-head)', lineHeight: 1.1, marginBottom: 12 }}>
+          {t.heroTitle}{' '}
+          <span className="shimmer-text">{t.heroTitleGold}</span>
+        </h1>
+        <p className="fade-up reveal-d2" style={{ fontSize: 15, color: 'var(--text-mid)', maxWidth: 560, margin: '0 auto 28px', lineHeight: 1.6 }}>
+          {t.heroSub}
+        </p>
+        <div className="fade-up reveal-d3" style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 32 }}>
+          <button className="btn-gold" onClick={onRequest}>{t.requestNow}</button>
+          <button className="btn-ghost" onClick={() => scrollToSection('map')}>{t.nav.map}</button>
+        </div>
+        <div className="fade-up reveal-d4" style={{ display: 'flex', gap: 8, justifyContent: 'center', alignItems: 'center', marginBottom: 16 }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--gold)', padding: '4px 12px', borderRadius: 16, border: '1px solid var(--gold)', animation: 'glowPulse 3s ease-in-out infinite' }}>
+            🎉 {t.claimOff}
+          </span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, maxWidth: 600, margin: '0 auto' }}>
+          {t.stats.map((s, i) => (
+            <div key={i} className="fade-up" style={{ animationDelay: `${0.5 + i * 0.1}s`, textAlign: 'center', padding: '12px 8px', background: 'var(--bg-glass)', borderRadius: 12, border: '1px solid var(--border)', backdropFilter: 'blur(12px)' }}>
+              <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--gold)', fontFamily: 'var(--font-mono)' }}>{s.v}</div>
+              <div style={{ fontSize: 10, color: 'var(--text-mid)', marginTop: 2, fontWeight: 600 }}>{s.l}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ═══ REQUEST MODAL (Smart Filter) ═══ */
+function RequestModal({ open, onClose }) {
+  const { lang } = useApp();
+  const t = T[lang];
+  const [purpose, setPurpose] = useState('buy');
+  const [bedrooms, setBedrooms] = useState('any');
+  const [selectedCompounds, setSelectedCompounds] = useState([]);
+  const [budget, setBudget] = useState('');
+  const [name, setName] = useState('');
+  const [whatsapp, setWhatsapp] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+
+  const toggleCompound = (c) => {
+    setSelectedCompounds(prev => prev.includes(c) ? prev.filter(x => x !== c) : [...prev, c]);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setSubmitted(true);
+    setTimeout(() => { setSubmitted(false); onClose(); }, 2000);
+  };
+
+  return (
+    <>
+      <div className={`sheet-overlay ${open ? 'open' : ''}`} onClick={onClose} />
+      <div className={`sheet ${open ? 'open' : ''}`} dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+        <div className="sheet-handle" onClick={onClose} />
+        <h2 style={{ fontFamily: 'var(--font-head)', fontSize: 24, fontWeight: 700, marginBottom: 4 }}>{t.dreamHome}</h2>
+        <p style={{ fontSize: 13, color: 'var(--text-mid)', marginBottom: 20 }}>{t.dreamDesc}</p>
+
+        {submitted ? (
+          <div style={{ textAlign: 'center', padding: 40 }}>
+            <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'var(--gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+              <Icon name="check" size={32} />
+            </div>
+            <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--gold)' }}>{lang === 'en' ? 'Request Submitted!' : 'تم إرسال الطلب!'}</p>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <div className="input-group">
+              <label className="input-label">{t.filter.buy} / {t.filter.rent}</label>
+              <div className="toggle-group">
+                <button type="button" className={`toggle-btn ${purpose === 'buy' ? 'active' : ''}`} onClick={() => setPurpose('buy')}>{t.filter.buy}</button>
+                <button type="button" className={`toggle-btn ${purpose === 'rent' ? 'active' : ''}`} onClick={() => setPurpose('rent')}>{t.filter.rent}</button>
+              </div>
+            </div>
+
+            <div className="input-group">
+              <label className="input-label">{t.filter.compound}</label>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, maxHeight: 120, overflowY: 'auto', padding: 4 }}>
+                {COMPOUNDS.map(c => (
+                  <button key={c.name} type="button" className={`chip ${selectedCompounds.includes(c.name) ? 'active' : ''}`} onClick={() => toggleCompound(c.name)}>
+                    {lang === 'ar' ? c.nameAr : c.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="input-group">
+              <label className="input-label">{t.filter.bedrooms}</label>
+              <select className="input-field" value={bedrooms} onChange={e => setBedrooms(e.target.value)}>
+                <option value="any">{t.filter.any}</option>
+                <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+                <option value="4">4</option><option value="5">5+</option>
+              </select>
+            </div>
+
+            <div className="input-group">
+              <label className="input-label">{t.filter.budget}</label>
+              <input className="input-field" type="text" value={budget} onChange={e => setBudget(e.target.value)} placeholder="EGP 5,000,000" />
+            </div>
+
+            <div className="input-group">
+              <label className="input-label">{t.filter.name}</label>
+              <input className="input-field" type="text" value={name} onChange={e => setName(e.target.value)} required placeholder={lang === 'en' ? 'Ahmed Hassan' : 'أحمد حسن'} />
+            </div>
+
+            <div className="input-group">
+              <label className="input-label">{t.filter.whatsapp}</label>
+              <input className="input-field" type="tel" value={whatsapp} onChange={e => setWhatsapp(e.target.value)} required placeholder="+20 100 123 4567" />
+            </div>
+
+            <button type="submit" className="btn-gold" style={{ width: '100%', marginTop: 8, padding: '14px' }}>{t.filter.submit}</button>
+          </form>
+        )}
+      </div>
+    </>
+  );
+}
+
+/* ═══ LISTINGS ═══ */
+function Listings({ onOpenRequest }) {
+  const { lang } = useApp();
+  const t = T[lang];
+  const [sort, setSort] = useState('ai');
+
+  const sampleListings = useMemo(() => [
+    { id: 1, title: lang === 'ar' ? 'بنتهاوس فاخر' : 'Ultra-Luxury Penthouse', compound: 'Mountain View iCity', beds: 6, baths: 6, area: 800, price: 'EGP 35M', ai: 9.9, img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&q=80' },
+    { id: 2, title: lang === 'ar' ? 'فيلا على البحر' : 'Beachfront Estate', compound: 'North Coast', beds: 6, baths: 5, area: 620, price: 'EGP 18.5M', ai: 9.7, img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=80' },
+    { id: 3, title: lang === 'ar' ? 'فيلا هايد بارك' : 'Luxury Modern Villa', compound: 'Hyde Park', beds: 5, baths: 4, area: 450, price: 'EGP 9.8M', ai: 9.4, img: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=80' },
+    { id: 4, title: lang === 'ar' ? 'بنتهاوس تنفيذي' : 'Executive Penthouse', compound: 'New Cairo', beds: 4, baths: 4, area: 350, price: 'EGP 13.5M', ai: 9.1, img: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&q=80' },
+  ], [lang]);
+
+  return (
+    <section id="listings" className="section-pad reveal" style={{ padding: '60px 20px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: 'var(--gold)', textTransform: 'uppercase', marginBottom: 4 }}>Sierra Intelligence · AI-Ranked</div>
+            <h2 style={{ fontFamily: 'var(--font-head)', fontSize: 28, fontWeight: 700 }}>{t.listTitle}</h2>
+          </div>
+          <select className="input-field" style={{ width: 'auto', padding: '8px 14px' }} value={sort} onChange={e => setSort(e.target.value)}>
+            <option value="ai">{t.aiScore}</option>
+            <option value="priceUp">{t.filter.priceUp}</option>
+            <option value="priceDown">{t.filter.priceDown}</option>
+          </select>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
+          {sampleListings.map((p, i) => (
+            <div key={p.id} className="card reveal" style={{ transitionDelay: `${i * 0.1}s`, padding: 0, overflow: 'hidden' }} onClick={onOpenRequest}>
+              <div style={{ position: 'relative', height: 200, overflow: 'hidden' }}>
+                <img src={p.img} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease' }}
+                  onMouseEnter={e => e.target.style.transform = 'scale(1.05)'} onMouseLeave={e => e.target.style.transform = 'scale(1)'} />
+                <div style={{ position: 'absolute', top: 10, right: 10, background: 'rgba(6,11,18,0.85)', borderRadius: 6, padding: '4px 8px', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <Icon name="cpu" size={12} />
+                  <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--gold)' }}>{p.ai}</span>
+                </div>
+                {p.ai >= 9.5 && <div style={{ position: 'absolute', bottom: 10, left: 10, background: 'var(--gold)', color: '#060B12', padding: '3px 8px', borderRadius: 4, fontSize: 10, fontWeight: 800, letterSpacing: 1 }}>FEATURED</div>}
+              </div>
+              <div style={{ padding: 14 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                  <span style={{ fontSize: 18, fontWeight: 800, color: 'var(--gold)' }}>{p.price}</span>
+                  <span style={{ fontSize: 11, color: 'var(--text-mid)' }}>✓ {t.verified}</span>
+                </div>
+                <h3 style={{ fontSize: 15, fontWeight: 700, marginBottom: 4 }}>{p.title}</h3>
+                <p style={{ fontSize: 12, color: 'var(--text-mid)', marginBottom: 10 }}>{p.compound}</p>
+                <div style={{ display: 'flex', gap: 12, fontSize: 12, color: 'var(--text-mid)' }}>
+                  <span>🛏 {p.beds}</span><span>🚿 {p.baths}</span><span>📐 {p.area}m²</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ═══ INTELLIGENCE OS ═══ */
+function IntelligenceOS() {
+  const { lang } = useApp();
+  const t = T[lang];
+  return (
+    <section className="section-pad reveal" style={{ padding: '60px 20px', background: 'var(--bg-elev)', position: 'relative', overflow: 'hidden' }}>
+      <div className="orb" style={{ width: 400, height: 400, background: 'var(--royal)', top: '10%', right: '-10%', opacity: 0.08 }} />
+      <div style={{ maxWidth: 1200, margin: '0 auto', position: 'relative', zIndex: 2 }}>
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: 'var(--gold)', textTransform: 'uppercase', marginBottom: 4 }}>{t.intOSSub}</div>
+          <h2 className="shimmer-text" style={{ fontFamily: 'var(--font-head)', fontSize: 32, fontWeight: 700 }}>{t.intOS}</h2>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16 }}>
+          <div className="card reveal reveal-d1">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+              <Icon name="cpu" size={20} />
+              <h3 style={{ fontSize: 16, fontWeight: 700 }}>{t.avm}</h3>
+            </div>
+            <p style={{ fontSize: 13, color: 'var(--text-mid)', lineHeight: 1.6 }}>{t.avmDesc}</p>
+            <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
+              {['Mivida', 'Hyde Park', 'Palm Hills'].map((c, i) => (
+                <div key={c} style={{ flex: 1, textAlign: 'center', padding: '8px 4px', background: 'var(--bg)', borderRadius: 8, border: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: 10, color: 'var(--text-mid)' }}>{c}</div>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--gold)', fontFamily: 'var(--font-mono)' }}>{['EGP 5.8M', 'EGP 18.5M', 'EGP 12.4M'][i]}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="card reveal reveal-d2">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+              <Icon name="trending-up" size={20} />
+              <h3 style={{ fontSize: 16, fontWeight: 700 }}>{t.roi}</h3>
+            </div>
+            <p style={{ fontSize: 13, color: 'var(--text-mid)', lineHeight: 1.6 }}>{t.roiDesc}</p>
+            <div style={{ marginTop: 12 }}>
+              {[{ l: 'Uptown Cairo', v: '+31%' }, { l: 'Mountain View', v: '+24%' }, { l: 'Hyde Park', v: '+22%' }, { l: 'Palm Hills', v: '+21%' }].map(r => (
+                <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: '1px solid var(--border)' }}>
+                  <span style={{ fontSize: 12, color: 'var(--text-mid)' }}>{r.l}</span>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--gold)', fontFamily: 'var(--font-mono)' }}>{r.v}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="card reveal reveal-d3" style={{ background: 'linear-gradient(135deg, var(--navy), var(--pepsi))', borderColor: 'var(--gold)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+              <Icon name="database" size={20} />
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--gold)' }}>{t.dreamHome}</h3>
+            </div>
+            <p style={{ fontSize: 13, color: 'rgba(240,235,224,0.7)', lineHeight: 1.6 }}>{t.dreamDesc}</p>
+            <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {['500+ Agencies', '1,500+ Brokers', '26 Compounds'].map(b => (
+                <span key={b} style={{ padding: '4px 10px', borderRadius: 16, background: 'rgba(211,167,71,0.15)', border: '1px solid rgba(211,167,71,0.3)', fontSize: 11, fontWeight: 700, color: 'var(--gold)' }}>{b}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ═══ MAP SECTION ═══ */
+function MapSection() {
+  const { lang } = useApp();
+  const t = T[lang];
+  const mapRef = useRef(null);
+  const mapInstance = useRef(null);
+  const [selectedCompound, setSelectedCompound] = useState(null);
+
+  useEffect(() => {
+    if (!mapRef.current || mapInstance.current) return;
+    const map = L.map(mapRef.current, {
+      zoomControl: false, scrollWheelZoom: false, doubleClickZoom: false,
+      dragging: true, touchZoom: true, boxZoom: false, keyboard: false,
+    }).setView([30.03, 31.5], 11);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      maxZoom: 19, attribution: ''
+    }).addTo(map);
+    mapInstance.current = map;
+
+    COMPOUNDS.forEach(c => {
+      const icon = L.divIcon({
+        className: '', html: `<div class="map-pin"><div class="map-pin-count">${c.units}</div><div class="map-pin-dot"></div></div>`,
+        iconSize: [0, 0], iconAnchor: [0, 40]
+      });
+      L.marker([c.lat, c.lng], { icon }).addTo(map).on('click', () => setSelectedCompound(c));
+    });
+
+    return () => { map.remove(); mapInstance.current = null; };
+  }, []);
+
+  const zoomIn = () => mapInstance.current?.zoomIn();
+  const zoomOut = () => mapInstance.current?.zoomOut();
+
+  return (
+    <section id="map" className="section-pad reveal" style={{ padding: '60px 20px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <div style={{ marginBottom: 16 }}>
+          <h2 style={{ fontFamily: 'var(--font-head)', fontSize: 28, fontWeight: 700, marginBottom: 4 }}>{t.mapTitle}</h2>
+          <p style={{ fontSize: 13, color: 'var(--text-mid)', lineHeight: 1.6, maxWidth: 700 }}>{t.mapSub}</p>
+        </div>
+        <div className="map-container" style={{ height: 420 }}>
+          <div ref={mapRef} style={{ width: '100%', height: '100%' }} />
+          <div className="map-zoom-controls">
+            <button className="map-zoom-btn" onClick={zoomIn}><Icon name="plus" size={18} /></button>
+            <button className="map-zoom-btn" onClick={zoomOut}><Icon name="minus" size={18} /></button>
+          </div>
+        </div>
+      </div>
+
+      {/* Compound Bottom Sheet */}
+      <div className={`sheet-overlay ${selectedCompound ? 'open' : ''}`} onClick={() => setSelectedCompound(null)} />
+      <div className={`sheet ${selectedCompound ? 'open' : ''}`} dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+        <div className="sheet-handle" onClick={() => setSelectedCompound(null)} />
+        {selectedCompound && (
+          <>
+            <h3 style={{ fontFamily: 'var(--font-head)', fontSize: 22, fontWeight: 700, marginBottom: 4 }}>
+              {lang === 'ar' ? selectedCompound.nameAr : selectedCompound.name}
+            </h3>
+            <p style={{ fontSize: 13, color: 'var(--gold)', fontWeight: 700, marginBottom: 16 }}>
+              {selectedCompound.units} {lang === 'en' ? 'Available Units' : 'وحدة متاحة'}
+            </p>
+            {Array.from({ length: Math.min(5, selectedCompound.units) }).map((_, i) => (
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid var(--border)' }}>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 600 }}>{lang === 'ar' ? `وحدة ${i + 1}` : `Unit ${i + 1}`}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-mid)' }}>{['3 Beds · 220m²', '4 Beds · 350m²', '5 Beds · 500m²', '2 Beds · 120m²', '6 Beds · 800m²'][i]}</div>
+                </div>
+                <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--gold)', fontFamily: 'var(--font-mono)' }}>
+                  EGP {['5.8M', '9.4M', '14.2M', '3.2M', '22M'][i]}
+                </div>
+              </div>
+            ))}
+          </>
+        )}
+      </div>
+    </section>
+  );
+}
+
+/* ═══ VIRTUAL TOUR ═══ */
+function VirtualTour() {
+  const { lang } = useApp();
+  const t = T[lang];
+  const [scene, setScene] = useState(0);
+  const [pos, setPos] = useState({ x: 50, y: 50 });
+  const current = TOUR_SCENES[scene];
+
+  const move = (dir) => {
+    setPos(p => ({
+      x: Math.max(0, Math.min(100, p.x + (dir === 'right' ? 5 : dir === 'left' ? -5 : 0))),
+      y: Math.max(0, Math.min(100, p.y + (dir === 'down' ? 5 : dir === 'up' ? -5 : 0))),
+    }));
+  };
+
+  return (
+    <section id="tour" className="section-pad reveal" style={{ padding: '60px 20px', background: 'var(--bg-elev)' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <div style={{ marginBottom: 16 }}>
+          <h2 style={{ fontFamily: 'var(--font-head)', fontSize: 28, fontWeight: 700, marginBottom: 4 }}>{t.tourTitle}</h2>
+          <p style={{ fontSize: 13, color: 'var(--text-mid)' }}>{t.tourSub}</p>
+        </div>
+        <div className="tour-container">
+          <div className="tour-scene" style={{
+            backgroundImage: `url(${current.bg})`,
+            backgroundPosition: `${pos.x}% ${pos.y}%`,
+            backgroundSize: '150%',
+          }} />
+          <div className="tour-label">{lang === 'ar' ? current.labelAr : current.label}</div>
+          <div className="tour-dpad">
+            <div className="dpad-btn empty" />
+            <button className="dpad-btn" onClick={() => move('up')}><Icon name="chevronUp" size={18} /></button>
+            <div className="dpad-btn empty" />
+            <button className="dpad-btn" onClick={() => move('left')}><Icon name="chevronLeft" size={18} /></button>
+            <div className="dpad-btn empty" />
+            <button className="dpad-btn" onClick={() => move('right')}><Icon name="chevronRight" size={18} /></button>
+            <div className="dpad-btn empty" />
+            <button className="dpad-btn" onClick={() => move('down')}><Icon name="chevronDown" size={18} /></button>
+            <div className="dpad-btn empty" />
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
+          {TOUR_SCENES.map((s, i) => (
+            <button key={i} className={`chip ${scene === i ? 'active' : ''}`} onClick={() => setScene(i)}>
+              {lang === 'ar' ? s.labelAr : s.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ═══ WHY SIERRA ═══ */
+function WhySierra() {
+  const { lang } = useApp();
+  const t = T[lang];
+  return (
+    <section id="contact" className="section-pad reveal" style={{ padding: '60px 20px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: 'var(--gold)', textTransform: 'uppercase', marginBottom: 4 }}>{t.whySub}</div>
+          <h2 className="shimmer-text" style={{ fontFamily: 'var(--font-head)', fontSize: 32, fontWeight: 700 }}>{t.whyTitle}</h2>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 16 }}>
+          {t.features.map((f, i) => (
+            <div key={i} className="card reveal" style={{ transitionDelay: `${i * 0.1}s`, textAlign: 'center' }}>
+              <div className="float-anim" style={{ width: 48, height: 48, borderRadius: 12, background: 'linear-gradient(135deg, var(--navy), var(--pepsi))', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', border: '1px solid var(--border-strong)' }}>
+                <Icon name={f.icon} size={22} />
+              </div>
+              <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 6 }}>{f.title}</h3>
+              <p style={{ fontSize: 12, color: 'var(--text-mid)', lineHeight: 1.6 }}>{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ═══ BOTTOM NAV ═══ */
+function BottomNav({ active, onSelect, visible }) {
+  const { lang } = useApp();
+  const t = T[lang];
+  const items = ['home', 'listings', 'map', 'tour', 'contact'];
+  return (
+    <nav className={`bottom-nav ${visible ? '' : 'hidden'}`}>
+      {items.map(item => (
+        <button key={item} className={`nav-item ${active === item ? 'active' : ''}`} onClick={() => onSelect(item)}>
+          <Icon name={item} />
+          <span>{t.nav[item]}</span>
+        </button>
+      ))}
+    </nav>
+  );
+}
+
+/* ═══ ADMIN PANEL ═══ */
+function AdminPanel() {
+  const { theme, toggleTheme, lang, toggleLang } = useApp();
+  const t = T[lang];
+  return (
+    <div style={{ minHeight: '100vh', padding: '20px', paddingTop: 80 }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+          <h1 style={{ fontFamily: 'var(--font-head)', fontSize: 28, fontWeight: 700 }}>{t.admin.title}</h1>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button onClick={toggleLang} style={{ background: 'none', border: '1px solid var(--border-strong)', borderRadius: 8, padding: '6px 10px', color: 'var(--text-mid)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>{lang === 'en' ? 'ع' : 'EN'}</button>
+            <button onClick={toggleTheme} style={{ background: 'none', border: '1px solid var(--border-strong)', borderRadius: 8, padding: 6, color: 'var(--gold)', cursor: 'pointer' }}><Icon name={theme === 'dark' ? 'sun' : 'moon'} size={16} /></button>
+          </div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 24 }}>
+          {[{ l: t.admin.leads, v: '1,247' }, { l: t.admin.units, v: '1,532' }, { l: t.admin.agents, v: '24' }, { l: t.admin.revenue, v: 'EGP 420M' }].map((s, i) => (
+            <div key={i} className="admin-card">
+              <div className="admin-label">{s.l}</div>
+              <div className="admin-stat">{s.v}</div>
+            </div>
+          ))}
+        </div>
+        <div className="admin-card">
+          <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 12 }}>{lang === 'en' ? 'Recent Leads' : 'العملاء الأخيرون'}</h3>
+          {['Ahmed Hassan · +20100xxx · Hyde Park', 'Sarah Chen · +20122xxx · Mivida', 'Omar Khaled · +20111xxx · Palm Hills'].map((lead, i) => (
+            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid var(--border)' }}>
+              <span style={{ fontSize: 13 }}>{lead}</span>
+              <span style={{ fontSize: 11, color: 'var(--gold)', fontWeight: 600 }}>{lang === 'en' ? 'New' : 'جديد'}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══ MAIN APP ═══ */
+function App() {
+  const [theme, setTheme] = useState('dark');
+  const [lang, setLang] = useState('en');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('home');
+  const [navVisible, setNavVisible] = useState(true);
+
+  const toggleTheme = useCallback(() => setTheme(t => t === 'dark' ? 'light' : 'dark'), []);
+  const toggleLang = useCallback(() => setLang(l => l === 'en' ? 'ar' : 'en'), []);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+    document.documentElement.setAttribute('lang', lang);
+  }, [theme, lang]);
+
+  // Scroll reveal observer
+  useEffect(() => {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+    return () => io.disconnect();
+  }, [lang]);
+
+  // Scroll spy for active section
+  useEffect(() => {
+    const sections = ['home', 'listings', 'map', 'tour', 'contact'];
+    const onScroll = () => {
+      const scrollY = window.scrollY + 100;
+      setNavVisible(window.scrollY < 100 || window.scrollY + window.innerHeight < document.body.scrollHeight - 100);
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const el = document.getElementById(sections[i]);
+        if (el && el.offsetTop <= scrollY) { setActiveSection(sections[i]); break; }
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const scrollToSection = (section) => {
+    const el = document.getElementById(section);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const isAdmin = typeof window !== 'undefined' && window.location.hostname.includes('admin');
+
+  return (
+    <AppCtx.Provider value={{ theme, lang, toggleTheme, toggleLang }}>
+      {isAdmin ? (
+        <>
+          <Header onRequest={() => {}} activeSection="" scrollToSection={() => {}} />
+          <AdminPanel />
+        </>
+      ) : (
+        <>
+          <Header onRequest={() => setModalOpen(true)} activeSection={activeSection} scrollToSection={scrollToSection} />
+          <main style={{ paddingBottom: 60 }}>
+            <Hero onRequest={() => setModalOpen(true)} scrollToSection={scrollToSection} />
+            <div className="gold-divider" />
+            <Listings onOpenRequest={() => setModalOpen(true)} />
+            <div className="gold-divider" />
+            <IntelligenceOS />
+            <div className="gold-divider" />
+            <MapSection />
+            <div className="gold-divider" />
+            <VirtualTour />
+            <div className="gold-divider" />
+            <WhySierra />
+          </main>
+          <BottomNav active={activeSection} onSelect={scrollToSection} visible={navVisible} />
+          <RequestModal open={modalOpen} onClose={() => setModalOpen(false)} />
+        </>
+      )}
+    </AppCtx.Provider>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
