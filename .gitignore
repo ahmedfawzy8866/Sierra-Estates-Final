@@ -116,3 +116,8 @@ test-results/
 # ─── Expo env file ───
 expo-env.d.ts
 
+# ─── Python ───
+.venv/
+venv/
+__pycache__/
+*.pyc
