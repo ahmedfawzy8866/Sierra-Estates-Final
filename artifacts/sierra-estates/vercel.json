@@ -1,24 +1,5 @@
 {
-  "version": 2,
-  "buildCommand": "vite build --config vite.config.ts",
+  "buildCommand": "cd ../.. && pnpm --filter @workspace/sierra-estates run build",
   "outputDirectory": "dist/public",
-  "installCommand": "npm install --legacy-peer-deps",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ],
-  "headers": [
-    {
-      "source": "/assets/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
-      ]
-    },
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "X-Frame-Options", "value": "DENY" },
-        { "key": "X-Content-Type-Options", "value": "nosniff" }
-      ]
-    }
-  ]
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }

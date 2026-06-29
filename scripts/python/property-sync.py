@@ -1,4 +1,4 @@
-# pylint: disable=invalid-name
+#!/usr/bin/env python3
 """Sync Property Finder listings into the Firestore Properties collection."""
 
 from __future__ import annotations
@@ -23,14 +23,7 @@ except ImportError:  # pragma: no cover - optional dependency
     credentials = None
     firestore = None
 
-# Load environment variables, prioritizing .env.local
-if os.path.exists('.env.local'):
-    load_dotenv('.env.local')
-elif os.path.exists('../../.env.local'):
-    load_dotenv('../../.env.local')
-else:
-    load_dotenv()
-
+load_dotenv()
 
 DEFAULT_PF_BASE_URL = 'https://api.property-finder.eg/v2'
 
@@ -38,10 +31,7 @@ DEFAULT_PF_BASE_URL = 'https://api.property-finder.eg/v2'
 def _load_firestore_client(project_id: str | None):
     """Initialize and return a Firestore client."""
     if firebase_admin is None or credentials is None or firestore is None:
-        raise RuntimeError(
-            'firebase-admin is required. '
-            'Install dependencies from scripts/python/requirements.txt.'
-        )
+        raise RuntimeError('firebase-admin is required. Install dependencies from scripts/python/requirements.txt.')
     service_account_json = os.getenv('FIREBASE_SERVICE_ACCOUNT_JSON')
     if not service_account_json:
         raise RuntimeError('FIREBASE_SERVICE_ACCOUNT_JSON is required for Firestore sync.')
@@ -50,8 +40,7 @@ def _load_firestore_client(project_id: str | None):
     except ValueError:
         options = {'projectId': project_id} if project_id else None
         if options is None:
-            cert = credentials.Certificate(json.loads(service_account_json))
-            app = firebase_admin.initialize_app(cert)
+            app = firebase_admin.initialize_app(credentials.Certificate(json.loads(service_account_json)))
         else:
             app = firebase_admin.initialize_app(
                 credentials.Certificate(json.loads(service_account_json)),
@@ -71,37 +60,28 @@ def _parse_number(value: Any) -> float:
     text = str(value or '').strip().lower()
     if not text:
         return 0.0
-
-    result = 0.0
     match = _NUMBER_SUFFIX_RE.search(text)
     if match:
         try:
             digits = float(match.group(1).replace(',', ''))
             multiplier = 1_000_000.0 if match.group(2) == 'm' else 1_000.0
-            result = digits * multiplier
+            return digits * multiplier
         except ValueError:
-            pass
-    else:
-        first = _FIRST_NUMBER_RE.search(text)
-        if first:
-            try:
-                result = float(first.group().replace(',', ''))
-            except ValueError:
-                pass
-    return result
+            return 0.0
+    first = _FIRST_NUMBER_RE.search(text)
+    if first:
+        try:
+            return float(first.group().replace(',', ''))
+        except ValueError:
+            return 0.0
+    return 0.0
 
 
 def _extract_location(listing: dict[str, Any]) -> str:
     """Return the best available compound/location value."""
     location = listing.get('Location') or listing.get('compound') or listing.get('location')
     if isinstance(location, dict):
-        val = (
-            location.get('name')
-            or location.get('compound')
-            or location.get('address')
-            or 'New Cairo'
-        )
-        return str(val).strip()
+        return str(location.get('name') or location.get('compound') or location.get('address') or 'New Cairo').strip()
     return str(location or 'New Cairo').strip()
 
 
@@ -116,13 +96,7 @@ def _extract_owner(listing: dict[str, Any]) -> str:
 def compute_sync_hash(listing: dict[str, Any]) -> str:
     """Mirror the CRM route hash logic with sensible source-field fallbacks."""
     location = _extract_location(listing)
-    rent_period_val = (
-        listing.get('RentPeriodType')
-        or listing.get('bua_m2')
-        or listing.get('area')
-        or '150'
-    )
-    rent_period_type = str(rent_period_val).strip()
+    rent_period_type = str(listing.get('RentPeriodType') or listing.get('bua_m2') or listing.get('area') or '150').strip()
     code = str(listing.get('Code') or listing.get('code') or listing.get('id') or '0').strip()
     owner = _extract_owner(listing)
     raw_signature = f'{location}-{rent_period_type}-{code}-{owner}'.lower().strip()
@@ -139,48 +113,15 @@ def normalize_property(listing: dict[str, Any]) -> dict[str, Any]:
     location = _extract_location(listing)
     sync_hash = compute_sync_hash(listing)
     price = _parse_number(listing.get('UnitPrice') or listing.get('price'))
-    beds = int(_parse_number(
-        listing.get('BedRooms')
-        or listing.get('bedrooms')
-        or listing.get('beds')
-        or 0
-    ))
-    property_type = str(
-        listing.get('PropertyType')
-        or listing.get('property_type')
-        or listing.get('type')
-        or 'Apartment'
-    ).strip()
+    beds = int(_parse_number(listing.get('BedRooms') or listing.get('bedrooms') or listing.get('beds') or 0))
+    property_type = str(listing.get('PropertyType') or listing.get('property_type') or listing.get('type') or 'Apartment').strip()
     owner = _extract_owner(listing)
     code = str(listing.get('Code') or listing.get('code') or listing.get('id') or '').strip()
-    rent_period_type = str(
-        listing.get('RentPeriodType')
-        or listing.get('area')
-        or listing.get('bua_m2')
-        or '150'
-    ).strip()
-    furnished_tag = (
-        'F'
-        if 'furnish' in str(listing.get('Furniture') or listing.get('furnishing') or '').lower()
-        else 'U'
-    )
-    price_abbrev = (
-        f"{int(price / 1_000_000)}M"
-        if price >= 1_000_000
-        else f"{max(1, int(price / 1_000))}K"
-    )
+    rent_period_type = str(listing.get('RentPeriodType') or listing.get('area') or listing.get('bua_m2') or '150').strip()
+    furnished = str(listing.get('Furniture') or listing.get('furnishing') or '').lower()
+    furnished_tag = 'F' if 'furnish' in furnished else 'U'
+    price_abbrev = f"{int(price / 1_000_000)}M" if price >= 1_000_000 else f"{max(1, int(price / 1_000))}K"
     unit_prefix = location[:3].upper() if location else 'SBR'
-
-    title_en = str(
-        listing.get('Name')
-        or listing.get('title')
-        or f'{property_type} in {location}'
-    ).strip()
-    agent_name = str(
-        listing.get('AgentName')
-        or listing.get('agent_name')
-        or 'Ahmed Fawzy'
-    ).strip()
 
     return {
         'id': sync_hash,
@@ -192,12 +133,12 @@ def normalize_property(listing: dict[str, Any]) -> dict[str, Any]:
         'price': price,
         'beds': beds,
         'type': property_type,
-        'title_en': title_en,
+        'title_en': str(listing.get('Name') or listing.get('title') or f'{property_type} in {location}').strip(),
         'title_ar': str(listing.get('title_ar') or _default_arabic_title(property_type)).strip(),
         'purpose': str(listing.get('Availability') or listing.get('purpose') or 'RENT').upper(),
         'currency': str(listing.get('currency') or 'EGP').upper(),
         'owner_name': owner,
-        'agent_name': agent_name,
+        'agent_name': str(listing.get('AgentName') or listing.get('agent_name') or 'Ahmed Fawzy').strip(),
         'bua_m2': _parse_number(rent_period_type),
         'last_sync_timestamp': datetime.now(timezone.utc).isoformat(),
         'raw_property_finder_payload': listing,
@@ -232,26 +173,15 @@ def fetch_property_finder_listings(limit: int | None, compound: str | None) -> l
     payload = response.json()
     listings = payload.get('results') or payload.get('listings') or payload.get('data') or []
     if not isinstance(listings, list):
-        raise RuntimeError(
-            'Unexpected Property Finder response shape; expected a list of listings.'
-        )
+        raise RuntimeError('Unexpected Property Finder response shape; expected a list of listings.')
     return [item for item in listings if isinstance(item, dict)]
 
 
 def main() -> int:
     """CLI entry point."""
     parser = argparse.ArgumentParser(description='Sync Property Finder listings into Firestore.')
-    parser.add_argument(
-        '--dry-run',
-        action='store_true',
-        help='Show sync actions without writing to Firestore.',
-    )
-    parser.add_argument(
-        '--limit',
-        type=int,
-        default=None,
-        help='Maximum number of Property Finder listings to fetch.',
-    )
+    parser.add_argument('--dry-run', action='store_true', help='Show sync actions without writing to Firestore.')
+    parser.add_argument('--limit', type=int, default=None, help='Maximum number of Property Finder listings to fetch.')
     parser.add_argument('--compound', default=None, help='Optional compound name filter.')
     parser.add_argument('--project-id', default=None, help='Optional Firebase project id override.')
     args = parser.parse_args()
@@ -266,28 +196,17 @@ def main() -> int:
         for listing in listings:
             normalized = normalize_property(listing)
             if args.dry_run:
-                print(
-                    f"[DRY RUN] Would upsert {normalized['sync_hash']} "
-                    f"({normalized['compound_name']})"
-                )
+                print(f"[DRY RUN] Would upsert {normalized['sync_hash']} ({normalized['compound_name']})")
                 continue
 
             assert client is not None
             document_ref = client.collection('Properties').document(normalized['sync_hash'])
             snapshot = document_ref.get()
-            incoming_comparable = {
-                key: value
-                for key, value in normalized.items()
-                if key != 'last_sync_timestamp'
-            }
+            incoming_comparable = {key: value for key, value in normalized.items() if key != 'last_sync_timestamp'}
 
             if snapshot.exists:
                 existing_data = snapshot.to_dict() or {}
-                existing_comparable = {
-                    key: value
-                    for key, value in existing_data.items()
-                    if key != 'last_sync_timestamp'
-                }
+                existing_comparable = {key: value for key, value in existing_data.items() if key != 'last_sync_timestamp'}
                 if existing_comparable == incoming_comparable:
                     skipped_duplicates += 1
                     continue
@@ -304,7 +223,7 @@ def main() -> int:
         if args.dry_run:
             print(f'  Dry-run listings inspected: {len(listings)}')
         return 0
-    except Exception as error:  # pylint: disable=broad-exception-caught
+    except Exception as error:  # pragma: no cover - CLI error path
         print(f'Error syncing properties: {error}', file=sys.stderr)
         return 1
 

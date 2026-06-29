@@ -2,39 +2,25 @@
   "name": "sierra-estates",
   "version": "1.0.0",
   "private": true,
-  "description": "Sierra Estates — Luxury PropTech Platform for New Cairo (Two-App Architecture)",
+  "description": "Sierra Estates — Luxury PropTech Platform for New Cairo",
   "workspaces": [
-    "apps/sierra-estates-realty",
-    "apps/vercel-app",
-    "apps/firebase-admin",
-    "apps/api",
-    "apps/agents",
-    "apps/admin-dashboard",
-    "apps/mass-blast",
+    "apps/*",
     "packages/*",
-    "functions",
-    "scripts"
+    "functions"
   ],
   "scripts": {
     "dev": "turbo run dev",
-    "dev:vercel": "pnpm --filter @sierra-estates/vercel-app dev",
-    "dev:admin": "pnpm --filter @sierra-estates/firebase-admin dev",
     "build": "turbo run build",
-    "build:vercel": "pnpm --filter @sierra-estates/vercel-app build",
-    "build:admin": "pnpm --filter @sierra-estates/firebase-admin build",
     "lint": "turbo run lint",
     "type-check": "turbo run type-check",
     "test:ci": "turbo run test:ci",
     "clean": "turbo run clean && rm -rf node_modules",
-    "deploy:vercel": "pnpm --filter @sierra-estates/vercel-app build && cd apps/vercel-app && vercel --prod",
-    "deploy:firebase": "bash scripts/deploy-firebase.sh",
-    "deploy:rules": "firebase deploy --only firestore:rules,storage",
-    "deploy:all": "bash scripts/setup-and-deploy.sh",
-    "pre-deploy": "bash scripts/pre-deploy-check.sh",
-    "generate-secrets": "bash scripts/generate-secrets.sh"
+    "link:vercel": "vercel link",
+    "deploy:preview": "vercel --build-env NEXT_PUBLIC_APP_ENV=preview",
+    "deploy:prod": "vercel --prod",
+    "deploy:firebase": "firebase deploy --only firestore:rules,storage,functions"
   },
   "devDependencies": {
-    "@esbuild/win32-x64": "^0.28.1",
     "turbo": "^2.3.3",
     "typescript": "^5.7.2"
   },

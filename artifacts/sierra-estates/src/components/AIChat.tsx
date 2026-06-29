@@ -64,7 +64,7 @@ export default function AIChat() {
         }}>
           {/* Header */}
           <div style={{ padding: "14px 16px", background: "var(--navy)", display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ width: 36, height: 36, borderRadius: "50%", background: "linear-gradient(135deg,var(--gold),var(--gold-lt))", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-serif)", fontSize: 18, color: "var(--brand-dark)", fontWeight: 700 }}>S</div>
+            <div style={{ width: 36, height: 36, borderRadius: "50%", background: "linear-gradient(135deg,var(--gold),var(--gold-lt))", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-serif)", fontSize: 18, color: "var(--navy)", fontWeight: 700 }}>S</div>
             <div>
               <div style={{ fontSize: 13, fontWeight: 700, color: "white", lineHeight: 1 }}>Sierra AI</div>
               <div style={{ fontSize: 9, color: "#4ade80", letterSpacing: ".1em", marginTop: 2 }}>{t("chat.online")}</div>

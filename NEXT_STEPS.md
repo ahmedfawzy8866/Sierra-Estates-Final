@@ -7,7 +7,6 @@ Updated: 2026-06-07. Trim items as completed.
 ## Deployment Architecture (RESOLVED ✅)
 
 **ONE Vercel deployment** (`apps/sierra-estates-realty`) serves everything:
-
 - `/` → Public site: listings, search, contact
 - `/admin/*` → Staff admin panel (Firebase Auth gated by `app/admin/layout.tsx`)
 - `/api/*` → All backend APIs (auth-guarded per route)
@@ -33,7 +32,6 @@ The hardened rules are ready in the repo — just need deploying.
 ## Vercel Setup (one-time in dashboard)
 
 **Option A — recommended (Root Directory = `apps/sierra-estates-realty`):**
-
 - Set Root Directory = `apps/sierra-estates-realty`
 - Framework = Next.js (auto-detected)
 - Build command = `pnpm build`
@@ -41,7 +39,6 @@ The hardened rules are ready in the repo — just need deploying.
 - Env vars: copy from `apps/sierra-estates-realty/.env.local.example`
 
 **Option B — fallback (Root Directory = repo root):**
-
 - Build command = `pnpm --filter sierra-estates-platform build`
 - Output directory = `apps/sierra-estates-realty/.next`
 - Install command = `pnpm install --frozen-lockfile`
@@ -51,7 +48,6 @@ The hardened rules are ready in the repo — just need deploying.
 ## Secrets — set before going live
 
 ### In Vercel dashboard (for the Next.js web app)
-
 ```
 NEXT_PUBLIC_FIREBASE_*          ← from Firebase console
 FIREBASE_PROJECT_ID
@@ -66,7 +62,6 @@ GOOGLE_SHEETS_SPREADSHEET_ID
 ```
 
 ### In Firebase (for Cloud Functions)
-
 ```bash
 firebase functions:secrets:set SBR_SECRET_KEY
 firebase functions:secrets:set ENCRYPTION_KEY
@@ -88,7 +83,6 @@ firebase deploy --only functions
 ---
 
 ## Recommendations (nice to have)
-
 - Enable branch protection on `main` (require PRs; block force-push)
 - Stand up staging Firebase + Vercel project
 - Replace `MockAIService` with real AI
@@ -98,7 +92,6 @@ firebase deploy --only functions
 ---
 
 ## Done ✅
-
 - Real type-check CI gate, functions tests, lint 256→0, turbo 2.9.16 CVEs fixed
 - Recovered concierge backend, dependency cleanup
 - Firestore/Storage rules hardened (staff-gated, ready to deploy)

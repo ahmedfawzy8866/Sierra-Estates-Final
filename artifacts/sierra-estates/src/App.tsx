@@ -3,7 +3,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ThemeProvider } from "next-themes";
 import Home from "@/pages/Home";
-import VerifiedListings from "@/pages/VerifiedListings";
 
 const queryClient = new QueryClient();
 
@@ -25,23 +24,12 @@ function NotFound() {
 }
 
 import ClientRequest from "@/pages/ClientRequest";
-import Login from "@/pages/Login";
-import AgentDashboard from "@/pages/AgentDashboard";
-import Properties from "@/pages/Properties";
-import PropertyDetail from "@/pages/PropertyDetail";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
-      <Route path="/listings" component={VerifiedListings} />
-      <Route path="/verified" component={VerifiedListings} />
       <Route path="/request" component={ClientRequest} />
-      <Route path="/login" component={Login} />
-      <Route path="/register" component={Login} />
-      <Route path="/agent-dashboard" component={AgentDashboard} />
-      <Route path="/properties" component={Properties} />
-      <Route path="/properties/:id" component={PropertyDetail} />
       <Route component={NotFound} />
     </Switch>
   );
