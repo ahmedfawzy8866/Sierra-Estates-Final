@@ -1,5 +1,6 @@
 import { env } from "../../core/cfg";
 import crypto from "crypto";
+import type { Request, Response, NextFunction } from "express";
 
 /**
  * SECURITY: Authentication is fail-closed by default.
@@ -78,7 +79,7 @@ function is_public_endpoint(path: string): boolean {
     );
 }
 
-function extract_api_key(req: any): string | null {
+function extract_api_key(req: Request): string | null {
     const x_api_key = req.headers[auth_config.api_key_header];
     if (x_api_key) return x_api_key;
     const auth_header = req.headers["authorization"];
@@ -139,7 +140,7 @@ function check_rate_limit(client_id: string): {
     };
 }
 
-export function authenticate_api_request(req: any, res: any, next: any) {
+export function authenticate_api_request(req: Request, res: Response, next: NextFunction) {
     const path = req.path || req.url;
     if (is_public_endpoint(path)) return next();
 
@@ -182,7 +183,7 @@ export function authenticate_api_request(req: any, res: any, next: any) {
     next();
 }
 
-export function log_authenticated_request(req: any, res: any, next: any) {
+export function log_authenticated_request(req: Request, res: Response, next: NextFunction) {
     const tenant = (req as any).tenant;
     if (tenant) console.log(`[AUTH] ${req.method} ${req.path} [${tenant}]`);
     next();

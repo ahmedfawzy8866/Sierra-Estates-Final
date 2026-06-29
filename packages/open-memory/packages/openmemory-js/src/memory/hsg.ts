@@ -2,7 +2,7 @@ import crypto from "node:crypto";
 import { canonical_token_set, stable_text_fallback_hash } from "../utils/text";
 import { inc_q, dec_q, on_query_hit } from "./decay";
 import { env, tier } from "../core/cfg";
-import { cos_sim, buf_to_vec, vec_to_buf } from "../utils/index";
+import { cos_sim, buf_to_vec, _vec_to_buf } from "../utils/index";
 export interface sector_cfg {
     model: string;
     decay_lambda: number;
@@ -20,7 +20,7 @@ export interface hsg_mem {
     primary_sector: string;
     sectors: string[];
     tags?: string;
-    meta?: any;
+    meta?: unknown;
     created_at: number;
     updated_at: number;
     last_seen_at: number;
@@ -45,7 +45,7 @@ export interface hsg_q_result {
     salience: number;
     last_seen_at: number;
     tags?: string[];
-    meta?: any;
+    meta?: unknown;
 }
 export const sector_configs: Record<string, sector_cfg> = {
     episodic: {
@@ -248,7 +248,7 @@ const compress_vec_for_storage = (
 
 export function classify_content(
     content: string,
-    metadata?: any,
+    metadata?: unknown,
 ): sector_class {
     if (metadata?.sector && sectors.includes(metadata.sector)) {
         return {
@@ -469,9 +469,9 @@ export function compute_hybrid_score(
 import {
     q,
     vector_store,
-    get_async,
-    all_async,
-    run_async,
+    _get_async,
+    _all_async,
+    _run_async,
     transaction,
     log_maint_op,
 } from "../core/db";
@@ -507,7 +507,7 @@ export async function create_cross_sector_waypoints(
 }
 export function calc_mean_vec(
     emb_res: EmbeddingResult[],
-    secs: string[],
+    _secs: string[],
 ): number[] {
     const dim = emb_res[0].vector.length;
     const wsum = new Array(dim).fill(0);
@@ -539,7 +539,7 @@ export async function create_single_waypoint(
     user_id?: string | null,
     project_id?: string | null,
 ): Promise<void> {
-    const thresh = 0.75;
+    const _thresh = 0.75;
     const mems = user_id
         ? await q.all_mem_by_user.all(user_id, 1000, 0)
         : await q.all_mem.all(1000, 0);
@@ -699,19 +699,19 @@ import {
     embedQueryForAllSectors,
     embedMultiSector,
     cosineSimilarity,
-    bufferToVector,
+    _bufferToVector,
     vectorToBuffer,
     EmbeddingResult,
 } from "./embed";
 import { chunk_text } from "../utils/chunking";
 import { j } from "../utils";
-import { keyword_filter_memories, extract_keywords } from "../utils/keyword";
+import { keyword_filter_memories, _extract_keywords } from "../utils/keyword";
 import {
     calculateCrossSectorResonanceScore,
     applyRetrievalTraceReinforcementToMemory,
     propagateAssociativeReinforcementToLinkedNodes,
-    ALPHA_LEARNING_RATE_FOR_RECALL_REINFORCEMENT,
-    BETA_LEARNING_RATE_FOR_EMOTIONAL_FREQUENCY,
+    _ALPHA_LEARNING_RATE_FOR_RECALL_REINFORCEMENT,
+    _BETA_LEARNING_RATE_FOR_EMOTIONAL_FREQUENCY,
 } from "../ops/dynamics";
 export interface multi_vec_fusion_weights {
     semantic_dimension_weight: number;
@@ -749,13 +749,13 @@ export async function calc_multi_vec_fusion_score(
 const cache = new Map<string, { r: hsg_q_result[]; t: number }>();
 const sal_cache = new Map<string, { s: number; t: number }>();
 
-const seg_cache = new Map<number, any[]>();
+const seg_cache = new Map<number, unknown[]>();
 const coact_buf: Array<[string, string]> = [];
 const TTL = 60000;
-const VEC_CACHE_MAX = 1000;
+const _VEC_CACHE_MAX = 1000;
 let active_queries = 0;
 
-const get_segment = async (seg: number): Promise<any[]> => {
+const _get_segment = async (seg: number): Promise<unknown[]> => {
     if (seg_cache.has(seg)) return seg_cache.get(seg)!;
     const rows = await q.get_mem_by_segment.all(seg);
     seg_cache.set(seg, rows);
@@ -798,10 +798,10 @@ setInterval(async () => {
                 wp?.created_at || now,
                 now,
             );
-        } catch (e) {}
+        } catch (_e) {}
     }
 }, 1000);
-const get_sal = async (id: string, def_sal: number): Promise<number> => {
+const _get_sal = async (id: string, def_sal: number): Promise<number> => {
     const c = sal_cache.get(id);
     if (c && Date.now() - c.t < TTL) return c.s;
     const m = await q.get_mem.get(id);
@@ -833,7 +833,7 @@ export async function hsg_query(
         const cached = cache.get(h);
         if (cached && Date.now() - cached.t < TTL) return cached.r;
         const qc = classify_content(qt);
-        const is_temporal = has_temporal_markers(qt);
+        const _is_temporal = has_temporal_markers(qt);
         const qtk = canonical_token_set(qt);
 
         const primary_sectors = [qc.primary, ...qc.additional];
@@ -935,7 +935,7 @@ export async function hsg_query(
                 const mat = rr.find((r) => r.id === mid);
                 if (mat && mat.similarity > bs) {
                     bs = mat.similarity;
-                    bsec = sec;
+                    _bsec = sec;
                 }
             }
 
@@ -1038,7 +1038,7 @@ export async function hsg_query(
             if (r.path.length > 1) {
                 await reinforce_waypoints(r.path);
                 const wps = await q.get_waypoints_by_src.all(r.id);
-                const lns = wps.map((wp: any) => ({
+                const lns = wps.map((wp: unknown) => ({
                     target_id: wp.dst_id,
                     weight: wp.weight,
                 }));
@@ -1126,7 +1126,7 @@ async function ensure_user_exists(user_id: string): Promise<void> {
 export async function add_hsg_memory(
     content: string,
     tags?: string,
-    metadata?: any,
+    metadata?: unknown,
     user_id?: string,
     project_id?: string,
 ): Promise<{
@@ -1272,7 +1272,7 @@ export async function update_memory(
     id: string,
     content?: string,
     tags?: string[],
-    metadata?: any,
+    metadata?: unknown,
 ): Promise<{ id: string; updated: boolean }> {
     const mem = await q.get_mem.get(id);
     if (!mem) throw new Error(`Memory ${id} not found`);

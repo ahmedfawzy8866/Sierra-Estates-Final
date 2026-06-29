@@ -63,7 +63,7 @@ export default function UnitPricingPage() {
       <div style={{ height: 72, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 2rem', borderBottom: `1px solid ${th.border}`, backdropFilter: 'blur(20px)', zIndex: 100 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <Link href="/">
-            <button style={{ background: 'transparent', border: `1px solid ${th.border}`, color: th.text, width: 40, height: 40, borderRadius: '12px', display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer' }}>
+            <button title="Go Back" aria-label="Go Back" style={{ background: 'transparent', border: `1px solid ${th.border}`, color: th.text, width: 40, height: 40, borderRadius: '12px', display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer' }}>
               <ArrowLeft size={18} />
             </button>
           </Link>
@@ -92,6 +92,8 @@ export default function UnitPricingPage() {
           <div>
             <label style={{ fontSize: '0.8rem', color: th.textSub, display: 'block', marginBottom: '0.4rem' }}>Target Compound</label>
             <select
+              title="Target Compound"
+              aria-label="Target Compound"
               value={compound}
               onChange={(e) => setCompound(e.target.value)}
               style={{ width: '100%', padding: '10px', background: th.bg, color: th.text, border: `1px solid ${th.border}`, borderRadius: '10px', outline: 'none', cursor: 'pointer' }}
@@ -113,6 +115,9 @@ export default function UnitPricingPage() {
             </div>
             <input
               type="range"
+              title="Built-Up Area (m²)"
+              aria-label="Built-Up Area"
+              placeholder="Built-up Area"
               min={60}
               max={800}
               step={10}
@@ -152,6 +157,8 @@ export default function UnitPricingPage() {
           <div>
             <label style={{ fontSize: '0.8rem', color: th.textSub, display: 'block', marginBottom: '0.4rem' }}>Finishing Type</label>
             <select
+              title="Finishing Type"
+              aria-label="Finishing Type"
               value={finishing}
               onChange={(e) => setFinishing(e.target.value)}
               style={{ width: '100%', padding: '10px', background: th.bg, color: th.text, border: `1px solid ${th.border}`, borderRadius: '10px', outline: 'none', cursor: 'pointer' }}
