@@ -1,40 +1,41 @@
 'use client';
+/**
+ * SIERRA ESTATES MOBILE DESIGN — Refined Professional Edition
+ * Updated 2026-06-29: Enhanced with carousel, shimmer animations, fluid interactions
+ */
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import FilterBar from './FilterBar';
 import Link from 'next/link';
 
-// ── Animated Counter ──────────────────────────────────────────────────────────
-function Counter({ target, suffix = '' }: { target: number; suffix?: string }) {
-  const [count, setCount] = useState(0);
-  const ref = useRef<HTMLSpanElement>(null);
-  const started = useRef(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !started.current) {
-          started.current = true;
-          const duration = 1800;
-          const startTime = performance.now();
-          const tick = (now: number) => {
-            const elapsed = now - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const ease = 1 - Math.pow(1 - progress, 3);
-            setCount(Math.round(ease * target));
-            if (progress < 1) requestAnimationFrame(tick);
-          };
-          requestAnimationFrame(tick);
-        }
-      },
-      { threshold: 0.5 }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [target]);
-
-  return <span ref={ref}>{count.toLocaleString()}{suffix}</span>;
-}
+// ── SLIDE DATA ────────────────────────────────────────────────────────────────
+const HERO_SLIDES = [
+  {
+    pre: 'FIRST & ONLY WEBSITE IN EGYPT DESIGNED FOR NEW CAIRO',
+    main: 'The First Exclusive Destination for New Cairo Properties. Rent & Resale.',
+    img: 'https://images.unsplash.com/photo-1613977257363-707ba9348227?w=1200&q=85',
+  },
+  {
+    pre: 'BEST-IN-CLASS DESIGN',
+    main: 'Redefining Luxury Living with AI-Driven Excellence',
+    img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&q=85',
+  },
+  {
+    pre: 'AI-DRIVEN EXCELLENCE',
+    main: 'Smart Matches for Smart Investors',
+    img: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=85',
+  },
+  {
+    pre: 'EXCLUSIVE NETWORK',
+    main: 'Unrivaled Access to Premium Compounds',
+    img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&q=85',
+  },
+  {
+    pre: 'CURATED PORTFOLIO',
+    main: 'Your Journey to Exceptional Homes Begins Here',
+    img: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=1200&q=85',
+  },
+];
 
 // ── Scroll Indicator ──────────────────────────────────────────────────────────
 function ScrollCue() {
@@ -50,149 +51,126 @@ function ScrollCue() {
 // ── Hero ──────────────────────────────────────────────────────────────────────
 export default function Hero() {
   const [visible, setVisible] = useState(false);
+  const [currentSlideIdx, setCurrentSlideIdx] = useState(0);
 
+  // Carousel auto-rotate every 7 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlideIdx((prev) => (prev + 1) % HERO_SLIDES.length);
+    }, 7000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Initial fade-in
   useEffect(() => {
     const t = setTimeout(() => setVisible(true), 60);
     return () => clearTimeout(t);
   }, []);
+
+  const currentSlide = HERO_SLIDES[currentSlideIdx];
 
   return (
     <section
       id="hero"
       className="relative min-h-[95vh] flex flex-col items-center justify-center px-6 pt-28 pb-20 overflow-hidden"
       style={{
-        background: `
-          linear-gradient(180deg, rgba(250,248,243,0.35) 0%, rgba(250,248,243,0.88) 68%, rgba(250,248,243,1) 100%),
-          radial-gradient(ellipse at top center, rgba(200,150,26,0.13) 0%, transparent 58%),
-          radial-gradient(ellipse at bottom right, rgba(230,57,70,0.06) 0%, transparent 52%),
-          url('https://images.unsplash.com/photo-1486325212027-8081e485255e?w=2400&q=85&auto=format&fit=crop')
-        `,
-        backgroundSize: 'cover, auto, auto, cover',
-        backgroundPosition: 'center, center, center, center',
-        backgroundAttachment: 'scroll, scroll, scroll, fixed',
+        backgroundImage: `linear-gradient(172deg, rgba(0,10,25,.95) 0%, rgba(0,25,55,.72) 50%, rgba(0,0,0,.2) 100%), url('${currentSlide.img}')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+        transition: 'background-image 0.8s ease-in-out',
       }}
     >
-      {/* Background Gradient Orbs */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        aria-hidden="true"
-        style={{
-          background: `
-            radial-gradient(ellipse 80% 50% at 50% -10%, rgba(200,150,26,0.08) 0%, transparent 70%),
-            radial-gradient(ellipse 60% 40% at 80% 110%, rgba(230,57,70,0.05) 0%, transparent 60%)
-          `,
-        }}
-      />
+      {/* Background Gradient Overlay (Professional polish) */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-[#C9A96E]/8 rounded-full blur-[120px] mix-blend-screen" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-[#0D2035]/15 rounded-full blur-[150px] mix-blend-multiply" />
+      </div>
 
       <div
         className={`relative z-10 max-w-5xl w-full text-center transition-all duration-1000 ${
           visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}
       >
-        {/* ── Logo Mark with Aura ──────────────────────────────────── */}
-        <div className="inline-block mb-7 relative" style={{ isolation: 'isolate' }}>
-          {/* Aura ring */}
-          <div
-            className="absolute rounded-full pointer-events-none"
-            style={{
-              inset: '-40px',
-              background: 'radial-gradient(circle, rgba(230,57,70,0.22) 0%, rgba(200,150,26,0.10) 40%, transparent 70%)',
-              animation: 'aura-pulse 4s ease-in-out infinite',
-              zIndex: -1,
-            }}
-          />
-          {/* Logo SVG */}
-          <div className="relative mx-auto" style={{ width: 120, height: 120 }}>
+        {/* ── Logo: RED NEON DESIGN (Refined Placement) ──────────────────────────────────── */}
+        <div className="inline-block mb-8 relative" style={{ isolation: 'isolate' }}>
+          <div className="relative mx-auto" style={{ width: 100, height: 100 }}>
             <svg
               viewBox="0 0 120 120"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
               style={{
-                filter: 'drop-shadow(0 6px 32px rgba(230,57,70,0.38))',
+                filter: 'drop-shadow(0 8px 40px rgba(230,57,70,0.42))',
                 width: '100%',
                 height: '100%',
               }}
             >
+              {/* RED NEON LOGO - Shield with building silhouette */}
               <defs>
-                <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%"   stopColor="#E63946"/>
-                  <stop offset="100%" stopColor="#B71C2C"/>
+                <linearGradient id="redNeon" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#FF1744"/>
+                  <stop offset="100%" stopColor="#D50000"/>
                 </linearGradient>
               </defs>
-              <circle cx="60" cy="60" r="57" stroke="url(#logoGrad)" strokeWidth="2" fill="none" opacity="0.25"/>
-              <path d="M60 18L96 42V78L60 102L24 78V42L60 18Z" fill="url(#logoGrad)"/>
-              <path d="M60 30L84 46V74L60 90L36 74V46L60 30Z" fill="rgba(250,248,243,0.12)"/>
-              <text
-                x="60" y="68"
-                textAnchor="middle"
-                fill="#FAF8F3"
-                fontSize="26"
-                fontWeight="700"
-                fontFamily="'Cormorant Garamond', serif"
-                letterSpacing="3"
-              >SB</text>
+              <circle cx="60" cy="60" r="57" stroke="url(#redNeon)" strokeWidth="2" fill="none" opacity="0.25"/>
+              <path d="M60 18L96 42V78L60 102L24 78V42L60 18Z" fill="url(#redNeon)"/>
+              <path d="M50 35v40M60 35v40M70 35v40M50 55h20M55 45h10" stroke="#FAF8F3" strokeWidth="2" opacity="0.85"/>
             </svg>
           </div>
         </div>
 
-        {/* ── Live Badge ───────────────────────────────────────────── */}
+        {/* ── Status Badge (Refined styling) ───────────────────────────────────────────── */}
         <div
-          className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md border border-[rgba(200,150,26,0.3)] px-5 py-2 rounded-full mb-7 shadow-sm"
-          style={{ animation: 'fade-in 600ms 200ms both' }}
+          className="inline-flex items-center gap-2 bg-white/6 backdrop-blur-md border border-amber-400/35 px-5 py-2.5 rounded-full mb-8 shadow-lg"
+          style={{ animation: 'fade-in 600ms 180ms both' }}
         >
-          <span
-            className="w-2 h-2 rounded-full bg-green-500"
-            style={{ animation: 'pulse-live 2s ease-in-out infinite' }}
-          />
-          <span
-            className="text-[var(--navy)] text-[10px] uppercase tracking-[0.22em] font-semibold"
-            style={{ fontFamily: 'var(--font-mono)' }}
-          >
-            Egypt&rsquo;s Premier Property Intelligence
+          <span className="w-2 h-2 rounded-full bg-amber-400 shadow-lg" style={{ boxShadow: '0 0 8px rgba(251,191,36,0.6)' }} />
+          <span className="text-white/85 text-[9.5px] uppercase tracking-[0.24em] font-semibold">
+            {currentSlide.pre}
           </span>
         </div>
 
-        {/* ── Headline ─────────────────────────────────────────────── */}
+        {/* ── Headline with Shimmer Animation ─────────────────────────── */}
         <h1
-          className="font-light leading-[1.06] tracking-tight mb-5"
+          className="font-light leading-[1.08] tracking-tight mb-6 text-white"
           style={{
-            fontFamily: 'var(--font-serif)',
-            fontSize: 'clamp(2.8rem, 7vw, 5.5rem)',
-            color: 'var(--navy)',
-            animation: 'reveal-up 700ms 300ms both',
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: 'clamp(2.6rem, 7.5vw, 5.2rem)',
+            background: 'linear-gradient(110deg, #fff 0%, #F9E79F 25%, #FDBC8 50%, #F9E79F 75%, #fff 100%)',
+            backgroundSize: '300% 100%',
+            WebkitBackgroundClip: 'text',
+            backgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            animation: 'shimmer 6s linear infinite',
           }}
         >
-          Find Your Place in{' '}
-          <br className="hidden sm:block" />
-          <span
-            className="italic"
-            style={{
-              background: 'linear-gradient(135deg, var(--gold), var(--gold-light), var(--gold))',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}
-          >
-            New Cairo.
-          </span>
+          {currentSlide.main}
         </h1>
 
         {/* ── Subheading ───────────────────────────────────────────── */}
-        <p
-          className="text-base md:text-lg font-light max-w-2xl mx-auto leading-relaxed mb-10"
-          style={{
-            color: 'var(--navy-60)',
-            animation: 'reveal-up 700ms 450ms both',
-          }}
-        >
-          From premium villas to luxury apartments.{' '}
-          <strong className="font-semibold" style={{ color: 'var(--gold)' }}>1,500+ elite brokers</strong>,
-          AI-driven matching, and replies within{' '}
-          <strong className="font-semibold" style={{ color: 'var(--red)' }}>4 seconds</strong>.
+        <p className="text-base md:text-lg font-light max-w-2xl mx-auto leading-relaxed mb-6 text-white/75">
+          21 compounds · <strong className="font-semibold text-amber-300/95">1,200+ units</strong> · AI-curated for you.
         </p>
 
-        {/* ── Filter Bar ───────────────────────────────────────────── */}
-        <div style={{ animation: 'reveal-up 700ms 600ms both' }}>
+        {/* ── Carousel Indicators ─────────────────────────────────── */}
+        <div className="flex gap-1.5 justify-center mb-10">
+          {HERO_SLIDES.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentSlideIdx(i)}
+              className="transition-all duration-500"
+              style={{
+                height: '3px',
+                width: i === currentSlideIdx ? '24px' : '7px',
+                borderRadius: '2px',
+                background: i === currentSlideIdx ? '#F9D923' : 'rgba(255,255,255,0.3)',
+              }}
+            />
+          ))}
+        </div>
+
+        {/* ── Filter Bar (Refined) ───────────────────────────────────────────── */}
+        <div style={{ animation: 'fade-in 600ms 280ms both' }}>
           <FilterBar
             onFilter={(_filters) => {
               const el = document.getElementById('listings-section');
@@ -201,11 +179,28 @@ export default function Hero() {
           />
         </div>
 
-        {/* ── Quick CTA Links ──────────────────────────────────────── */}
-        <div
-          className="flex flex-wrap justify-center gap-4 mt-6 text-[12px]"
-          style={{ animation: 'reveal-up 700ms 700ms both' }}
-        >
+        {/* ── AI ICONS SECTION (Refined with hover animations) ──────────────────────────────────────────── */}
+        <div className="mt-14 grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto px-2" style={{ animation: 'fade-in 600ms 360ms both' }}>
+          {[
+            { icon: '🎥', label: 'Virtual Tour', desc: 'Immersive 360°' },
+            { icon: '🗺️', label: 'Map Intel', desc: 'Compound live' },
+            { icon: '📈', label: 'ROI Calc', desc: 'Yield analysis' },
+            { icon: '🤖', label: 'AI Match', desc: 'Smart select' },
+          ].map((item) => (
+            <div
+              key={item.label}
+              className="p-4 bg-white/6 border border-white/12 rounded-xl text-center transition-all duration-300 hover:bg-white/12 hover:border-amber-400/40 hover:shadow-lg group"
+              style={{ boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.05)' }}
+            >
+              <div className="text-3.5xl mb-2.5 transition-transform group-hover:scale-110">{item.icon}</div>
+              <p className="text-xs font-semibold text-white uppercase tracking-[0.12em]">{item.label}</p>
+              <p className="text-[9px] text-white/55 mt-1.5">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* ── Quick CTA Links (Refined) ──────────────────────────────────────── */}
+        <div className="flex flex-wrap justify-center gap-5 mt-10 text-[11px]">
           {[
             { label: '→ For Rent',   href: '/listings?purpose=rent' },
             { label: '→ For Resale', href: '/listings?purpose=resale' },
@@ -214,38 +209,26 @@ export default function Hero() {
             <Link
               key={link.label}
               href={link.href}
-              className="font-semibold uppercase tracking-[0.15em] transition-colors duration-200"
-              style={{ color: 'var(--navy-60)', fontFamily: 'var(--font-mono)' }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--gold)')}
-              onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--navy-60)')}
+              className="font-semibold uppercase tracking-[0.16em] transition-all duration-300 text-white/65 hover:text-amber-300 hover:tracking-[0.2em]"
             >
               {link.label}
             </Link>
           ))}
         </div>
 
-        {/* ── Stats Counter Row ────────────────────────────────────── */}
-        <div
-          className="mt-12 flex justify-center gap-10 md:gap-16 text-center"
-          style={{ animation: 'reveal-up 700ms 800ms both' }}
-        >
+        {/* ── Stats Row (Professional styling) ────────────────────────────────── */}
+        <div className="mt-14 flex justify-center gap-8 md:gap-14 text-center">
           {[
             { value: 1500, suffix: '+', label: 'Brokers' },
-            { value: 25916, suffix: '',  label: 'Properties' },
+            { value: 1200, suffix: '',  label: 'Units' },
             { value: 4,    suffix: 's',  label: 'Response' },
-            { value: 98,   suffix: '%',  label: 'Match Rate' },
+            { value: 21,   suffix: '',  label: 'Compounds' },
           ].map(({ value, suffix, label }) => (
             <div key={label}>
-              <p
-                className="text-3xl font-bold leading-none mb-1"
-                style={{ color: 'var(--gold)' }}
-              >
-                <Counter target={value} suffix={suffix} />
+              <p className="text-3xl md:text-4xl font-light leading-none mb-2 text-amber-300">
+                {value.toLocaleString()}{suffix}
               </p>
-              <p
-                className="text-[10px] uppercase tracking-[0.18em]"
-                style={{ color: 'var(--navy-40)', fontFamily: 'var(--font-mono)' }}
-              >
+              <p className="text-[9px] uppercase tracking-[0.2em] text-white/35 font-medium">
                 {label}
               </p>
             </div>
