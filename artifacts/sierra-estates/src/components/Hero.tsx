@@ -1,16 +1,45 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useLang } from "@/contexts/LanguageContext";
-import { SCENES } from "../lib/data";
+
+/* ── High-quality luxury villa images ── */
+const SCENES = [
+  {
+    bg:    "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=90",
+    thumb: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=160&q=70",
+    lbl:   "Villa Exterior",
+    loc:   "Hyde Park · New Cairo",
+  },
+  {
+    bg:    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=90",
+    thumb: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=160&q=70",
+    lbl:   "Luxury Pool",
+    loc:   "Mivida · 5th Settlement",
+  },
+  {
+    bg:    "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=1920&q=90",
+    thumb: "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=160&q=70",
+    lbl:   "Garden Estate",
+    loc:   "Mountain View · New Cairo",
+  },
+  {
+    bg:    "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1920&q=90",
+    thumb: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=160&q=70",
+    lbl:   "Contemporary Villa",
+    loc:   "Uptown Cairo · Mokattam",
+  },
+  {
+    bg:    "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1920&q=90",
+    thumb: "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=160&q=70",
+    lbl:   "Night View",
+    loc:   "El Shorouk Springs · Shorouk",
+  },
+];
 
 const TRANSITION_MS = 1600;
 
-interface HeroProps {
-  scene: number;
-  setScene: (s: number) => void;
-}
-
-export default function Hero({ scene, setScene }: HeroProps) {
-  const { t, lang } = useLang();
+export default function Hero() {
+  const { t } = useLang();
+  const [scene, setScene]     = useState(0);
   const [imgA, setImgA]       = useState(SCENES[0].bg);
   const [imgB, setImgB]       = useState(SCENES[0].bg);
   const [aOnTop, setAOnTop]   = useState(true);
@@ -39,16 +68,17 @@ export default function Hero({ scene, setScene }: HeroProps) {
     setKbKey(k => k + 1);
     setScene(next);
     setTimeout(() => setLocked(false), TRANSITION_MS);
-  }, [locked, scene, aOnTop, setScene]);
+  }, [locked, scene, aOnTop]);
 
   /* ── Auto-advance every 7s ── */
   useEffect(() => {
-    const id = setInterval(() => {
-      const next = (scene + 1) % SCENES.length;
+    const id = setInterval(() => setScene(s => {
+      const next = (s + 1) % SCENES.length;
       goTo(next);
-    }, 7000);
+      return s; // goTo manages scene state
+    }), 7000);
     return () => clearInterval(id);
-  }, [goTo, scene]);
+  }, [goTo]);
 
   /* ── Parallax on scroll ── */
   const applyBg = useCallback(() => {
@@ -161,11 +191,11 @@ export default function Hero({ scene, setScene }: HeroProps) {
       </div>
 
       <div className="hero-content" style={{ zIndex: 4 }} key={`content-${scene}`}>
-        <div className="hero-eyebrow" style={{ animation: "fadeUp .8s both" }}>{lang === "ar" ? cur.tagAr : cur.tagEn}</div>
+        <div className="hero-eyebrow" style={{ animation: "fadeUp .8s both" }}>{t(`hero.${scene + 1}.eyebrow`)}</div>
         <h1 className="hero-title" style={{ animation: "fadeUp .8s .1s both" }}>
-          {lang === "ar" ? cur.title1Ar : cur.title1En} <em>{lang === "ar" ? cur.titleEmAr : cur.titleEmEn}</em><br />{lang === "ar" ? cur.title2Ar : cur.title2En}
+          {t(`hero.${scene + 1}.title1`)} <em>{t(`hero.${scene + 1}.titleEm`)}</em><br />{t(`hero.${scene + 1}.title2`)}
         </h1>
-        <p className="hero-sub" style={{ animation: "fadeUp .8s .2s both" }}>{lang === "ar" ? cur.subtitleAr : cur.subtitleEn}</p>
+        <p className="hero-sub" style={{ animation: "fadeUp .8s .2s both" }}>{t(`hero.${scene + 1}.sub`)}</p>
         <div className="hero-stats">
           {[["1,500+","hero.listings"],["19","hero.compounds"],["9.8","hero.aiScore"],["24h","hero.response"]].map(([v, lk], i) => (
             <div key={i} className="hero-stat" style={{ padding: "2px 8px" }}>

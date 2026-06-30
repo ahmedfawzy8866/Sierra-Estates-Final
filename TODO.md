@@ -9,25 +9,12 @@ Aligned with STATUS.md. Sorted by deployment-readiness (pre-deploy → post-depl
 - [x] Property Finder Sync API
 - [x] Careers Page (Framer Motion)
 - [x] Design System (`design.css`)
-- [x] PropertyFinder Atlas sync engine (paginated, dedup, override protection)
-- [x] Twilio WhatsApp integration (4-number load balancing, rate limits, queue)
-- [x] CORS middleware for all API routes
-- [x] Rate limiting middleware for all API routes (public/admin/sync/webhook tiers)
-- [x] Environment config validation (Zod schemas, feature gates)
-- [x] Admin DataSyncHubPage upgraded with real API endpoints
-- [x] Owner Negotiations admin page (chat threads, initiate, search)
-- [x] AI service factory (auto-selects Gemini or Mock based on env)
-- [x] Smart Filter API (AI-powered NL → Firestore query)
-- [x] Unit tests for CRM leads API (14 tests) + PF sync engine (30+ tests)
-- [x] LeadScoreBadge + StatsCard components for admin
-- [x] Mobile responsive fixes for PremiumHero
-- [x] Sidebar updated with Negotiations nav item
 
 ## 🆕 Next Logical Steps
-- [x] Connect AI Smart Filter to frontend UI component
+- [ ] Connect AI Smart Filter to real Firestore query
 - [ ] Integrate real Virtual Tour SDK
-- [ ] Add more unit tests for PF sync engine edge cases
-- [ ] Wire LeadScoreBadge into LeadsPage lead cards
+- [ ] Add unit tests for CRM leads API
+- [ ] Mobile responsive fixes for PremiumHero
 
 ## 🚨 Pre-Deployment (blocking)
 - [ ] **Deploy Firestore rules** to production: `firebase deploy --only firestore:rules,storage` (requires local Firebase credentials; user action)
@@ -48,15 +35,15 @@ Aligned with STATUS.md. Sorted by deployment-readiness (pre-deploy → post-depl
 - [ ] **Rotate credentials**: Quarterly rotation of SBR_SECRET_KEY, JWT_SECRET, Firebase admin key
 
 ## 💡 Enhancement Candidates (safe, high-value, not blocking)
-- [x] **Edge rate-limiting**: Upstash Redis support built into rate-limit.ts (auto-detects env vars)
-- [x] **Request/response validation**: Zod env config validation in lib/server/env-config.ts
+- [ ] **Edge rate-limiting**: Move from in-memory to Upstash Redis for multi-instance consistency
+- [ ] **Request/response validation**: Add zod schemas to public endpoints (leads, listings, concierge) to prevent API contract drift
 - [ ] **Refresh stale docs**: Audit issue/PR descriptions for outdated TODO/STATUS refs
-- [x] **Real AI service**: AI service factory auto-selects Gemini or Mock based on GOOGLE_AI_API_KEY
+- [ ] **Real AI service**: Replace MockAIService with actual implementation (or switch to LLM vendor)
 - [ ] **Consolidate secrets**: Move web app from Vercel to Firebase Hosting + Functions for unified secrets/deployment (lower priority)
 
 ## 🐛 Known Issues (low-priority)
 - i18n: next-intl wired but underutilized in some flows
-- Test coverage: 47+ tests passing; expand for critical paths
+- Test coverage: 47 tests passing, but overall coverage ~45%; expand for critical paths
 
 ## 📚 Documentation
 - [ ] Update CLAUDE.md if stack/conventions change
@@ -102,7 +89,8 @@ Aligned with STATUS.md. Sorted by deployment-readiness (pre-deploy → post-depl
       `Authorization: Bearer $CRON_SECRET`.
 - [ ] Deploy `firestore.indexes.json` (now includes 2 new `owner_negotiations`
       composite indexes) — `firebase deploy --only firestore:indexes`.
-- [x] Build an admin UI page for owner negotiations (OwnerNegotiationsPage.tsx with chat threads)
+- [ ] Build an admin UI page for owner negotiations (the API exists; no page
+      surfaces it in `/admin` yet — out of scope for this pass).
 
 ## 🧹 Repo Cleanup
 - [x] Divergent `firestore.rules` resolved: `firebase.json` now deploys the
@@ -110,7 +98,8 @@ Aligned with STATUS.md. Sorted by deployment-readiness (pre-deploy → post-depl
       (`users/{uid}.role`); the legacy root `admins/{uid}` rules file is deleted.
 - [x] `apps/{admin-dashboard,sierra-blu-admin-portal,sierra-blu-realty}` excluded
       from `pnpm-workspace.yaml` (stopped participating in CI; kept on disk).
-- [x] `apps/frontend` does not exist — was already cleaned up.
+- [ ] `apps/frontend` is still a live (if trivial) workspace member and still
+      undeployed dead weight — wasn't covered by the exclusion above.
 
 ## 🐍 Python
 - [ ] Schedule analytics-report.py via GitHub Actions cron

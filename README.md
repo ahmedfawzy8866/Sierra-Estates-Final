@@ -1,198 +1,243 @@
-# Sierra Estates Platform — Two-App Architecture
+# Sierra Estates Platform - Unified Monorepo
 
-Luxury PropTech platform for New Cairo. AI-powered lead management, property matching, and deal orchestration.
+Clean backend-only monorepo for the Sierra Estates luxury PropTech platform (New Cairo market). No frontend code; this repo contains only API routes, services, agents, Firebase functions, and automation workflows.
 
-## Architecture Overview
+## Stack
 
-```
-┌──────────────────────────────┐     ┌──────────────────────────────────┐
-│       VERCEL APP             │     │      FIREBASE ADMIN APP          │
-│  (Public + Light Dashboard)  │     │  (Admin + Bots + Workflows)      │
-│                              │     │                                  │
-│  sierra-estates.net          │     │  admin-api.sierra-estates.net    │
-│  ├─ /          Public site   │     │  ├─ /api/webhooks/*   Bots inbound│
-│  ├─ /listings   Search       │     │  ├─ /api/ingest/*     Scraper     │
-│  ├─ /dashboard  CRM reads    │     │  ├─ /api/agent/*      AI agents   │
-│  └─ /api/*      Light APIs   │     │  ├─ /api/cron/*       Scheduled   │
-│                              │     │  ├─ /api/admin/*      Admin panel │
-│  READ-ONLY against Firestore │     │  └─ /api/sync/*       PF sync     │
-└──────────┬───────────────────┘     └──────────┬───────────────────────┘
-           │                                    │
-           │         ┌──────────────┐           │
-           └────────►│  FIRESTORE   │◄──────────┘
-                     │  (ONE DB)    │
-                     │              │
-                     │  listings/   │
-                     │  leads/      │
-                     │  proposals/  │
-                     │  bot_jobs/   │
-                     │  exchange/   │
-                     │  users/      │
-                     └──────────────┘
-                           ▲
-                           │
-                  ┌────────┴────────┐
-                  │  FIREBASE AUTH   │
-                  │  (ONE AUTH)      │
-                  │  Roles: admin    │
-                  │  agent employee  │
-                  └─────────────────┘
-```
+> **Migration complete**: Code and history from several legacy repositories have been consolidated here under the Sierra Estates brand. See [MIGRATION.md](./MIGRATION.md) for details.
 
-## Hard Rules
-
-1. **One database.** Both apps read/write the same Firestore. Never create a second DB.
-2. **One auth system.** Both apps use Firebase Auth with custom claims (admin/agent/employee). Never build a second auth.
-3. **Bots/scrapers write, dashboards read.** Heavy workflow stuff lives in Firebase. Vercel dashboard only subscribes to results.
-4. **Admin SDK server-side only.** Never expose Firebase Admin SDK to the browser.
-5. **No secrets in git.** Ever. Use Vercel env vars + Firebase Secret Manager.
-
-## Repository Structure
+## 📦 Repository Structure
 
 ```
 Sierra-Estates-Final/
 ├── apps/
-│   ├── vercel-app/              ← 🌐 PUBLIC + LIGHT DASHBOARD
-│   │   ├── app/
-│   │   │   ├── (marketing)/     # Public site: listings, search, about
-│   │   │   ├── dashboard/       # Agent/CRM/employee dashboard (reads)
-│   │   │   └── api/             # Light APIs (listings, leads, concierge)
-│   │   ├── lib/                 # Client SDK, services, UI
-│   │   ├── hooks/               # React hooks
-│   │   ├── middleware.ts         # Auth + routing
-│   │   ├── next.config.ts       # Rewrites heavy routes → Firebase Admin
-│   │   └── package.json
-│   │
-│   ├── firebase-admin/          ← 🔧 ADMIN + BOTS + WORKFLOWS
-│   │   ├── src/
-│   │   │   ├── app/api/         # Heavy APIs (webhooks, bots, cron, admin)
-│   │   │   └── index.ts         # Admin SDK init
-│   │   └── package.json
-│   │
-│   ├── api/                     ← 🐍 Python FastAPI (Cloud Run)
-│   ├── agents/                  ← WhatsApp scraper + deal orchestration
-│   ├── admin-dashboard/         ← Legacy Vite SPA (redirects)
-│   └── mass-blast/              ← WhatsApp bulk messaging
-│
-├── packages/                    ← 📦 SHARED (used by BOTH apps)
-│   ├── db/                      # Firestore data contract (ONE source of truth)
-│   │   └── src/
-│   │       ├── schema.ts        # All collection types + names
-│   │       └── index.ts         # BotJob, ExchangeRecord, roles
-│   ├── auth/                    # Custom claims + role guards
-│   │   └── src/index.ts         # requireRole(), verifyRequestAuth()
-│   ├── agents-core/             # Multi-agent orchestration framework
-│   ├── agents/                  # Agent definitions (Scribe/Curator/Matchmaker/Closer)
-│   ├── exchange/                # Exchange Sheet client (Firestore message bus)
-│   ├── memory-engine/           # Agent memory store
-│   ├── config/                  # Shared configuration
-│   ├── property-finder-api/     # Property Finder integration
-│   └── ...
-│
-├── functions/                   ← 🔥 Firebase Cloud Functions
-├── workflows/                   ← n8n automation workflows
-├── scripts/                     ← Utility + deployment scripts
-└── docs/                        ← Documentation
+│   ├── sierra-estates-realty/  # Main backend/API + admin dashboard (Next.js 16 + Turbopack)
+│   │   ├── app/               # App Router pages & API routes (/api/*)
+│   │   │   ├── admin/         # Admin dashboard (staff-gated)
+│   │   │   ├── api/           # REST API endpoints
+│   │   │   └── (marketing)/   # Public site (listings, about, contact)
+│   │   ├── components/        # React components (admin UI, shared)
+│   │   ├── hooks/             # Custom React hooks
+│   │   ├── lib/               # Utilities, services, models, agents
+│   │   └── public/            # Static assets
+│   ├── api/                   # Python service (Docker/Cloud Run) — PropertyFinder sync + bot integration
+│   │   ├── main.py            # FastAPI entry point
+│   │   ├── requirements.txt   # Python dependencies
+│   │   └── Dockerfile         # Container definition
+├── packages/
+│   ├── agents-core/           # Multi-agent framework & AI services
+│   ├── db/                    # Firestore models & schema
+│   ├── config/                # Shared configuration
+│   └── obedian/               # Obsidian vault integration
+├── functions/                 # Firebase Cloud Functions (Node.js 20)
+│   └── src/
+│       └── index.ts           # collectData, processDataForApp
+├── workflows/                 # Node scripts for external data sync (triggered by GitHub Actions)
+├── scripts/
+│   └── sync-obsidian.ps1      # Sync workflow documentation to Obsidian vault
+├── .github/workflows/         # CI/CD pipelines (lint, type-check, test, build)
+├── firestore.rules            # Production Firestore security rules
+├── storage.rules              # Production Storage security rules
+├── pnpm-workspace.yaml        # Monorepo workspace config
+├── turbo.json                 # Turborepo build cache config
+├── package.json               # Root workspace dependencies
+├── firebase.json              # Firebase Functions + Firestore + Storage config
+├── vercel.json                # Vercel deployment config (root dir)
+├── CLAUDE.md                  # Codebase guidelines & architecture decisions
+├── docs/
+│   ├── API_CONTRACT.md        # API specification for separate frontend repo
+│   └── obsidian-vault/        # Architecture & operational documentation
+└── NEXT_STEPS.md              # Outstanding tasks & migration checklist
 ```
 
-## Data Contract
+## 🚀 Quick Start
 
-Both apps depend on these Firestore collections. **Don't rename without updating both.**
+### Prerequisites
+- **Node.js** 20+
+- **pnpm** 9+
+- **Firebase CLI** (for deployment)
+- **Docker** (optional, for local Firebase emulation)
 
-| Collection | Writer | Reader | Description |
-|-----------|--------|--------|-------------|
-| `listings/` | Firebase Admin | Both | Property units |
-| `leads/` | Firebase Admin | Both | CRM leads |
-| `projects/` | Firebase Admin | Both | Development projects |
-| `developers/` | Firebase Admin | Both | Developer profiles |
-| `proposals/` | Firebase Admin | Vercel | AI-generated proposals |
-| `viewings/` | Firebase Admin | Vercel | Scheduled inspections |
-| `sales/` | Firebase Admin | Vercel | Transactions |
-| `users/` | Firebase Admin | Both | Staff profiles + roles |
-| `activities/` | Firebase Admin | Both | Audit log |
-| `bot_jobs/` | Firebase Admin | — | Scraper/bot task queue |
-| `exchange/` | Firebase Admin | — | Agent orchestration bus |
-| `owner_negotiations/` | Firebase Admin | — | WhatsApp negotiation threads |
+### Installation
 
-## Quick Start
-
-### Vercel App (Public + Dashboard)
 ```bash
 pnpm install
-cp apps/vercel-app/.env.local.example apps/vercel-app/.env.local
-# Fill in Firebase client + admin credentials
-pnpm --filter @sierra-estates/vercel-app dev
-```
-
-### Firebase Admin App (Admin + Bots)
-```bash
-firebase use sierra-estates
-firebase deploy --only firestore:rules,storage
-firebase deploy --only functions
-```
-
-### Both at once
-```bash
-pnpm dev               # Starts Vercel app on :3000
+cp .env.example .env   # fill in your credentials
+pnpm dev               # Next.js API on :3000
 docker-compose -f docker-compose.n8n.yml up -d  # n8n on :5678
 ```
 
-## API Routes by App
+## Project Structure
 
-### Vercel App (lightweight, public-facing)
+```
+.
+├── backend/                    # Next.js 15 API-only app
+│   └── src/
+│       ├── app/api/            # 20 REST API routes
+│       └── lib/
+│           ├── agents/         # AI agent definitions
+│           ├── firebase/       # Firebase client init
+│           ├── models/         # Firestore schemas
+│           ├── server/         # Admin SDK, auth, AI
+│           ├── services/       # 15 business-logic services
+│           └── types/          # Shared TypeScript types
+├── apps/
+│   ├── api/                    # Python FastAPI
+│   └── agents/
+│       ├── stage-9-closer/     # Deal orchestration (S9–S10)
+│       └── whatsapp-scraper/   # WhatsApp group scraper bot
+├── functions/                  # Firebase Cloud Functions
+├── packages/
+│   ├── db/                     # Shared Firestore DSL
+│   └── agents-core/            # 15-agent orchestration framework
+└── workflows/                  # n8n + external scripts
+```
+
+## API Routes
+
 | Route | Method | Description |
 |-------|--------|-------------|
-| `/api/listings` | GET | Public property search |
-| `/api/leads` | POST | Create lead (public form) |
+| `/api/admin/deploy` | POST | Admin deploy trigger |
+| `/api/agent/hub` | POST | Multi-agent hub (Scribe/Curator/Matchmaker/Closer) |
+| `/api/closer/initiate` | POST | Stage 9 closer agent |
+| `/api/ingest/whatsapp` | POST | WhatsApp message ingestion |
+| `/api/leads` | POST | Create investment stakeholder |
 | `/api/leads/request-viewing` | POST | Request property viewing |
-| `/api/viewing-requests` | GET/POST | Viewing requests |
-| `/api/crm/leads` | GET | CRM leads list (dashboard) |
-| `/api/crm/property-finder` | GET | PF integration status |
-| `/api/concierge/*` | POST | Client concierge |
-| `/api/chat` | POST | Client chat |
-| `/api/wealth/*` | GET | Portfolio/ROI dashboard |
-
-### Firebase Admin App (heavy, write-side)
-| Route | Method | Description |
-|-------|--------|-------------|
-| `/api/webhooks/whatsapp` | GET/POST | WhatsApp bot inbound |
-| `/api/webhooks/property-finder` | POST | PF webhook (HMAC) |
-| `/api/ingest/whatsapp` | POST | Scraper intake |
-| `/api/telegram/*` | GET/POST | Telegram bot |
-| `/api/whatsapp/*` | POST | WhatsApp bot |
-| `/api/agent/hub` | POST | Multi-agent hub |
+| `/api/listings` | GET | Fetch portfolio assets |
+| `/api/matching` | POST | Run AI matching engine |
 | `/api/orchestrate` | POST | Full S1–S10 pipeline |
-| `/api/closer/initiate` | POST | Deal closing |
-| `/api/matching` | POST | AI matching engine |
-| `/api/cron/*` | POST | Scheduled jobs |
-| `/api/admin/*` | POST | Admin operations |
-| `/api/sync/*` | GET/POST | PF sync management |
-| `/api/proposals` | POST | Generate proposals |
-| `/api/seed/*` | POST | Database seeding |
+| `/api/properties/sync` | POST | Property Finder sync |
+| `/api/property-finder` | GET/POST/PUT/DELETE | PF gateway |
+| `/api/proposals` | POST | Generate proposal |
+| `/api/sync` | GET/POST | Sync management |
+| `/api/sync/publish` | POST | Publish to Property Finder |
+| `/api/telegram/setup` | GET | Telegram webhook setup |
+| `/api/telegram/webhook` | POST | Telegram bot handler |
+| `/api/viewing-requests` | GET/POST | Viewing requests |
+| `/api/webhooks/property-finder` | POST | PF webhook (HMAC verified) |
+| `/api/webhooks/whatsapp` | GET/POST | WhatsApp webhook |
+| `/api/whatsapp/heartbeat` | POST | Scraper heartbeat |
+| `/api/whatsapp/webhook` | POST | WhatsApp message handler |
+
+## Intelligence Pipeline
+
+```
+WhatsApp Groups
+    └─→ /api/webhooks/whatsapp (Scribe agent — S1/S2)
+            └─→ Firestore rawScrapeData
+                    └─→ processDataForApp (Cloud Function)
+                            └─→ Matching Engine (S6/S7/S8)
+                                    └─→ Stage 9 Closer Agent
+                                            └─→ Telegram alerts + Proposals
+```
+
+## Agents
+
+### Staging
+```bash
+pnpm build
+firebase deploy --project sierra-estates-staging
+```
 
 ## Deployment
 
-### Vercel (auto-deploys on push to main)
-- Root Directory: `apps/vercel-app`
-- Framework: Next.js
-- Env vars: See `.env.local.example`
-
-### Firebase (manual or CI)
-```bash
-firebase deploy --only firestore:rules,storage   # Security rules
-firebase deploy --only functions                   # Cloud Functions
-```
+# Deploy to production
+firebase deploy --project sierra-estates-prod
 
 ## Security
 
-- TypeScript strict mode with `ignoreBuildErrors: false`
-- ONE Firebase Auth with custom claims (admin/agent/employee)
-- Firestore rules staff-gated by `users/{uid}.role`
-- HMAC webhook verification
-- Rate limiting on public endpoints
-- Pino logger with automatic sensitive field redaction
-- CORS restricted by `ALLOWED_ORIGNS`
+### Rollback
+```bash
+# Instant rollback to previous version
+firebase hosting:rollback
 
-## License
+# Function-specific rollback
+firebase deploy --only functions:api --region us-central1 [previous-version]
+```
 
-Proprietary — Sierra Estates Inc. See [LICENSE](./LICENSE).
+## 💰 Cost Analysis (Monthly)
+
+| Service | Est. Cost | Notes |
+|---------|-----------|-------|
+| Firebase Hosting | $15 | CDN included, 100GB bandwidth |
+| Cloud Functions | $40 | 100M invocations/mo |
+| Firestore | $50 | 1B reads, 100GB storage |
+| Cloud Storage | $5 | 10GB stored, 50GB outbound |
+| Logging | $20 | 50GB/month, 7-day retention |
+| Pub/Sub | $10 | 1B messages/mo |
+| **Subtotal** | **$140** | Infrastructure only |
+| **AI APIs** | $500-2K | Anthropic, Google, OpenAI (variable) |
+| **Total** | **$640-2,140** | Estimated monthly |
+
+**Cost Optimization Tips**:
+- ✅ Batch Firestore writes (-30%)
+- ✅ Cache API responses at CDN (-25%)
+- ✅ Use regional Firestore (-20%)
+- ✅ Optimize function cold-starts (-15%)
+
+## 📋 Environment Variables
+
+See `.env.example` for complete list. Key variables:
+
+```env
+# Firebase
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=sierra-estates-prod
+FIREBASE_ADMIN_SDK_KEY=...
+
+# APIs
+ANTHROPIC_API_KEY=...
+GOOGLE_AI_API_KEY=...
+
+# Observability
+ARIZE_API_KEY=...
+OTEL_EXPORTER_OTLP_ENDPOINT=...
+
+# Integrations
+PROPERTY_FINDER_API_KEY=...
+TELEGRAM_BOT_TOKEN=...
+```
+
+## 🔐 Security
+
+- ✅ Type-safe with TypeScript strict mode
+- ✅ Authentication via Firebase Auth + JWT
+- ✅ Secrets via Google Secret Manager
+- ✅ CORS & CSP headers configured
+- ✅ SQL injection prevention (Zod validation)
+- ✅ XSS protection (React automatic escaping)
+- ✅ Rate limiting on Cloud Functions
+- ✅ Firestore Security Rules enforced
+- ✅ Cloud Storage CORS restricted
+
+## 📚 Documentation
+
+- `ARCHITECTURE.md` - System design & data flows
+- `DEPLOYMENT_GUIDE.md` - Deployment procedures & runbooks
+- `API.md` - REST API specifications
+- `CONTRIBUTING.md` - Developer setup & workflow
+- `RESOURCES.md` - Consolidated archive resources
+
+
+## 🤝 Contributing
+
+1. Create feature branch: `git checkout -b feature/name`
+2. Follow TypeScript strict mode
+3. Add tests for new functionality
+4. Run linter & tests: `pnpm validate-build`
+5. Submit pull request with description
+
+## 📞 Support
+
+- **Issues**: GitHub Issues (this repo)
+- **Docs**: See `ARCHITECTURE.md`, `API.md`, `DEPLOYMENT_GUIDE.md`
+- **Team**: Slack #sierra-estates
+
+## 📄 License
+
+Proprietary - Sierra Estates Inc.
+
+---
+
+**Last Updated**: May 31, 2026  
+**Build**: Turbopack + Turborepo  
+**Status**: Production Ready ✅

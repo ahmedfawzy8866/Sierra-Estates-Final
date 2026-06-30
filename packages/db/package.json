@@ -1,22 +1,17 @@
 {
   "name": "@sierra-estates/db",
-  "version": "2.0.0",
-  "description": "Shared Firestore data contract — single source of truth for both Vercel + Firebase Admin apps",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "version": "1.0.0",
+  "description": "Firestore models and database utilities",
+  "main": "lib/index.ts",
+  "types": "lib/index.ts",
   "private": true,
-  "scripts": {
-    "type-check": "tsc --noEmit",
-    "build": "tsc",
-    "clean": "rm -rf dist"
-  },
   "dependencies": {
-    "firebase": "^12.0.0",
-    "firebase-admin": "^13.0.0",
-    "zod": "^3.25.76"
+    "firebase": "^12.11",
+    "firebase-admin": "^13.0",
+    "zod": "^3.22"
   },
   "devDependencies": {
-    "@types/node": "^25.3.3",
-    "typescript": "^5.7.2"
+    "@types/node": "^20",
+    "typescript": "^5.3"
   }
 }

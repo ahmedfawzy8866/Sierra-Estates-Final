@@ -1,4 +1,3 @@
-import { logger } from '@/lib/logger';
 import { useState, useEffect } from 'react';
 import { COLLECTIONS, Lead, PipelineStage, StakeholderAcquisitionSource } from '@/lib/models/schema';
 import { db } from '@/lib/firebase';
@@ -138,7 +137,7 @@ export function useSierra() {
             ["View Inventory"]
           );
         } catch (error) {
-          logger.error("Lead capture failed:", error);
+          console.error("Lead capture failed:", error);
           addSierraMessage("I encountered a synchronization error, but our team has been notified.");
         }
         break;

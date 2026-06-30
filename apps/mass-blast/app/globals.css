@@ -43,7 +43,3 @@ body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--muted-foreground); }
-
-.whatsapp-bg {
-  background-image: radial-gradient(circle at 30% 40%, rgba(37,211,102,0.05) 0%, transparent 50%), radial-gradient(circle at 70% 60%, rgba(18,140,126,0.05) 0%, transparent 50%);
-}

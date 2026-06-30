@@ -1,4 +1,3 @@
-import { logger } from '@/lib/logger';
 import 'server-only';
 import { COLLECTIONS } from '../models/schema';
 import { instrumentAgent } from '../arize';
@@ -24,13 +23,13 @@ export const runScribe = async (
     if (!doc) throw new Error(`Document ${docId} not found`);
 
     if (stage === 'S1') {
-      logger.info(`[SCRIBE] S1: Raw Data Intake for ${docId}`);
+      console.log(`[SCRIBE] S1: Raw Data Intake for ${docId}`);
       // In production, S1 handles deduplication and initial validation
       await StateManager.completeStage(docId, collection, 'S2');
     }
 
     if (stage === 'S2') {
-      logger.info(`[SCRIBE] S2: Logical Normalization for ${docId}`);
+      console.log(`[SCRIBE] S2: Logical Normalization for ${docId}`);
 
       const rawText = doc?.rawMessage || doc?.description || JSON.stringify(doc || {});
 
@@ -71,7 +70,7 @@ Output ONLY a JSON object.`;
           'baths': normalized.bathrooms || doc?.baths || 0,
         });
       } catch (error) {
-        logger.error('[SCRIBE] S2 Error', { docId, error });
+        console.error('[SCRIBE] S2 Error', { docId, error });
         await StateManager.failStage(
           docId,
           collection,

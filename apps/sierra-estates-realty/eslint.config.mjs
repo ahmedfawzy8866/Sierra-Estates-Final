@@ -10,9 +10,6 @@ export default [
     languageOptions: {
       ecmaVersion: 2020,
       sourceType: 'module',
-      parserOptions: {
-        tsconfigRootDir: import.meta.dirname,
-      },
     },
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',

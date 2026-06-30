@@ -21,27 +21,18 @@ export class AgentRegistry {
 
   private loadAllProfiles() {
     try {
-      this.loadProfilesFromDir(this.srcDir);
-      
-      const personasDir = path.join(this.srcDir, 'personas');
-      if (fs.existsSync(personasDir) && fs.statSync(personasDir).isDirectory()) {
-        this.loadProfilesFromDir(personasDir);
+      const files = fs.readdirSync(this.srcDir);
+      for (const file of files) {
+        if (file.endsWith('.md')) {
+          const name = path.basename(file, '.md');
+          const filePath = path.join(this.srcDir, file);
+          const content = fs.readFileSync(filePath, 'utf-8');
+          const profile = this.parseMarkdownProfile(name, content);
+          this.profiles[name] = profile;
+        }
       }
     } catch (err) {
       console.error('[AgentRegistry] Error loading profiles:', err);
-    }
-  }
-
-  private loadProfilesFromDir(dirPath: string) {
-    const files = fs.readdirSync(dirPath);
-    for (const file of files) {
-      if (file.endsWith('.md')) {
-        const name = path.basename(file, '.md');
-        const filePath = path.join(dirPath, file);
-        const content = fs.readFileSync(filePath, 'utf-8');
-        const profile = this.parseMarkdownProfile(name, content);
-        this.profiles[name] = profile;
-      }
     }
   }
 
