@@ -82,7 +82,7 @@ export default function ClientRequest() {
   }
 
   return (
-    <div className="req-wrap min-h-screen relative flex items-center justify-center p-4 bg-[#0B131E] overflow-hidden dir-rtl">
+    <div className="req-wrap min-h-screen relative flex items-center justify-center p-4 bg-black overflow-hidden dir-rtl">
       {/* Background Ambience */}
       <div className="absolute inset-0 z-0">
         <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-[#C9A96E]/10 rounded-full blur-[120px] mix-blend-screen animate-pulse" />

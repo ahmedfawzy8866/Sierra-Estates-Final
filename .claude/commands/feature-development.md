@@ -14,9 +14,9 @@ Standard feature implementation workflow
 
 ## Common Files
 
-- `apps/admin/src/*`
-- `apps/admin/src/config/*`
-- `apps/admin/src/context/*`
+- `apps/agents/whatsapp-bot/*`
+- `apps/sierra-estates-realty/app/api/admin/whatsapp/whitelist/*`
+- `apps/mobile-app/app/(tabs)/*`
 - `**/*.test.*`
 - `**/api/**`
 

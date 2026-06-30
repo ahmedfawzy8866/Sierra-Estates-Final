@@ -3,36 +3,20 @@
 Aligned with STATUS.md. Sorted by deployment-readiness (pre-deploy → post-deploy).
 
 ## ✅ Sierra Estates 2026 Completed
-
 - [x] Split-Hero with Virtual Tour
 - [x] AI Smart Filter
 - [x] CRM Leads API
 - [x] Property Finder Sync API
 - [x] Careers Page (Framer Motion)
 - [x] Design System (`design.css`)
-- [x] PropertyFinder Atlas sync engine (paginated, dedup, override protection)
-- [x] Twilio WhatsApp integration (4-number load balancing, rate limits, queue)
-- [x] CORS middleware for all API routes
-- [x] Rate limiting middleware for all API routes (public/admin/sync/webhook tiers)
-- [x] Environment config validation (Zod schemas, feature gates)
-- [x] Admin DataSyncHubPage upgraded with real API endpoints
-- [x] Owner Negotiations admin page (chat threads, initiate, search)
-- [x] AI service factory (auto-selects Gemini or Mock based on env)
-- [x] Smart Filter API (AI-powered NL → Firestore query)
-- [x] Unit tests for CRM leads API (14 tests) + PF sync engine (30+ tests)
-- [x] LeadScoreBadge + StatsCard components for admin
-- [x] Mobile responsive fixes for PremiumHero
-- [x] Sidebar updated with Negotiations nav item
 
 ## 🆕 Next Logical Steps
-
-- [x] Connect AI Smart Filter to frontend UI component
+- [ ] Connect AI Smart Filter to real Firestore query
 - [ ] Integrate real Virtual Tour SDK
-- [ ] Add more unit tests for PF sync engine edge cases
-- [ ] Wire LeadScoreBadge into LeadsPage lead cards
+- [ ] Add unit tests for CRM leads API
+- [ ] Mobile responsive fixes for PremiumHero
 
 ## 🚨 Pre-Deployment (blocking)
-
 - [ ] **Deploy Firestore rules** to production: `firebase deploy --only firestore:rules,storage` (requires local Firebase credentials; user action)
 - [ ] **Set environment secrets** in Vercel + Google Secret Manager (never in chat/git)
   - [ ] NEXT_PUBLIC_FIREBASE_* (public; safe to commit)
@@ -45,33 +29,28 @@ Aligned with STATUS.md. Sorted by deployment-readiness (pre-deploy → post-depl
 - [ ] **CI green**: type-check, lint (including config validation), tests all pass
 
 ## 📦 Post-Deployment (operational)
-
 - [ ] **Monitor**: Set up alerts in OpenTelemetry/Arize for error rates, latency, custom metrics
 - [ ] **Rate-limit tuning**: Monitor public endpoints for false-positives; adjust windowMs/maxRequests if needed
 - [ ] **Log retention**: Set Firestore/Storage backup cadence; archive old logs
 - [ ] **Rotate credentials**: Quarterly rotation of SBR_SECRET_KEY, JWT_SECRET, Firebase admin key
 
 ## 💡 Enhancement Candidates (safe, high-value, not blocking)
-
-- [x] **Edge rate-limiting**: Upstash Redis support built into rate-limit.ts (auto-detects env vars)
-- [x] **Request/response validation**: Zod env config validation in lib/server/env-config.ts
+- [ ] **Edge rate-limiting**: Move from in-memory to Upstash Redis for multi-instance consistency
+- [ ] **Request/response validation**: Add zod schemas to public endpoints (leads, listings, concierge) to prevent API contract drift
 - [ ] **Refresh stale docs**: Audit issue/PR descriptions for outdated TODO/STATUS refs
-- [x] **Real AI service**: AI service factory auto-selects Gemini or Mock based on GOOGLE_AI_API_KEY
+- [ ] **Real AI service**: Replace MockAIService with actual implementation (or switch to LLM vendor)
 - [ ] **Consolidate secrets**: Move web app from Vercel to Firebase Hosting + Functions for unified secrets/deployment (lower priority)
 
 ## 🐛 Known Issues (low-priority)
-
 - i18n: next-intl wired but underutilized in some flows
-- Test coverage: 47+ tests passing; expand for critical paths
+- Test coverage: 47 tests passing, but overall coverage ~45%; expand for critical paths
 
 ## 📚 Documentation
-
 - [ ] Update CLAUDE.md if stack/conventions change
 - [ ] Keep STATUS.md + TODO.md in sync with actual state
 - [ ] Archive closed issues/PRs if their TODO/STATUS refs become confusing
 
 ## 📱 WhatsApp Outreach — 4 real Twilio numbers provisioned (Egypt)
-
 - [x] Service layer wired: `lib/server/whatsapp-queue.ts` (load-balanced
       per-number claim, 30/2hr window + 120/day/number + 480/day total,
       12pm-8pm Africa/Cairo gate), `lib/server/twilio-client.ts` (REST send +
@@ -110,32 +89,25 @@ Aligned with STATUS.md. Sorted by deployment-readiness (pre-deploy → post-depl
       `Authorization: Bearer $CRON_SECRET`.
 - [ ] Deploy `firestore.indexes.json` (now includes 2 new `owner_negotiations`
       composite indexes) — `firebase deploy --only firestore:indexes`.
-- [x] Build an admin UI page for owner negotiations (OwnerNegotiationsPage.tsx with chat threads)
+- [ ] Build an admin UI page for owner negotiations (the API exists; no page
+      surfaces it in `/admin` yet — out of scope for this pass).
 
 ## 🧹 Repo Cleanup
-
 - [x] Divergent `firestore.rules` resolved: `firebase.json` now deploys the
       staff-gated `apps/sierra-estates-realty/firestore.rules`
       (`users/{uid}.role`); the legacy root `admins/{uid}` rules file is deleted.
 - [x] `apps/{admin-dashboard,sierra-blu-admin-portal,sierra-blu-realty}` excluded
       from `pnpm-workspace.yaml` (stopped participating in CI; kept on disk).
-- [x] `apps/frontend` does not exist — was already cleaned up.
+- [ ] `apps/frontend` is still a live (if trivial) workspace member and still
+      undeployed dead weight — wasn't covered by the exclusion above.
 
 ## 🐍 Python
-
 - [ ] Schedule analytics-report.py via GitHub Actions cron
 - [ ] Add unit tests for LeadScorer class
 - [ ] Connect lead-scorer.py to live Firestore in production
 - [ ] WhatsApp template message approval workflow
 
 ## 🎨 Frontend
-
 - [ ] Wire LeadScoreBadge into CRM dashboard
 - [ ] Add StatsCard to admin analytics page
 - [ ] Mobile responsive pass for PremiumHero
-
-## 🤖 WhatsApp Bot
-
-- [x] **Client Whitelist Filter**: Implemented whitelist checking (`whitelist.json`) in `apps/agents/whatsapp-bot/index.ts` to prevent responding to personal contacts.
-- [x] **Admin Commands**: Added `!whitelist <on|off|add|remove|list|status>` commands for real-time whitelist management.
-- [x] **Excel/CSV Import Utility**: Created `import-whitelist.ts` script to batch-import client numbers from `clients.csv`.

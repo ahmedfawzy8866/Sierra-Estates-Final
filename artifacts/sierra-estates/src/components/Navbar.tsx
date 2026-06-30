@@ -3,8 +3,21 @@ import { useLang } from "@/contexts/LanguageContext";
 import { useTheme } from "next-themes";
 import { Menu, X, Sun, Moon } from "lucide-react";
 import { useLocation } from "wouter";
-import { motion, useScroll, useSpring } from "framer-motion";
-import { ALL_COMPOUNDS, NEARBY } from "../lib/data";
+
+const ALL_COMPOUNDS = [
+  'Hyde Park','Mountain View iCity','Mountain View Hyde Park',
+  'Uptown Cairo','Mivida','Madinaty','Eastown','El Shorouk',
+  'Palm Hills NC','Villette','Fifth Square','SODIC East',
+  'Taj City','Bloomfields','Sarai','Katameya Heights',
+  'Al Rehab','Zed East','La Vista City',
+];
+const NEARBY = [
+  'British International School Cairo','GEMS Cairo International',
+  'Cairo American College','AUC New Cairo',
+  'Cairo Festival City Mall','Point 90 Mall',
+  'Waterway Restaurants','New Cairo Sporting Club',
+  '5th Settlement Ring Road','Cairo Airport 30 min',
+];
 
 interface NavbarProps {
   mode: string;
@@ -29,9 +42,6 @@ export default function Navbar({
   const { theme, setTheme } = useTheme();
   const [, setLocation] = useLocation();
   const pillRef = useRef<HTMLDivElement>(null);
-
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
 
   const topOffset = annVisible ? 36 : 0;
 
@@ -70,28 +80,13 @@ export default function Navbar({
 
   return (
     <>
-      <header className="hdr" style={{ top: topOffset }} role="navigation" aria-label="Main navigation">
-        {/* Scroll Progress Bar */}
-        <motion.div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: "3px",
-            background: "linear-gradient(90deg, var(--gold), var(--gold-lt))",
-            scaleX,
-            transformOrigin: "0%",
-            zIndex: 100
-          }}
-        />
-
+      <header className="hdr" style={{ top: topOffset }}>
         {/* Logo */}
         <a href="#hero" className="hdr-brand" onClick={e => { e.preventDefault(); scrollTo("#hero"); }}>
-          <img src="/logo.png" alt="Sierra Estates" style={{ width: 44, height: 44, objectFit: "cover", borderRadius: 8, flexShrink: 0 }} />
+          <img src="/logo.jpg" alt="Sierra Estates" style={{ width: 34, height: 34, objectFit: "cover", borderRadius: 6, flexShrink: 0 }} />
           <div>
             <div className="hdr-name">Sierra Estates</div>
-            <div className="hdr-slogan">{isRTL ? "الريادة العقارية بالقاهرة الجديدة" : "New Cairo's Premier Real Estate Intel"}</div>
+            <div className="hdr-slogan">{isRTL ? "مستقبل العقارات" : "Future of Real Estates"}</div>
           </div>
         </a>
 
@@ -181,12 +176,6 @@ export default function Navbar({
 
         {/* Right controls */}
         <div className="hdr-right">
-          <button className="hdr-icon hdr-desktop" onClick={() => setLocation("/properties")} style={{ fontSize: 10.5, fontFamily: "inherit", fontWeight: 700, letterSpacing: ".08em", color: "rgba(255,255,255,.55)" }}>
-            Properties
-          </button>
-          <button className="hdr-icon hdr-desktop" onClick={() => setLocation("/login")} style={{ fontSize: 10.5, fontFamily: "inherit", fontWeight: 700, letterSpacing: ".08em", color: "rgba(211,167,71,.7)" }}>
-            Agent Login
-          </button>
           <button className="hdr-icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} title="Theme">
             {theme === "dark" ? <Sun size={14} /> : <Moon size={14} />}
           </button>
@@ -228,7 +217,7 @@ export default function Navbar({
               {t("nav.lang")}
             </button>
             <button onClick={() => { setLocation("/request"); setMenuOpen(false); }}
-              style={{ padding: "10px 24px", borderRadius: 9, background: "linear-gradient(135deg,var(--gold),var(--gold-lt))", color: "var(--brand-dark)", fontSize: 11, fontWeight: 800, letterSpacing: ".1em", textTransform: "uppercase", border: "none", cursor: "pointer", fontFamily: "inherit" }}>
+              style={{ padding: "10px 24px", borderRadius: 9, background: "linear-gradient(135deg,var(--gold),var(--gold-lt))", color: "var(--navy)", fontSize: 11, fontWeight: 800, letterSpacing: ".1em", textTransform: "uppercase", border: "none", cursor: "pointer", fontFamily: "inherit" }}>
               {t("nav.cta")}
             </button>
           </div>
@@ -237,10 +226,8 @@ export default function Navbar({
 
       <style>{`
         .hdr-hamburger { display: none !important; }
-        .hdr-desktop { display: flex !important; }
         @media(max-width: 900px) {
           .hdr-hamburger { display: flex !important; }
-          .hdr-desktop { display: none !important; }
         }
       `}</style>
     </>

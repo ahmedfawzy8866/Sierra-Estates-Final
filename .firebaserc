@@ -1,17 +1,7 @@
 {
   "projects": {
-    "default": "sierra-estates",
-    "staging": "sierra-estates",
-    "production": "sierra-estates"
-  },
-  "targets": {
-    "sierra-estates": {
-      "hosting": {
-        "sierra-estates-admin": [
-          "admin-sierra-estates"
-        ]
-      }
-    }
+    "default": "sierra-blu",
+    "production": "sierra-blu"
   },
   "etags": {}
 }

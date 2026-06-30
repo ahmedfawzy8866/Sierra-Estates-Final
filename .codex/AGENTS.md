@@ -21,8 +21,8 @@ The generated baseline enables GitHub, Context7, Exa, Memory, Playwright, and Se
 
 ## Workflow Files
 
-- `.claude/commands/database-migration.md`
 - `.claude/commands/feature-development.md`
-- `.claude/commands/refactoring.md`
+- `.claude/commands/add-or-update-api-endpoint.md`
+- `.claude/commands/add-or-update-whatsapp-bot-features.md`
 
 Use these workflow files as reusable task scaffolds when the detected repository workflows recur.

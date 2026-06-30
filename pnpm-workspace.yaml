@@ -16,35 +16,43 @@
 # passed (e.g. an urgent security bugfix), you can add it to the
 # `minimumReleaseAgeExclude` allowlist below. Only consider doing this for
 # packages released by trusted organizations with an impeccable security
-# posture. Even then, remove the exclusion once the 1-day window has passed.
+# posture (e.g. Replit packsges, react from Meta, typescript from Microsoft). Even then,
+# remove the exclusion once the 1-day window has passed.
+#
+# Example:
+#   minimumReleaseAgeExclude:
+#     - react
+#     - typescript
+#
 # ============================================================================
 minimumReleaseAge: 1440
 
 minimumReleaseAgeExclude:
-  - react
-  - typescript
+  # Exclude @replit scoped packages from the minimum release age check.
+  # These are published by Replit and trusted — the supply-chain attack vector
+  # this setting guards against does not apply to our own packages.
+  - '@replit/*'
+  - stripe-replit-sync
 
 packages:
-  # ─── RESTORED FLAGSHIP APP ───
-  - "apps/sierra-estates-realty"
-  # ─── TWO-APP ARCHITECTURE ───
-  # Vercel App: public client site + light dashboard (read-only)
-  - "apps/vercel-app"
-  # Firebase Admin App: admin panel + bots + scrapers + workflows (write)
-  - "apps/firebase-admin"
-  - "apps/mobile-app"
-  # ─── SUPPORTING APPS ───
-  - "apps/api"              # Python FastAPI (Cloud Run)
-  - "apps/agents"           # WhatsApp scraper + deal orchestration
-  - "apps/mass-blast"       # WhatsApp bulk messaging
-  # ─── SHARED PACKAGES (used by BOTH apps) ───
+  - "apps/*"
+  # Legacy/deprecated apps excluded from the workspace so they no longer
+  # participate in `turbo run build/lint/type-check` (one pins TS ~6.0.2 and
+  # reddened CI). Kept on disk for now; physical removal is a follow-up.
+  - "!apps/admin-dashboard"
+  - "!apps/sierra-blu-admin-portal"
+  - "!apps/sierra-blu-realty"
   - "packages/*"
-  - "lib/*"
-  # ─── INFRASTRUCTURE ───
   - "functions"
+  - "artifacts/*"
+  - "lib/*"
+  - "lib/integrations/*"
   - "scripts"
 
 catalog:
+  '@replit/vite-plugin-cartographer': ^0.5.21
+  '@replit/vite-plugin-dev-banner': ^0.1.1
+  '@replit/vite-plugin-runtime-error-modal': ^0.0.6
   '@tailwindcss/vite': ^4.1.14
   '@tanstack/react-query': ^5.90.21
   '@types/node': ^25.3.3
@@ -52,7 +60,7 @@ catalog:
   '@types/react-dom': ^19.2.0
   '@vitejs/plugin-react': ^5.0.4
   class-variance-authority: ^0.7.1
-  clsx: ^2.2.1
+  clsx: ^2.1.1
   drizzle-orm: ^0.45.2
   framer-motion: ^12.23.24
   lucide-react: ^0.545.0
@@ -74,31 +82,93 @@ onlyBuiltDependencies:
   - esbuild
   - msw
   - unrs-resolver
-  - '@firebase/util'
-  - '@google/genai'
-  - core-js
-  - protobufjs
 
 overrides:
-  # Pin esbuild to a known-good version
+  # replit uses linux-x64 only, we can exclude all other platforms
+  "esbuild>@esbuild/darwin-arm64": "-"
+  "esbuild>@esbuild/darwin-x64": "-"
+  "esbuild>@esbuild/freebsd-arm64": "-"
+  "esbuild>@esbuild/freebsd-x64": "-"
+  "esbuild>@esbuild/linux-arm": "-"
+  "esbuild>@esbuild/linux-arm64": "-"
+  "esbuild>@esbuild/linux-ia32": "-"
+  "esbuild>@esbuild/linux-loong64": "-"
+  "esbuild>@esbuild/linux-mips64el": "-"
+  "esbuild>@esbuild/linux-ppc64": "-"
+  "esbuild>@esbuild/linux-riscv64": "-"
+  "esbuild>@esbuild/linux-s390x": "-"
+  "esbuild>@esbuild/netbsd-arm64": "-"
+  "esbuild>@esbuild/netbsd-x64": "-"
+  "esbuild>@esbuild/openbsd-arm64": "-"
+  "esbuild>@esbuild/openbsd-x64": "-"
+  "esbuild>@esbuild/sunos-x64": "-"
+  "esbuild>@esbuild/win32-arm64": "-"
+  "esbuild>@esbuild/win32-ia32": "-"
+  "esbuild>@esbuild/win32-x64": "-"
+  "esbuild>@esbuild/aix-ppc64": '-'
+  "esbuild>@esbuild/android-arm": '-'
+  "esbuild>@esbuild/android-arm64": '-'
+  "esbuild>@esbuild/android-x64": '-'
+  "esbuild>@esbuild/openharmony-arm64": '-'
+  "lightningcss>lightningcss-android-arm64": "-"
+  "lightningcss>lightningcss-darwin-arm64": "-"
+  "lightningcss>lightningcss-darwin-x64": "-"
+  "lightningcss>lightningcss-freebsd-x64": "-"
+  "lightningcss>lightningcss-linux-arm-gnueabihf": "-"
+  "lightningcss>lightningcss-linux-arm64-gnu": "-"
+  "lightningcss>lightningcss-linux-arm64-musl": "-"
+  "lightningcss>lightningcss-linux-x64-musl": "-"
+  "lightningcss>lightningcss-win32-arm64-msvc": "-"
+  "lightningcss>lightningcss-win32-x64-msvc": "-"
+  "@tailwindcss/oxide>@tailwindcss/oxide-android-arm64": "-"
+  "@tailwindcss/oxide>@tailwindcss/oxide-darwin-arm64": "-"
+  "@tailwindcss/oxide>@tailwindcss/oxide-darwin-x64": "-"
+  "@tailwindcss/oxide>@tailwindcss/oxide-freebsd-x64": "-"
+  "@tailwindcss/oxide>@tailwindcss/oxide-linux-arm-gnueabihf": "-"
+  "@tailwindcss/oxide>@tailwindcss/oxide-linux-arm64-gnu": "-"
+  "@tailwindcss/oxide>@tailwindcss/oxide-linux-arm64-musl": "-"
+  "@tailwindcss/oxide>@tailwindcss/oxide-win32-arm64-msvc": "-"
+  "@tailwindcss/oxide>@tailwindcss/oxide-win32-x64-msvc": "-"
+  "@tailwindcss/oxide>@tailwindcss/oxide-linux-x64-musl": "-"
+  "rollup>@rollup/rollup-android-arm-eabi": "-"
+  "rollup>@rollup/rollup-android-arm64": "-"
+  "rollup>@rollup/rollup-darwin-arm64": "-"
+  "rollup>@rollup/rollup-darwin-x64": "-"
+  "rollup>@rollup/rollup-freebsd-arm64": "-"
+  "rollup>@rollup/rollup-freebsd-x64": "-"
+  "rollup>@rollup/rollup-linux-arm-gnueabihf": "-"
+  "rollup>@rollup/rollup-linux-arm-musleabihf": "-"
+  "rollup>@rollup/rollup-linux-arm64-gnu": "-"
+  "rollup>@rollup/rollup-linux-arm64-musl": "-"
+  "rollup>@rollup/rollup-linux-loong64-gnu": "-"
+  "rollup>@rollup/rollup-linux-loong64-musl": "-"
+  "rollup>@rollup/rollup-linux-ppc64-gnu": "-"
+  "rollup>@rollup/rollup-linux-ppc64-musl": "-"
+  "rollup>@rollup/rollup-linux-riscv64-gnu": "-"
+  "rollup>@rollup/rollup-linux-riscv64-musl": "-"
+  "rollup>@rollup/rollup-linux-s390x-gnu": "-"
+  "rollup>@rollup/rollup-linux-x64-musl": "-"
+  "rollup>@rollup/rollup-openbsd-x64": "-"
+  "rollup>@rollup/rollup-openharmony-arm64": "-"
+  "rollup>@rollup/rollup-win32-arm64-msvc": "-"
+  "rollup>@rollup/rollup-win32-ia32-msvc": "-"
+  "rollup>@rollup/rollup-win32-x64-gnu": "-"
+  "rollup>@rollup/rollup-win32-x64-msvc": "-"
+  "@expo/ngrok-bin>@expo/ngrok-bin-darwin-arm64": "-"
+  "@expo/ngrok-bin>@expo/ngrok-bin-darwin-x64": "-"
+  "@expo/ngrok-bin>@expo/ngrok-bin-freebsd-ia32": "-"
+  "@expo/ngrok-bin>@expo/ngrok-bin-freebsd-x64": "-"
+  "@expo/ngrok-bin>@expo/ngrok-bin-linux-arm64": "-"
+  "@expo/ngrok-bin>@expo/ngrok-bin-linux-arm": "-"
+  "@expo/ngrok-bin>@expo/ngrok-bin-linux-ia32": "-"
+  "@expo/ngrok-bin>@expo/ngrok-bin-sunos-x64": "-"
+  "@expo/ngrok-bin>@expo/ngrok-bin-win32-ia32": "-"
+  "@expo/ngrok-bin>@expo/ngrok-bin-win32-x64": "-"
+  # drizzle-kit uses esbuild internally on an older version that's vulnerable, this overrides it
+  "@esbuild-kit/esm-loader": "npm:tsx@^4.21.0"
   esbuild: "0.28.1"
   # Security overrides for transitive dependency vulnerabilities
   qs: "^6.15.2"
   js-yaml: "^4.2.0"
   markdown-it: "^14.2.0"
   "@babel/core": "^7.29.6"
-  # Force a single @types/react across the workspace — duplicate 18.x/19.x
-  # copies caused framer-motion's children prop to fail type-checking.
-  "@types/react": "^19"
-  "@types/react-dom": "^19"
-
-allowBuilds:
-  '@firebase/util': true
-  '@google/genai': true
-  core-js: true
-  esbuild: true
-  protobufjs: true
-  puppeteer: true
-  openclaw: true
-  tree-sitter-bash: true
-  unrs-resolver: true
