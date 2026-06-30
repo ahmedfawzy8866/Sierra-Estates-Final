@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // ── Filter State ─────────────────────────────────────────────────────────────
 export interface FilterState {
@@ -35,12 +36,14 @@ const SearchIcon = () => (
   </svg>
 );
 const ChevronDown = ({ open }: { open: boolean }) => (
-  <svg
-    className={`w-3.5 h-3.5 text-[var(--gold)] transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+  <motion.svg
+    animate={{ rotate: open ? 180 : 0 }}
+    transition={{ duration: 0.25, type: 'spring', stiffness: 300, damping: 25 }}
+    className="w-3.5 h-3.5 text-[var(--gold)]"
     viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
   >
     <path d="m6 9 6 6 6-6"/>
-  </svg>
+  </motion.svg>
 );
 
 // ── Dropdown Wrapper ──────────────────────────────────────────────────────────
@@ -63,9 +66,11 @@ function Dropdown({
 
   return (
     <div className="relative" ref={ref}>
-      <button
+      <motion.button
         id={`filter-${id}`}
         onClick={onToggle}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
         className={`flex items-center gap-2 px-4 py-2.5 bg-white border rounded-xl text-[13px] font-medium text-[var(--navy)] transition-all duration-200 whitespace-nowrap ${
           isOpen
             ? 'border-[var(--gold)] shadow-[0_0_0_3px_rgba(200,150,26,0.15)]'
@@ -74,15 +79,20 @@ function Dropdown({
       >
         <span>{value || label}</span>
         <ChevronDown open={isOpen} />
-      </button>
-      {isOpen && (
-        <div
-          className="absolute top-[calc(100%+8px)] left-0 min-w-[240px] bg-white border border-[var(--navy-08)] rounded-xl shadow-xl p-4 z-[var(--z-dropdown)]"
-          style={{ animation: 'slide-down 180ms var(--ease-silk) forwards' }}
-        >
-          {children}
-        </div>
-      )}
+      </motion.button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2, type: 'spring', stiffness: 300, damping: 28 }}
+            className="absolute top-[calc(100%+8px)] left-0 min-w-[240px] bg-white border border-[var(--navy-08)] rounded-xl shadow-xl p-4 z-[var(--z-dropdown)]"
+          >
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -226,9 +236,11 @@ export default function FilterBar({ compact = false, initialFilters, onFilter }:
           <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--navy-60)] mb-2">Bedrooms</p>
           <div className="flex flex-wrap gap-2 mb-4">
             {[0, 1, 2, 3, 4, 5, 6].map((b) => (
-              <button
+              <motion.button
                 key={b}
                 onClick={() => update({ beds: b })}
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.95 }}
                 className={`w-11 h-10 rounded-lg text-[12px] font-bold transition-all ${
                   filters.beds === b
                     ? 'bg-[var(--gold)] text-white shadow-[var(--shadow-gold)]'
@@ -236,15 +248,17 @@ export default function FilterBar({ compact = false, initialFilters, onFilter }:
                 }`}
               >
                 {b === 0 ? 'Any' : b === 6 ? '6+' : b}
-              </button>
+              </motion.button>
             ))}
           </div>
           <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--navy-60)] mb-2">Bathrooms</p>
           <div className="flex flex-wrap gap-2">
             {[0, 1, 2, 3, 4, 5].map((b) => (
-              <button
+              <motion.button
                 key={b}
                 onClick={() => update({ baths: b })}
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.95 }}
                 className={`w-11 h-10 rounded-lg text-[12px] font-bold transition-all ${
                   filters.baths === b
                     ? 'bg-[var(--gold)] text-white shadow-[var(--shadow-gold)]'
@@ -252,7 +266,7 @@ export default function FilterBar({ compact = false, initialFilters, onFilter }:
                 }`}
               >
                 {b === 0 ? 'Any' : b === 5 ? '5+' : b}
-              </button>
+              </motion.button>
             ))}
           </div>
         </div>
@@ -300,12 +314,14 @@ export default function FilterBar({ compact = false, initialFilters, onFilter }:
           <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--navy-60)] mb-2">Furnishing</p>
           <div className="flex flex-wrap gap-2 mb-4">
             {['Furnished', 'Semi-Furnished', 'Unfurnished'].map((f) => (
-              <button
+              <motion.button
                 key={f}
                 onClick={() => {
                   const arr = filters.furnish;
                   update({ furnish: arr.includes(f) ? arr.filter((x) => x !== f) : [...arr, f] });
                 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
                   filters.furnish.includes(f)
                     ? 'bg-[var(--gold)] text-white'
@@ -313,18 +329,20 @@ export default function FilterBar({ compact = false, initialFilters, onFilter }:
                 }`}
               >
                 {f}
-              </button>
+              </motion.button>
             ))}
           </div>
           <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--navy-60)] mb-2">Amenities</p>
           <div className="flex flex-wrap gap-2">
             {['Garden', 'Pool', 'Parking', 'Security', 'Gym', 'Concierge'].map((a) => (
-              <button
+              <motion.button
                 key={a}
                 onClick={() => {
                   const arr = filters.amenities;
                   update({ amenities: arr.includes(a) ? arr.filter((x) => x !== a) : [...arr, a] });
                 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
                   filters.amenities.includes(a)
                     ? 'bg-[var(--gold)] text-white'
@@ -332,20 +350,23 @@ export default function FilterBar({ compact = false, initialFilters, onFilter }:
                 }`}
               >
                 {a}
-              </button>
+              </motion.button>
             ))}
           </div>
         </div>
       </Dropdown>
 
       {/* Search CTA */}
-      <button
+      <motion.button
         id="filter-search-btn"
         onClick={handleSearch}
-        className="px-8 py-3 bg-gradient-to-r from-[var(--red)] to-[var(--red-deep)] hover:from-[#FF4D5A] hover:to-[var(--red)] text-white rounded-xl text-[11px] font-bold uppercase tracking-[0.2em] shadow-[var(--shadow-red)] transition-all duration-300 ease-silk active:scale-95"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+        className="px-8 py-3 bg-gradient-to-r from-[var(--red)] to-[var(--red-deep)] hover:from-[#FF4D5A] hover:to-[var(--red)] text-white rounded-xl text-[11px] font-bold uppercase tracking-[0.2em] shadow-[var(--shadow-red)] transition-all duration-300 ease-silk"
       >
         Find
-      </button>
+      </motion.button>
     </div>
   );
 }

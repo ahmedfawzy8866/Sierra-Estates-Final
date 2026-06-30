@@ -1,0 +1,156 @@
+'use client';
+
+/**
+ * ══════════════════════════════════════════════════════════════════════════════
+ * HERO COMPONENT — Sierra Estates Mobile Design
+ * Architecture: Placeholder with 4 AI icons (Virtual Tour, Intelligence Map,
+ *              ROI Calculator, AI Home Match)
+ * Status: SCAFFOLD - Ready for Emil Kowalski motion polish and advanced styling
+ * ══════════════════════════════════════════════════════════════════════════════
+ */
+
+import { useEffect, useRef, useState } from 'react';
+import FilterBar from './FilterBar';
+import Link from 'next/link';
+
+/**
+ * HERO SECTION STRUCTURE
+ *
+ * This component uses the Sierra Estates Mobile design from the uploaded HTML files.
+ * AI icons are placeholders pending the refined design implementation.
+ * All animation logic from legacy-animations-reference.ts can be wired here.
+ */
+export default function Hero() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setVisible(true), 60);
+    return () => clearTimeout(t);
+  }, []);
+
+  return (
+    <section
+      id="hero"
+      className="relative min-h-[95vh] flex flex-col items-center justify-center px-6 pt-28 pb-20 overflow-hidden"
+    >
+      {/* Background placeholder - will be replaced with Sierra design */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 z-0" />
+
+      <div className={`relative z-10 max-w-5xl w-full text-center transition-all duration-1000 ${
+        visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+      }`}>
+        {/* Logo - TO BE REPLACED WITH NEW RED NEON LOGO */}
+        <div className="inline-block mb-7 relative">
+          <div className="relative mx-auto" style={{ width: 120, height: 120 }}>
+            <svg
+              viewBox="0 0 120 120"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              style={{
+                filter: 'drop-shadow(0 6px 32px rgba(230,57,70,0.38))',
+                width: '100%',
+                height: '100%',
+              }}
+            >
+              {/* PLACEHOLDER: Replace with RED neon logo from uploaded image */}
+              <circle cx="60" cy="60" r="57" stroke="#E63946" strokeWidth="2" fill="none" opacity="0.25"/>
+              <text
+                x="60" y="68"
+                textAnchor="middle"
+                fill="#FAF8F3"
+                fontSize="26"
+                fontWeight="700"
+                fontFamily="'Cormorant Garamond', serif"
+                letterSpacing="3"
+              >SB</text>
+            </svg>
+          </div>
+        </div>
+
+        {/* Headline */}
+        <h1 className="font-light leading-[1.06] tracking-tight mb-5 text-white" style={{
+          fontFamily: "'Cormorant Garamond', serif",
+          fontSize: 'clamp(2.8rem, 7vw, 5.5rem)',
+        }}>
+          Find Your Place in <br className="hidden sm:block" />
+          <span className="italic text-amber-300">New Cairo.</span>
+        </h1>
+
+        {/* Subheading */}
+        <p className="text-base md:text-lg font-light max-w-2xl mx-auto leading-relaxed mb-10 text-white/70">
+          From premium villas to luxury apartments. <strong className="font-semibold text-amber-300">1,500+ elite brokers</strong>,
+          AI-driven matching, and replies within <strong className="font-semibold text-red-400">4 seconds</strong>.
+        </p>
+
+        {/* Filter Bar - Component to be created */}
+        <div>
+          <FilterBar
+            onFilter={(_filters) => {
+              const el = document.getElementById('listings-section');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }}
+          />
+        </div>
+
+        {/* Quick CTA Links */}
+        <div className="flex flex-wrap justify-center gap-4 mt-6 text-[12px]">
+          {[
+            { label: '→ For Rent',   href: '/listings?purpose=rent' },
+            { label: '→ For Resale', href: '/listings?purpose=resale' },
+            { label: '→ New Projects', href: '/projects' },
+          ].map((link) => (
+            <Link
+              key={link.label}
+              href={link.href}
+              className="font-semibold uppercase tracking-[0.15em] transition-colors duration-200 text-white/60 hover:text-amber-300"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+
+        {/* AI ICONS SECTION - Placeholder for 4 AI icons */}
+        <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+          {[
+            { icon: '🏢', label: 'Virtual Tour', desc: 'Coming soon' },
+            { icon: '🗺️', label: 'Intelligence Map', desc: 'Coming soon' },
+            { icon: '📈', label: 'ROI Calculator', desc: 'Coming soon' },
+            { icon: '🤖', label: 'AI Home Match', desc: 'Coming soon' },
+          ].map((item) => (
+            <div key={item.label} className="p-4 bg-white/5 rounded-lg border border-white/10 text-center">
+              <div className="text-3xl mb-2">{item.icon}</div>
+              <p className="text-xs font-semibold text-white uppercase tracking-wider">{item.label}</p>
+              <p className="text-[10px] text-white/50 mt-1">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Stats Counter Row - PRESERVE COUNTER ANIMATION */}
+        <div className="mt-12 flex justify-center gap-10 md:gap-16 text-center">
+          {[
+            { value: 1500, suffix: '+', label: 'Brokers' },
+            { value: 25916, suffix: '', label: 'Properties' },
+            { value: 4, suffix: 's', label: 'Response' },
+            { value: 98, suffix: '%', label: 'Match Rate' },
+          ].map(({ value, suffix, label }) => (
+            <div key={label}>
+              <p className="text-3xl font-bold leading-none mb-1 text-amber-300">
+                {value.toLocaleString()}{suffix}
+              </p>
+              <p className="text-[10px] uppercase tracking-[0.18em] text-white/40">
+                {label}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Scroll Cue - PRESERVE BOUNCE-DOWN ANIMATION */}
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10" style={{ animation: 'bounce-down 2s infinite' }}>
+        <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round">
+          <path d="M12 2v14M12 16l-4-4M12 16l4-4" />
+        </svg>
+      </div>
+    </section>
+  );
+}
