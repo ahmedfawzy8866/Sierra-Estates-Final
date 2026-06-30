@@ -2,20 +2,20 @@
 
 import { logger } from '@/lib/logger';
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { Phone, User, CheckCircle2 } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import Hero from '@/components/Hero';
 import SearchRequestModal from '@/components/SearchRequestModal';
 
 export default function ClientRequest() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [_loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [error, setError] = useState('');
-  const [formData, setFormData] = useState({
+  const [_error, setError] = useState('');
+  const [_formData, setFormData] = useState({
     type: '',
     area: '',
     budget: '',
@@ -80,7 +80,7 @@ export default function ClientRequest() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
       {/* Hero Section with Sierra Mobile Design */}
       <Hero />
 
@@ -91,14 +91,69 @@ export default function ClientRequest() {
         onSubmit={handleModalSubmit}
       />
 
-      {/* CTA Section - Optional Additional Content */}
-      <section className="py-16 bg-slate-900/50 text-center">
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="px-8 py-4 rounded-lg bg-gradient-to-r from-amber-400 to-amber-500 text-black font-bold hover:opacity-90 transition"
-        >
-          Start Your Search
-        </button>
+      {/* Premium CTA Section */}
+      <section className="py-24 px-4 bg-gradient-to-br from-slate-900 to-slate-800 border-t border-white/5">
+        <div className="max-w-3xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-4xl md:text-5xl font-serif font-bold text-white mb-6 leading-tight">
+              Ready to Find Your Perfect Property?
+            </h2>
+            <p className="text-xl text-white/70 mb-8 max-w-2xl mx-auto">
+              Let our expert team guide you through the finest luxury properties in New Cairo.
+              Start your search today and discover homes beyond imagination.
+            </p>
+            <motion.button
+              onClick={() => setIsModalOpen(true)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+              className="px-12 py-4 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-black font-bold text-lg hover:shadow-2xl hover:shadow-amber-500/50 transition-all duration-300"
+            >
+              Explore Listings
+            </motion.button>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Trust Indicators */}
+      <section className="py-16 px-4 bg-slate-950 border-t border-white/5">
+        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            viewport={{ once: true }}
+            className="p-6"
+          >
+            <div className="text-4xl font-bold text-amber-400 mb-2">500+</div>
+            <p className="text-white/70">Premium Listings</p>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            viewport={{ once: true }}
+            className="p-6"
+          >
+            <div className="text-4xl font-bold text-amber-400 mb-2">24/7</div>
+            <p className="text-white/70">Expert Support</p>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            viewport={{ once: true }}
+            className="p-6"
+          >
+            <div className="text-4xl font-bold text-amber-400 mb-2">100%</div>
+            <p className="text-white/70">Verified Properties</p>
+          </motion.div>
+        </div>
       </section>
     </div>
   );
