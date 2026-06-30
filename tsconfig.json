@@ -21,7 +21,6 @@
       "@sierra-estates/agents": ["./packages/agents/index.ts"],
       "@sierra-estates/agents-core": ["./packages/agents-core/src/index.ts"],
       "@sierra-estates/memory-engine": ["./packages/memory-engine/src/index.ts"],
-      "@sierra-estates/obedian": ["./packages/obedian/src/index.ts"],
       "@sierra-estates/db": ["./packages/db/lib/index.ts"],
       "@sierra-estates/auth": ["./packages/auth"],
       "@sierra-estates/config": ["./packages/config"]

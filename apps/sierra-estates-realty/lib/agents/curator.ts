@@ -1,4 +1,3 @@
-import { logger } from '@/lib/logger';
 import 'server-only';
 import { COLLECTIONS } from '../models/schema';
 import { instrumentAgent } from '../arize';
@@ -24,7 +23,7 @@ export const runCurator = async (
     if (!doc) throw new Error(`Document ${docId} not found`);
 
     if (stage === 'S3') {
-      logger.info(`[CURATOR] S3: Asset Branding (Bilingual/Multimodal) for ${docId}`);
+      console.log(`[CURATOR] S3: Asset Branding (Bilingual/Multimodal) for ${docId}`);
 
       const mediaUrls = doc?.mediaUrls || [];
 
@@ -64,7 +63,7 @@ Deliverables (JSON):
         // --- Visual Branding Engine ---
         let brandedMediaUrls: string[] = [];
         if (mediaUrls.length > 0) {
-          logger.info(`🖼️ [CURATOR] Starting Visual Branding Engine for ${mediaUrls.length} assets...`);
+          console.log(`🖼️ [CURATOR] Starting Visual Branding Engine for ${mediaUrls.length} assets...`);
           const sourceLimit = mediaUrls.slice(0, 3);
           brandedMediaUrls = await Promise.all(
             sourceLimit.map((url: string, index: number) =>
@@ -80,15 +79,15 @@ Deliverables (JSON):
           'brandedMediaUrls': brandedMediaUrls,
           'automation.isBranded': true,
         });
-        logger.info(`✅ [CURATOR] S3 Branding completed for ${docId}`);
+        console.log(`✅ [CURATOR] S3 Branding completed for ${docId}`);
       } catch (error) {
-        logger.error('[CURATOR] S3 Error', { docId, error });
+        console.error('[CURATOR] S3 Error', { docId, error });
         await StateManager.failStage(docId, collection, stage, 'Branding AI failed');
       }
     }
 
     if (stage === 'S4') {
-      logger.info(`[CURATOR] S4: Global Distribution for ${docId}`);
+      console.log(`[CURATOR] S4: Global Distribution for ${docId}`);
 
       const systemPrompt = `You are "The Curator". Generate high-impact distribution templates.
 Deliverables (JSON):
@@ -112,13 +111,13 @@ Deliverables (JSON):
           'automation.whatsappAdGenerated': true,
         });
       } catch (error) {
-        logger.error('[CURATOR] S4 Error', { docId, error });
+        console.error('[CURATOR] S4 Error', { docId, error });
         await StateManager.failStage(docId, collection, stage, 'Distribution AI failed');
       }
     }
 
     if (stage === 'S5') {
-      logger.info(`[CURATOR] S5: Portal Sync for ${docId}`);
+      console.log(`[CURATOR] S5: Portal Sync for ${docId}`);
       await StateManager.completeStage(docId, collection, 'S6', {
         'automation.isPublishedToPF': true,
       });

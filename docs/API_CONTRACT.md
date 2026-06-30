@@ -114,45 +114,13 @@ Request a viewing for a unit (moves the lead to the agent-approval stage).
 ```
 `400` `{ error: "Lead ID and Unit ID are required" }` when missing.
 
-### `POST /api/listings/smart-filter`
-AI-powered natural language property search.
-
-```json
-// request
-{ "query": "3 bedroom villa in New Cairo under 5 million", "limit": 20 }
-// response
-{ "success": true, "query": "...", "parsedFilters": { ... }, "results": [...], "count": 5 }
-```
-Supported filter fields: `propertyType`, `offeringType`, `bedrooms`, `priceMin`, `priceMax`, `location`, `compound`, `furnishingType`, `amenities`.
-`400` when `query` is missing or not a string.
-
-### `GET /api/health`
-Health check for uptime monitoring and load balancers.
-
-```json
-{ "status": "ok" | "degraded" | "down", "timestamp": "...", "version": "1.0.0", "checks": { "firebaseAdmin": "ok", "rateLimiting": "degraded", "twilio": "ok", "propertyFinder": "degraded" } }
-```
-Returns `503` when `status` is `"down"`.
-No auth required.
-
-### `POST /api/chat`
-Web concierge chat endpoint.
-
-```json
-// request
-{ "sessionId": "...", "message": "I want a villa in Madinaty", "name": "Ahmed" }
-// response
-{ "success": true, "reply": "...", "stakeholderId": "...", "action": "..." }
-```
-`400` when `sessionId` or `message` is missing. Name is optional (defaults to "Web Guest").
-Input is sanitized (max 4000 chars for message, 128 for sessionId).
-
 ### Other public routes
 | Method | Path | Purpose |
 |--------|------|---------|
 | POST | `/api/closer/initiate` | Kick off the Stage-9 closer flow |
 | GET  | `/api/concierge/[leadId]` | Fetch a client's concierge portfolio |
 | GET  | `/api/wealth/portfolio` | Investor portfolio view |
+| GET  | `/api/whatsapp/heartbeat` | Bot liveness probe |
 
 > Rate limiting: public routes apply `publicEndpointLimiter`
 > (`lib/server/rate-limit.ts`) and may return `429`.
@@ -163,8 +131,7 @@ Send `Authorization: Bearer <Firebase ID token>`.
 
 | Method | Path | Purpose |
 |--------|------|---------|
-| GET/POST | `/api/viewing-requests` | Manage viewing approvals (GET requires auth, paginated with `?page=&limit=`) |
-| GET/POST | `/api/admin/owner-negotiations` | Owner negotiation threads (auth required, phone PII masked for non-secret-key auth) |
+| GET/POST | `/api/viewing-requests` | Manage viewing approvals |
 | POST | `/api/concierge/send-whatsapp` | Send a concierge WhatsApp message |
 | POST | `/api/telegram/setup` | Configure the Telegram bot |
 | GET  | `/api/wealth/roi` | ROI analytics |

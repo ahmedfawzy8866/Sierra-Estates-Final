@@ -10,13 +10,5 @@
   "devDependencies": {
     "@types/node": "catalog:",
     "tsx": "catalog:"
-  },
-  "description": "",
-  "main": "bootstrap-admins.js",
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "firebase-admin": "^14.1.0"
   }
 }

@@ -1,10 +1,4 @@
 'use client';
-/**
- * ══════════════════════════════════════════════════════════════════════════════
- * SIERRA ESTATES MOBILE — Client/Clients Landing Page
- * Replaced with new Sierra Mobile design (updated 2026-06-29)
- * ══════════════════════════════════════════════════════════════════════════════
- */
 
 import { logger } from '@/lib/logger';
 import { useState } from 'react';
@@ -47,8 +41,8 @@ export default function ClientRequest() {
       setSuccess(true);
       setIsModalOpen(false);
     } catch (err: any) {
-      setError('Error submitting request. Please try again.');
-      logger.error(err);
+      setError('حدث خطأ أثناء إرسال الطلب، برجاء المحاولة لاحقاً.');
+      console.error(err);
     } finally {
       setLoading(false);
     }

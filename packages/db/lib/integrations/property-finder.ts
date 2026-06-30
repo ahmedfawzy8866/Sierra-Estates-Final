@@ -36,8 +36,8 @@ export interface PFListingAnalytics { views: number; leads: number; phoneReveals
 export async function pushListingToPF(listing: SBRListing): Promise<PFSyncResult> {
   if (!listing.id) return { success: false, error: 'listing.id is required' };
 
-  let token: string | undefined = (globalThis as any).__TEST_TOKEN__;
-  if (!token && typeof window !== 'undefined') {
+  let token: string | undefined;
+  if (typeof window !== 'undefined') {
     try {
       const { getAuth } = await import('firebase/auth');
       token = await getAuth().currentUser?.getIdToken();

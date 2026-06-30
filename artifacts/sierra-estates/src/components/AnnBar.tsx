@@ -12,7 +12,7 @@ export default function AnnBar({ visible, onDismiss, onClaim }: Props) {
   return (
     <div className="ann-bar" style={{ top: 0 }}>
       <span style={{ width: 7, height: 7, borderRadius: "50%", background: "var(--gold)", display: "block", animation: "blink 1.8s ease infinite", flexShrink: 0 }} />
-      <span style={{ background: "linear-gradient(135deg,var(--gold),var(--gold-lt))", color: "var(--brand-dark)", fontSize: 9, fontWeight: 800, letterSpacing: ".12em", padding: "2px 8px", borderRadius: 4 }}>
+      <span style={{ background: "linear-gradient(135deg,var(--gold),var(--gold-lt))", color: "var(--navy)", fontSize: 9, fontWeight: 800, letterSpacing: ".12em", padding: "2px 8px", borderRadius: 4 }}>
         25% OFF
       </span>
       <span style={{ color: "rgba(255,255,255,.8)", fontSize: 11, fontWeight: 400 }}>

@@ -4,18 +4,21 @@ import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
-// PORT is only needed for dev server — Vercel build runs `vite build` with no PORT set.
+// PORT/BASE_PATH are only needed to run the dev/preview server (Replit-style
+// hosting); a plain `vite build` (e.g. on Vercel) must work without them.
 const isServe = !process.argv.includes("build");
+
 const rawPort = process.env.PORT;
 
-// Only throw for missing PORT when actually serving (not building)
 if (isServe && !rawPort) {
-  throw new Error("PORT environment variable is required for dev server.");
+  throw new Error(
+    "PORT environment variable is required but was not provided.",
+  );
 }
 
 const port = rawPort ? Number(rawPort) : 5173;
 
-if (rawPort && (Number.isNaN(port) || port <= 0)) {
+if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
 
@@ -53,16 +56,6 @@ export default defineConfig({
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
     sourcemap: false,
-    chunkSizeWarningLimit: 1000,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'vendor-react': ['react', 'react-dom'],
-          'vendor-firebase': ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/storage'],
-          'vendor-map': ['leaflet'],
-        },
-      },
-    },
   },
   server: {
     port,
@@ -71,12 +64,6 @@ export default defineConfig({
     allowedHosts: true,
     fs: {
       strict: true,
-    },
-    proxy: {
-      "/api": {
-        target: "http://localhost:3000",
-        changeOrigin: true,
-      },
     },
   },
   preview: {

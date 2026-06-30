@@ -1,5 +1,4 @@
 'use client';
-import { logger } from '@/lib/logger';
 
 /**
  * SIERRA ESTATES — UNIFIED HOMEPAGE
@@ -8,12 +7,11 @@ import { logger } from '@/lib/logger';
  */
 
 import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
 import { Languages } from 'lucide-react';
 import { collection, onSnapshot, query, where, orderBy, DocumentData } from 'firebase/firestore';
 import { db as clientDb } from '@/lib/firebase';
 
-import CinematicHero from '@/components/UI/CinematicHero';
+import PremiumHero from '@/components/UI/PremiumHero';
 import AIMatchingEngine from '@/components/UI/AIMatchingEngine';
 import TestimonialsCarousel from '@/components/UI/TestimonialsCarousel';
 import VirtualTour3D from '@/components/UI/VirtualTour3D';
@@ -124,7 +122,7 @@ export default function UnifiedHomepage() {
       const unsub = onSnapshot(q, snap => {
         setProperties(snap.docs.map(d => ({ id: d.id, ...d.data() } as Property)));
       }, err => {
-        logger.error('Firestore sync error:', err);
+        console.error('Firestore sync error:', err);
       });
       return () => unsub();
     } catch {
@@ -132,7 +130,7 @@ export default function UnifiedHomepage() {
     }
   }, []);
 
-  const _handleSearch = (f: typeof filters) => {
+  const handleSearch = (f: typeof filters) => {
     setFilters(f);
     const el = document.getElementById('inventory');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -182,26 +180,13 @@ export default function UnifiedHomepage() {
       {/* ─── FLOATING TOP ADVISORY HEADER ─────────────────────────────────────── */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/70 dark:bg-[#071422]/70 backdrop-blur-md border-b border-[#071422]/10 dark:border-white/10 px-6 py-4 shadow-sm">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            {/* Shield Emblem Logo */}
-            <div className="relative w-10 h-10 md:w-12 md:h-12 flex-shrink-0 drop-shadow-lg hover:scale-105 transition-transform duration-300">
-              <Image
-                src="/sierra-estates-shield.png"
-                alt="Sierra Estates Shield"
-                fill
-                className="object-contain"
-                priority
-              />
-            </div>
-            {/* Wordmark */}
-            <div className="flex flex-col">
-              <span className="font-playfair text-xl font-bold tracking-[0.1em] text-[#071422] dark:text-white leading-tight">
-                {t.navTitle}
-              </span>
-              <span className="text-[8px] tracking-[0.3em] font-mono text-[#C9A84C] font-semibold">
-                {t.navSubtitle}
-              </span>
-            </div>
+          <div className="flex flex-col">
+            <span className="font-playfair text-xl font-bold tracking-[0.1em] text-[#071422] dark:text-white">
+              {t.navTitle}
+            </span>
+            <span className="text-[8px] tracking-[0.3em] font-mono text-[#C9A84C] font-semibold">
+              {t.navSubtitle}
+            </span>
           </div>
 
           <div className="flex items-center gap-6">
@@ -238,13 +223,9 @@ export default function UnifiedHomepage() {
         {/* EXPLORE TAB */}
         {activeMobileTab === 'explore' && (
           <>
-            {/* Cinematic Hero — Base44-cloned design */}
-            <CinematicHero
-              onSearch={(query) => {
-                setFilters(f => ({ ...f, compound: query }));
-                const el = document.getElementById('inventory');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              }}
+            {/* Premium Hero with Search + Virtual Tour */}
+            <PremiumHero
+              onSearch={handleSearch}
               isArabic={isAr}
             />
 
@@ -420,20 +401,18 @@ export default function UnifiedHomepage() {
         <form onSubmit={handleLeadSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="name-input" className="block text-[10px] uppercase tracking-wider text-[#071422]/60 dark:text-white/60 mb-2 font-mono">
+              <label className="block text-[10px] uppercase tracking-wider text-[#071422]/60 dark:text-white/60 mb-2 font-mono">
                 {t.inputName}
               </label>
               <input
-                id="name-input"
                 type="text"
                 name="name"
                 required
-                placeholder={t.inputName}
                 className="w-full px-5 py-4 rounded-xl bg-white dark:bg-[#071422] border border-[#071422]/15 dark:border-white/10 focus:border-[#C9A84C] outline-none transition-colors text-sm"
               />
             </div>
             <div>
-              <label htmlFor="email-input" className="block text-[10px] uppercase tracking-wider text-[#071422]/60 dark:text-white/60 mb-2 font-mono">
+              <label className="block text-[10px] uppercase tracking-wider text-[#071422]/60 dark:text-white/60 mb-2 font-mono">
                 {t.inputEmail}
               </label>
               <input
@@ -479,17 +458,6 @@ export default function UnifiedHomepage() {
 
       {/* ─── FOOTER ─────────────────────────────────────────────────────────────── */}
       <footer className="py-12 text-center text-xs text-[#071422]/40 dark:text-white/40 border-t border-[#071422]/5 dark:border-white/5 pb-24 md:pb-12">
-        {/* Footer Logo */}
-        <div className="flex justify-center mb-4">
-          <div className="relative w-10 h-10 opacity-60 hover:opacity-100 transition-opacity duration-300">
-            <Image
-              src="/sierra-estates-shield.png"
-              alt="Sierra Estates"
-              fill
-              className="object-contain"
-            />
-          </div>
-        </div>
         <p className="font-mono">© {new Date().getFullYear()} SIERRA ESTATES. ALL RIGHTS RESERVED.</p>
         <p className="mt-2 text-[10px]">{t.navSubtitle}</p>
         <div className="flex items-center justify-center gap-6 mt-4 text-[10px]">

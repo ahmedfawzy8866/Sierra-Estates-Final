@@ -21,7 +21,7 @@
     },
     {
       "path": "/api/cron/whatsapp-dispatch",
-      "schedule": "0 12 * * *"
+      "schedule": "*/10 * * * *"
     }
   ],
   "headers": [
@@ -58,6 +58,11 @@
       "source": "/old-landing",
       "destination": "/",
       "permanent": true
+    },
+    {
+      "source": "/admin",
+      "destination": "/admin/dashboard",
+      "permanent": false
     }
   ]
 }

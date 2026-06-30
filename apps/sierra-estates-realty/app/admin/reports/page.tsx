@@ -6,7 +6,6 @@ import { collection, query, where, getCountFromServer } from 'firebase/firestore
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Users, Home, Handshake, DollarSign } from 'lucide-react';
 import { logger } from '@/lib/logger';
-import StatsCard from '@/components/Admin/StatsCard';
 
 interface ReportMetric {
   label: string;
@@ -161,14 +160,14 @@ export default function AdminReportsPage() {
   }, [timeRange]);
 
   return (
-    <div className="space-y-8 font-sans">
+    <div className="space-y-8" style={{ fontFamily: 'var(--font-body)' }}>
       {/* ══ Header ══ */}
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
         <div>
           <span className="text-[10px] tracking-[0.25em] font-semibold text-[#C9A84C] uppercase font-mono block mb-2">
             Business Intelligence
           </span>
-          <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-[#071422] font-serif">
+          <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-[#071422]" style={{ fontFamily: 'var(--font-display)' }}>
             Analytics & Reports
           </h1>
           <p className="text-[#3a5570] text-sm mt-1">Real-time performance metrics and insights</p>
@@ -195,15 +194,35 @@ export default function AdminReportsPage() {
               <div key={i} className="bg-white rounded-2xl p-6 h-40 sm:h-36 animate-pulse" />
             ))
           : metrics.map(metric => {
+              const Icon = metric.icon;
               return (
-                <StatsCard
+                <div
                   key={metric.label}
-                  label={metric.label}
-                  value={metric.value}
-                  change={metric.change}
-                  icon={metric.icon}
-                  color={metric.color}
-                />
+                  className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] hover:shadow-[0_8px_32px_-4px_rgba(3,22,50,0.1)] transition-all border-l-[3px]"
+                  style={{ borderLeftColor: metric.color }}
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div
+                      className="w-10 h-10 rounded-xl flex items-center justify-center"
+                      style={{ backgroundColor: `${metric.color}14` }}
+                    >
+                      <Icon size={18} style={{ color: metric.color }} />
+                    </div>
+                    {metric.change && (
+                      <div className="flex items-center gap-0.5 text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg">
+                        <span>↑</span>
+                        {metric.change}
+                      </div>
+                    )}
+                  </div>
+                  <div
+                    className="text-3xl sm:text-2xl font-bold tracking-tight mb-2"
+                    style={{ color: metric.color, fontFamily: 'var(--font-mono)' }}
+                  >
+                    {metric.value}
+                  </div>
+                  <div className="text-xs sm:text-xs font-semibold text-[#071422]">{metric.label}</div>
+                </div>
               );
             })}
       </div>
@@ -212,7 +231,7 @@ export default function AdminReportsPage() {
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Deal Trends */}
         <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] overflow-hidden">
-          <h2 className="text-lg font-bold text-[#071422] mb-6 font-serif">
+          <h2 className="text-lg font-bold text-[#071422] mb-6" style={{ fontFamily: 'var(--font-display)' }}>
             Deal Trends
           </h2>
           {!loading && chartData.length > 0 ? (
@@ -239,7 +258,7 @@ export default function AdminReportsPage() {
 
         {/* Pipeline Distribution */}
         <div className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] overflow-hidden">
-          <h2 className="text-lg font-bold text-[#071422] mb-6 font-serif">
+          <h2 className="text-lg font-bold text-[#071422] mb-6" style={{ fontFamily: 'var(--font-display)' }}>
             Pipeline Breakdown
           </h2>
           {!loading && pieData.length > 0 ? (
@@ -272,7 +291,7 @@ export default function AdminReportsPage() {
 
       {/* ══ Top Agents ══ */}
       <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)]">
-        <h2 className="text-lg sm:text-xl font-bold text-[#071422] mb-6 font-serif">
+        <h2 className="text-lg sm:text-xl font-bold text-[#071422] mb-6" style={{ fontFamily: 'var(--font-display)' }}>
           Top Agents
         </h2>
         <div className="space-y-3">

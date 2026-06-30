@@ -1,48 +1,14 @@
 import { useLang } from "@/contexts/LanguageContext";
-import { useLocation } from "wouter";
 
 export default function Footer() {
   const { t, isRTL } = useLang();
-  const [, setLocation] = useLocation();
   const scrollTo = (href: string) => document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
 
   const cols = [
-    {
-      title: t("footer.company"),
-      links: [
-        { label: "About Sierra", action: () => scrollTo("#hero") },
-        { label: "Our Team", action: () => scrollTo("#intel") },
-        { label: "Careers", action: () => scrollTo("#contact") },
-        { label: "Agent Login", action: () => setLocation("/login") },
-      ],
-    },
-    {
-      title: t("footer.services"),
-      links: [
-        { label: "Property Search", action: () => setLocation("/properties") },
-        { label: "Virtual Tours", action: () => scrollTo("#tour") },
-        { label: "AI Matching", action: () => scrollTo("#intel") },
-        { label: "Investment Advice", action: () => scrollTo("#contact") },
-      ],
-    },
-    {
-      title: t("footer.compounds"),
-      links: [
-        { label: "Hyde Park", action: () => setLocation("/properties") },
-        { label: "Mountain View iCity", action: () => setLocation("/properties") },
-        { label: "Mivida", action: () => setLocation("/properties") },
-        { label: "Uptown Cairo", action: () => setLocation("/properties") },
-        { label: "Madinaty", action: () => setLocation("/properties") },
-      ],
-    },
-    {
-      title: t("footer.legal"),
-      links: [
-        { label: "Privacy Policy", action: () => {} },
-        { label: "Terms of Use", action: () => {} },
-        { label: "Cookie Policy", action: () => {} },
-      ],
-    },
+    { title: t("footer.company"), links: ["About Sierra", "Our Team", "Press", "Careers"] },
+    { title: t("footer.services"), links: ["Property Search", "Virtual Tours", "AI Matching", "Investment Advice"] },
+    { title: t("footer.compounds"), links: ["Hyde Park", "Mountain View iCity", "Mivida", "Uptown Cairo", "Madinaty"] },
+    { title: t("footer.legal"), links: ["Privacy Policy", "Terms of Use", "Cookie Policy"] },
   ];
 
   return (
@@ -99,7 +65,7 @@ export default function Footer() {
           <div key={ci}>
             <div className="ftr-col-t">{col.title}</div>
             {col.links.map((l, li) => (
-              <span key={li} className="ftr-link" onClick={l.action}>{l.label}</span>
+              <span key={li} className="ftr-link" onClick={() => scrollTo("#hero")}>{l}</span>
             ))}
           </div>
         ))}
