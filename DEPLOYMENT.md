@@ -62,14 +62,14 @@ serverless model can't host anyway.
 | Component | Path | Runtime / Host | How it deploys | Domain / endpoint |
 |---|---|---|---|---|
 | **Public site + Admin + API** | `apps/sierra-estates-realty` | Vercel (Next.js) | **Auto on push to `main`** → `.github/workflows/deploy-vercel.yml` | `sierra-estates.net` (+ `admin.sierra-estates.net`) |
-| **Backend infra** | `firestore.rules`, `storage.rules`, `functions/` | Firebase · project `sierra-blu` | Manual → `deploy-firebase.yml` or `firebase deploy --only firestore:rules,storage,functions` | n/a (Firestore/Storage/Auth) |
+| **Backend infra** | `firestore.rules`, `storage.rules`, `functions/` | Firebase · project `sierra-blu` | Manual → `firebase deploy --only firestore:rules,storage,functions --project sierra-blu` (or `pnpm deploy:rules` / `pnpm deploy:functions`) | n/a (Firestore/Storage/Auth) |
 | **Legacy-admin redirect** | `firebase.json` hosting `sierra-estates-admin` | Firebase Hosting site `admin-sierra-blu` | Manual → `deploy-firebase.yml` | 302 → `sierra-estates.net/admin` |
 | **Python API + bots** | `apps/api` | Cloud Run (FastAPI, :8000) | `gcloud run deploy` (own pipeline) | gated by `PYTHON_API_BASE_URL` |
 | **Intelligence OS** | external (Remix) | Cloud Run · europe-west2 | `gcloud run deploy` (own pipeline) | `NEXT_PUBLIC_INTELLIGENCE_OS_URL` |
 | **WhatsApp scraper + automation** | `workflows/`, n8n templates | n8n · Docker/VPS :5678 | imported into n8n; triggered by `N8N_BASE_URL` webhooks | internal |
 | **Scheduled external sync** | `workflows/*` | GitHub Actions | `external-workflows.yml` (cron) | n/a |
 | **Shared libraries** | `packages/*` | — | **not deployed** — consumed by apps at build time | n/a |
-| **`apps/admin-dashboard`** | `apps/admin-dashboard` | **retired** | not a deployed admin; its Firebase site only redirects | — |
+| **`apps/admin-dashboard`** | _removed_ | **deleted** | legacy Vite second-admin UI removed; Firebase serves only the redirect (never an app) | — |
 
 > Identifiers (non-secret, committed): Vercel team `team_k2jaWfzeatcYG6Qpl0ooCxQh`,
 > project `prj_theA731k4WdFVhgd6DJUP6pAry6n` (root dir pinned to
@@ -144,7 +144,7 @@ feature branch  ──PR──▶  CI (lint hard-gate)  ──review──▶  s
 1. Branch from `main` (never commit to `main`).
 2. Open a **draft PR**; let CI run; mark **ready**; **squash-merge** when green.
 3. Merge to `main` → `deploy-vercel.yml` builds + deploys **production** automatically.
-4. **Backend** changes (rules/functions): run **`deploy-firebase.yml`** (Actions tab) or `firebase deploy --only firestore:rules,storage,functions --project sierra-blu`.
+4. **Backend** changes (rules/functions): `firebase deploy --only firestore:rules,storage,functions --project sierra-blu` (or `pnpm deploy:rules` / `pnpm deploy:functions`). The **`deploy-firebase.yml`** Action deploys only the admin **redirect**, not rules/functions.
 5. **Cloud Run** apps (`apps/api`, Intelligence OS): deploy via their own `gcloud run deploy`.
 6. **n8n** workflows: import/update in the n8n UI.
 

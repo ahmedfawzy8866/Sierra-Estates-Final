@@ -1,21 +1,20 @@
-name: Deploy · Firebase (Admin Nexus)
+name: Deploy · Firebase (admin redirect)
 
-# Deploys apps/admin-dashboard to Firebase Hosting (target: sierra-estates-admin,
-# Web Frameworks SSR via Cloud Run — see firebase.json/.firebaserc). The public
-# site (apps/sierra-estates-realty) stays on Vercel and is untouched by this
-# workflow. Manual trigger only — run from the Actions tab when ready to ship;
+# Deploys the legacy-admin Firebase Hosting REDIRECT (target: sierra-estates-admin
+# → 302 to https://sierra-estates.net/admin), as defined in firebase.json. The
+# real admin + public site run on Vercel (apps/sierra-estates-realty) and are
+# untouched by this workflow. The old Vite `apps/admin-dashboard` second-admin
+# UI this workflow used to deploy has been removed — Firebase hosts only the
+# redirect now, never an app. Manual trigger only — run from the Actions tab;
 # nothing here runs automatically on push, per the "no deploys without explicit
 # approval" project rule.
 #
+# Firestore/Storage rules and Cloud Functions are deployed separately (see
+# DEPLOYMENT.md §6 / GO_LIVE_CHECKLIST.md), not by this workflow.
+#
 # Required repo secret:
-#   FIREBASE_SERVICE_ACCOUNT_SIERRA_BLU — JSON key for a service account with
-#   Firebase Hosting Admin + Cloud Run Admin + Service Account User roles on
-#   the sierra-estates Firebase project.
-# Optional repo secrets (public Firebase web config — safe to omit short-term,
-# but the deployed app's client-side Firebase init will fail without them):
-#   NEXT_PUBLIC_FIREBASE_API_KEY, NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-#   NEXT_PUBLIC_FIREBASE_PROJECT_ID, NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-#   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID, NEXT_PUBLIC_FIREBASE_APP_ID
+#   FIREBASE_SERVICE_ACCOUNT_SIERRA_BLU — service-account JSON with the
+#   Firebase Hosting Admin role on the sierra-blu project.
 
 on:
   workflow_dispatch: {}
@@ -30,29 +29,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_SIERRA_BLU }}
 
-      - name: Deploy to Firebase Hosting
-        env:
-          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
-          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
-          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
-          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
-          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
-          NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
-        run: npx firebase-tools@latest deploy --only hosting:sierra-estates-admin --project sierra-estates --non-interactive
+      - name: Deploy admin redirect (Firebase Hosting)
+        run: npx firebase-tools@latest deploy --only hosting:sierra-estates-admin --project sierra-blu --non-interactive

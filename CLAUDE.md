@@ -46,9 +46,9 @@ and `lib/server/python-api-client.ts`) — scrapers/agents never run in the Next
 path, so they cannot affect public-site performance.
 
 **Admin lives in ONE place**: `apps/sierra-estates-realty/app/admin/`. The duplicate
-`apps/admin-dashboard` (Vite SPA) is no longer a deployed admin — its Firebase Hosting site
-now redirects to the Vercel `/admin`. (The older `sierra-estates-admin-portal` was removed
-June 2026.)
+`apps/admin-dashboard` (Vite SPA) has been **removed** — its Firebase Hosting site now serves
+only a 302 redirect to the Vercel `/admin` (wired in `firebase.json` → `firebase/admin-redirect/`).
+(The older `sierra-estates-admin-portal` was removed June 2026.)
 
 ## Config files
 - `vercel.json` (root) — Vercel config when root dir = repo root (buildCommand points to the realty app)
