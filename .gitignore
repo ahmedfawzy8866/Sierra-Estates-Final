@@ -40,7 +40,7 @@ docs/secrets.local.md
 # misc
 /.sass-cache
 /connect.lock
-/coverage/
+coverage/
 /libpeerconnection.log
 npm-debug.log
 yarn-error.log
@@ -90,3 +90,5 @@ firestore-debug.log
 # Credentials & runtime logs — never commit
 **/service-account.json
 /logs/
+Sierra Engine Brain/
+coverage/
