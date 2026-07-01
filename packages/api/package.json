@@ -11,6 +11,7 @@
     "./clients": "./src/clients/index.ts"
   },
   "dependencies": {
+    "@sierra-estates/agents": "workspace:*",
     "axios": "^1.6",
     "express": "^4.18",
     "pino": "^8.17",

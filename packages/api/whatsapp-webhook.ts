@@ -35,7 +35,13 @@ router.post('/webhook', async (req, res) => {
   const twilioSignature = req.headers['x-twilio-signature'] as string | undefined;
   const url = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
 
-  if (twilioAuthToken && twilioSignature) {
+  if (twilioAuthToken) {
+    if (!twilioSignature) {
+      logger.warn({ msg: 'Missing Twilio signature — rejecting webhook' });
+      res.sendStatus(403);
+      return;
+    }
+
     const isValid = twilio.validateRequest(twilioAuthToken, twilioSignature, url, req.body);
     if (!isValid) {
       logger.warn({ msg: 'Invalid Twilio signature — rejecting webhook' });

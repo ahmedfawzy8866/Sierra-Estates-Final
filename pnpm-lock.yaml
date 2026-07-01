@@ -549,6 +549,9 @@ importers:
 
   packages/api:
     dependencies:
+      '@sierra-estates/agents':
+        specifier: workspace:*
+        version: link:../agents
       axios:
         specifier: ^1.6
         version: 1.18.0

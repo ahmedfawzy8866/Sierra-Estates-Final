@@ -41,27 +41,38 @@ export class OpenClawAgent {
    */
   async extractUnitData(text: string): Promise<ExtractedUnit | null> {
     logger.info({ msg: 'Extracting unit data from text', textLength: text.length });
-    
-    // In a real implementation, you would call OpenAI here with the UnitExtractionSchema
-    // Example:
-    // const response = await openai.chat.completions.create({
-    //   model: 'gpt-4o',
-    //   messages: [
-    //     { role: 'system', content: 'Extract real estate unit details into JSON.' },
-    //     { role: 'user', content: text }
-    //   ],
-    //   functions: [{ name: 'extract_unit', parameters: zodToJsonSchema(UnitExtractionSchema) }]
-    // });
-    
-    // For now, we mock the extraction process for demonstration
-    // The actual integration will be plugged into the user's preferred LLM
+
     try {
-      const mockResult: ExtractedUnit = {
-        type: 'Apartment',
-        location: 'Unknown',
+      const source = text.trim();
+      if (!source) return null;
+
+      const typeMatch = source.match(/\b(apartment|villa|office|duplex|penthouse|studio|townhouse|shop)\b/i);
+      const locationMatch =
+        source.match(/\b(?:in|at|location[:\s-]+)\s*([A-Za-z0-9][A-Za-z0-9\s,.'-]{1,80})/i) ||
+        source.match(/\b(?:compound|district|area)[:\s-]+([A-Za-z0-9][A-Za-z0-9\s,.'-]{1,80})/i);
+
+      const priceMatch = source.match(/\b(?:price|budget|for)\s*[:\-]?\s*(?:EGP|USD|AED)?\s*([0-9][0-9,]*)\b/i);
+      const bedroomsMatch = source.match(/\b(\d{1,2})\s*(?:bed|bedroom|br)\b/i);
+      const bathroomsMatch = source.match(/\b(\d{1,2})\s*(?:bath|bathroom)\b/i);
+      const areaMatch = source.match(/\b([0-9]{2,4})\s*(?:sqm|m2|m²)\b/i);
+      const contactMatch = source.match(/\b(?:\+?\d{8,15}|wa\.?me\/\d{8,15})\b/i);
+      const currencyMatch = source.match(/\b(EGP|USD|AED|SAR|EUR)\b/i);
+
+      const extracted: Partial<ExtractedUnit> = {
+        type: typeMatch?.[1],
+        location: locationMatch?.[1]?.trim(),
+        price: priceMatch?.[1] ? Number(priceMatch[1].replaceAll(',', '')) : undefined,
+        bedrooms: bedroomsMatch?.[1] ? Number(bedroomsMatch[1]) : undefined,
+        bathrooms: bathroomsMatch?.[1] ? Number(bathroomsMatch[1]) : undefined,
+        area_sqm: areaMatch?.[1] ? Number(areaMatch[1]) : undefined,
+        contact_info: contactMatch?.[0],
+        currency: currencyMatch?.[1]?.toUpperCase(),
       };
-      
-      return mockResult;
+
+      const parsed = UnitExtractionSchema.safeParse(extracted);
+      if (!parsed.success) return null;
+
+      return parsed.data;
     } catch (error) {
       logger.error({ err: error, msg: 'Failed to extract unit data' });
       return null;

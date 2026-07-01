@@ -48,7 +48,7 @@
           "__rl": true,
           "value": "YOUR_GOOGLE_SHEET_ID",
           "mode": "id"
-        }
+        },
         "sheetName": {
           "__rl": true,
           "value": "Owners-Rent",
