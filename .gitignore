@@ -40,7 +40,7 @@ docs/secrets.local.md
 # misc
 /.sass-cache
 /connect.lock
-/coverage/
+coverage/
 /libpeerconnection.log
 npm-debug.log
 yarn-error.log
@@ -75,3 +75,20 @@ firestore-debug.log
 
 # Vercel
 .vercel
+
+# Legacy duplicate/obsolete directories (removed from the repo; must not reappear)
+/sierra-estates-final/
+/frontend-vercel/
+/backend/
+/app/
+/components/
+/hooks/
+
+# Local-only unrelated repo clone
+/system_prompts_leaks/
+
+# Credentials & runtime logs — never commit
+**/service-account.json
+/logs/
+Sierra Engine Brain/
+coverage/
