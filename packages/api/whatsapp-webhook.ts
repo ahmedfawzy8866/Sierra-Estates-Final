@@ -1,5 +1,6 @@
 import express from 'express';
 import pino from 'pino';
+import twilio from 'twilio';
 import { OpenClawAgent } from '@sierra-estates/agents';
 
 const router = express.Router();
@@ -10,21 +11,50 @@ const openClaw = new OpenClawAgent({
   airtableApiKey: process.env.AIRTABLE_API_KEY || '',
   airtableBaseId: process.env.AIRTABLE_BASE_ID || '',
   airtableTableName: process.env.AIRTABLE_TABLE_NAME || 'Units',
-  aiApiKey: process.env.AI_API_KEY || ''
+  aiApiKey: process.env.GOOGLE_AI_API_KEY || ''
 });
+
+/**
+ * Escapes special XML characters to prevent XML injection.
+ */
+function escapeXml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
 
 /**
  * Webhook endpoint to receive messages from WhatsApp (e.g., Twilio, Meta API)
  */
 router.post('/webhook', async (req, res) => {
-  logger.info({ body: req.body, msg: 'Incoming WhatsApp Webhook' });
+  // Validate Twilio signature to prevent spoofed requests
+  const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN || '';
+  const twilioSignature = req.headers['x-twilio-signature'] as string | undefined;
+  const url = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
+
+  if (twilioAuthToken && twilioSignature) {
+    const isValid = twilio.validateRequest(twilioAuthToken, twilioSignature, url, req.body);
+    if (!isValid) {
+      logger.warn({ msg: 'Invalid Twilio signature — rejecting webhook' });
+      res.sendStatus(403);
+      return;
+    }
+  }
+
+  // Log only non-sensitive metadata to avoid capturing PII
+  logger.info({ msg: 'Incoming WhatsApp Webhook', hasBody: !!req.body, contentType: req.headers['content-type'] });
 
   try {
     // 1. Extract message details from payload. 
     // Format depends on your provider (Twilio vs Meta Cloud API)
     // Assuming a generic format for this example:
     const messageText = req.body.Body || req.body.message || req.body.text?.body || req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0]?.text?.body;
-    const sender = req.body.From || req.body.sender || req.body.entry?.[0]?.changes?.[0]?.value?.contacts?.[0]?.wa_id;
+    const rawSender = req.body.From || req.body.sender || req.body.entry?.[0]?.changes?.[0]?.value?.contacts?.[0]?.wa_id;
+    // Coerce sender to string to avoid passing undefined to handleWhatsAppMessage
+    const sender = rawSender != null ? String(rawSender) : '';
 
     if (!messageText) {
       logger.warn('No text found in incoming message payload');
@@ -40,7 +70,7 @@ router.post('/webhook', async (req, res) => {
     res.setHeader('Content-Type', 'text/xml');
     res.status(200).send(`
       <Response>
-        <Message>${reply}</Message>
+        <Message>${escapeXml(reply)}</Message>
       </Response>
     `);
   } catch (error) {

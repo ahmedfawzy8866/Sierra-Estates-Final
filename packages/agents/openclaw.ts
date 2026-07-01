@@ -40,7 +40,7 @@ export class OpenClawAgent {
    * Parses the text using an AI API (e.g., OpenAI or Gemini) to extract structured unit data
    */
   async extractUnitData(text: string): Promise<ExtractedUnit | null> {
-    logger.info({ msg: 'Extracting unit data from text', text });
+    logger.info({ msg: 'Extracting unit data from text', textLength: text.length });
     
     // In a real implementation, you would call OpenAI here with the UnitExtractionSchema
     // Example:
@@ -72,10 +72,11 @@ export class OpenClawAgent {
    * Pushes the extracted unit data to Airtable
    */
   async pushToAirtable(unit: ExtractedUnit): Promise<boolean> {
-    logger.info({ msg: 'Pushing unit data to Airtable', unit });
+    logger.info({ msg: 'Pushing unit data to Airtable', unitType: unit.type, location: unit.location });
     
     try {
-      const response = await fetch(`https://api.airtable.com/v0/${this.airtableBaseId}/${this.airtableTableName}`, {
+      const encodedTableName = encodeURIComponent(this.airtableTableName);
+      const response = await fetch(`https://api.airtable.com/v0/${this.airtableBaseId}/${encodedTableName}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.airtableApiKey}`,
