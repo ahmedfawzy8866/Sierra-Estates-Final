@@ -46,9 +46,9 @@
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "1g9GIcCM0slC5QplgzatZRxU46O_N4CR2jgDp9DeMYZk",
+          "value": "YOUR_GOOGLE_SHEET_ID",
           "mode": "id"
-        },
+        }
         "sheetName": {
           "__rl": true,
           "value": "Owners-Rent",
