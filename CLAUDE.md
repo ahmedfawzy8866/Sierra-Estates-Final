@@ -16,7 +16,7 @@ Next.js 16 (App Router, Turbopack) · React 19 · TypeScript 5 (strict) · Tailw
 > every app deploys, domains/DNS, secrets, CI gates, and how to add a new app. Read it
 > before any deployment/infra change. The summary below must stay consistent with it.
 
-Production domain: **sierra-estates.net** (Vercel). Firebase project: **sierra-estates**.
+Production domain: **sierra-estates.net** (Vercel). Firebase project: **sierra-blu**.
 
 ```
 Vercel → apps/sierra-estates-realty (Next.js)        [auto-deploys on push to main]
@@ -29,7 +29,7 @@ Vercel → apps/sierra-estates-realty (Next.js)        [auto-deploys on push to 
     /admin/...                 env var (host-split in middleware.ts); INERT until that
                                subdomain + its Vercel project exist (single-deploy today).
 
-Firebase (project sierra-estates) — backend + one redirect (NOT the web host)
+Firebase (project sierra-blu) — backend + one redirect (NOT the web host)
   Firestore / Storage / Auth   Database, media, authentication (staff-gated rules)
   Functions                    Background jobs (functions/)
   Hosting (admin-sierra-estates)   302-redirects the legacy admin URL → the Vercel /admin
@@ -54,7 +54,7 @@ June 2026.)
 - `vercel.json` (root) — Vercel config when root dir = repo root (buildCommand points to the realty app)
 - `apps/sierra-estates-realty/vercel.json` — Vercel config when root dir = `apps/sierra-estates-realty` in Vercel dashboard
 - `firebase.json` — Functions + Firestore rules + Storage rules + emulators + Hosting (the `admin-sierra-estates` site is a 302 redirect to the Vercel `/admin`, not a real web host)
-- `.firebaserc` — Firebase project: `sierra-estates` (hosting target `sierra-estates-admin` → site `admin-sierra-estates`)
+- `.firebaserc` — Firebase project: `sierra-blu` (hosting target `sierra-estates-admin` → site `admin-sierra-blu`)
 
 ## Layout
 

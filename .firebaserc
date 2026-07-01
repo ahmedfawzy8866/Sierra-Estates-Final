@@ -1,14 +1,14 @@
 {
   "projects": {
-    "default": "sierra-estates",
-    "staging": "sierra-estates",
-    "production": "sierra-estates"
+    "default": "sierra-blu",
+    "staging": "sierra-blu",
+    "production": "sierra-blu"
   },
   "targets": {
-    "sierra-estates": {
+    "sierra-blu": {
       "hosting": {
         "sierra-estates-admin": [
-          "admin-sierra-estates"
+          "admin-sierra-blu"
         ]
       }
     }
