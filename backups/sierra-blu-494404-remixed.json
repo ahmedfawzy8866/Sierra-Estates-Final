@@ -1,0 +1,4460 @@
+{
+  "activities": [
+    {
+      "id": "act-log-0",
+      "data": {
+        "id": "act-log-0",
+        "type": "lead_created",
+        "actorId": "system-concierge",
+        "actorName": "Scribe S1 Bot",
+        "description": "Extracted inbound Lead Ahmed Al-Mansoori from WhatsApp real estate ingestion stream.",
+        "relatedId": "lead-ahmed-al-mansoori",
+        "relatedType": "lead",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z"
+      },
+      "createTime": "2026-06-21T05:28:13.207Z",
+      "updateTime": "2026-06-21T05:28:13.207Z"
+    },
+    {
+      "id": "act-log-1",
+      "data": {
+        "id": "act-log-1",
+        "type": "lead_stage_changed",
+        "actorId": "agent-sierra-02",
+        "actorName": "Karim Hegazi",
+        "description": "Moved Dr. Laila Hegazi to 'Negotiate' stage after successful viewing of Mivida Penthouse.",
+        "relatedId": "lead-dr.-laila-hegazi",
+        "relatedType": "lead",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z"
+      },
+      "createTime": "2026-06-21T05:28:14.182Z",
+      "updateTime": "2026-06-21T05:28:14.182Z"
+    },
+    {
+      "id": "act-log-3",
+      "data": {
+        "id": "act-log-3",
+        "type": "sale_closed",
+        "actorId": "agent-sierra-01",
+        "actorName": "Heba Soliman",
+        "description": "Closed won contract deal for Dr. Karim Fahmy at commission ROI 2.5%.",
+        "relatedId": "lead-dr.-karim-fahmy",
+        "relatedType": "lead",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z"
+      },
+      "createTime": "2026-06-21T05:28:15.891Z",
+      "updateTime": "2026-06-21T05:28:15.891Z"
+    },
+    {
+      "id": "act-log-2",
+      "data": {
+        "id": "act-log-2",
+        "type": "listing_added",
+        "actorId": "system-pf-sync",
+        "actorName": "Property Finder Sync Hub",
+        "description": "Synchronized 50 luxury property listings matching Quiet Luxury criteria.",
+        "relatedId": "list-unit-0",
+        "relatedType": "unit",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z"
+      },
+      "createTime": "2026-06-21T05:28:15.032Z",
+      "updateTime": "2026-06-21T05:28:15.032Z"
+    }
+  ],
+  "agents": [
+    {
+      "id": "agent-9",
+      "data": {
+        "name": "Social Publisher",
+        "desc": "Schedules and formats automated social media posting across networks.",
+        "emoji": "📱",
+        "color": "#0ea5e9",
+        "status": "Online",
+        "load": 45,
+        "tasks": 754,
+        "updatedAt": {
+          "_seconds": 1781898789,
+          "_nanoseconds": 767000000
+        }
+      },
+      "createTime": "2026-06-21T05:28:24.060Z",
+      "updateTime": "2026-06-21T05:28:24.060Z"
+    },
+    {
+      "id": "agent-5",
+      "data": {
+        "name": "The Scribe",
+        "desc": "S1-S2 ingestion — parses raw listing data & normalizes to Sierra schema.",
+        "emoji": "✍️",
+        "color": "#E63946",
+        "status": "Idle",
+        "load": 12,
+        "tasks": 4821,
+        "updatedAt": {
+          "_seconds": 1781898789,
+          "_nanoseconds": 767000000
+        }
+      },
+      "createTime": "2026-06-21T05:28:20.603Z",
+      "updateTime": "2026-06-21T05:28:20.603Z"
+    },
+    {
+      "id": "agent-1",
+      "data": {
+        "name": "Sierra Bot",
+        "desc": "Primary AI concierge — handles client queries & property recommendations.",
+        "emoji": "🤖",
+        "color": "#C8961A",
+        "status": "Online",
+        "load": 94,
+        "tasks": 1203,
+        "updatedAt": {
+          "_seconds": 1781898789,
+          "_nanoseconds": 767000000
+        }
+      },
+      "createTime": "2026-06-21T05:28:17.102Z",
+      "updateTime": "2026-06-21T05:28:17.102Z"
+    },
+    {
+      "id": "agent-8",
+      "data": {
+        "name": "Data Enricher",
+        "desc": "Cross-references property data with external APIs for comprehensive details.",
+        "emoji": "🧠",
+        "color": "#6366f1",
+        "status": "Running",
+        "load": 82,
+        "tasks": 1980,
+        "updatedAt": {
+          "_seconds": 1781898789,
+          "_nanoseconds": 767000000
+        }
+      },
+      "createTime": "2026-06-21T05:28:23.214Z",
+      "updateTime": "2026-06-21T05:28:23.214Z"
+    },
+    {
+      "id": "agent-4",
+      "data": {
+        "name": "WhatsApp Scraper",
+        "desc": "Monitors Property Finder, OLX & WhatsApp groups.",
+        "emoji": "🕵️",
+        "color": "#7C3AED",
+        "status": "Running",
+        "load": 55,
+        "tasks": 2847,
+        "updatedAt": {
+          "_seconds": 1781898789,
+          "_nanoseconds": 767000000
+        }
+      },
+      "createTime": "2026-06-21T05:28:19.742Z",
+      "updateTime": "2026-06-21T05:28:19.742Z"
+    },
+    {
+      "id": "agent-6",
+      "data": {
+        "name": "The Curator",
+        "desc": "S3-S5 inventory management — deduplication, quality scoring & AVM pricing.",
+        "emoji": "🎨",
+        "color": "#E9C176",
+        "status": "Online",
+        "load": 68,
+        "tasks": 3102,
+        "updatedAt": {
+          "_seconds": 1781898789,
+          "_nanoseconds": 767000000
+        }
+      },
+      "createTime": "2026-06-21T05:28:21.449Z",
+      "updateTime": "2026-06-21T05:28:21.449Z"
+    },
+    {
+      "id": "agent-2",
+      "data": {
+        "name": "Leila / Lola",
+        "desc": "Bilingual Arabic specialist — translates listings & handles Gulf negotiations.",
+        "emoji": "🐪",
+        "color": "#1E88D9",
+        "status": "Online",
+        "load": 87,
+        "tasks": 889,
+        "updatedAt": {
+          "_seconds": 1781898789,
+          "_nanoseconds": 767000000
+        }
+      },
+      "createTime": "2026-06-21T05:28:17.977Z",
+      "updateTime": "2026-06-21T05:28:17.977Z"
+    },
+    {
+      "id": "agent-3",
+      "data": {
+        "name": "Stage-9 Closer",
+        "desc": "Automated deal engine — drafts contracts, DocuSign, Stripe deposits.",
+        "emoji": "💼",
+        "color": "#34D399",
+        "status": "Online",
+        "load": 71,
+        "tasks": 421,
+        "updatedAt": {
+          "_seconds": 1781898789,
+          "_nanoseconds": 767000000
+        }
+      },
+      "createTime": "2026-06-21T05:28:18.830Z",
+      "updateTime": "2026-06-21T05:28:18.830Z"
+    },
+    {
+      "id": "agent-7",
+      "data": {
+        "name": "Marketing Oracle",
+        "desc": "Auto-generates ad copy and configures Facebook/Instagram targeted campaigns.",
+        "emoji": "📈",
+        "color": "#f43f5e",
+        "status": "Idle",
+        "load": 18,
+        "tasks": 412,
+        "updatedAt": {
+          "_seconds": 1781898789,
+          "_nanoseconds": 767000000
+        }
+      },
+      "createTime": "2026-06-21T05:28:22.286Z",
+      "updateTime": "2026-06-21T05:28:22.286Z"
+    }
+  ],
+  "developers": [
+    {
+      "id": "dev-palm-hills",
+      "data": {
+        "id": "dev-palm-hills",
+        "name": "Palm Hills Developments",
+        "nameAr": "بالم هيلز للتعمير",
+        "slug": "palm-hills",
+        "description": "Palm Hills Developments is a pioneer in creating integrated residential, commercial, and resort communities.",
+        "descriptionAr": "بالم هيلز هي شركة رائدة في إنشاء مجتمعات متكاملة سكنية، تجارية ومنتجعات سياحية.",
+        "foundedYear": 1997,
+        "headquarters": "Smart Village, Giza",
+        "website": "https://palmhillsdevelopments.com",
+        "rating": 4.7,
+        "totalProjects": 31,
+        "tier": "premium",
+        "logo": "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=200&h=200&fit=crop",
+        "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z"
+      },
+      "createTime": "2026-06-21T05:28:27.059Z",
+      "updateTime": "2026-06-21T05:28:27.059Z"
+    },
+    {
+      "id": "dev-sodic",
+      "data": {
+        "id": "dev-sodic",
+        "name": "Sodic",
+        "nameAr": "سوديك",
+        "slug": "sodic",
+        "description": "One of Egypt's leading real estate development companies, famous for high-end residential and commercial compounds.",
+        "descriptionAr": "واحدة من الشركات الرائدة في تطوير العقارات بمصر، تشتهر بالكمبوندات السكنية والتجارية الفاخرة.",
+        "foundedYear": 1996,
+        "headquarters": "Sheikh Zayed, Giza",
+        "website": "https://sodic.com",
+        "rating": 4.8,
+        "totalProjects": 24,
+        "tier": "premium",
+        "logo": "https://images.unsplash.com/photo-1545235617-9465d2a55698?w=200&h=200&fit=crop",
+        "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z"
+      },
+      "createTime": "2026-06-21T05:28:27.968Z",
+      "updateTime": "2026-06-21T05:28:27.968Z"
+    },
+    {
+      "id": "dev-emaar-egypt",
+      "data": {
+        "id": "dev-emaar-egypt",
+        "name": "Emaar Egypt",
+        "nameAr": "إعمار مصر",
+        "slug": "emaar-egypt",
+        "description": "Emaar Egypt drives master-planned lifestyle communities, delivering world-class luxury and exquisite standards.",
+        "descriptionAr": "إعمار مصر تقود المجتمعات السكنية الراقية، وتقدم رفاهية عالمية ومستويات جودة استثنائية.",
+        "foundedYear": 2005,
+        "headquarters": "New Cairo, Cairo",
+        "website": "https://emaaregypt.com",
+        "rating": 4.9,
+        "totalProjects": 15,
+        "tier": "premium",
+        "logo": "https://images.unsplash.com/photo-1606857521015-7f9fcf423740?w=200&h=200&fit=crop",
+        "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z"
+      },
+      "createTime": "2026-06-21T05:28:25.277Z",
+      "updateTime": "2026-06-21T05:28:25.277Z"
+    },
+    {
+      "id": "dev-mountain-view",
+      "data": {
+        "id": "dev-mountain-view",
+        "name": "Mountain View",
+        "nameAr": "ماونتن فيو",
+        "slug": "mountain-view",
+        "description": "Bringing happiness-led designs and American/European style architectures to premium Egyptian real estate.",
+        "descriptionAr": "تقديم تصميمات مبنية على السعادة وهندسة معمارية أمريكية وأوروبية لعقارات فاخرة في مصر.",
+        "foundedYear": 2005,
+        "headquarters": "New Cairo, Cairo",
+        "website": "https://mountainviewegypt.com",
+        "rating": 4.6,
+        "totalProjects": 18,
+        "tier": "standard",
+        "logo": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=200&fit=crop",
+        "coverImage": "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1200",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z"
+      },
+      "createTime": "2026-06-21T05:28:26.120Z",
+      "updateTime": "2026-06-21T05:28:26.120Z"
+    }
+  ],
+  "leads": [
+    {
+      "id": "lead-tarek-mansour",
+      "data": {
+        "id": "lead-tarek-mansour",
+        "name": "Tarek Mansour",
+        "phone": "+201012345678",
+        "email": "t.mansour@sodicholding.com",
+        "nationality": "Egyptian",
+        "stage": "contract",
+        "source": "walk-in",
+        "budget": 22000000,
+        "budgetMax": 26000000,
+        "preferredPropertyType": "villa",
+        "preferredLocations": [
+          "Golden Square"
+        ],
+        "timeline": "immediate",
+        "notes": "V12.0 Closer Stage: Contract currently being audited for signature approval.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "aiProfiling": {
+          "score": 71,
+          "interests": [
+            "Premium compounds",
+            "Flexible installments",
+            "Ready to move in"
+          ],
+          "topMatches": [
+            {
+              "unitId": "list-unit-2",
+              "matchScore": 99,
+              "matchReason": "Fits perfectly in requested villa property type in Sodic Villette with budget."
+            },
+            {
+              "unitId": "list-unit-4",
+              "matchScore": 95,
+              "matchReason": "Fits perfectly in requested villa property type in Sodic Villette with budget."
+            },
+            {
+              "unitId": "list-unit-7",
+              "matchScore": 86,
+              "matchReason": "Fits perfectly in requested villa property type in Palm Hills New Cairo with budget."
+            }
+          ],
+          "lastMatchRunAt": "2026-05-28T17:04:28.550Z"
+        },
+        "intelligence": {
+          "profile": {
+            "bedrooms": 4,
+            "budget": 22000000,
+            "location": "Golden Square",
+            "furnishingStatus": "unfurnished",
+            "nationality": "Egyptian"
+          },
+          "memory": {
+            "negativeSignals": [
+              {
+                "category": "price",
+                "description": "Rejects options with over 15% premium appreciation above appraised valuation",
+                "importance": 0.8
+              }
+            ],
+            "positiveSignals": [
+              "Appreciates private landscape structures",
+              "Prefers immediate possession readiness"
+            ]
+          },
+          "matrix": {
+            "lossAversionSensitivity": 0.75,
+            "premiumTolerance": 0.85
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:34.397Z",
+      "updateTime": "2026-06-21T05:28:34.397Z"
+    },
+    {
+      "id": "lead-ahmed-al-mansoori",
+      "data": {
+        "id": "lead-ahmed-al-mansoori",
+        "name": "Ahmed Al-Mansoori",
+        "phone": "+971501234567",
+        "email": "ahmed.mansoori@dubaiholding.ae",
+        "nationality": "Emirati",
+        "stage": "engage",
+        "source": "property-finder",
+        "budget": 15000000,
+        "budgetMax": 28000000,
+        "preferredPropertyType": "villa",
+        "preferredLocations": [
+          "Golden Square",
+          "Fifth Settlement"
+        ],
+        "timeline": "immediate",
+        "notes": "High net worth investor from Dubai. Seeking standalone villas in Villette or Mivida for personal residence and capital preservation.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "aiProfiling": {
+          "score": 77,
+          "interests": [
+            "Premium compounds",
+            "Flexible installments",
+            "Ready to move in"
+          ],
+          "topMatches": [
+            {
+              "unitId": "list-unit-2",
+              "matchScore": 91,
+              "matchReason": "Fits perfectly in requested villa property type in Sodic Villette with budget."
+            },
+            {
+              "unitId": "list-unit-4",
+              "matchScore": 85,
+              "matchReason": "Fits perfectly in requested villa property type in Sodic Villette with budget."
+            },
+            {
+              "unitId": "list-unit-7",
+              "matchScore": 94,
+              "matchReason": "Fits perfectly in requested villa property type in Palm Hills New Cairo with budget."
+            }
+          ],
+          "lastMatchRunAt": "2026-05-28T17:04:28.550Z"
+        },
+        "intelligence": {
+          "profile": {
+            "bedrooms": 4,
+            "budget": 15000000,
+            "location": "Golden Square",
+            "furnishingStatus": "unfurnished",
+            "nationality": "Emirati"
+          },
+          "memory": {
+            "negativeSignals": [
+              {
+                "category": "price",
+                "description": "Rejects options with over 15% premium appreciation above appraised valuation",
+                "importance": 0.8
+              }
+            ],
+            "positiveSignals": [
+              "Appreciates private landscape structures",
+              "Prefers immediate possession readiness"
+            ]
+          },
+          "matrix": {
+            "lossAversionSensitivity": 0.75,
+            "premiumTolerance": 0.85
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:29.194Z",
+      "updateTime": "2026-06-21T05:28:29.194Z"
+    },
+    {
+      "id": "lead-sherif-kamal",
+      "data": {
+        "id": "lead-sherif-kamal",
+        "name": "Sherif Kamal",
+        "phone": "+201009876543",
+        "email": "sherif.kamal@telecomegypt.com.eg",
+        "nationality": "Egyptian",
+        "stage": "viewing",
+        "source": "website",
+        "budget": 8000000,
+        "budgetMax": 13000000,
+        "preferredPropertyType": "apartment",
+        "preferredLocations": [
+          "Fifth Settlement"
+        ],
+        "timeline": "1-3months",
+        "notes": "Corporate executive. Interested in fully finished duplex apartments. Viewing scheduled for Sodic Villette.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "aiProfiling": {
+          "score": 83,
+          "interests": [
+            "Premium compounds",
+            "Flexible installments",
+            "Ready to move in"
+          ],
+          "topMatches": [
+            {
+              "unitId": "list-unit-11",
+              "matchScore": 86,
+              "matchReason": "Fits perfectly in requested apartment property type in Palm Hills New Cairo with budget."
+            },
+            {
+              "unitId": "list-unit-47",
+              "matchScore": 95,
+              "matchReason": "Fits perfectly in requested apartment property type in Mountain View iCity with budget."
+            },
+            {
+              "unitId": "list-unit-49",
+              "matchScore": 98,
+              "matchReason": "Fits perfectly in requested apartment property type in Mivida with budget."
+            }
+          ],
+          "lastMatchRunAt": "2026-05-28T17:04:28.550Z"
+        },
+        "intelligence": {
+          "profile": {
+            "bedrooms": 4,
+            "budget": 8000000,
+            "location": "Fifth Settlement",
+            "furnishingStatus": "unfurnished",
+            "nationality": "Egyptian"
+          },
+          "memory": {
+            "negativeSignals": [
+              {
+                "category": "price",
+                "description": "Rejects options with over 15% premium appreciation above appraised valuation",
+                "importance": 0.8
+              }
+            ],
+            "positiveSignals": [
+              "Appreciates private landscape structures",
+              "Prefers immediate possession readiness"
+            ]
+          },
+          "matrix": {
+            "lossAversionSensitivity": 0.75,
+            "premiumTolerance": 0.85
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:33.544Z",
+      "updateTime": "2026-06-21T05:28:33.544Z"
+    },
+    {
+      "id": "lead-mariam-roushdy",
+      "data": {
+        "id": "lead-mariam-roushdy",
+        "name": "Mariam Roushdy",
+        "phone": "+201115554433",
+        "email": "mariam.roushdy@aucegypt.edu",
+        "nationality": "Egyptian",
+        "stage": "qualify",
+        "source": "whatsapp",
+        "budget": 6000000,
+        "budgetMax": 9000000,
+        "preferredPropertyType": "townhouse",
+        "preferredLocations": [
+          "New Cairo North"
+        ],
+        "timeline": "1-3months",
+        "notes": "Inquired via S1 Lead Intake WhatsApp pipeline. Seeking semi-finished townhouse.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "aiProfiling": {
+          "score": 96,
+          "interests": [
+            "Premium compounds",
+            "Flexible installments",
+            "Ready to move in"
+          ],
+          "topMatches": [
+            {
+              "unitId": "list-unit-10",
+              "matchScore": 86,
+              "matchReason": "Fits perfectly in requested townhouse property type in Mivida with budget."
+            }
+          ],
+          "lastMatchRunAt": "2026-05-28T17:04:28.550Z"
+        },
+        "intelligence": {
+          "profile": {
+            "bedrooms": 4,
+            "budget": 6000000,
+            "location": "New Cairo North",
+            "furnishingStatus": "unfurnished",
+            "nationality": "Egyptian"
+          },
+          "memory": {
+            "negativeSignals": [
+              {
+                "category": "price",
+                "description": "Rejects options with over 15% premium appreciation above appraised valuation",
+                "importance": 0.8
+              }
+            ],
+            "positiveSignals": [
+              "Appreciates private landscape structures",
+              "Prefers immediate possession readiness"
+            ]
+          },
+          "matrix": {
+            "lossAversionSensitivity": 0.75,
+            "premiumTolerance": 0.85
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:32.693Z",
+      "updateTime": "2026-06-21T05:28:32.693Z"
+    },
+    {
+      "id": "lead-dr.-karim-fahmy",
+      "data": {
+        "id": "lead-dr.-karim-fahmy",
+        "name": "Dr. Karim Fahmy",
+        "phone": "+201023456781",
+        "email": "karim.fahmy@helwan.edu.eg",
+        "nationality": "Egyptian",
+        "stage": "closed-won",
+        "source": "website",
+        "budget": 14000000,
+        "budgetMax": 18000000,
+        "preferredPropertyType": "duplex",
+        "preferredLocations": [
+          "Fifth Settlement"
+        ],
+        "timeline": "immediate",
+        "notes": "Finalized closed won deal.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "aiProfiling": {
+          "score": 98,
+          "interests": [
+            "Premium compounds",
+            "Flexible installments",
+            "Ready to move in"
+          ],
+          "topMatches": [
+            {
+              "unitId": "list-unit-3",
+              "matchScore": 93,
+              "matchReason": "Fits perfectly in requested duplex property type in Sodic Villette with budget."
+            },
+            {
+              "unitId": "list-unit-5",
+              "matchScore": 89,
+              "matchReason": "Fits perfectly in requested duplex property type in Mountain View iCity with budget."
+            },
+            {
+              "unitId": "list-unit-12",
+              "matchScore": 85,
+              "matchReason": "Fits perfectly in requested duplex property type in Palm Hills New Cairo with budget."
+            }
+          ],
+          "lastMatchRunAt": "2026-05-28T17:04:28.550Z"
+        },
+        "intelligence": {
+          "profile": {
+            "bedrooms": 4,
+            "budget": 14000000,
+            "location": "Fifth Settlement",
+            "furnishingStatus": "unfurnished",
+            "nationality": "Egyptian"
+          },
+          "memory": {
+            "negativeSignals": [
+              {
+                "category": "price",
+                "description": "Rejects options with over 15% premium appreciation above appraised valuation",
+                "importance": 0.8
+              }
+            ],
+            "positiveSignals": [
+              "Appreciates private landscape structures",
+              "Prefers immediate possession readiness"
+            ]
+          },
+          "matrix": {
+            "lossAversionSensitivity": 0.75,
+            "premiumTolerance": 0.85
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:30.065Z",
+      "updateTime": "2026-06-21T05:28:30.065Z"
+    },
+    {
+      "id": "lead-khaled-al-otaibi",
+      "data": {
+        "id": "lead-khaled-al-otaibi",
+        "name": "Khaled Al-Otaibi",
+        "phone": "+966504567890",
+        "email": "k.otaibi@aramco.com",
+        "nationality": "Saudi",
+        "stage": "proposal",
+        "source": "social-media",
+        "budget": 20000000,
+        "budgetMax": 35000000,
+        "preferredPropertyType": "villa",
+        "preferredLocations": [
+          "New Cairo East"
+        ],
+        "timeline": "3-6months",
+        "notes": "Aramco engineer. Looking to acquire premium investment real estate in Cairo. Multiple proposals sent.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "aiProfiling": {
+          "score": 83,
+          "interests": [
+            "Premium compounds",
+            "Flexible installments",
+            "Ready to move in"
+          ],
+          "topMatches": [
+            {
+              "unitId": "list-unit-2",
+              "matchScore": 98,
+              "matchReason": "Fits perfectly in requested villa property type in Sodic Villette with budget."
+            },
+            {
+              "unitId": "list-unit-4",
+              "matchScore": 89,
+              "matchReason": "Fits perfectly in requested villa property type in Sodic Villette with budget."
+            },
+            {
+              "unitId": "list-unit-7",
+              "matchScore": 95,
+              "matchReason": "Fits perfectly in requested villa property type in Palm Hills New Cairo with budget."
+            }
+          ],
+          "lastMatchRunAt": "2026-05-28T17:04:28.550Z"
+        },
+        "intelligence": {
+          "profile": {
+            "bedrooms": 4,
+            "budget": 20000000,
+            "location": "New Cairo East",
+            "furnishingStatus": "unfurnished",
+            "nationality": "Saudi"
+          },
+          "memory": {
+            "negativeSignals": [
+              {
+                "category": "price",
+                "description": "Rejects options with over 15% premium appreciation above appraised valuation",
+                "importance": 0.8
+              }
+            ],
+            "positiveSignals": [
+              "Appreciates private landscape structures",
+              "Prefers immediate possession readiness"
+            ]
+          },
+          "matrix": {
+            "lossAversionSensitivity": 0.75,
+            "premiumTolerance": 0.85
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:31.823Z",
+      "updateTime": "2026-06-21T05:28:31.823Z"
+    },
+    {
+      "id": "lead-dr.-laila-hegazi",
+      "data": {
+        "id": "lead-dr.-laila-hegazi",
+        "name": "Dr. Laila Hegazi",
+        "phone": "+201223456789",
+        "email": "l.hegazi@cairomedic.com",
+        "nationality": "Egyptian",
+        "stage": "negotiate",
+        "source": "referral",
+        "budget": 18000000,
+        "budgetMax": 24000000,
+        "preferredPropertyType": "penthouse",
+        "preferredLocations": [
+          "Golden Square"
+        ],
+        "timeline": "immediate",
+        "notes": "Medical director. Insisting on a prime penthouse with private pool. Active negotiation in Mivida.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "aiProfiling": {
+          "score": 97,
+          "interests": [
+            "Premium compounds",
+            "Flexible installments",
+            "Ready to move in"
+          ],
+          "topMatches": [
+            {
+              "unitId": "list-unit-14",
+              "matchScore": 90,
+              "matchReason": "Fits perfectly in requested penthouse property type in Mivida with budget."
+            },
+            {
+              "unitId": "list-unit-18",
+              "matchScore": 85,
+              "matchReason": "Fits perfectly in requested penthouse property type in Mivida with budget."
+            },
+            {
+              "unitId": "list-unit-23",
+              "matchScore": 95,
+              "matchReason": "Fits perfectly in requested penthouse property type in Sodic Villette with budget."
+            }
+          ],
+          "lastMatchRunAt": "2026-05-28T17:04:28.550Z"
+        },
+        "intelligence": {
+          "profile": {
+            "bedrooms": 4,
+            "budget": 18000000,
+            "location": "Golden Square",
+            "furnishingStatus": "unfurnished",
+            "nationality": "Egyptian"
+          },
+          "memory": {
+            "negativeSignals": [
+              {
+                "category": "price",
+                "description": "Rejects options with over 15% premium appreciation above appraised valuation",
+                "importance": 0.8
+              }
+            ],
+            "positiveSignals": [
+              "Appreciates private landscape structures",
+              "Prefers immediate possession readiness"
+            ]
+          },
+          "matrix": {
+            "lossAversionSensitivity": 0.75,
+            "premiumTolerance": 0.85
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:30.972Z",
+      "updateTime": "2026-06-21T05:28:30.972Z"
+    }
+  ],
+  "listings": [
+    {
+      "id": "list-unit-42",
+      "data": {
+        "id": "list-unit-42",
+        "title": "Duplex at Palm Hills New Cairo",
+        "titleAr": "دوبلكس فاخرة في Palm Hills New Cairo",
+        "referenceNumber": "SB-PAL-1042",
+        "code": "UNIT-2042",
+        "slug": "duplex-palm-hills-new-cairo-42",
+        "propertyType": "duplex",
+        "category": "residential",
+        "status": "reserved",
+        "projectId": "proj-palm-hills-new-cairo",
+        "developerId": "dev-palm-hills",
+        "compound": "Palm Hills New Cairo",
+        "location": "New Cairo East",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.022536672486506,
+          "lng": 31.461344971227007
+        },
+        "area": 351,
+        "bedrooms": 3,
+        "bathrooms": 3,
+        "finishingType": "semi-finished",
+        "price": 9722455,
+        "pricePerSqm": 27699,
+        "downPayment": 972245,
+        "installmentYears": 8,
+        "monthlyInstallment": 104169,
+        "featuredImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600",
+          "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600",
+          "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Palm Hills New Cairo. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Palm Hills New Cairo. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 75,
+          "urgencyScore": 32,
+          "standard": "normal",
+          "marketVelocity": "fast",
+          "sentiment": "neutral",
+          "roi": "6.6%",
+          "valuation": {
+            "appraisedValue": 10174936,
+            "marketDifference": 48232,
+            "downpaymentRequired": 972245,
+            "installmentMonths": 96,
+            "monthlyInstallment": 91148,
+            "valuationStatus": "underpriced"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:29:02.061Z",
+      "updateTime": "2026-06-21T05:29:02.061Z"
+    },
+    {
+      "id": "list-unit-46",
+      "data": {
+        "id": "list-unit-46",
+        "title": "Apartment at Mountain View iCity",
+        "titleAr": "شقة فاخرة في Mountain View iCity",
+        "referenceNumber": "SB-MOU-1046",
+        "code": "UNIT-2046",
+        "slug": "apartment-mountain-view-icity-46",
+        "propertyType": "apartment",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-mv-icity",
+        "developerId": "dev-mountain-view",
+        "compound": "Mountain View iCity",
+        "location": "New Cairo North",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.03881408093185,
+          "lng": 31.47093463876919
+        },
+        "area": 419,
+        "bedrooms": 5,
+        "bathrooms": 5,
+        "finishingType": "fully-finished",
+        "price": 26565154,
+        "pricePerSqm": 63401,
+        "downPayment": 2656515,
+        "installmentYears": 8,
+        "monthlyInstallment": 249048,
+        "featuredImage": "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600",
+          "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600",
+          "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Mountain View iCity. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Mountain View iCity. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 98,
+          "urgencyScore": 86,
+          "standard": "luxury",
+          "marketVelocity": "stable",
+          "sentiment": "positive",
+          "roi": "5.4%",
+          "valuation": {
+            "appraisedValue": 25506146,
+            "marketDifference": -170337,
+            "downpaymentRequired": 2656515,
+            "installmentMonths": 96,
+            "monthlyInstallment": 249048,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:29:03.925Z",
+      "updateTime": "2026-06-21T05:29:03.925Z"
+    },
+    {
+      "id": "list-unit-13",
+      "data": {
+        "id": "list-unit-13",
+        "title": "Villa at Sodic Villette",
+        "titleAr": "فيلا فاخرة في Sodic Villette",
+        "referenceNumber": "SB-SOD-1013",
+        "code": "UNIT-2013",
+        "slug": "villa-sodic-villette-13",
+        "propertyType": "villa",
+        "category": "residential",
+        "status": "reserved",
+        "projectId": "proj-sodic-villette",
+        "developerId": "dev-sodic",
+        "compound": "Sodic Villette",
+        "location": "Golden Square",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.011753876818915,
+          "lng": 31.49592231893664
+        },
+        "area": 305,
+        "bedrooms": 4,
+        "bathrooms": 3,
+        "finishingType": "semi-finished",
+        "price": 14552764,
+        "pricePerSqm": 47713,
+        "downPayment": 1455276,
+        "installmentYears": 8,
+        "monthlyInstallment": 136432,
+        "featuredImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600",
+          "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
+          "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Sodic Villette. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Sodic Villette. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 78,
+          "urgencyScore": 58,
+          "standard": "normal",
+          "marketVelocity": "fast",
+          "sentiment": "positive",
+          "roi": "5.0%",
+          "valuation": {
+            "appraisedValue": 13956928,
+            "marketDifference": -854672,
+            "downpaymentRequired": 1455276,
+            "installmentMonths": 96,
+            "monthlyInstallment": 136432,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:40.212Z",
+      "updateTime": "2026-06-21T05:28:40.212Z"
+    },
+    {
+      "id": "list-unit-17",
+      "data": {
+        "id": "list-unit-17",
+        "title": "Townhouse at Palm Hills New Cairo",
+        "titleAr": "تاون هاوس فاخرة في Palm Hills New Cairo",
+        "referenceNumber": "SB-PAL-1017",
+        "code": "UNIT-2017",
+        "slug": "townhouse-palm-hills-new-cairo-17",
+        "propertyType": "townhouse",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-palm-hills-new-cairo",
+        "developerId": "dev-palm-hills",
+        "compound": "Palm Hills New Cairo",
+        "location": "New Cairo East",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.02698979287321,
+          "lng": 31.46533619420334
+        },
+        "area": 444,
+        "bedrooms": 3,
+        "bathrooms": 2,
+        "finishingType": "core-shell",
+        "price": 15669306,
+        "pricePerSqm": 35291,
+        "downPayment": 1566930,
+        "installmentYears": 7,
+        "monthlyInstallment": 167885,
+        "featuredImage": "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600",
+          "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600",
+          "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Palm Hills New Cairo. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Palm Hills New Cairo. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 98,
+          "urgencyScore": 37,
+          "standard": "normal",
+          "marketVelocity": "fast",
+          "sentiment": "neutral",
+          "roi": "8.1%",
+          "valuation": {
+            "appraisedValue": 16135742,
+            "marketDifference": 838673,
+            "downpaymentRequired": 1566930,
+            "installmentMonths": 84,
+            "monthlyInstallment": 146899,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:43.654Z",
+      "updateTime": "2026-06-21T05:28:43.654Z"
+    },
+    {
+      "id": "list-unit-33",
+      "data": {
+        "id": "list-unit-33",
+        "title": "Townhouse at Mountain View iCity",
+        "titleAr": "تاون هاوس فاخرة في Mountain View iCity",
+        "referenceNumber": "SB-MOU-1033",
+        "code": "UNIT-2033",
+        "slug": "townhouse-mountain-view-icity-33",
+        "propertyType": "townhouse",
+        "category": "residential",
+        "status": "sold",
+        "projectId": "proj-mv-icity",
+        "developerId": "dev-mountain-view",
+        "compound": "Mountain View iCity",
+        "location": "New Cairo North",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.035453219628977,
+          "lng": 31.469771516364727
+        },
+        "area": 307,
+        "bedrooms": 3,
+        "bathrooms": 2,
+        "finishingType": "core-shell",
+        "price": 29209704,
+        "pricePerSqm": 95145,
+        "downPayment": 2920970,
+        "installmentYears": 8,
+        "monthlyInstallment": 312961,
+        "featuredImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600",
+          "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
+          "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Mountain View iCity. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Mountain View iCity. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 84,
+          "urgencyScore": 92,
+          "standard": "luxury",
+          "marketVelocity": "stable",
+          "sentiment": "positive",
+          "roi": "6.4%",
+          "valuation": {
+            "appraisedValue": 29715640,
+            "marketDifference": 952957,
+            "downpaymentRequired": 2920970,
+            "installmentMonths": 84,
+            "monthlyInstallment": 273840,
+            "valuationStatus": "underpriced"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:57.170Z",
+      "updateTime": "2026-06-21T05:28:57.170Z"
+    },
+    {
+      "id": "list-unit-37",
+      "data": {
+        "id": "list-unit-37",
+        "title": "Villa at Mivida",
+        "titleAr": "فيلا فاخرة في Mivida",
+        "referenceNumber": "SB-MIV-1037",
+        "code": "UNIT-2037",
+        "slug": "villa-mivida-37",
+        "propertyType": "villa",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-mivida-emaar",
+        "developerId": "dev-emaar-egypt",
+        "compound": "Mivida",
+        "location": "Fifth Settlement",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.017889471361062,
+          "lng": 31.48635471057814
+        },
+        "area": 178,
+        "bedrooms": 2,
+        "bathrooms": 1,
+        "finishingType": "fully-finished",
+        "price": 19007562,
+        "pricePerSqm": 106784,
+        "downPayment": 1900756,
+        "installmentYears": 8,
+        "monthlyInstallment": 203652,
+        "featuredImage": "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600",
+          "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600",
+          "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Mivida. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Mivida. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 77,
+          "urgencyScore": 72,
+          "standard": "luxury",
+          "marketVelocity": "stable",
+          "sentiment": "neutral",
+          "roi": "6.0%",
+          "valuation": {
+            "appraisedValue": 19308496,
+            "marketDifference": 207994,
+            "downpaymentRequired": 1900756,
+            "installmentMonths": 96,
+            "monthlyInstallment": 178195,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:59.105Z",
+      "updateTime": "2026-06-21T05:28:59.105Z"
+    },
+    {
+      "id": "list-unit-23",
+      "data": {
+        "id": "list-unit-23",
+        "title": "Penthouse at Sodic Villette",
+        "titleAr": "بنتهاوس فاخرة في Sodic Villette",
+        "referenceNumber": "SB-SOD-1023",
+        "code": "UNIT-2023",
+        "slug": "penthouse-sodic-villette-23",
+        "propertyType": "penthouse",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-sodic-villette",
+        "developerId": "dev-sodic",
+        "compound": "Sodic Villette",
+        "location": "Golden Square",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.011153607455732,
+          "lng": 31.494109035517965
+        },
+        "area": 386,
+        "bedrooms": 5,
+        "bathrooms": 5,
+        "finishingType": "semi-finished",
+        "price": 6610519,
+        "pricePerSqm": 17125,
+        "downPayment": 661051,
+        "installmentYears": 8,
+        "monthlyInstallment": 70826,
+        "featuredImage": "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600",
+          "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600",
+          "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Sodic Villette. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Sodic Villette. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 94,
+          "urgencyScore": 58,
+          "standard": "normal",
+          "marketVelocity": "stable",
+          "sentiment": "positive",
+          "roi": "5.1%",
+          "valuation": {
+            "appraisedValue": 6414356,
+            "marketDifference": 367043,
+            "downpaymentRequired": 661051,
+            "installmentMonths": 96,
+            "monthlyInstallment": 61973,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:49.613Z",
+      "updateTime": "2026-06-21T05:28:49.613Z"
+    },
+    {
+      "id": "list-unit-8",
+      "data": {
+        "id": "list-unit-8",
+        "title": "Duplex at Sodic Villette",
+        "titleAr": "دوبلكس فاخرة في Sodic Villette",
+        "referenceNumber": "SB-SOD-1008",
+        "code": "UNIT-2008",
+        "slug": "duplex-sodic-villette-8",
+        "propertyType": "duplex",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-sodic-villette",
+        "developerId": "dev-sodic",
+        "compound": "Sodic Villette",
+        "location": "Golden Square",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.01496734321074,
+          "lng": 31.49431873617403
+        },
+        "area": 147,
+        "bedrooms": 3,
+        "bathrooms": 2,
+        "finishingType": "fully-finished",
+        "price": 19592207,
+        "pricePerSqm": 133280,
+        "downPayment": 1959220,
+        "installmentYears": 7,
+        "monthlyInstallment": 183676,
+        "featuredImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600",
+          "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600",
+          "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Sodic Villette. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Sodic Villette. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 77,
+          "urgencyScore": 20,
+          "standard": "luxury",
+          "marketVelocity": "stable",
+          "sentiment": "positive",
+          "roi": "7.2%",
+          "valuation": {
+            "appraisedValue": 18819641,
+            "marketDifference": -716407,
+            "downpaymentRequired": 1959220,
+            "installmentMonths": 96,
+            "monthlyInstallment": 209916,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:29:07.173Z",
+      "updateTime": "2026-06-21T05:29:07.173Z"
+    },
+    {
+      "id": "list-unit-27",
+      "data": {
+        "id": "list-unit-27",
+        "title": "Penthouse at Mountain View iCity",
+        "titleAr": "بنتهاوس فاخرة في Mountain View iCity",
+        "referenceNumber": "SB-MOU-1027",
+        "code": "UNIT-2027",
+        "slug": "penthouse-mountain-view-icity-27",
+        "propertyType": "penthouse",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-mv-icity",
+        "developerId": "dev-mountain-view",
+        "compound": "Mountain View iCity",
+        "location": "New Cairo North",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.04089292353118,
+          "lng": 31.472118368135863
+        },
+        "area": 329,
+        "bedrooms": 4,
+        "bathrooms": 3,
+        "finishingType": "core-shell",
+        "price": 23512022,
+        "pricePerSqm": 71465,
+        "downPayment": 2351202,
+        "installmentYears": 8,
+        "monthlyInstallment": 251914,
+        "featuredImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
+          "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600",
+          "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Mountain View iCity. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Mountain View iCity. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 83,
+          "urgencyScore": 53,
+          "standard": "luxury",
+          "marketVelocity": "stable",
+          "sentiment": "positive",
+          "roi": "5.3%",
+          "valuation": {
+            "appraisedValue": 24460080,
+            "marketDifference": 904250,
+            "downpaymentRequired": 2351202,
+            "installmentMonths": 84,
+            "monthlyInstallment": 251914,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:53.087Z",
+      "updateTime": "2026-06-21T05:28:53.087Z"
+    },
+    {
+      "id": "list-unit-4",
+      "data": {
+        "id": "list-unit-4",
+        "title": "Villa at Sodic Villette",
+        "titleAr": "فيلا فاخرة في Sodic Villette",
+        "referenceNumber": "SB-SOD-1004",
+        "code": "UNIT-2004",
+        "slug": "villa-sodic-villette-4",
+        "propertyType": "villa",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-sodic-villette",
+        "developerId": "dev-sodic",
+        "compound": "Sodic Villette",
+        "location": "Golden Square",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.015831884888115,
+          "lng": 31.492631694308542
+        },
+        "area": 429,
+        "bedrooms": 3,
+        "bathrooms": 3,
+        "finishingType": "semi-finished",
+        "price": 10986355,
+        "pricePerSqm": 25609,
+        "downPayment": 1098635,
+        "installmentYears": 8,
+        "monthlyInstallment": 102997,
+        "featuredImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600",
+          "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
+          "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Sodic Villette. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Sodic Villette. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 76,
+          "urgencyScore": 32,
+          "standard": "normal",
+          "marketVelocity": "fast",
+          "sentiment": "positive",
+          "roi": "7.7%",
+          "valuation": {
+            "appraisedValue": 10465317,
+            "marketDifference": 917111,
+            "downpaymentRequired": 1098635,
+            "installmentMonths": 96,
+            "monthlyInstallment": 102997,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:29:00.614Z",
+      "updateTime": "2026-06-21T05:29:00.614Z"
+    },
+    {
+      "id": "list-unit-0",
+      "data": {
+        "id": "list-unit-0",
+        "title": "Apartment at Palm Hills New Cairo",
+        "titleAr": "شقة فاخرة في Palm Hills New Cairo",
+        "referenceNumber": "SB-PAL-1000",
+        "code": "UNIT-2000",
+        "slug": "apartment-palm-hills-new-cairo-0",
+        "propertyType": "apartment",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-palm-hills-new-cairo",
+        "developerId": "dev-palm-hills",
+        "compound": "Palm Hills New Cairo",
+        "location": "New Cairo East",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.02067636940554,
+          "lng": 31.46200465990377
+        },
+        "area": 283,
+        "bedrooms": 3,
+        "bathrooms": 3,
+        "finishingType": "core-shell",
+        "price": 27202183,
+        "pricePerSqm": 96120,
+        "downPayment": 2720218,
+        "installmentYears": 8,
+        "monthlyInstallment": 291451,
+        "featuredImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600",
+          "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600",
+          "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": true,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Palm Hills New Cairo. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Palm Hills New Cairo. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 92,
+          "urgencyScore": 84,
+          "standard": "luxury",
+          "marketVelocity": "stable",
+          "sentiment": "positive",
+          "roi": "7.2%",
+          "valuation": {
+            "appraisedValue": 28138578,
+            "marketDifference": 961972,
+            "downpaymentRequired": 2720218,
+            "installmentMonths": 84,
+            "monthlyInstallment": 291451,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:35.880Z",
+      "updateTime": "2026-06-21T05:28:35.880Z"
+    },
+    {
+      "id": "list-unit-26",
+      "data": {
+        "id": "list-unit-26",
+        "title": "Apartment at Mountain View iCity",
+        "titleAr": "شقة فاخرة في Mountain View iCity",
+        "referenceNumber": "SB-MOU-1026",
+        "code": "UNIT-2026",
+        "slug": "apartment-mountain-view-icity-26",
+        "propertyType": "apartment",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-mv-icity",
+        "developerId": "dev-mountain-view",
+        "compound": "Mountain View iCity",
+        "location": "New Cairo North",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.036618518206552,
+          "lng": 31.471209290581193
+        },
+        "area": 248,
+        "bedrooms": 3,
+        "bathrooms": 3,
+        "finishingType": "core-shell",
+        "price": 17084096,
+        "pricePerSqm": 68887,
+        "downPayment": 1708409,
+        "installmentYears": 7,
+        "monthlyInstallment": 160163,
+        "featuredImage": "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600",
+          "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600",
+          "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": true,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Mountain View iCity. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Mountain View iCity. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 88,
+          "urgencyScore": 33,
+          "standard": "normal",
+          "marketVelocity": "stable",
+          "sentiment": "positive",
+          "roi": "4.7%",
+          "valuation": {
+            "appraisedValue": 16870823,
+            "marketDifference": 396335,
+            "downpaymentRequired": 1708409,
+            "installmentMonths": 96,
+            "monthlyInstallment": 160163,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:52.200Z",
+      "updateTime": "2026-06-21T05:28:52.200Z"
+    },
+    {
+      "id": "list-unit-9",
+      "data": {
+        "id": "list-unit-9",
+        "title": "Villa at Mivida",
+        "titleAr": "فيلا فاخرة في Mivida",
+        "referenceNumber": "SB-MIV-1009",
+        "code": "UNIT-2009",
+        "slug": "villa-mivida-9",
+        "propertyType": "villa",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-mivida-emaar",
+        "developerId": "dev-emaar-egypt",
+        "compound": "Mivida",
+        "location": "Fifth Settlement",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.016578983200304,
+          "lng": 31.484289577699567
+        },
+        "area": 204,
+        "bedrooms": 3,
+        "bathrooms": 2,
+        "finishingType": "semi-finished",
+        "price": 28983998,
+        "pricePerSqm": 142078,
+        "downPayment": 2898399,
+        "installmentYears": 7,
+        "monthlyInstallment": 271724,
+        "featuredImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600",
+          "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
+          "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Mivida. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Mivida. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 94,
+          "urgencyScore": 18,
+          "standard": "luxury",
+          "marketVelocity": "fast",
+          "sentiment": "positive",
+          "roi": "4.9%",
+          "valuation": {
+            "appraisedValue": 29588663,
+            "marketDifference": 674960,
+            "downpaymentRequired": 2898399,
+            "installmentMonths": 96,
+            "monthlyInstallment": 271724,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:29:07.614Z",
+      "updateTime": "2026-06-21T05:29:07.614Z"
+    },
+    {
+      "id": "list-unit-22",
+      "data": {
+        "id": "list-unit-22",
+        "title": "Apartment at Mivida",
+        "titleAr": "شقة فاخرة في Mivida",
+        "referenceNumber": "SB-MIV-1022",
+        "code": "UNIT-2022",
+        "slug": "apartment-mivida-22",
+        "propertyType": "apartment",
+        "category": "residential",
+        "status": "reserved",
+        "projectId": "proj-mivida-emaar",
+        "developerId": "dev-emaar-egypt",
+        "compound": "Mivida",
+        "location": "Fifth Settlement",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.01603205387297,
+          "lng": 31.490385189838598
+        },
+        "area": 175,
+        "bedrooms": 3,
+        "bathrooms": 3,
+        "finishingType": "semi-finished",
+        "price": 18286904,
+        "pricePerSqm": 104496,
+        "downPayment": 1828690,
+        "installmentYears": 7,
+        "monthlyInstallment": 171439,
+        "featuredImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600",
+          "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600",
+          "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Mivida. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Mivida. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 90,
+          "urgencyScore": 15,
+          "standard": "luxury",
+          "marketVelocity": "stable",
+          "sentiment": "neutral",
+          "roi": "4.8%",
+          "valuation": {
+            "appraisedValue": 17443005,
+            "marketDifference": 439364,
+            "downpaymentRequired": 1828690,
+            "installmentMonths": 84,
+            "monthlyInstallment": 171439,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:48.751Z",
+      "updateTime": "2026-06-21T05:28:48.751Z"
+    },
+    {
+      "id": "list-unit-1",
+      "data": {
+        "id": "list-unit-1",
+        "title": "Apartment at Sodic Villette",
+        "titleAr": "شقة فاخرة في Sodic Villette",
+        "referenceNumber": "SB-SOD-1001",
+        "code": "UNIT-2001",
+        "slug": "apartment-sodic-villette-1",
+        "propertyType": "apartment",
+        "category": "residential",
+        "status": "sold",
+        "projectId": "proj-sodic-villette",
+        "developerId": "dev-sodic",
+        "compound": "Sodic Villette",
+        "location": "Golden Square",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.01022697925781,
+          "lng": 31.48900115277811
+        },
+        "area": 404,
+        "bedrooms": 3,
+        "bathrooms": 3,
+        "finishingType": "fully-finished",
+        "price": 26909317,
+        "pricePerSqm": 66607,
+        "downPayment": 2690931,
+        "installmentYears": 7,
+        "monthlyInstallment": 288314,
+        "featuredImage": "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600",
+          "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600",
+          "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Sodic Villette. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Sodic Villette. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 76,
+          "urgencyScore": 25,
+          "standard": "luxury",
+          "marketVelocity": "fast",
+          "sentiment": "positive",
+          "roi": "7.7%",
+          "valuation": {
+            "appraisedValue": 25838250,
+            "marketDifference": 541312,
+            "downpaymentRequired": 2690931,
+            "installmentMonths": 84,
+            "monthlyInstallment": 288314,
+            "valuationStatus": "underpriced"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:36.731Z",
+      "updateTime": "2026-06-21T05:28:36.731Z"
+    },
+    {
+      "id": "list-unit-5",
+      "data": {
+        "id": "list-unit-5",
+        "title": "Duplex at Mountain View iCity",
+        "titleAr": "دوبلكس فاخرة في Mountain View iCity",
+        "referenceNumber": "SB-MOU-1005",
+        "code": "UNIT-2005",
+        "slug": "duplex-mountain-view-icity-5",
+        "propertyType": "duplex",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-mv-icity",
+        "developerId": "dev-mountain-view",
+        "compound": "Mountain View iCity",
+        "location": "New Cairo North",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.034211762623446,
+          "lng": 31.46951972871902
+        },
+        "area": 408,
+        "bedrooms": 4,
+        "bathrooms": 3,
+        "finishingType": "semi-finished",
+        "price": 11200132,
+        "pricePerSqm": 27451,
+        "downPayment": 1120013,
+        "installmentYears": 8,
+        "monthlyInstallment": 120001,
+        "featuredImage": "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600",
+          "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600",
+          "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": true,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Mountain View iCity. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Mountain View iCity. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 92,
+          "urgencyScore": 84,
+          "standard": "normal",
+          "marketVelocity": "stable",
+          "sentiment": "neutral",
+          "roi": "5.3%",
+          "valuation": {
+            "appraisedValue": 11728037,
+            "marketDifference": -48192,
+            "downpaymentRequired": 1120013,
+            "installmentMonths": 84,
+            "monthlyInstallment": 105001,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:29:05.793Z",
+      "updateTime": "2026-06-21T05:29:05.793Z"
+    },
+    {
+      "id": "list-unit-36",
+      "data": {
+        "id": "list-unit-36",
+        "title": "Villa at Palm Hills New Cairo",
+        "titleAr": "فيلا فاخرة في Palm Hills New Cairo",
+        "referenceNumber": "SB-PAL-1036",
+        "code": "UNIT-2036",
+        "slug": "villa-palm-hills-new-cairo-36",
+        "propertyType": "villa",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-palm-hills-new-cairo",
+        "developerId": "dev-palm-hills",
+        "compound": "Palm Hills New Cairo",
+        "location": "New Cairo East",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.02770126358991,
+          "lng": 31.466509772422537
+        },
+        "area": 467,
+        "bedrooms": 2,
+        "bathrooms": 1,
+        "finishingType": "semi-finished",
+        "price": 8881380,
+        "pricePerSqm": 19017,
+        "downPayment": 888138,
+        "installmentYears": 8,
+        "monthlyInstallment": 83262,
+        "featuredImage": "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600",
+          "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600",
+          "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Palm Hills New Cairo. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Palm Hills New Cairo. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 80,
+          "urgencyScore": 89,
+          "standard": "normal",
+          "marketVelocity": "fast",
+          "sentiment": "neutral",
+          "roi": "8.0%",
+          "valuation": {
+            "appraisedValue": 8472393,
+            "marketDifference": 482623,
+            "downpaymentRequired": 888138,
+            "installmentMonths": 84,
+            "monthlyInstallment": 95157,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:58.617Z",
+      "updateTime": "2026-06-21T05:28:58.617Z"
+    },
+    {
+      "id": "list-unit-32",
+      "data": {
+        "id": "list-unit-32",
+        "title": "Penthouse at Mivida",
+        "titleAr": "بنتهاوس فاخرة في Mivida",
+        "referenceNumber": "SB-MIV-1032",
+        "code": "UNIT-2032",
+        "slug": "penthouse-mivida-32",
+        "propertyType": "penthouse",
+        "category": "residential",
+        "status": "reserved",
+        "projectId": "proj-mivida-emaar",
+        "developerId": "dev-emaar-egypt",
+        "compound": "Mivida",
+        "location": "Fifth Settlement",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.016555057919636,
+          "lng": 31.48516585074141
+        },
+        "area": 120,
+        "bedrooms": 4,
+        "bathrooms": 3,
+        "finishingType": "fully-finished",
+        "price": 28957527,
+        "pricePerSqm": 241312,
+        "downPayment": 2895752,
+        "installmentYears": 8,
+        "monthlyInstallment": 271476,
+        "featuredImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600",
+          "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
+          "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Mivida. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Mivida. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 82,
+          "urgencyScore": 78,
+          "standard": "luxury",
+          "marketVelocity": "fast",
+          "sentiment": "neutral",
+          "roi": "5.7%",
+          "valuation": {
+            "appraisedValue": 27773733,
+            "marketDifference": -716881,
+            "downpaymentRequired": 2895752,
+            "installmentMonths": 84,
+            "monthlyInstallment": 271476,
+            "valuationStatus": "underpriced"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:56.729Z",
+      "updateTime": "2026-06-21T05:28:56.729Z"
+    },
+    {
+      "id": "list-unit-47",
+      "data": {
+        "id": "list-unit-47",
+        "title": "Apartment at Mountain View iCity",
+        "titleAr": "شقة فاخرة في Mountain View iCity",
+        "referenceNumber": "SB-MOU-1047",
+        "code": "UNIT-2047",
+        "slug": "apartment-mountain-view-icity-47",
+        "propertyType": "apartment",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-mv-icity",
+        "developerId": "dev-mountain-view",
+        "compound": "Mountain View iCity",
+        "location": "New Cairo North",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.034862854493124,
+          "lng": 31.46904044619463
+        },
+        "area": 139,
+        "bedrooms": 4,
+        "bathrooms": 3,
+        "finishingType": "fully-finished",
+        "price": 12731448,
+        "pricePerSqm": 91593,
+        "downPayment": 1273144,
+        "installmentYears": 8,
+        "monthlyInstallment": 119357,
+        "featuredImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600",
+          "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600",
+          "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Mountain View iCity. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Mountain View iCity. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 77,
+          "urgencyScore": 24,
+          "standard": "normal",
+          "marketVelocity": "fast",
+          "sentiment": "positive",
+          "roi": "7.0%",
+          "valuation": {
+            "appraisedValue": 13104767,
+            "marketDifference": -505338,
+            "downpaymentRequired": 1273144,
+            "installmentMonths": 96,
+            "monthlyInstallment": 119357,
+            "valuationStatus": "underpriced"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:29:04.393Z",
+      "updateTime": "2026-06-21T05:29:04.393Z"
+    },
+    {
+      "id": "list-unit-43",
+      "data": {
+        "id": "list-unit-43",
+        "title": "Duplex at Mivida",
+        "titleAr": "دوبلكس فاخرة في Mivida",
+        "referenceNumber": "SB-MIV-1043",
+        "code": "UNIT-2043",
+        "slug": "duplex-mivida-43",
+        "propertyType": "duplex",
+        "category": "residential",
+        "status": "sold",
+        "projectId": "proj-mivida-emaar",
+        "developerId": "dev-emaar-egypt",
+        "compound": "Mivida",
+        "location": "Fifth Settlement",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.015191263082144,
+          "lng": 31.487729449704737
+        },
+        "area": 453,
+        "bedrooms": 3,
+        "bathrooms": 2,
+        "finishingType": "core-shell",
+        "price": 17595584,
+        "pricePerSqm": 38842,
+        "downPayment": 1759558,
+        "installmentYears": 8,
+        "monthlyInstallment": 164958,
+        "featuredImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
+          "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600",
+          "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Mivida. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Mivida. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 79,
+          "urgencyScore": 62,
+          "standard": "normal",
+          "marketVelocity": "stable",
+          "sentiment": "neutral",
+          "roi": "7.5%",
+          "valuation": {
+            "appraisedValue": 16918883,
+            "marketDifference": -918466,
+            "downpaymentRequired": 1759558,
+            "installmentMonths": 96,
+            "monthlyInstallment": 164958,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:29:02.594Z",
+      "updateTime": "2026-06-21T05:29:02.594Z"
+    },
+    {
+      "id": "list-unit-16",
+      "data": {
+        "id": "list-unit-16",
+        "title": "Villa at Sodic Villette",
+        "titleAr": "فيلا فاخرة في Sodic Villette",
+        "referenceNumber": "SB-SOD-1016",
+        "code": "UNIT-2016",
+        "slug": "villa-sodic-villette-16",
+        "propertyType": "villa",
+        "category": "residential",
+        "status": "reserved",
+        "projectId": "proj-sodic-villette",
+        "developerId": "dev-sodic",
+        "compound": "Sodic Villette",
+        "location": "Golden Square",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.014217306002564,
+          "lng": 31.489394014876247
+        },
+        "area": 250,
+        "bedrooms": 2,
+        "bathrooms": 2,
+        "finishingType": "core-shell",
+        "price": 7268349,
+        "pricePerSqm": 29073,
+        "downPayment": 726834,
+        "installmentYears": 8,
+        "monthlyInstallment": 77875,
+        "featuredImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
+          "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600",
+          "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": true,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Sodic Villette. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Sodic Villette. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 77,
+          "urgencyScore": 69,
+          "standard": "normal",
+          "marketVelocity": "fast",
+          "sentiment": "positive",
+          "roi": "6.2%",
+          "valuation": {
+            "appraisedValue": 6917882,
+            "marketDifference": -210767,
+            "downpaymentRequired": 726834,
+            "installmentMonths": 84,
+            "monthlyInstallment": 77875,
+            "valuationStatus": "underpriced"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:42.801Z",
+      "updateTime": "2026-06-21T05:28:42.801Z"
+    },
+    {
+      "id": "list-unit-12",
+      "data": {
+        "id": "list-unit-12",
+        "title": "Duplex at Palm Hills New Cairo",
+        "titleAr": "دوبلكس فاخرة في Palm Hills New Cairo",
+        "referenceNumber": "SB-PAL-1012",
+        "code": "UNIT-2012",
+        "slug": "duplex-palm-hills-new-cairo-12",
+        "propertyType": "duplex",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-palm-hills-new-cairo",
+        "developerId": "dev-palm-hills",
+        "compound": "Palm Hills New Cairo",
+        "location": "New Cairo East",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.026905992597975,
+          "lng": 31.461432779590112
+        },
+        "area": 343,
+        "bedrooms": 3,
+        "bathrooms": 2,
+        "finishingType": "semi-finished",
+        "price": 11983692,
+        "pricePerSqm": 34937,
+        "downPayment": 1198369,
+        "installmentYears": 7,
+        "monthlyInstallment": 112347,
+        "featuredImage": "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600",
+          "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600",
+          "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Palm Hills New Cairo. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Palm Hills New Cairo. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 84,
+          "urgencyScore": 80,
+          "standard": "normal",
+          "marketVelocity": "stable",
+          "sentiment": "positive",
+          "roi": "7.1%",
+          "valuation": {
+            "appraisedValue": 12541867,
+            "marketDifference": 240995,
+            "downpaymentRequired": 1198369,
+            "installmentMonths": 96,
+            "monthlyInstallment": 128396,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:39.323Z",
+      "updateTime": "2026-06-21T05:28:39.323Z"
+    },
+    {
+      "id": "list-unit-10",
+      "data": {
+        "id": "list-unit-10",
+        "title": "Townhouse at Mivida",
+        "titleAr": "تاون هاوس فاخرة في Mivida",
+        "referenceNumber": "SB-MIV-1010",
+        "code": "UNIT-2010",
+        "slug": "townhouse-mivida-10",
+        "propertyType": "townhouse",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-mivida-emaar",
+        "developerId": "dev-emaar-egypt",
+        "compound": "Mivida",
+        "location": "Fifth Settlement",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.017420380021967,
+          "lng": 31.485027275007194
+        },
+        "area": 389,
+        "bedrooms": 2,
+        "bathrooms": 2,
+        "finishingType": "fully-finished",
+        "price": 8313250,
+        "pricePerSqm": 21370,
+        "downPayment": 831325,
+        "installmentYears": 8,
+        "monthlyInstallment": 77936,
+        "featuredImage": "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600",
+          "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600",
+          "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Mivida. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Mivida. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 89,
+          "urgencyScore": 60,
+          "standard": "normal",
+          "marketVelocity": "stable",
+          "sentiment": "positive",
+          "roi": "6.6%",
+          "valuation": {
+            "appraisedValue": 8609125,
+            "marketDifference": 978151,
+            "downpaymentRequired": 831325,
+            "installmentMonths": 96,
+            "monthlyInstallment": 89070,
+            "valuationStatus": "underpriced"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:37.581Z",
+      "updateTime": "2026-06-21T05:28:37.581Z"
+    },
+    {
+      "id": "list-unit-14",
+      "data": {
+        "id": "list-unit-14",
+        "title": "Penthouse at Mivida",
+        "titleAr": "بنتهاوس فاخرة في Mivida",
+        "referenceNumber": "SB-MIV-1014",
+        "code": "UNIT-2014",
+        "slug": "penthouse-mivida-14",
+        "propertyType": "penthouse",
+        "category": "residential",
+        "status": "reserved",
+        "projectId": "proj-mivida-emaar",
+        "developerId": "dev-emaar-egypt",
+        "compound": "Mivida",
+        "location": "Fifth Settlement",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.016478482031733,
+          "lng": 31.491434005403033
+        },
+        "area": 445,
+        "bedrooms": 3,
+        "bathrooms": 2,
+        "finishingType": "fully-finished",
+        "price": 12170138,
+        "pricePerSqm": 27348,
+        "downPayment": 1217013,
+        "installmentYears": 8,
+        "monthlyInstallment": 114095,
+        "featuredImage": "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600",
+          "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600",
+          "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Mivida. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Mivida. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 86,
+          "urgencyScore": 85,
+          "standard": "normal",
+          "marketVelocity": "stable",
+          "sentiment": "positive",
+          "roi": "7.6%",
+          "valuation": {
+            "appraisedValue": 12345750,
+            "marketDifference": 790832,
+            "downpaymentRequired": 1217013,
+            "installmentMonths": 84,
+            "monthlyInstallment": 130394,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:41.079Z",
+      "updateTime": "2026-06-21T05:28:41.079Z"
+    },
+    {
+      "id": "list-unit-49",
+      "data": {
+        "id": "list-unit-49",
+        "title": "Apartment at Mivida",
+        "titleAr": "شقة فاخرة في Mivida",
+        "referenceNumber": "SB-MIV-1049",
+        "code": "UNIT-2049",
+        "slug": "apartment-mivida-49",
+        "propertyType": "apartment",
+        "category": "residential",
+        "status": "reserved",
+        "projectId": "proj-mivida-emaar",
+        "developerId": "dev-emaar-egypt",
+        "compound": "Mivida",
+        "location": "Fifth Settlement",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.013770311067624,
+          "lng": 31.488098525452454
+        },
+        "area": 165,
+        "bedrooms": 4,
+        "bathrooms": 4,
+        "finishingType": "semi-finished",
+        "price": 10600150,
+        "pricePerSqm": 64243,
+        "downPayment": 1060015,
+        "installmentYears": 7,
+        "monthlyInstallment": 99376,
+        "featuredImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600",
+          "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
+          "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Mivida. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Mivida. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 98,
+          "urgencyScore": 87,
+          "standard": "normal",
+          "marketVelocity": "fast",
+          "sentiment": "neutral",
+          "roi": "7.4%",
+          "valuation": {
+            "appraisedValue": 10322453,
+            "marketDifference": 878342,
+            "downpaymentRequired": 1060015,
+            "installmentMonths": 96,
+            "monthlyInstallment": 99376,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:29:05.327Z",
+      "updateTime": "2026-06-21T05:29:05.327Z"
+    },
+    {
+      "id": "list-unit-41",
+      "data": {
+        "id": "list-unit-41",
+        "title": "Apartment at Mivida",
+        "titleAr": "شقة فاخرة في Mivida",
+        "referenceNumber": "SB-MIV-1041",
+        "code": "UNIT-2041",
+        "slug": "apartment-mivida-41",
+        "propertyType": "apartment",
+        "category": "residential",
+        "status": "sold",
+        "projectId": "proj-mivida-emaar",
+        "developerId": "dev-emaar-egypt",
+        "compound": "Mivida",
+        "location": "Fifth Settlement",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.01887964744183,
+          "lng": 31.485136675661618
+        },
+        "area": 167,
+        "bedrooms": 3,
+        "bathrooms": 3,
+        "finishingType": "core-shell",
+        "price": 29436550,
+        "pricePerSqm": 176266,
+        "downPayment": 2943655,
+        "installmentYears": 7,
+        "monthlyInstallment": 315391,
+        "featuredImage": "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600",
+          "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600",
+          "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Mivida. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Mivida. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 92,
+          "urgencyScore": 54,
+          "standard": "luxury",
+          "marketVelocity": "stable",
+          "sentiment": "neutral",
+          "roi": "6.9%",
+          "valuation": {
+            "appraisedValue": 30014723,
+            "marketDifference": -55771,
+            "downpaymentRequired": 2943655,
+            "installmentMonths": 84,
+            "monthlyInstallment": 315391,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:29:01.573Z",
+      "updateTime": "2026-06-21T05:29:01.573Z"
+    },
+    {
+      "id": "list-unit-18",
+      "data": {
+        "id": "list-unit-18",
+        "title": "Penthouse at Mivida",
+        "titleAr": "بنتهاوس فاخرة في Mivida",
+        "referenceNumber": "SB-MIV-1018",
+        "code": "UNIT-2018",
+        "slug": "penthouse-mivida-18",
+        "propertyType": "penthouse",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-mivida-emaar",
+        "developerId": "dev-emaar-egypt",
+        "compound": "Mivida",
+        "location": "Fifth Settlement",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.014868663054138,
+          "lng": 31.49058702366049
+        },
+        "area": 385,
+        "bedrooms": 5,
+        "bathrooms": 4,
+        "finishingType": "semi-finished",
+        "price": 22578868,
+        "pricePerSqm": 58646,
+        "downPayment": 2257886,
+        "installmentYears": 7,
+        "monthlyInstallment": 241916,
+        "featuredImage": "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600",
+          "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600",
+          "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Mivida. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Mivida. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 86,
+          "urgencyScore": 24,
+          "standard": "luxury",
+          "marketVelocity": "fast",
+          "sentiment": "positive",
+          "roi": "5.7%",
+          "valuation": {
+            "appraisedValue": 21974056,
+            "marketDifference": -405782,
+            "downpaymentRequired": 2257886,
+            "installmentMonths": 84,
+            "monthlyInstallment": 211676,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:44.506Z",
+      "updateTime": "2026-06-21T05:28:44.506Z"
+    },
+    {
+      "id": "list-unit-45",
+      "data": {
+        "id": "list-unit-45",
+        "title": "Penthouse at Mountain View iCity",
+        "titleAr": "بنتهاوس فاخرة في Mountain View iCity",
+        "referenceNumber": "SB-MOU-1045",
+        "code": "UNIT-2045",
+        "slug": "penthouse-mountain-view-icity-45",
+        "propertyType": "penthouse",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-mv-icity",
+        "developerId": "dev-mountain-view",
+        "compound": "Mountain View iCity",
+        "location": "New Cairo North",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.03471429235577,
+          "lng": 31.469892516268263
+        },
+        "area": 460,
+        "bedrooms": 4,
+        "bathrooms": 4,
+        "finishingType": "semi-finished",
+        "price": 6166179,
+        "pricePerSqm": 13404,
+        "downPayment": 616617,
+        "installmentYears": 8,
+        "monthlyInstallment": 66066,
+        "featuredImage": "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600",
+          "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600",
+          "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Mountain View iCity. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Mountain View iCity. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 90,
+          "urgencyScore": 61,
+          "standard": "normal",
+          "marketVelocity": "stable",
+          "sentiment": "positive",
+          "roi": "7.7%",
+          "valuation": {
+            "appraisedValue": 6153369,
+            "marketDifference": 909240,
+            "downpaymentRequired": 616617,
+            "installmentMonths": 84,
+            "monthlyInstallment": 57807,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:29:03.484Z",
+      "updateTime": "2026-06-21T05:29:03.484Z"
+    },
+    {
+      "id": "list-unit-7",
+      "data": {
+        "id": "list-unit-7",
+        "title": "Villa at Palm Hills New Cairo",
+        "titleAr": "فيلا فاخرة في Palm Hills New Cairo",
+        "referenceNumber": "SB-PAL-1007",
+        "code": "UNIT-2007",
+        "slug": "villa-palm-hills-new-cairo-7",
+        "propertyType": "villa",
+        "category": "residential",
+        "status": "sold",
+        "projectId": "proj-palm-hills-new-cairo",
+        "developerId": "dev-palm-hills",
+        "compound": "Palm Hills New Cairo",
+        "location": "New Cairo East",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.020762790838628,
+          "lng": 31.460719815351126
+        },
+        "area": 120,
+        "bedrooms": 5,
+        "bathrooms": 5,
+        "finishingType": "semi-finished",
+        "price": 18129198,
+        "pricePerSqm": 151076,
+        "downPayment": 1812919,
+        "installmentYears": 8,
+        "monthlyInstallment": 169961,
+        "featuredImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600",
+          "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600",
+          "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Palm Hills New Cairo. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Palm Hills New Cairo. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 96,
+          "urgencyScore": 76,
+          "standard": "luxury",
+          "marketVelocity": "stable",
+          "sentiment": "neutral",
+          "roi": "4.7%",
+          "valuation": {
+            "appraisedValue": 18740737,
+            "marketDifference": -448102,
+            "downpaymentRequired": 1812919,
+            "installmentMonths": 96,
+            "monthlyInstallment": 194241,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:29:06.712Z",
+      "updateTime": "2026-06-21T05:29:06.712Z"
+    },
+    {
+      "id": "list-unit-3",
+      "data": {
+        "id": "list-unit-3",
+        "title": "Duplex at Sodic Villette",
+        "titleAr": "دوبلكس فاخرة في Sodic Villette",
+        "referenceNumber": "SB-SOD-1003",
+        "code": "UNIT-2003",
+        "slug": "duplex-sodic-villette-3",
+        "propertyType": "duplex",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-sodic-villette",
+        "developerId": "dev-sodic",
+        "compound": "Sodic Villette",
+        "location": "Golden Square",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.00862759766551,
+          "lng": 31.48922683491763
+        },
+        "area": 170,
+        "bedrooms": 5,
+        "bathrooms": 4,
+        "finishingType": "core-shell",
+        "price": 17773754,
+        "pricePerSqm": 104551,
+        "downPayment": 1777375,
+        "installmentYears": 8,
+        "monthlyInstallment": 166628,
+        "featuredImage": "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600",
+          "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600",
+          "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Sodic Villette. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Sodic Villette. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 98,
+          "urgencyScore": 67,
+          "standard": "normal",
+          "marketVelocity": "stable",
+          "sentiment": "positive",
+          "roi": "6.4%",
+          "valuation": {
+            "appraisedValue": 18491990,
+            "marketDifference": -987253,
+            "downpaymentRequired": 1777375,
+            "installmentMonths": 96,
+            "monthlyInstallment": 190433,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:55.316Z",
+      "updateTime": "2026-06-21T05:28:55.316Z"
+    },
+    {
+      "id": "list-unit-28",
+      "data": {
+        "id": "list-unit-28",
+        "title": "Villa at Palm Hills New Cairo",
+        "titleAr": "فيلا فاخرة في Palm Hills New Cairo",
+        "referenceNumber": "SB-PAL-1028",
+        "code": "UNIT-2028",
+        "slug": "villa-palm-hills-new-cairo-28",
+        "propertyType": "villa",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-palm-hills-new-cairo",
+        "developerId": "dev-palm-hills",
+        "compound": "Palm Hills New Cairo",
+        "location": "New Cairo East",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.024724815166383,
+          "lng": 31.466352028691126
+        },
+        "area": 124,
+        "bedrooms": 2,
+        "bathrooms": 2,
+        "finishingType": "core-shell",
+        "price": 20199630,
+        "pricePerSqm": 162900,
+        "downPayment": 2019963,
+        "installmentYears": 7,
+        "monthlyInstallment": 216424,
+        "featuredImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600",
+          "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600",
+          "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Palm Hills New Cairo. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Palm Hills New Cairo. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 94,
+          "urgencyScore": 91,
+          "standard": "luxury",
+          "marketVelocity": "fast",
+          "sentiment": "positive",
+          "roi": "7.8%",
+          "valuation": {
+            "appraisedValue": 19703451,
+            "marketDifference": -813226,
+            "downpaymentRequired": 2019963,
+            "installmentMonths": 84,
+            "monthlyInstallment": 216424,
+            "valuationStatus": "underpriced"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:53.956Z",
+      "updateTime": "2026-06-21T05:28:53.956Z"
+    },
+    {
+      "id": "list-unit-20",
+      "data": {
+        "id": "list-unit-20",
+        "title": "Apartment at Palm Hills New Cairo",
+        "titleAr": "شقة فاخرة في Palm Hills New Cairo",
+        "referenceNumber": "SB-PAL-1020",
+        "code": "UNIT-2020",
+        "slug": "apartment-palm-hills-new-cairo-20",
+        "propertyType": "apartment",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-palm-hills-new-cairo",
+        "developerId": "dev-palm-hills",
+        "compound": "Palm Hills New Cairo",
+        "location": "New Cairo East",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.02145126477823,
+          "lng": 31.467338429748125
+        },
+        "area": 332,
+        "bedrooms": 2,
+        "bathrooms": 2,
+        "finishingType": "core-shell",
+        "price": 13134001,
+        "pricePerSqm": 39560,
+        "downPayment": 1313400,
+        "installmentYears": 8,
+        "monthlyInstallment": 123131,
+        "featuredImage": "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600",
+          "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600",
+          "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": true,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Palm Hills New Cairo. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Palm Hills New Cairo. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 99,
+          "urgencyScore": 46,
+          "standard": "normal",
+          "marketVelocity": "fast",
+          "sentiment": "neutral",
+          "roi": "5.4%",
+          "valuation": {
+            "appraisedValue": 12762786,
+            "marketDifference": -813106,
+            "downpaymentRequired": 1313400,
+            "installmentMonths": 84,
+            "monthlyInstallment": 123131,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:47.047Z",
+      "updateTime": "2026-06-21T05:28:47.047Z"
+    },
+    {
+      "id": "list-unit-24",
+      "data": {
+        "id": "list-unit-24",
+        "title": "Townhouse at Sodic Villette",
+        "titleAr": "تاون هاوس فاخرة في Sodic Villette",
+        "referenceNumber": "SB-SOD-1024",
+        "code": "UNIT-2024",
+        "slug": "townhouse-sodic-villette-24",
+        "propertyType": "townhouse",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-sodic-villette",
+        "developerId": "dev-sodic",
+        "compound": "Sodic Villette",
+        "location": "Golden Square",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.013340562192734,
+          "lng": 31.491935060902932
+        },
+        "area": 226,
+        "bedrooms": 5,
+        "bathrooms": 5,
+        "finishingType": "fully-finished",
+        "price": 28088546,
+        "pricePerSqm": 124285,
+        "downPayment": 2808854,
+        "installmentYears": 7,
+        "monthlyInstallment": 300948,
+        "featuredImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600",
+          "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600",
+          "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Sodic Villette. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Sodic Villette. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 78,
+          "urgencyScore": 32,
+          "standard": "luxury",
+          "marketVelocity": "fast",
+          "sentiment": "positive",
+          "roi": "5.4%",
+          "valuation": {
+            "appraisedValue": 27957866,
+            "marketDifference": 835740,
+            "downpaymentRequired": 2808854,
+            "installmentMonths": 96,
+            "monthlyInstallment": 300948,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:50.482Z",
+      "updateTime": "2026-06-21T05:28:50.482Z"
+    },
+    {
+      "id": "list-unit-30",
+      "data": {
+        "id": "list-unit-30",
+        "title": "Apartment at Mivida",
+        "titleAr": "شقة فاخرة في Mivida",
+        "referenceNumber": "SB-MIV-1030",
+        "code": "UNIT-2030",
+        "slug": "apartment-mivida-30",
+        "propertyType": "apartment",
+        "category": "residential",
+        "status": "reserved",
+        "projectId": "proj-mivida-emaar",
+        "developerId": "dev-emaar-egypt",
+        "compound": "Mivida",
+        "location": "Fifth Settlement",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.018739759129954,
+          "lng": 31.487480668132097
+        },
+        "area": 328,
+        "bedrooms": 2,
+        "bathrooms": 2,
+        "finishingType": "core-shell",
+        "price": 15061991,
+        "pricePerSqm": 45920,
+        "downPayment": 1506199,
+        "installmentYears": 8,
+        "monthlyInstallment": 141206,
+        "featuredImage": "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600",
+          "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600",
+          "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Mivida. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Mivida. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 91,
+          "urgencyScore": 37,
+          "standard": "normal",
+          "marketVelocity": "stable",
+          "sentiment": "positive",
+          "roi": "7.5%",
+          "valuation": {
+            "appraisedValue": 15412441,
+            "marketDifference": 556077,
+            "downpaymentRequired": 1506199,
+            "installmentMonths": 96,
+            "monthlyInstallment": 161378,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:55.797Z",
+      "updateTime": "2026-06-21T05:28:55.797Z"
+    },
+    {
+      "id": "list-unit-34",
+      "data": {
+        "id": "list-unit-34",
+        "title": "Penthouse at Sodic Villette",
+        "titleAr": "بنتهاوس فاخرة في Sodic Villette",
+        "referenceNumber": "SB-SOD-1034",
+        "code": "UNIT-2034",
+        "slug": "penthouse-sodic-villette-34",
+        "propertyType": "penthouse",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-sodic-villette",
+        "developerId": "dev-sodic",
+        "compound": "Sodic Villette",
+        "location": "Golden Square",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.012025417245425,
+          "lng": 31.49470241113858
+        },
+        "area": 466,
+        "bedrooms": 4,
+        "bathrooms": 3,
+        "finishingType": "fully-finished",
+        "price": 16876681,
+        "pricePerSqm": 36216,
+        "downPayment": 1687668,
+        "installmentYears": 7,
+        "monthlyInstallment": 180821,
+        "featuredImage": "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600",
+          "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600",
+          "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Sodic Villette. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Sodic Villette. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 77,
+          "urgencyScore": 93,
+          "standard": "normal",
+          "marketVelocity": "fast",
+          "sentiment": "neutral",
+          "roi": "5.0%",
+          "valuation": {
+            "appraisedValue": 16432367,
+            "marketDifference": -85177,
+            "downpaymentRequired": 1687668,
+            "installmentMonths": 96,
+            "monthlyInstallment": 180821,
+            "valuationStatus": "underpriced"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:57.642Z",
+      "updateTime": "2026-06-21T05:28:57.642Z"
+    },
+    {
+      "id": "list-unit-38",
+      "data": {
+        "id": "list-unit-38",
+        "title": "Apartment at Mivida",
+        "titleAr": "شقة فاخرة في Mivida",
+        "referenceNumber": "SB-MIV-1038",
+        "code": "UNIT-2038",
+        "slug": "apartment-mivida-38",
+        "propertyType": "apartment",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-mivida-emaar",
+        "developerId": "dev-emaar-egypt",
+        "compound": "Mivida",
+        "location": "Fifth Settlement",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.01345641728069,
+          "lng": 31.491249326881285
+        },
+        "area": 270,
+        "bedrooms": 3,
+        "bathrooms": 2,
+        "finishingType": "fully-finished",
+        "price": 28120549,
+        "pricePerSqm": 104150,
+        "downPayment": 2812054,
+        "installmentYears": 8,
+        "monthlyInstallment": 263630,
+        "featuredImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
+          "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600",
+          "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Mivida. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Mivida. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 79,
+          "urgencyScore": 50,
+          "standard": "luxury",
+          "marketVelocity": "fast",
+          "sentiment": "positive",
+          "roi": "7.3%",
+          "valuation": {
+            "appraisedValue": 27496205,
+            "marketDifference": 854681,
+            "downpaymentRequired": 2812054,
+            "installmentMonths": 84,
+            "monthlyInstallment": 263630,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:59.637Z",
+      "updateTime": "2026-06-21T05:28:59.637Z"
+    },
+    {
+      "id": "list-unit-35",
+      "data": {
+        "id": "list-unit-35",
+        "title": "Penthouse at Palm Hills New Cairo",
+        "titleAr": "بنتهاوس فاخرة في Palm Hills New Cairo",
+        "referenceNumber": "SB-PAL-1035",
+        "code": "UNIT-2035",
+        "slug": "penthouse-palm-hills-new-cairo-35",
+        "propertyType": "penthouse",
+        "category": "residential",
+        "status": "reserved",
+        "projectId": "proj-palm-hills-new-cairo",
+        "developerId": "dev-palm-hills",
+        "compound": "Palm Hills New Cairo",
+        "location": "New Cairo East",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.028115295698026,
+          "lng": 31.460126308362337
+        },
+        "area": 433,
+        "bedrooms": 4,
+        "bathrooms": 3,
+        "finishingType": "core-shell",
+        "price": 23250078,
+        "pricePerSqm": 53695,
+        "downPayment": 2325007,
+        "installmentYears": 8,
+        "monthlyInstallment": 217969,
+        "featuredImage": "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600",
+          "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600",
+          "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Palm Hills New Cairo. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Palm Hills New Cairo. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 88,
+          "urgencyScore": 83,
+          "standard": "luxury",
+          "marketVelocity": "fast",
+          "sentiment": "neutral",
+          "roi": "7.1%",
+          "valuation": {
+            "appraisedValue": 22266663,
+            "marketDifference": 455391,
+            "downpaymentRequired": 2325007,
+            "installmentMonths": 96,
+            "monthlyInstallment": 217969,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:58.137Z",
+      "updateTime": "2026-06-21T05:28:58.137Z"
+    },
+    {
+      "id": "list-unit-31",
+      "data": {
+        "id": "list-unit-31",
+        "title": "Villa at Palm Hills New Cairo",
+        "titleAr": "فيلا فاخرة في Palm Hills New Cairo",
+        "referenceNumber": "SB-PAL-1031",
+        "code": "UNIT-2031",
+        "slug": "villa-palm-hills-new-cairo-31",
+        "propertyType": "villa",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-palm-hills-new-cairo",
+        "developerId": "dev-palm-hills",
+        "compound": "Palm Hills New Cairo",
+        "location": "New Cairo East",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.021021355739514,
+          "lng": 31.467960657520134
+        },
+        "area": 135,
+        "bedrooms": 3,
+        "bathrooms": 3,
+        "finishingType": "core-shell",
+        "price": 22508517,
+        "pricePerSqm": 166729,
+        "downPayment": 2250851,
+        "installmentYears": 8,
+        "monthlyInstallment": 241162,
+        "featuredImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
+          "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600",
+          "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Palm Hills New Cairo. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Palm Hills New Cairo. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 98,
+          "urgencyScore": 42,
+          "standard": "luxury",
+          "marketVelocity": "stable",
+          "sentiment": "neutral",
+          "roi": "6.2%",
+          "valuation": {
+            "appraisedValue": 23511350,
+            "marketDifference": 828135,
+            "downpaymentRequired": 2250851,
+            "installmentMonths": 96,
+            "monthlyInstallment": 241162,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:56.257Z",
+      "updateTime": "2026-06-21T05:28:56.257Z"
+    },
+    {
+      "id": "list-unit-39",
+      "data": {
+        "id": "list-unit-39",
+        "title": "Apartment at Palm Hills New Cairo",
+        "titleAr": "شقة فاخرة في Palm Hills New Cairo",
+        "referenceNumber": "SB-PAL-1039",
+        "code": "UNIT-2039",
+        "slug": "apartment-palm-hills-new-cairo-39",
+        "propertyType": "apartment",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-palm-hills-new-cairo",
+        "developerId": "dev-palm-hills",
+        "compound": "Palm Hills New Cairo",
+        "location": "New Cairo East",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.028256506650294,
+          "lng": 31.46156926900556
+        },
+        "area": 310,
+        "bedrooms": 4,
+        "bathrooms": 3,
+        "finishingType": "fully-finished",
+        "price": 20354637,
+        "pricePerSqm": 65660,
+        "downPayment": 2035463,
+        "installmentYears": 8,
+        "monthlyInstallment": 218085,
+        "featuredImage": "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600",
+          "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600",
+          "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Palm Hills New Cairo. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Palm Hills New Cairo. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 75,
+          "urgencyScore": 34,
+          "standard": "luxury",
+          "marketVelocity": "fast",
+          "sentiment": "positive",
+          "roi": "4.5%",
+          "valuation": {
+            "appraisedValue": 19632083,
+            "marketDifference": -32826,
+            "downpaymentRequired": 2035463,
+            "installmentMonths": 96,
+            "monthlyInstallment": 190824,
+            "valuationStatus": "underpriced"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:29:00.130Z",
+      "updateTime": "2026-06-21T05:29:00.130Z"
+    },
+    {
+      "id": "list-unit-29",
+      "data": {
+        "id": "list-unit-29",
+        "title": "Apartment at Mountain View iCity",
+        "titleAr": "شقة فاخرة في Mountain View iCity",
+        "referenceNumber": "SB-MOU-1029",
+        "code": "UNIT-2029",
+        "slug": "apartment-mountain-view-icity-29",
+        "propertyType": "apartment",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-mv-icity",
+        "developerId": "dev-mountain-view",
+        "compound": "Mountain View iCity",
+        "location": "New Cairo North",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.037775893460054,
+          "lng": 31.47589326646544
+        },
+        "area": 304,
+        "bedrooms": 4,
+        "bathrooms": 4,
+        "finishingType": "semi-finished",
+        "price": 16816671,
+        "pricePerSqm": 55317,
+        "downPayment": 1681667,
+        "installmentYears": 8,
+        "monthlyInstallment": 157656,
+        "featuredImage": "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600",
+          "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600",
+          "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Mountain View iCity. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Mountain View iCity. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 88,
+          "urgencyScore": 51,
+          "standard": "normal",
+          "marketVelocity": "stable",
+          "sentiment": "positive",
+          "roi": "8.2%",
+          "valuation": {
+            "appraisedValue": 17057876,
+            "marketDifference": 362208,
+            "downpaymentRequired": 1681667,
+            "installmentMonths": 84,
+            "monthlyInstallment": 157656,
+            "valuationStatus": "underpriced"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:54.835Z",
+      "updateTime": "2026-06-21T05:28:54.835Z"
+    },
+    {
+      "id": "list-unit-2",
+      "data": {
+        "id": "list-unit-2",
+        "title": "Villa at Sodic Villette",
+        "titleAr": "فيلا فاخرة في Sodic Villette",
+        "referenceNumber": "SB-SOD-1002",
+        "code": "UNIT-2002",
+        "slug": "villa-sodic-villette-2",
+        "propertyType": "villa",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-sodic-villette",
+        "developerId": "dev-sodic",
+        "compound": "Sodic Villette",
+        "location": "Golden Square",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.01646983645081,
+          "lng": 31.495723344613108
+        },
+        "area": 277,
+        "bedrooms": 4,
+        "bathrooms": 3,
+        "finishingType": "core-shell",
+        "price": 9675030,
+        "pricePerSqm": 34927,
+        "downPayment": 967503,
+        "installmentYears": 7,
+        "monthlyInstallment": 103661,
+        "featuredImage": "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600",
+          "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600",
+          "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Sodic Villette. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Sodic Villette. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 77,
+          "urgencyScore": 44,
+          "standard": "normal",
+          "marketVelocity": "stable",
+          "sentiment": "neutral",
+          "roi": "7.3%",
+          "valuation": {
+            "appraisedValue": 10130929,
+            "marketDifference": 403019,
+            "downpaymentRequired": 967503,
+            "installmentMonths": 84,
+            "monthlyInstallment": 90703,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:46.208Z",
+      "updateTime": "2026-06-21T05:28:46.208Z"
+    },
+    {
+      "id": "list-unit-6",
+      "data": {
+        "id": "list-unit-6",
+        "title": "Townhouse at Sodic Villette",
+        "titleAr": "تاون هاوس فاخرة في Sodic Villette",
+        "referenceNumber": "SB-SOD-1006",
+        "code": "UNIT-2006",
+        "slug": "townhouse-sodic-villette-6",
+        "propertyType": "townhouse",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-sodic-villette",
+        "developerId": "dev-sodic",
+        "compound": "Sodic Villette",
+        "location": "Golden Square",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.012697226095586,
+          "lng": 31.491949773672196
+        },
+        "area": 252,
+        "bedrooms": 4,
+        "bathrooms": 3,
+        "finishingType": "semi-finished",
+        "price": 29117664,
+        "pricePerSqm": 115546,
+        "downPayment": 2911766,
+        "installmentYears": 7,
+        "monthlyInstallment": 272978,
+        "featuredImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600",
+          "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
+          "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Sodic Villette. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Sodic Villette. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 78,
+          "urgencyScore": 81,
+          "standard": "luxury",
+          "marketVelocity": "stable",
+          "sentiment": "neutral",
+          "roi": "7.3%",
+          "valuation": {
+            "appraisedValue": 30416111,
+            "marketDifference": -510333,
+            "downpaymentRequired": 2911766,
+            "installmentMonths": 96,
+            "monthlyInstallment": 311974,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:29:06.260Z",
+      "updateTime": "2026-06-21T05:29:06.260Z"
+    },
+    {
+      "id": "list-unit-25",
+      "data": {
+        "id": "list-unit-25",
+        "title": "Townhouse at Mivida",
+        "titleAr": "تاون هاوس فاخرة في Mivida",
+        "referenceNumber": "SB-MIV-1025",
+        "code": "UNIT-2025",
+        "slug": "townhouse-mivida-25",
+        "propertyType": "townhouse",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-mivida-emaar",
+        "developerId": "dev-emaar-egypt",
+        "compound": "Mivida",
+        "location": "Fifth Settlement",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.01453295832126,
+          "lng": 31.48673644258575
+        },
+        "area": 327,
+        "bedrooms": 5,
+        "bathrooms": 4,
+        "finishingType": "fully-finished",
+        "price": 14102789,
+        "pricePerSqm": 43127,
+        "downPayment": 1410278,
+        "installmentYears": 7,
+        "monthlyInstallment": 132213,
+        "featuredImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600",
+          "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600",
+          "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Mivida. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Mivida. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 89,
+          "urgencyScore": 75,
+          "standard": "normal",
+          "marketVelocity": "stable",
+          "sentiment": "neutral",
+          "roi": "5.8%",
+          "valuation": {
+            "appraisedValue": 14574393,
+            "marketDifference": -204280,
+            "downpaymentRequired": 1410278,
+            "installmentMonths": 96,
+            "monthlyInstallment": 132213,
+            "valuationStatus": "underpriced"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:51.340Z",
+      "updateTime": "2026-06-21T05:28:51.340Z"
+    },
+    {
+      "id": "list-unit-21",
+      "data": {
+        "id": "list-unit-21",
+        "title": "Villa at Mountain View iCity",
+        "titleAr": "فيلا فاخرة في Mountain View iCity",
+        "referenceNumber": "SB-MOU-1021",
+        "code": "UNIT-2021",
+        "slug": "villa-mountain-view-icity-21",
+        "propertyType": "villa",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-mv-icity",
+        "developerId": "dev-mountain-view",
+        "compound": "Mountain View iCity",
+        "location": "New Cairo North",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.03677225635403,
+          "lng": 31.476644501645957
+        },
+        "area": 435,
+        "bedrooms": 5,
+        "bathrooms": 5,
+        "finishingType": "fully-finished",
+        "price": 6566801,
+        "pricePerSqm": 15096,
+        "downPayment": 656680,
+        "installmentYears": 8,
+        "monthlyInstallment": 70358,
+        "featuredImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
+          "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600",
+          "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Mountain View iCity. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Mountain View iCity. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 95,
+          "urgencyScore": 90,
+          "standard": "normal",
+          "marketVelocity": "stable",
+          "sentiment": "positive",
+          "roi": "6.1%",
+          "valuation": {
+            "appraisedValue": 6446616,
+            "marketDifference": 89915,
+            "downpaymentRequired": 656680,
+            "installmentMonths": 96,
+            "monthlyInstallment": 61563,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:47.894Z",
+      "updateTime": "2026-06-21T05:28:47.894Z"
+    },
+    {
+      "id": "list-unit-48",
+      "data": {
+        "id": "list-unit-48",
+        "title": "Penthouse at Sodic Villette",
+        "titleAr": "بنتهاوس فاخرة في Sodic Villette",
+        "referenceNumber": "SB-SOD-1048",
+        "code": "UNIT-2048",
+        "slug": "penthouse-sodic-villette-48",
+        "propertyType": "penthouse",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-sodic-villette",
+        "developerId": "dev-sodic",
+        "compound": "Sodic Villette",
+        "location": "Golden Square",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.013629996560866,
+          "lng": 31.49115559029387
+        },
+        "area": 187,
+        "bedrooms": 2,
+        "bathrooms": 1,
+        "finishingType": "fully-finished",
+        "price": 13502226,
+        "pricePerSqm": 72204,
+        "downPayment": 1350222,
+        "installmentYears": 8,
+        "monthlyInstallment": 126583,
+        "featuredImage": "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600",
+          "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600",
+          "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Sodic Villette. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Sodic Villette. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 84,
+          "urgencyScore": 45,
+          "standard": "normal",
+          "marketVelocity": "fast",
+          "sentiment": "neutral",
+          "roi": "5.3%",
+          "valuation": {
+            "appraisedValue": 13822756,
+            "marketDifference": 400288,
+            "downpaymentRequired": 1350222,
+            "installmentMonths": 84,
+            "monthlyInstallment": 126583,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:29:04.860Z",
+      "updateTime": "2026-06-21T05:29:04.860Z"
+    },
+    {
+      "id": "list-unit-15",
+      "data": {
+        "id": "list-unit-15",
+        "title": "Townhouse at Sodic Villette",
+        "titleAr": "تاون هاوس فاخرة في Sodic Villette",
+        "referenceNumber": "SB-SOD-1015",
+        "code": "UNIT-2015",
+        "slug": "townhouse-sodic-villette-15",
+        "propertyType": "townhouse",
+        "category": "residential",
+        "status": "sold",
+        "projectId": "proj-sodic-villette",
+        "developerId": "dev-sodic",
+        "compound": "Sodic Villette",
+        "location": "Golden Square",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.016364583307126,
+          "lng": 31.490918483550114
+        },
+        "area": 210,
+        "bedrooms": 3,
+        "bathrooms": 3,
+        "finishingType": "core-shell",
+        "price": 19529264,
+        "pricePerSqm": 92996,
+        "downPayment": 1952926,
+        "installmentYears": 8,
+        "monthlyInstallment": 183086,
+        "featuredImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600",
+          "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600",
+          "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Sodic Villette. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Sodic Villette. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 77,
+          "urgencyScore": 23,
+          "standard": "luxury",
+          "marketVelocity": "fast",
+          "sentiment": "neutral",
+          "roi": "7.2%",
+          "valuation": {
+            "appraisedValue": 18627359,
+            "marketDifference": 342463,
+            "downpaymentRequired": 1952926,
+            "installmentMonths": 96,
+            "monthlyInstallment": 183086,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:41.949Z",
+      "updateTime": "2026-06-21T05:28:41.949Z"
+    },
+    {
+      "id": "list-unit-11",
+      "data": {
+        "id": "list-unit-11",
+        "title": "Apartment at Palm Hills New Cairo",
+        "titleAr": "شقة فاخرة في Palm Hills New Cairo",
+        "referenceNumber": "SB-PAL-1011",
+        "code": "UNIT-2011",
+        "slug": "apartment-palm-hills-new-cairo-11",
+        "propertyType": "apartment",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-palm-hills-new-cairo",
+        "developerId": "dev-palm-hills",
+        "compound": "Palm Hills New Cairo",
+        "location": "New Cairo East",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.023197928902036,
+          "lng": 31.464001307188738
+        },
+        "area": 430,
+        "bedrooms": 2,
+        "bathrooms": 1,
+        "finishingType": "semi-finished",
+        "price": 8393083,
+        "pricePerSqm": 19518,
+        "downPayment": 839308,
+        "installmentYears": 8,
+        "monthlyInstallment": 78685,
+        "featuredImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
+          "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600",
+          "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Palm Hills New Cairo. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Palm Hills New Cairo. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 95,
+          "urgencyScore": 36,
+          "standard": "normal",
+          "marketVelocity": "fast",
+          "sentiment": "positive",
+          "roi": "5.6%",
+          "valuation": {
+            "appraisedValue": 8714641,
+            "marketDifference": -439618,
+            "downpaymentRequired": 839308,
+            "installmentMonths": 96,
+            "monthlyInstallment": 89925,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:38.453Z",
+      "updateTime": "2026-06-21T05:28:38.453Z"
+    },
+    {
+      "id": "list-unit-44",
+      "data": {
+        "id": "list-unit-44",
+        "title": "Duplex at Mivida",
+        "titleAr": "دوبلكس فاخرة في Mivida",
+        "referenceNumber": "SB-MIV-1044",
+        "code": "UNIT-2044",
+        "slug": "duplex-mivida-44",
+        "propertyType": "duplex",
+        "category": "residential",
+        "status": "reserved",
+        "projectId": "proj-mivida-emaar",
+        "developerId": "dev-emaar-egypt",
+        "compound": "Mivida",
+        "location": "Fifth Settlement",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.011825754262247,
+          "lng": 31.490812374910416
+        },
+        "area": 184,
+        "bedrooms": 3,
+        "bathrooms": 2,
+        "finishingType": "semi-finished",
+        "price": 24681489,
+        "pricePerSqm": 134138,
+        "downPayment": 2468148,
+        "installmentYears": 7,
+        "monthlyInstallment": 264444,
+        "featuredImage": "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600",
+          "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600",
+          "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Mivida. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Mivida. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 93,
+          "urgencyScore": 48,
+          "standard": "luxury",
+          "marketVelocity": "fast",
+          "sentiment": "neutral",
+          "roi": "6.4%",
+          "valuation": {
+            "appraisedValue": 25592605,
+            "marketDifference": 202966,
+            "downpaymentRequired": 2468148,
+            "installmentMonths": 96,
+            "monthlyInstallment": 231388,
+            "valuationStatus": "underpriced"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:29:03.033Z",
+      "updateTime": "2026-06-21T05:29:03.033Z"
+    },
+    {
+      "id": "list-unit-19",
+      "data": {
+        "id": "list-unit-19",
+        "title": "Villa at Mivida",
+        "titleAr": "فيلا فاخرة في Mivida",
+        "referenceNumber": "SB-MIV-1019",
+        "code": "UNIT-2019",
+        "slug": "villa-mivida-19",
+        "propertyType": "villa",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-mivida-emaar",
+        "developerId": "dev-emaar-egypt",
+        "compound": "Mivida",
+        "location": "Fifth Settlement",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.017230874399292,
+          "lng": 31.490447630277828
+        },
+        "area": 394,
+        "bedrooms": 3,
+        "bathrooms": 2,
+        "finishingType": "semi-finished",
+        "price": 19542733,
+        "pricePerSqm": 49600,
+        "downPayment": 1954273,
+        "installmentYears": 8,
+        "monthlyInstallment": 183213,
+        "featuredImage": "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600",
+          "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600",
+          "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": true,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Mivida. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Mivida. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 76,
+          "urgencyScore": 28,
+          "standard": "luxury",
+          "marketVelocity": "fast",
+          "sentiment": "positive",
+          "roi": "4.6%",
+          "valuation": {
+            "appraisedValue": 19542138,
+            "marketDifference": 890889,
+            "downpaymentRequired": 1954273,
+            "installmentMonths": 84,
+            "monthlyInstallment": 183213,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:28:45.347Z",
+      "updateTime": "2026-06-21T05:28:45.347Z"
+    },
+    {
+      "id": "list-unit-40",
+      "data": {
+        "id": "list-unit-40",
+        "title": "Villa at Palm Hills New Cairo",
+        "titleAr": "فيلا فاخرة في Palm Hills New Cairo",
+        "referenceNumber": "SB-PAL-1040",
+        "code": "UNIT-2040",
+        "slug": "villa-palm-hills-new-cairo-40",
+        "propertyType": "villa",
+        "category": "residential",
+        "status": "available",
+        "projectId": "proj-palm-hills-new-cairo",
+        "developerId": "dev-palm-hills",
+        "compound": "Palm Hills New Cairo",
+        "location": "New Cairo East",
+        "city": "New Cairo",
+        "governorate": "Cairo",
+        "coordinates": {
+          "lat": 30.026379463519287,
+          "lng": 31.463691276565825
+        },
+        "area": 393,
+        "bedrooms": 2,
+        "bathrooms": 2,
+        "finishingType": "core-shell",
+        "price": 16098898,
+        "pricePerSqm": 40964,
+        "downPayment": 1609889,
+        "installmentYears": 8,
+        "monthlyInstallment": 172488,
+        "featuredImage": "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600",
+        "images": [
+          "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600",
+          "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600",
+          "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600"
+        ],
+        "syncSource": "manual",
+        "lastSyncAt": "2026-05-28T17:04:28.550Z",
+        "ownerType": "internal",
+        "isFeatured": false,
+        "description": "A masterpiece unit designed with highest engineering layouts inside Palm Hills New Cairo. Offering private quarters, green garden vistas, and flexible payment plan options.",
+        "descriptionAr": "وحدة استثنائية مصممة بأعلى المعايير المعمارية داخل Palm Hills New Cairo. توفر إطلالات خضراء وخصوصية تامة، بالإضافة لخطط سداد مرنة.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z",
+        "intelligence": {
+          "valuationScore": 80,
+          "urgencyScore": 28,
+          "standard": "normal",
+          "marketVelocity": "stable",
+          "sentiment": "neutral",
+          "roi": "6.8%",
+          "valuation": {
+            "appraisedValue": 16545228,
+            "marketDifference": 623579,
+            "downpaymentRequired": 1609889,
+            "installmentMonths": 96,
+            "monthlyInstallment": 172488,
+            "valuationStatus": "fair"
+          }
+        }
+      },
+      "createTime": "2026-06-21T05:29:01.095Z",
+      "updateTime": "2026-06-21T05:29:01.095Z"
+    }
+  ],
+  "partners": [
+    {
+      "id": "iyaag8vNAAGwxyux4ZpF",
+      "data": {
+        "name": "Ahmed Fawzy",
+        "role": "Senior Consultant",
+        "revenue": "8.5M",
+        "deals": 12,
+        "color": "var(--blue)",
+        "initials": "AF"
+      },
+      "createTime": "2026-06-21T05:29:08.795Z",
+      "updateTime": "2026-06-21T05:29:08.795Z"
+    },
+    {
+      "id": "jFREvp4xWxCXIAIQiRRX",
+      "data": {
+        "name": "Sarah El-Sayed",
+        "deals": 9,
+        "role": "Luxury Portfolio Manager",
+        "initials": "SE",
+        "revenue": "14.2M",
+        "color": "var(--gold)"
+      },
+      "createTime": "2026-06-21T05:29:09.227Z",
+      "updateTime": "2026-06-21T05:29:09.227Z"
+    },
+    {
+      "id": "LY3G9yrL39Nj0M0khTC5",
+      "data": {
+        "role": "Investment Advisor",
+        "revenue": "6.8M",
+        "deals": 15,
+        "color": "var(--navy)",
+        "initials": "OK",
+        "name": "Omar Khaled"
+      },
+      "createTime": "2026-06-21T05:29:08.356Z",
+      "updateTime": "2026-06-21T05:29:08.356Z"
+    }
+  ],
+  "projects": [
+    {
+      "id": "proj-mivida-emaar",
+      "data": {
+        "id": "proj-mivida-emaar",
+        "name": "Mivida Emaar",
+        "nameAr": "ميفيدا إعمار",
+        "developerId": "dev-emaar-egypt",
+        "slug": "mivida-emaar",
+        "location": "Fifth Settlement",
+        "city": "New Cairo",
+        "coordinates": {
+          "lat": 30.0152,
+          "lng": 31.4876
+        },
+        "description": "A beautiful Spanish-themed master planned community designed for sophisticated sustainable living.",
+        "status": "delivered",
+        "totalUnits": 3400,
+        "availableUnits": 98,
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z"
+      },
+      "createTime": "2026-06-21T05:29:10.001Z",
+      "updateTime": "2026-06-21T05:29:10.001Z"
+    },
+    {
+      "id": "proj-palm-hills-new-cairo",
+      "data": {
+        "id": "proj-palm-hills-new-cairo",
+        "name": "Palm Hills New Cairo",
+        "nameAr": "بالم هيلز القاهرة الجديدة",
+        "developerId": "dev-palm-hills",
+        "slug": "palm-hills-new-cairo",
+        "location": "New Cairo East",
+        "city": "New Cairo",
+        "coordinates": {
+          "lat": 30.0245,
+          "lng": 31.4641
+        },
+        "description": "A flagship eco-friendly compound bringing luxurious smart-living features in a green-infused layout.",
+        "status": "under-construction",
+        "totalUnits": 2500,
+        "availableUnits": 310,
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z"
+      },
+      "createTime": "2026-06-21T05:29:10.891Z",
+      "updateTime": "2026-06-21T05:29:10.891Z"
+    },
+    {
+      "id": "proj-sodic-villette",
+      "data": {
+        "id": "proj-sodic-villette",
+        "name": "Sodic Villette",
+        "nameAr": "سوديك فيليت",
+        "developerId": "dev-sodic",
+        "slug": "sodic-villette",
+        "location": "Golden Square",
+        "city": "New Cairo",
+        "coordinates": {
+          "lat": 30.0125,
+          "lng": 31.4925
+        },
+        "description": "A luxury pocket of premium standalone villas, townhouses, and signature apartments built for privacy.",
+        "status": "delivered",
+        "totalUnits": 1200,
+        "availableUnits": 45,
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z"
+      },
+      "createTime": "2026-06-21T05:29:11.323Z",
+      "updateTime": "2026-06-21T05:29:11.323Z"
+    },
+    {
+      "id": "proj-mv-icity",
+      "data": {
+        "id": "proj-mv-icity",
+        "name": "Mountain View iCity",
+        "nameAr": "ماونتن فيو آي سيتي",
+        "developerId": "dev-mountain-view",
+        "slug": "mv-icity",
+        "location": "New Cairo North",
+        "city": "New Cairo",
+        "coordinates": {
+          "lat": 30.0381,
+          "lng": 31.4729
+        },
+        "description": "Features smart 4D technology and beautiful landscape layout separating vehicle routes from pedestrian tracks.",
+        "status": "under-construction",
+        "totalUnits": 4800,
+        "availableUnits": 620,
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z"
+      },
+      "createTime": "2026-06-21T05:29:10.458Z",
+      "updateTime": "2026-06-21T05:29:10.458Z"
+    }
+  ],
+  "sales": [
+    {
+      "id": "sale-villette-won",
+      "data": {
+        "id": "sale-villette-won",
+        "unitId": "list-unit-0",
+        "leadId": "lead-dr.-karim-fahmy",
+        "agentId": "agent-sierra-01",
+        "salePrice": 27202183,
+        "commissionPercent": 2.5,
+        "commissionAmount": 680054,
+        "closingDate": "2026-05-28T17:04:28.550Z",
+        "status": "completed",
+        "contractNumber": "CONT-2026-0089",
+        "notes": "Deal finalized under V12 Closer stage. Fast-tracked transaction with no legal objections.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z"
+      },
+      "createTime": "2026-06-21T05:29:12.038Z",
+      "updateTime": "2026-06-21T05:29:12.038Z"
+    }
+  ],
+  "users": [
+    {
+      "id": "dbqHmlScyOV8KVZD5cbfnnD4YIX2",
+      "data": {
+        "email": "sierrablue8866@gmail.com",
+        "role": "admin",
+        "uid": "dbqHmlScyOV8KVZD5cbfnnD4YIX2"
+      },
+      "createTime": "2026-06-21T05:29:12.675Z",
+      "updateTime": "2026-06-21T05:29:12.675Z"
+    },
+    {
+      "id": "9FQL2caknjXhOiUzMPKvjYPskcO2",
+      "data": {
+        "role": "superadmin",
+        "email": "a.fawzy8866@gmail.com",
+        "name": "A. Fawzy"
+      },
+      "createTime": "2026-06-19T19:52:23.620Z",
+      "updateTime": "2026-06-19T19:52:23.620Z"
+    }
+  ],
+  "vouchers": [
+    {
+      "id": "voucher-sierra50k",
+      "data": {
+        "id": "voucher-sierra50k",
+        "code": "SIERRA50K",
+        "type": "discount",
+        "value": 50000,
+        "currency": "EGP",
+        "leadId": "lead-ahmed-al-mansoori",
+        "status": "active",
+        "expiresAt": "2026-06-27T17:04:28.550Z",
+        "conditions": "Applicable on Sodic Villette apartments.",
+        "createdAt": "2026-05-28T17:04:28.550Z",
+        "updatedAt": "2026-05-28T17:04:28.550Z"
+      },
+      "createTime": "2026-06-21T05:29:13.581Z",
+      "updateTime": "2026-06-21T05:29:13.581Z"
+    }
+  ],
+  "workflows": [
+    {
+      "id": "wf-7",
+      "data": {
+        "name": "Email Follow-Up Sequence",
+        "nameAr": "سلسلة رسائل المتابعة البريدية",
+        "desc": "Dispatches periodic reminders to prospects showing interest.",
+        "descAr": "إرسال رسائل بريد تذكيرية آلية دورية للعملاء المهتمين بوحدات محددة.",
+        "status": "paused",
+        "runs": 1240,
+        "last": "1 day ago",
+        "color": "#E63946",
+        "updatedAt": {
+          "_seconds": 1781804402,
+          "_nanoseconds": 423000000
+        }
+      },
+      "createTime": "2026-06-21T05:29:17.037Z",
+      "updateTime": "2026-06-21T05:29:17.037Z"
+    },
+    {
+      "id": "wf-3",
+      "data": {
+        "name": "Listing Price AVM Sync",
+        "nameAr": "مزامنة الأسعار مع محرك التقييم",
+        "desc": "Synchronizes listing prices with actual Sierra valuation models.",
+        "descAr": "مراجعة أسعار السوق المعروضة وتعديلها تلقائياً بالاعتماد على ذكاء نماذج سييرا.",
+        "status": "active",
+        "runs": 3210,
+        "last": "1 hr ago",
+        "color": "#34D399",
+        "updatedAt": {
+          "_seconds": 1781804402,
+          "_nanoseconds": 422000000
+        }
+      },
+      "createTime": "2026-06-21T05:29:15.212Z",
+      "updateTime": "2026-06-21T05:29:15.212Z"
+    },
+    {
+      "id": "wf-2",
+      "data": {
+        "name": "WhatsApp Scraper Cron (30m)",
+        "nameAr": "مراقب مجموعات الواتساب والمواقع",
+        "desc": "Periodically audits WhatsApp broker communities for raw listing postings.",
+        "descAr": "سحب البيانات التلقائي وعمل فحص دوري لمجموعات السماسرة والمواقع العقارية.",
+        "status": "active",
+        "runs": 6420,
+        "last": "28 min ago",
+        "color": "#34D399",
+        "updatedAt": {
+          "_seconds": 1781804402,
+          "_nanoseconds": 422000000
+        }
+      },
+      "createTime": "2026-06-21T05:29:14.778Z",
+      "updateTime": "2026-06-21T05:29:14.778Z"
+    },
+    {
+      "id": "wf-6",
+      "data": {
+        "name": "Stale Listing Monitor",
+        "nameAr": "مراقب العقود والوحدات الراكدة",
+        "desc": "Audits old database entries and changes status of stale units to Review.",
+        "descAr": "فلترة العقارات القديمة والوحدات غير المحدثة وتغيير حالتها تلقائياً للمراجعة.",
+        "status": "warning",
+        "runs": 890,
+        "last": "2 hrs ago",
+        "color": "#f59e0b",
+        "updatedAt": {
+          "_seconds": 1781804402,
+          "_nanoseconds": 423000000
+        }
+      },
+      "createTime": "2026-06-21T05:29:16.565Z",
+      "updateTime": "2026-06-21T05:29:16.565Z"
+    },
+    {
+      "id": "wf-8",
+      "data": {
+        "name": "Telegram Alert Dispatcher",
+        "nameAr": "مرسل تنبيهات تيليجرام للعمليات الإدارية",
+        "desc": "Pushes high-priority bot matches instantly to team Telegram channels.",
+        "descAr": "بث فوري لأحدث ترشيحات العقارات ومطابقة العملاء لقنوات العمل الإدارية.",
+        "status": "active",
+        "runs": 5640,
+        "last": "4 min ago",
+        "color": "#34D399",
+        "updatedAt": {
+          "_seconds": 1781804402,
+          "_nanoseconds": 423000000
+        }
+      },
+      "createTime": "2026-06-21T05:29:17.501Z",
+      "updateTime": "2026-06-21T05:29:17.501Z"
+    },
+    {
+      "id": "wf-4",
+      "data": {
+        "name": "Stage-9 Contract Generator",
+        "nameAr": "توليد العقود للمرحلة الختامية",
+        "desc": "Prepares contract PDFs and logs legal signatures dynamic events.",
+        "descAr": "إعداد مسودات العقود القانونية النهائية وتسجيل تواقيع العملاء وإيداع الدفعات.",
+        "status": "active",
+        "runs": 421,
+        "last": "15 min ago",
+        "color": "#34D399",
+        "updatedAt": {
+          "_seconds": 1781804402,
+          "_nanoseconds": 422000000
+        }
+      },
+      "createTime": "2026-06-21T05:29:15.666Z",
+      "updateTime": "2026-06-21T05:29:15.666Z"
+    },
+    {
+      "id": "wf-1",
+      "data": {
+        "name": "Lead Ingestion → Firestore",
+        "nameAr": "معالجة وتوجيه العملاء الجدد",
+        "desc": "Processes raw WhatsApp text and routes parsed leads info into Firestore.",
+        "descAr": "تحليل وتنسيق معلومات المعاينات من نصوص واتس اب الخام وتوجيهها إلى قاعدة البيانات.",
+        "status": "active",
+        "runs": 12840,
+        "last": "2 min ago",
+        "color": "#34D399",
+        "updatedAt": {
+          "_seconds": 1781804402,
+          "_nanoseconds": 422000000
+        }
+      },
+      "createTime": "2026-06-21T05:29:14.315Z",
+      "updateTime": "2026-06-21T05:29:14.315Z"
+    },
+    {
+      "id": "wf-5",
+      "data": {
+        "name": "Broker KPI Report (Daily)",
+        "nameAr": "تقرير مؤشرات الأداء اليومي للوسطاء",
+        "desc": "Synthesizes daily metrics on agent activity and lead progression rates.",
+        "descAr": "استخلاص وتقييم تقارير الأداء اليومية ونشاط الوكلاء ونسب الإغلاق الفعلي.",
+        "status": "active",
+        "runs": 186,
+        "last": "6 hrs ago",
+        "color": "#1E88D9",
+        "updatedAt": {
+          "_seconds": 1781804402,
+          "_nanoseconds": 423000000
+        }
+      },
+      "createTime": "2026-06-21T05:29:16.119Z",
+      "updateTime": "2026-06-21T05:29:16.119Z"
+    }
+  ]
+}
