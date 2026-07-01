@@ -28,7 +28,7 @@ concurrency:
 
 env:
   VERCEL_ORG_ID: team_k2jaWfzeatcYG6Qpl0ooCxQh
-  VERCEL_PROJECT_ID: prj_theA731k4WdFVhgd6DJUP6pAry6n
+  VERCEL_PROJECT_ID: prj_cJSEzNFE1JOAHzIdjrsJtVaqq7vJ
 
 jobs:
   deploy:
