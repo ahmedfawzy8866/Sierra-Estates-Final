@@ -1,6 +1,5 @@
 'use client';
 
-import { logger } from '@/lib/logger';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
@@ -15,15 +14,6 @@ export default function ClientRequest() {
   const [_loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [_error, setError] = useState('');
-  const [_formData, setFormData] = useState({
-    type: '',
-    area: '',
-    budget: '',
-    rooms: '',
-    name: '',
-    phone: '',
-  });
-
   const handleModalSubmit = async (data: any) => {
     if (!data.name || !data.phone) {
       setError('Please enter your name and phone number');
