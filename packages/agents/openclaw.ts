@@ -119,7 +119,7 @@ export class OpenClawAgent {
    * Main entry point for a WhatsApp webhook
    */
   async handleWhatsAppMessage(messageText: string, sender: string): Promise<string> {
-    logger.info({ msg: 'Received WhatsApp message', sender, messageText });
+    logger.info({ msg: 'Received WhatsApp message', hasSender: sender.length > 0, messageLength: messageText.length });
     
     const unitData = await this.extractUnitData(messageText);
     
