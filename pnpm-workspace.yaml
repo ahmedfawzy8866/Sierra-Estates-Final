@@ -36,9 +36,8 @@ minimumReleaseAgeExclude:
 
 packages:
   - "apps/*"
-  # Legacy/deprecated apps (admin-dashboard, agents, mass-blast,
-  # sierra-estates-admin-portal, frontend) have been archived out of the tree
-  # to .archive/2026-07-dedup/ — no per-app exclusions needed anymore.
+  # apps/admin-dashboard (removed in PR #86) and the dead apps/frontend (no
+  # package.json) were taken out of the tree; no per-app exclusions are needed.
   - "packages/*"
   - "functions"
   - "artifacts/*"
