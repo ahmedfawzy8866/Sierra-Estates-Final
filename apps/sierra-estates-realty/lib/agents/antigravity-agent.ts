@@ -281,7 +281,7 @@ async function handleStakeholderInterview(chatId: number, text: string): Promise
   await updateDoc(leadRef, updates);
 
   // 4. Get Next Question - Using Sierra's Editorial Luxury Persona
-  const _welcomeSequence = `
+  const welcomeSequence = `
     Based on the current profile summary: "${profile.summary}",
     generate a warm, professional response in refined English with quiet confidence.
     If the lead is new, follow the 3-message welcome sequence:
@@ -306,7 +306,7 @@ async function handleStakeholderInterview(chatId: number, text: string): Promise
         Focus on qualifying the lead: Nationality, Family Size, Budget, Move-in Date.
         Be warm, professional, and precise. Speak exclusively in refined English with quiet confidence.`
       },
-      { role: 'user', content: `Previous context: ${text}\nGenerate the next Sierra-style question.` }
+      { role: 'user', content: `${welcomeSequence}\n\nPrevious context: ${text}\nGenerate the next Sierra-style question.` }
     ],
     { model: 'gemini-1.5-flash' }
   );

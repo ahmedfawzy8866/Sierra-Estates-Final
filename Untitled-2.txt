@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sierra Blu Realty | Beyond Brokerage</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            sierra: {
+              navy: '#0A192F',
+              charcoal: '#112240',
+              gold: '#D4AF37',
+              goldLight: '#F3E5AB',
+              light: '#E6F1FF',
+              dark: '#020C1B'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            serif: ['Playfair Display', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-styles">@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&family=Noto+Serif:wght@700&display=swap');
+
+    .hero-bg {
+      background-image: linear-gradient(to bottom, rgba(10, 25, 47, 0.4), rgba(10, 25, 47, 0.85)), url('https://lh3.googleusercontent.com/aida-public/AB6AXuBK26c8odvU9yWszyc2vRshRWU9KfUkGKonQlv19vW70Bokt_dSiE1Rpx4RF0XBIFrOc0_hlNij3pEpe0U2OqDngwKCyFQPVV43BF9b9fRICGRLQ2mqI02GCXVZ8iI5WNPAmrPtyXmwpnAy2RsGApDQhWKd2JQUbNNqv9BwlZKIA-62WP7UrX4bpJSsozbl91qAaVSSK7tkeLgTIcqviFd2vbya7WbV9q8M6obgw855uUDrWGKj842k4-aEJuVKHPvJuFtfKNXCjg');
+      background-size: cover;
+      background-position: center;
+    }
+    
+    .glass-panel {
+      background: rgba(10, 25, 47, 0.6);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(212, 175, 55, 0.15);
+    }
+    
+    .hairline-border {
+        border-width: 0.5px;
+        border-color: rgba(212, 175, 55, 0.2);
+    }</style>
+</head>
+<body class="bg-sierra-dark text-sierra-light font-sans antialiased flex flex-col min-h-screen relative">
+<!-- BEGIN: Navigation -->
+<header class="absolute top-0 left-0 w-full z-50 p-4 flex justify-between items-center glass-panel border-b-0">
+<div class="flex items-center space-x-2"><div class="relative flex-1 group">
+<div class="absolute -top-6 right-0 text-[10px] text-sierra-gold/60 font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">AI Match Rate: 98%</div>
+<select class="block w-full pl-4 pr-10 py-4 text-sm border border-white/10 rounded-xl bg-white/5 text-gray-300 focus:outline-none focus:ring-1 focus:ring-sierra-gold focus:border-sierra-gold/50 appearance-none transition-all">
+<option>Property Type</option>
+<option>Apartment</option>
+<option>Villa</option>
+<option>Townhouse</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-sierra-gold/40">
+<svg class="h-4 w-4" fill="currentColor" viewbox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"></path></svg>
+</div>
+</div>
+<div class="relative flex-1 group">
+<div class="absolute -top-6 right-0 text-[10px] text-sierra-gold/60 font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">Market Insight: High</div>
+<select class="block w-full pl-4 pr-10 py-4 text-sm border border-white/10 rounded-xl bg-white/5 text-gray-300 focus:outline-none focus:ring-1 focus:ring-sierra-gold focus:border-sierra-gold/50 appearance-none transition-all">
+<option>Price Range</option>
+<option>Under 5M EGP</option>
+<option>5M - 10M EGP</option>
+<option>10M+ EGP</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-sierra-gold/40">
+<svg class="h-4 w-4" fill="currentColor" viewbox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"></path></svg>
+</div>
+</div></div>
+<button aria-label="Open Menu" class="text-sierra-light focus:outline-none">
+<svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</header>
+<!-- END: Navigation -->
+<!-- BEGIN: Hero Section -->
+<main class="flex-grow hero-bg flex flex-col justify-center relative pt-20 pb-10 px-4">
+<!-- Hero Content -->
+<div class="text-center z-10 mb-8 mt-12">
+<h1 class="font-serif text-3xl md:text-5xl lg:text-6xl font-bold mb-6 leading-[1.1] text-white drop-shadow-2xl max-w-4xl mx-auto">New Cairo’s first dedicated SaaS platform for <span class="text-sierra-gold font-serif italic">Rent and Resale.</span></h1>
+<p class="text-sm md:text-lg font-normal tracking-tight text-sierra-light/90 max-w-xl mx-auto drop-shadow-md px-2 font-sans mb-12">
+        Unlock the market's best opportunities with AI-powered real estate intelligence.
+      </p>
+</div>
+<!-- BEGIN: Search & Filter Box -->
+<div class="glass-panel rounded-2xl p-8 z-10 w-full max-w-2xl mx-auto shadow-2xl relative hairline-border">
+<!-- AI Intelligence Badge -->
+<div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-sierra-navy/90 border border-sierra-gold/30 text-sierra-gold text-[0.7rem] font-bold uppercase tracking-[0.2em] py-2 px-6 rounded-full flex items-center shadow-2xl backdrop-blur-md whitespace-nowrap"><span class="flex h-2 w-2 mr-2"><span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-sierra-gold opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-sierra-gold"></span></span>Intelligence Interface Ready</div>
+<div class="flex flex-col space-y-3">
+<!-- Search Bar -->
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<svg aria-hidden="true" class="h-5 w-5 text-gray-400" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" fill-rule="evenodd"></path>
+</svg>
+</div>
+<input class="block w-full pl-12 pr-4 py-4 border border-white/10 rounded-xl leading-5 bg-white/5 text-sierra-light placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-sierra-gold/50 focus:border-sierra-gold/50 sm:text-sm transition-all" placeholder="Search by compound, area..." type="text"/>
+</div>
+<!-- Filters Row -->
+<div class="flex space-x-2"><div class="relative flex-1 group">
+<div class="absolute -top-6 right-0 text-[10px] text-sierra-gold/60 font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">AI Match Rate: 98%</div>
+<select class="block w-full pl-4 pr-10 py-4 text-sm border border-white/10 rounded-xl bg-white/5 text-gray-300 focus:outline-none focus:ring-1 focus:ring-sierra-gold focus:border-sierra-gold/50 appearance-none transition-all">
+<option>Property Type</option>
+<option>Apartment</option>
+<option>Villa</option>
+<option>Townhouse</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-sierra-gold/40">
+<svg class="h-4 w-4" fill="currentColor" viewbox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"></path></svg>
+</div>
+</div>
+<div class="relative flex-1 group">
+<div class="absolute -top-6 right-0 text-[10px] text-sierra-gold/60 font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">Market Insight: High</div>
+<select class="block w-full pl-4 pr-10 py-4 text-sm border border-white/10 rounded-xl bg-white/5 text-gray-300 focus:outline-none focus:ring-1 focus:ring-sierra-gold focus:border-sierra-gold/50 appearance-none transition-all">
+<option>Price Range</option>
+<option>Under 5M EGP</option>
+<option>5M - 10M EGP</option>
+<option>10M+ EGP</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-sierra-gold/40">
+<svg class="h-4 w-4" fill="currentColor" viewbox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"></path></svg>
+</div>
+</div></div>
+<!-- Search Button -->
+<button class="w-full bg-sierra-gold hover:bg-yellow-600 text-sierra-navy font-bold py-4 px-8 rounded-xl flex justify-center items-center transition-all duration-300 ease-in-out shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:shadow-[0_0_30px_rgba(212,175,55,0.5)] transform hover:-translate-y-0.5 mt-2">
+<svg class="h-5 w-5 mr-3" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+    Run AI Market Search
+</button>
+</div>
+</div>
+<!-- END: Search & Filter Box -->
+</main>
+<!-- END: Hero Section -->
+</body></html>
