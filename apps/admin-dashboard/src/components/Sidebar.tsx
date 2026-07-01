@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  LogOut, Languages, PanelLeftClose, PanelLeftOpen, X,
-  LayoutDashboard, Users, Building2, CalendarCheck, BarChart3,
-  FileText, Bot, Workflow, Zap, Settings, RefreshCw, Database,
-  Sun, Moon, Terminal, Rocket,
-  type LucideIcon,
-} from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
 
@@ -22,52 +16,20 @@ interface SidebarProps {
   setLangKey: React.Dispatch<React.SetStateAction<string>>;
 }
 
-interface NavItem {
-  id: string;
-  label: string;
-  labelAr: string;
-  icon: LucideIcon;
-  section: 'core' | 'automation' | 'integrations' | 'system';
-  badge?: string;
-  badgeTone?: 'success' | 'info';
-}
-
-// Professional nav items — Lucide icons, no emojis.
-// Each item carries EN + AR labels so the sidebar re-renders cleanly on
-// language switch without re-deriving the labels via the T() lookup.
-export const NAV_ITEMS: NavItem[] = [
-  // ── Core operations ────────────────────────────────────────────────
-  { id: 'overview',       label: 'Live Dashboard',    labelAr: 'لوحة التحكم',           icon: LayoutDashboard, section: 'core' },
-  { id: 'leads',          label: 'Leads & CRM',       labelAr: 'العملاء و CRM',         icon: Users,           section: 'core' },
-  { id: 'listings',       label: 'Property Inventory',labelAr: 'العقارات',              icon: Building2,       section: 'core' },
-  { id: 'followups',      label: 'Follow-ups',        labelAr: 'المتابعات',             icon: CalendarCheck,   section: 'core' },
-  { id: 'searchInsights', label: 'Search Insights',   labelAr: 'تحليلات البحث',         icon: BarChart3,       section: 'core' },
-  { id: 'pageEditor',     label: 'Page Editor',       labelAr: 'محرر الصفحات',          icon: FileText,        section: 'core' },
-  // ── Automation & agents ────────────────────────────────────────────
-  { id: 'bots',           label: 'Bots Control',      labelAr: 'التحكم بالبوتات',       icon: Bot,             section: 'automation' },
-  { id: 'agents',         label: 'AI Agents',         labelAr: 'وكلاء الذكاء',          icon: Bot,             section: 'automation', badge: '6', badgeTone: 'success' },
-  { id: 'workflows',      label: 'DataFlow',         labelAr: 'تدفق البيانات',             icon: Workflow,        section: 'automation', badge: '8', badgeTone: 'info' },
-  // ── Integrations ───────────────────────────────────────────────────
-  { id: 'easyListing',    label: 'Easy Listing',      labelAr: 'إدراج سريع',            icon: Zap,             section: 'integrations' },
-  { id: 'automation',     label: 'Automation Portal', labelAr: 'بوابة الأتمتة',         icon: Settings,        section: 'integrations' },
-  { id: 'dataSync',       label: 'Data Sync',         labelAr: 'مزامنة البيانات',       icon: RefreshCw,       section: 'integrations' },
-  // ── System ─────────────────────────────────────────────────────────
-  { id: 'dbEditor',       label: 'DB Editor',         labelAr: 'محرر قاعدة البيانات',   icon: Database,        section: 'system' },
-  { id: 'openclaw',       label: 'OpenClaw Terminal', labelAr: 'طرفية أوبن كلو',        icon: Terminal,        section: 'system' },
-  { id: 'enhancement',   label: 'Enhancement Plan',  labelAr: 'خطة التحسين',           icon: Rocket,          section: 'system', badge: '🤖', badgeTone: 'info' },
+export const NAV_ITEMS = (T: (k: string) => string) => [
+  { id: 'overview', label: T('overview'), icon: '🏠', section: T('main') },
+  { id: 'agents', label: T('agents'), icon: '🤖', section: T('main'), badge: '6', badgeCls: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' },
+  { id: 'workflows', label: T('workflows'), icon: '⚡', section: T('main'), badge: '8', badgeCls: 'bg-blue-500/10 text-blue-400 border border-blue-500/20' },
+  { id: 'openclaw', label: T('openclaw'), icon: '⚙️', section: T('main') },
+  { id: 'nexus', label: T('nexus'), icon: '📡', section: T('main'), badge: 'LIVE', badgeCls: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' },
+  { id: 'leads', label: T('leads'), icon: '👥', section: T('operations'), badge: 'REAL', badgeCls: 'bg-red-500/10 text-red-400 border border-red-500/20' },
+  { id: 'listings', label: T('listings'), icon: '🏘️', section: T('operations') },
+  { id: 'curator', label: T('curator'), icon: '🎨', section: T('operations') },
+  { id: 'scribe', label: T('scribe'), icon: '✍️', section: T('operations') },
+  { id: 'closer', label: T('closer'), icon: '💼', section: T('operations') },
+  { id: 'reports', label: T('reports'), icon: '📊', section: T('analytics') },
+  { id: 'settings', label: T('settings'), icon: '🔧', section: T('system') },
 ];
-
-const SECTION_LABELS: Record<NavItem['section'], { en: string; ar: string }> = {
-  core:         { en: 'Operations',   ar: 'العمليات' },
-  automation:   { en: 'Automation',   ar: 'الأتمتة' },
-  integrations: { en: 'Integrations', ar: 'التكاملات' },
-  system:       { en: 'System',       ar: 'النظام' },
-};
-
-const BADGE_TONES: Record<NonNullable<NavItem['badgeTone']>, string> = {
-  success: 'bg-emerald-500/10 text-emerald-400 ring-1 ring-inset ring-emerald-500/20',
-  info:    'bg-blue-500/10 text-blue-400 ring-1 ring-inset ring-blue-500/20',
-};
 
 export default function Sidebar({
   T,
@@ -81,189 +43,128 @@ export default function Sidebar({
   langKey,
   setLangKey,
 }: SidebarProps) {
-  const isAr = langKey === 'ar';
-  const sections: NavItem['section'][] = ['core', 'automation', 'integrations', 'system'];
+  const items = NAV_ITEMS(T);
+  const sections = Array.from(new Set(items.map((i) => i.section)));
 
   const handleSignOut = async () => {
-    if (confirm(isAr ? 'تسجيل الخروج من لوحة التحكم؟' : 'Sign out of admin session?')) {
+    if (confirm("Disconnect Admin Session?")) {
       await signOut(auth);
     }
   };
 
-  const handleItemClick = (id: string) => {
-    setTab(id);
-    if (onClose) onClose();
-  };
-
   return (
-    <aside
-      className={`flex flex-col h-full bg-slate-950 border-r border-slate-800/80 overflow-hidden transition-[width] duration-200 ease-out ${
-        collapsed ? 'w-[60px]' : 'w-[244px]'
-      }`}
-      id="admin-sidebar"
-      dir={isAr ? 'rtl' : 'ltr'}
-    >
-      {/* ── Brand header ──────────────────────────────────────────────── */}
-      <div className="border-b border-slate-800/80 px-3 h-14 flex items-center justify-between shrink-0">
+    <div className={`flex flex-col h-full bg-[#0a0f1d] border-r border-slate-800 overflow-hidden transition-all duration-300 ${collapsed ? 'w-14' : 'w-56'}`} id="admin-sidebar">
+      {/* Brand Header */}
+      <div className="p-4 border-b border-slate-800 flex items-center gap-3 min-h-[56px] justify-between">
         <div className="flex items-center gap-2.5 overflow-hidden">
-          {/* Logo mark — refined, not glowing */}
-          <div className="w-8 h-8 rounded-md bg-gradient-to-br from-slate-100 to-slate-300 flex items-center justify-center shrink-0 shadow-sm">
-            <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
-              <path d="M4 20L12 4L20 20H4Z" stroke="#0f172a" strokeWidth="2" strokeLinejoin="round" />
-              <path d="M9 14H15" stroke="#0f172a" strokeWidth="2" strokeLinecap="round" />
-            </svg>
+          <div className="w-8 h-8 bg-cyan-500 rounded flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.5)] text-sm shrink-0">
+            🛡️
           </div>
           {!collapsed && (
-            <div className="select-none overflow-hidden">
-              <div className="font-semibold text-[13px] text-white tracking-tight leading-none">
-                {isAr ? 'سييرا إستيتس' : 'Sierra Estates'}
+            <div className="brand-text select-none animate-fade-in">
+              <div className="font-bold text-sm text-white tracking-tight">
+                {T('brand')}
               </div>
-              <div className="text-[9px] tracking-[0.18em] text-slate-500 uppercase mt-1 font-medium">
-                {isAr ? 'لوحة التحكم' : 'Admin Console'}
+              <div className="font-mono text-[6.5px] tracking-[0.18em] text-slate-500 uppercase mt-0.5">
+                {T('brandSub')}
               </div>
             </div>
           )}
         </div>
         {onClose && (
-          <button
-            onClick={onClose}
-            className="p-1 hover:bg-slate-800 rounded text-slate-500 hover:text-white transition lg:hidden"
-            aria-label={isAr ? 'إغلاق' : 'Close'}
-          >
-            <X className="w-4 h-4" />
+          <button onClick={onClose} className="p-1 hover:bg-white/5 rounded text-slate-500 hover:text-white transition">
+            ✕
           </button>
         )}
       </div>
 
-      {/* ── Navigation ───────────────────────────────────────────────── */}
-      <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-5 scrollbar-thin">
-        {sections.map((section) => {
-          const sectionItems = NAV_ITEMS.filter((i) => i.section === section);
-          if (sectionItems.length === 0) return null;
-          return (
-            <div key={section} className="space-y-0.5">
-              {!collapsed && (
-                <div className="px-2 mb-1.5 text-[10px] font-semibold tracking-[0.12em] text-slate-600 uppercase select-none">
-                  {isAr ? SECTION_LABELS[section].ar : SECTION_LABELS[section].en}
-                </div>
-              )}
-              {sectionItems.map((item) => {
+      {/* Navigation Sections */}
+      <div className="flex-1 overflow-y-auto py-3 px-2 space-y-4">
+        {sections.map((section) => (
+          <div key={section} className="space-y-1">
+            {!collapsed && (
+              <div className="px-2 font-mono text-[8px] font-bold tracking-[0.2em] text-slate-500 uppercase select-none">
+                {section}
+              </div>
+            )}
+            {items
+              .filter((item) => item.section === section)
+              .map((item) => {
                 const isActive = tab === item.id;
-                const Icon = item.icon;
-                const label = isAr ? item.labelAr : item.label;
                 return (
                   <button
                     key={item.id}
-                    onClick={() => handleItemClick(item.id)}
-                    title={collapsed ? label : undefined}
-                    className={`group w-full flex items-center gap-2.5 px-2.5 h-8 rounded-md text-[13px] font-medium cursor-pointer transition-all duration-150 relative ${
+                    onClick={() => {
+                      setTab(item.id);
+                      if (onClose) onClose();
+                    }}
+                    className={`nav-item-btn w-full flex items-center gap-3 px-3 py-2 rounded text-xs font-medium cursor-pointer transition-all duration-150 relative ${
                       isActive
-                        ? 'bg-slate-800/80 text-white'
-                        : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+                        ? 'bg-cyan-500/10 text-cyan-400 border-l-2 border-cyan-400 rounded-r'
+                        : 'text-slate-400 hover:text-white hover:bg-white/5'
                     }`}
+                    title={item.label}
                   >
-                    {/* Active indicator bar — subtle, left edge */}
-                    {isActive && (
-                      <span className="absolute left-0 top-1.5 bottom-1.5 w-0.5 rounded-full bg-blue-400" />
-                    )}
-                    <Icon
-                      className={`w-4 h-4 shrink-0 transition-colors ${
-                        isActive ? 'text-blue-400' : 'text-slate-500 group-hover:text-slate-300'
-                      }`}
-                      strokeWidth={1.75}
-                    />
+                    <span className="text-sm shadow-sm shrink-0">{item.icon}</span>
                     {!collapsed && (
-                      <>
-                        <span className={`truncate select-none flex-1 ${isAr ? 'text-right' : 'text-left'}`}>{label}</span>
-                        {item.badge && (
-                          <span
-                            className={`text-[10px] font-semibold px-1.5 py-0.5 rounded select-none ${
-                              BADGE_TONES[item.badgeTone ?? 'info']
-                            }`}
-                          >
-                            {item.badge}
-                          </span>
-                        )}
-                      </>
+                      <span className="truncate select-none">{item.label}</span>
+                    )}
+                    {item.badge && !collapsed && (
+                      <span className={`ml-auto text-[7px] font-bold px-1.5 py-0.5 rounded-full select-none ${item.badgeCls}`}>
+                        {item.badge}
+                      </span>
                     )}
                   </button>
                 );
               })}
-            </div>
-          );
-        })}
-      </nav>
+          </div>
+        ))}
+      </div>
 
-      {/* ── Footer controls ──────────────────────────────────────────── */}
-      <div className="border-t border-slate-800/80 p-2 space-y-0.5 shrink-0">
-        {/* Theme toggle (light / dark) — clean Lucide icons */}
-        <button
-          onClick={() => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))}
-          className="group w-full flex items-center gap-2.5 px-2.5 h-8 rounded-md text-slate-400 hover:text-white hover:bg-slate-800/50 transition select-none"
-          title={theme === 'dark' ? (isAr ? 'الوضع الفاتح' : 'Light mode') : (isAr ? 'الوضع الداكن' : 'Dark mode')}
-        >
-          {theme === 'dark' ? (
-            <Sun className="w-4 h-4 text-slate-500 group-hover:text-amber-400 shrink-0" strokeWidth={1.75} />
-          ) : (
-            <Moon className="w-4 h-4 text-slate-500 group-hover:text-slate-300 shrink-0" strokeWidth={1.75} />
-          )}
-          {!collapsed && (
-            <span className="text-[13px] font-medium">
-              {theme === 'dark' ? (isAr ? 'الوضع الفاتح' : 'Light mode') : (isAr ? 'الوضع الداكن' : 'Dark mode')}
-            </span>
-          )}
-        </button>
+      {/* Sidebar Footer Controls */}
+      <div className="border-t border-slate-800 p-2 space-y-1 shrink-0 bg-[#0a0f1d]">
+        {!collapsed && (
+          <button
+            onClick={handleSignOut}
+            className="flex items-center gap-2.5 w-full px-3 py-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded text-left transition select-none text-[11px] font-mono uppercase tracking-wider"
+            id="sidebar-logout"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Sign Out Admin</span>
+          </button>
+        )}
 
-        {/* Language toggle */}
+        {/* Language Toggle Button */}
         <button
           onClick={() => setLangKey((prev) => (prev === 'ar' ? 'en' : 'ar'))}
-          className="group w-full flex items-center gap-2.5 px-2.5 h-8 rounded-md text-slate-400 hover:text-white hover:bg-slate-800/50 transition select-none"
-          title={isAr ? 'Switch to English' : 'التحويل إلى العربية'}
+          className="flex items-center gap-2.5 w-full px-3 py-2 text-slate-400 hover:text-cyan-400 hover:bg-white/5 rounded text-left transition select-none"
+          title={langKey === 'ar' ? 'Switch to English' : 'التحويل إلى العربية'}
+          id="btn-language-toggle"
         >
-          <Languages className="w-4 h-4 text-slate-500 group-hover:text-slate-300 shrink-0" strokeWidth={1.75} />
+          <span className="text-sm shrink-0">🌐</span>
           {!collapsed && (
-            <span className="text-[13px] font-medium flex items-center justify-between w-full">
-              <span>{isAr ? 'اللغة' : 'Language'}</span>
-              <span className="text-[10px] uppercase tracking-wider text-slate-500 font-mono">
-                {isAr ? 'ع' : 'EN'}
+            <span className="text-[11px] font-mono uppercase tracking-wider flex items-center justify-between w-full">
+              <span>{langKey === 'ar' ? 'اللغة الحالية' : 'Language'}</span>
+              <span className="text-[10px] bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-1.5 py-0.5 rounded font-bold uppercase">
+                {langKey === 'ar' ? 'العربية' : 'English'}
               </span>
             </span>
           )}
         </button>
 
-        {/* Sign out */}
-        <button
-          onClick={handleSignOut}
-          className="group w-full flex items-center gap-2.5 px-2.5 h-8 rounded-md text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition select-none"
-          title={isAr ? 'تسجيل الخروج' : 'Sign out'}
-          id="sidebar-logout"
-        >
-          <LogOut className="w-4 h-4 text-slate-500 group-hover:text-red-400 shrink-0" strokeWidth={1.75} />
-          {!collapsed && (
-            <span className="text-[13px] font-medium">{isAr ? 'تسجيل الخروج' : 'Sign out'}</span>
-          )}
-        </button>
-
-        {/* Collapse toggle */}
+        {/* Collapse Toggle */}
         <button
           onClick={() => setCollapsed((v) => !v)}
-          className="group w-full flex items-center gap-2.5 px-2.5 h-8 rounded-md text-slate-500 hover:text-white hover:bg-slate-800/50 transition select-none"
-          title={`${isAr ? 'طيّ الشريط' : 'Collapse'} [/]`}
+          className="flex items-center gap-2.5 w-full px-3 py-2 text-slate-500 hover:text-white hover:bg-white/5 rounded text-left transition select-none"
+          title={T('collapse')}
           id="btn-sidebar-toggle"
         >
-          {collapsed ? (
-            <PanelLeftOpen className="w-4 h-4 shrink-0" strokeWidth={1.75} />
-          ) : (
-            <PanelLeftClose className="w-4 h-4 shrink-0" strokeWidth={1.75} />
-          )}
-          {!collapsed && (
-            <div className="flex items-center justify-between w-full select-none">
-              <span className="text-[13px] font-medium">{isAr ? 'طيّ الشريط' : 'Collapse'}</span>
-              <kbd className="text-[9px] bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800 text-slate-600 font-mono">/</kbd>
-            </div>
-          )}
+          <span className="text-sm transform transition-transform duration-300 shrink-0">
+            {collapsed ? '▶' : '◀'}
+          </span>
+          {!collapsed && <span className="text-[11px] font-mono uppercase tracking-wider">{T('collapse')}</span>}
         </button>
       </div>
-    </aside>
+    </div>
   );
 }

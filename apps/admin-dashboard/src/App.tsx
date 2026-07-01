@@ -1,20 +1,12 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { addDoc, collection } from 'firebase/firestore';
-import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import { Mic, Search, X } from 'lucide-react';
+import { onSnapshot, doc as fireDoc, getDoc as getFireDoc } from 'firebase/firestore';
 import { auth, db, createSierraNotification } from './firebase';
-import { api } from './lib/apiClient';
 import { seedFirestore } from './seed';
-import { motion, AnimatePresence } from 'motion/react';
-import { SpeedInsights } from '@vercel/speed-insights/react';
 
 // Modular Component Imports
 import LoginPage from './components/LoginPage';
 import Sidebar, { NAV_ITEMS } from './components/Sidebar';
-// NAV_ITEMS is now a static array (Lucide icons, bilingual labels baked in).
-// langKey drives which label is shown — the T() function is still used by
-// child components for backwards compatibility.
 import OverviewPage from './components/OverviewPage';
 import AgentsPage from './components/AgentsPage';
 import WorkflowsPage from './components/WorkflowsPage';
@@ -28,19 +20,7 @@ import ReportsPage from './components/ReportsPage';
 import SettingsPage from './components/SettingsPage';
 import Stage9CloserPage from './components/Stage9CloserPage';
 import NotificationCenter from './components/NotificationCenter';
-import AutomationToolsPage from './components/AutomationToolsPage';
-import EasyListingPage from './components/EasyListingPage';
-import DataSyncHubPage from './components/DataSyncHubPage';
 import ClientHub from './components/ClientHub';
-import SearchInsightsPage from './components/SearchInsightsPage';
-import DBEditorPage from './components/DBEditorPage';
-import PageEditorPage from './components/PageEditorPage';
-import FollowupsPage from './components/FollowupsPage';
-import BotsControlPage from './components/BotsControlPage';
-import EnhancementTasksPage from './components/EnhancementTasksPage';
-
-import GlobalProgressTracker from './components/GlobalProgressTracker';
-import AdminHealthMonitor from './components/AdminHealthMonitor';
 
 // Text translations conforming to standard arabic/english requirements
 const TRANSLATIONS: Record<string, Record<string, string>> = {
@@ -49,7 +29,7 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     brandSub: 'INTELLIGENCE OS',
     overview: 'Intelligence OS',
     agents: 'Agents & Bots',
-    workflows: 'DataFlow',
+    workflows: 'Workflows',
     openclaw: 'OpenClaw Terminal',
     nexus: 'Nexus-AI Telemetry',
     leads: 'CRM · Leads',
@@ -58,11 +38,6 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     scribe: 'The Scribe',
     closer: 'Stage-9 Closer',
     reports: 'Reports',
-    searchInsights: 'Search Insights',
-    followups: 'Follow-ups',
-    bots: 'Bots Control',
-    pageEditor: 'Page Editor (CMS)',
-    dbEditor: 'DB Editor (Raw)',
     settings: 'System Config',
     main: 'Main',
     operations: 'Operations',
@@ -85,7 +60,7 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     pending: 'Pending Reviews',
     eliteBrokers: 'Elite Brokers',
     pipelineTitle: 'Pipeline · S1→S10',
-    hotLeads: 'Hot Leads',
+    hotLeads: '🔥 Hot Leads',
     agentStatus: 'Agent Status',
     viewingScheduled: 'Viewing Scheduled',
     aiMatched: 'AI Matched',
@@ -122,25 +97,22 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     client: 'Client',
     view: 'View',
     whatsapp: 'WhatsApp',
-    monthlyDeals: 'Monthly Deals Closed',
-    revPipeline: 'Revenue Pipeline',
-    perfByCompound: 'Performance by Compound',
+    monthlyDeals: '📊 Monthly Deals Closed',
+    revPipeline: '💰 Revenue Pipeline',
+    perfByCompound: '🗺️ Performance by Compound',
     saveConfig: 'Save Configuration',
     saved: '✓ Saved!',
-    githubIntegration: 'GitHub Integration',
+    githubIntegration: '🔗 GitHub Integration',
     pullLatest: 'Pull Latest',
     openRepo: 'Open Repo',
     pushChanges: 'Push Changes',
-    voiceSearch: 'Voice Search',
-    listening: 'Listening...',
-    speechNotSupported: 'Speech Recognition not supported in this browser.',
   },
   ar: {
     brand: 'سييرا إيستيتس 3.0',
     brandSub: 'نظام التشغيل الذكي',
     overview: 'لوحة التحكم والذكاء',
     agents: 'الوكلاء والبوتات',
-    workflows: 'تدفق البيانات (DataFlow)',
+    workflows: 'سير العمل',
     openclaw: 'طرفية أوبن كلو',
     nexus: 'نيكسوس · البث المباشر',
     leads: 'إدارة العملاء',
@@ -149,11 +121,6 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     scribe: 'الكاتب اللغوي',
     closer: 'المغلق · المرحلة 9',
     reports: 'التقارير التحليلية',
-    searchInsights: 'تحليلات البحث',
-    followups: 'المتابعات',
-    bots: 'التحكم بالبوتات',
-    pageEditor: 'محرر الصفحات',
-    dbEditor: 'محرر قاعدة البيانات',
     settings: 'إعدادات النظام',
     main: 'رئيسي',
     operations: 'العمليات',
@@ -176,7 +143,7 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     pending: 'قيد المراجعة',
     eliteBrokers: 'الوسطاء النخبة',
     pipelineTitle: 'مراحل خط الأنابيب',
-    hotLeads: 'العملاء الساخنين',
+    hotLeads: '🔥 العملاء الساخنين',
     agentStatus: 'نشاط الوكلاء',
     viewingScheduled: 'معاينة مجدولة',
     aiMatched: 'مطابقة ذكية',
@@ -213,18 +180,15 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     client: 'العميل المستهدف',
     view: 'عرض التفاصيل',
     whatsapp: 'واتساب',
-    monthlyDeals: 'الصفقات الشهرية المغلقة',
-    revPipeline: 'خط الإيرادات المالية',
-    perfByCompound: 'الأداء حسب المجمع السكني',
+    monthlyDeals: '📊 الصفقات الشهرية المغلقة',
+    revPipeline: '💰 خط الإيرادات المالية',
+    perfByCompound: '🗺️ الأداء حسب المجمع السكني',
     saveConfig: 'حفظ الإعدادات الفنية',
     saved: '✓ تم الحفظ بنجاح!',
-    githubIntegration: 'تكامل مستودع GitHub',
+    githubIntegration: '🔗 تكامل مستودع GitHub',
     pullLatest: 'سحب آخر التحديثات',
     openRepo: 'فتح المستودع الفرعي',
     pushChanges: 'رفع التغييرات الفورية',
-    voiceSearch: 'البحث الصوتي',
-    listening: 'جاري الاستماع...',
-    speechNotSupported: 'البحث الصوتي غير مدعوم في هذا المتصفح',
   }
 };
 
@@ -233,139 +197,24 @@ export default function App() {
   const [isAdminUser, setIsAdminUser] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const navigate = useNavigate();
-  const location = useLocation();
-
   // App layouts states
+  const [viewMode, setViewMode] = useState<'client' | 'admin'>(() => {
+    return (localStorage.getItem('sierra_view_mode') as 'client' | 'admin') || 'client';
+  });
   const [tab, setTab] = useState<string>(() => localStorage.getItem('sierra_admin_tab') || 'overview');
   const [theme, setTheme] = useState<string>(() => localStorage.getItem('sierra_admin_theme') || 'dark');
   const [langKey, setLangKey] = useState<string>(() => localStorage.getItem('sierra_admin_lang') || 'en');
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [searchScope, setSearchScope] = useState<'all' | 'leads' | 'listings' | 'agents' | 'workflows'>('all');
-  const [showScopeDropdown, setShowScopeDropdown] = useState<boolean>(false);
-  const [isListening, setIsListening] = useState<boolean>(false);
-  const [recognition, setRecognition] = useState<any>(null);
-  const [speechError, setSpeechError] = useState<string | null>(null);
-  const [pendingVoiceTranscript, setPendingVoiceTranscript] = useState<string | null>(null);
-  const [voiceCountdown, setVoiceCountdown] = useState<number>(2);
-
-  const searchInputRef = useRef<HTMLInputElement>(null);
-
-  // Global keyboard shortcuts hook (CMD+K / CTRL+K for search, '/' to toggle sidebar)
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // 1. CMD+K / CTRL+K: Focus search input
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        if (searchInputRef.current) {
-          searchInputRef.current.focus();
-          searchInputRef.current.select();
-        }
-      }
-
-      // 2. '/': Toggle sidebar, unless inside focused text/input fields
-      if (e.key === '/') {
-        const activeEl = document.activeElement;
-        const isInputField = activeEl && (
-          activeEl.tagName === 'INPUT' || 
-          activeEl.tagName === 'TEXTAREA' || 
-          activeEl.getAttribute('contenteditable') === 'true'
-        );
-        if (!isInputField) {
-          e.preventDefault();
-          setCollapsed((prev) => !prev);
-        }
-      }
-
-      // 3. 'Escape' key: blur focus from inputs
-      if (e.key === 'Escape') {
-        const activeEl = document.activeElement as HTMLElement | null;
-        if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) {
-          activeEl.blur();
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []);
 
   // Translate handler callback
   const T = useCallback((key: string) => TRANSLATIONS[langKey]?.[key] || key, [langKey]);
   const isAr = langKey === 'ar';
 
   useEffect(() => {
-    const SpeechRecognitionAPI = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (SpeechRecognitionAPI) {
-      const rec = new SpeechRecognitionAPI();
-      rec.continuous = false;
-      rec.interimResults = false;
-      setRecognition(rec);
-    }
-  }, []);
-
-  const toggleVoiceSearch = useCallback(() => {
-    if (!recognition) {
-       setSpeechError(T('speechNotSupported'));
-       setTimeout(() => setSpeechError(null), 3000);
-       return;
-    }
-
-    if (isListening) {
-      recognition.stop();
-      setIsListening(false);
-      return;
-    }
-
-    setSpeechError(null);
-    recognition.lang = langKey === 'ar' ? 'ar-EG' : 'en-US';
-
-    recognition.onstart = () => {
-      setIsListening(true);
-    };
-
-    recognition.onresult = (event: any) => {
-      const transcript = event.results[0][0].transcript;
-      if (transcript) {
-        setPendingVoiceTranscript(transcript);
-      }
-      setIsListening(false);
-    };
-
-    recognition.onerror = (event: any) => {
-      console.warn('Speech recognition error:', event.error);
-      if (event.error === 'not-allowed') {
-        setSpeechError(isAr ? 'الرجاء تمكين الميكروفون لاستخدام هذه الميزة' : 'Please enable microphone access.');
-      } else {
-        setSpeechError(event.error);
-      }
-      setTimeout(() => setSpeechError(null), 3500);
-      setIsListening(false);
-    };
-
-    recognition.onend = () => {
-      setIsListening(false);
-    };
-
-    try {
-      recognition.start();
-    } catch (e) {
-      console.error('Failed to start SpeechRecognition:', e);
-      setIsListening(false);
-    }
-  }, [recognition, isListening, langKey, T, isAr, setPendingVoiceTranscript]);
-
-  const handleSelectScope = useCallback((scope: 'all' | 'leads' | 'listings' | 'agents' | 'workflows') => {
-    setSearchScope(scope);
-    setShowScopeDropdown(false);
-    if (scope !== 'all') {
-      setTab(scope);
-    }
-  }, []);
+    localStorage.setItem('sierra_view_mode', viewMode);
+  }, [viewMode]);
 
   useEffect(() => {
     // Core document layouts configuration updates
@@ -378,114 +227,42 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('sierra_admin_tab', tab);
     setSearchQuery(''); // Reset search input on navigation change
-    if (['leads', 'listings', 'agents', 'workflows'].includes(tab)) {
-      setSearchScope(tab as any);
-    } else {
-      setSearchScope('all');
-    }
   }, [tab]);
 
-  // Voice command delay, visual countdown and cancellation handling
-  useEffect(() => {
-    if (!pendingVoiceTranscript) return;
-
-    setVoiceCountdown(2);
-
-    const interval = setInterval(() => {
-      setVoiceCountdown((prev) => {
-        if (prev <= 1) {
-          localStorage.setItem('sierra_voice_search_pending', 'true');
-          setSearchQuery(pendingVoiceTranscript);
-          setPendingVoiceTranscript(null);
-          clearInterval(interval);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [pendingVoiceTranscript]);
-
-  // Synchronize debounced searches into Firestore as analytical logs
-  useEffect(() => {
-    if (!searchQuery || !searchQuery.trim()) return;
-    const qRaw = searchQuery.trim();
-    if (qRaw.length < 2) return; // Skip extremely short partial typings
-    
-    // De-duplicate immediately identical sequential search queries
-    const lastSearch = localStorage.getItem('sierra_last_logged_search');
-    if (lastSearch === qRaw) return;
-
-    const isVoice = localStorage.getItem('sierra_voice_search_pending') === 'true';
-
-    const timer = setTimeout(async () => {
-      try {
-        await addDoc(collection(db, 'searches'), {
-          query: qRaw.substring(0, 200),
-          scope: searchScope,
-          timestamp: new Date(),
-          userId: currentUser?.uid || 'anonymous',
-          isVoice: isVoice
-        });
-        localStorage.removeItem('sierra_voice_search_pending');
-        localStorage.setItem('sierra_last_logged_search', qRaw);
-      } catch (err) {
-        console.error('Failed to log search telemetry:', err);
-      }
-    }, 1500);
-
-    return () => clearTimeout(timer);
-  }, [searchQuery, searchScope, currentUser]);
-
-  // Auth changes listener — admin status now comes from the backend's
-  // users/{uid}.role check (verifyAdminRequest), not a local Firestore lookup.
+  // Auth changes listener
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
       if (user) {
-        let passesAdminRule = false;
+        // Enforce verified emails admin rules checking:
         const emailLower = user.email?.toLowerCase();
-        const isAllowedEmail = emailLower === 'a.fawzy8866@gmail.com' || emailLower === 'emeraldestatesegypt@gmail.com';
-
-        // Immediately grant access for bootstrapped owner emails — no API round-trip needed
-        if (isAllowedEmail) {
-          passesAdminRule = true;
-        } else {
-          // API verify call with 5s timeout so it can never hang the UI
-          try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 5000);
-            const result = await api.get<{ isAdmin: boolean }>('/api/admin/auth/verify');
-            clearTimeout(timeoutId);
-            passesAdminRule = !!result.isAdmin;
-          } catch (e) {
-            console.warn('Admin verification check failed (non-owner):', e);
+        const isVerified = user.emailVerified || emailLower === 'a.fawzy8866@gmail.com'; // allow bypass verification check for the exact bootstrapped email
+        const isBootstrapped = emailLower === 'a.fawzy8866@gmail.com';
+        
+        let hasRegisterDoc = false;
+        try {
+          const admSnap = await getFireDoc(fireDoc(db, 'admins', user.uid));
+          if (admSnap.exists()) {
+            hasRegisterDoc = true;
           }
+        } catch (e) {
+          console.error("Admins directory check returned: ", e);
         }
 
+        const passesAdminRule = isVerified && (isBootstrapped || hasRegisterDoc);
         setIsAdminUser(passesAdminRule);
 
         if (passesAdminRule) {
-          // Seed Firestore only ONCE per device — never block login with repeated seeds
-          const seedKey = `sierra_seeded_${user.uid}`;
-          if (!localStorage.getItem(seedKey)) {
-            try {
-              await seedFirestore();
-              localStorage.setItem(seedKey, '1');
-            } catch (seedErr) {
-              console.warn("Seeding process skipped or failed:", seedErr);
-            }
-          }
+          // Pre-seed clean Firebase indexes on absolute initial setup run
+          await seedFirestore();
         } else {
-          // Fire-and-forget — don't await this, it should not block the UI
-          createSierraNotification(
+          await createSierraNotification(
             'error',
             'Intrusion Warning: Access Denied',
             `Unauthorized login attempt from ${user.email || 'anonymous-user'}. Resource access blocked.`,
             'تحذير اختراق: تم رفض الدخول',
             `محاولة دخول غير مصرح بها من ${user.email || 'مجهول'}. تم حجب الوصول بنجاح.`
-          ).catch(console.warn);
+          );
         }
       } else {
         setIsAdminUser(false);
@@ -500,44 +277,35 @@ export default function App() {
     switch (tab) {
       case 'overview':
         return <OverviewPage T={T} />;
-      case 'leads':
-        return <LeadsPage T={T} isAr={isAr} searchQuery={searchQuery} />;
-      case 'listings':
-        return <ListingsHubPage T={T} searchQuery={searchQuery} />;
       case 'agents':
         return <AgentsPage T={T} searchQuery={searchQuery} />;
       case 'workflows':
         return <WorkflowsPage T={T} isAr={isAr} searchQuery={searchQuery} />;
-      case 'easyListing':
-        return <EasyListingPage />;
-      case 'automation':
-        return <AutomationToolsPage />;
-      case 'dataSync':
-        return <DataSyncHubPage />;
-      case 'searchInsights':
-        return <SearchInsightsPage T={T} isAr={isAr} />;
-      case 'followups':
-        return <FollowupsPage T={T} isAr={isAr} />;
-      case 'bots':
-        return <BotsControlPage T={T} isAr={isAr} />;
-      case 'pageEditor':
-        return <PageEditorPage T={T} isAr={isAr} />;
-      case 'dbEditor':
-        return <DBEditorPage T={T} isAr={isAr} />;
       case 'openclaw':
-        return <OpenClawPage T={T} isAr={isAr} />;
-      case 'enhancement':
-        return <EnhancementTasksPage />;
+        return <OpenClawPage />;
+      case 'nexus':
+        return <NexusAIPage />;
+      case 'leads':
+        return <LeadsPage T={T} isAr={isAr} searchQuery={searchQuery} />;
+      case 'listings':
+        return <ListingsHubPage T={T} searchQuery={searchQuery} />;
+      case 'curator':
+        return <CuratorPage T={T} />;
+      case 'scribe':
+        return <ScribePage T={T} />;
+      case 'closer':
+        return <Stage9CloserPage />;
+      case 'reports':
+        return <ReportsPage T={T} isAr={isAr} />;
+      case 'settings':
+        return <SettingsPage T={T} isAr={isAr} currentUser={currentUser} />;
       default:
         return <OverviewPage T={T} />;
     }
   };
 
-  // NAV_ITEMS is now a static array (Lucide icons + bilingual labels baked in)
-  const activeItem = NAV_ITEMS.find((n) => n.id === tab);
-  const activeTitle = activeItem
-    ? (langKey === 'ar' ? activeItem.labelAr : activeItem.label)
-    : (langKey === 'ar' ? 'لوحة سييرا إستيتس' : 'Sierra Estates Console');
+  const navItems = NAV_ITEMS(T);
+  const activeTitle = navItems.find((n) => n.id === tab)?.label || 'Sierra Estates Intelligence';
 
   if (loading) {
     return (
@@ -548,153 +316,157 @@ export default function App() {
     );
   }
 
-  // Admin Portal View
-  const AdminPortal = () => {
-    if (!currentUser || !isAdminUser) {
-      return (
-        <LoginPage
-          onLoginSuccess={() => setTab('overview')}
-          isAdminUser={isAdminUser}
-          currentUser={currentUser}
-          loading={loading}
-        />
-      );
-    }
-
+  // Dual product line mapping: Client facing landing viewport vs Admin backbuilding
+  if (viewMode === 'client') {
     return (
-      <div className="flex flex-col md:flex-row h-screen w-full overflow-hidden bg-slate-50 dark:bg-[#05080f] text-slate-900 dark:text-white transition-colors duration-300">
-        <Sidebar
-          collapsed={collapsed}
-          setCollapsed={setCollapsed}
-          tab={tab}
-          setTab={setTab}
-          langKey={langKey}
-          setLangKey={setLangKey}
-          theme={theme}
-          setTheme={setTheme}
-          T={T}
-        />
-        
-        <div className="flex-1 flex flex-col min-w-0" style={{ zIndex: 10 }}>
-          {/* Header — refined, professional, no emojis */}
-          <header className="h-14 border-b border-slate-200 dark:border-slate-800/80 bg-white/90 dark:bg-slate-950/80 backdrop-blur-lg flex items-center justify-between px-4 sticky top-0 transition-all z-20">
-            <div className="flex items-center gap-3 min-w-0">
-              {/* Active page title + breadcrumb-style subtitle */}
-              <div className="flex items-baseline gap-2.5 min-w-0">
-                <h1 className="font-semibold text-[15px] tracking-tight text-slate-900 dark:text-white select-none truncate">
-                  {activeTitle}
-                </h1>
-                <span className="hidden sm:inline text-[11px] text-slate-400 dark:text-slate-600 font-medium uppercase tracking-wider">
-                  {langKey === 'ar' ? 'سييرا إستيتس' : 'Sierra Estates'}
-                </span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-1.5">
-              <AdminHealthMonitor />
-              <GlobalProgressTracker />
-
-              {/* Voice command — subtle, no glow */}
-              <button
-                onClick={toggleVoiceSearch}
-                className={`relative p-2 rounded-md border transition-all duration-200 ${
-                  isListening
-                    ? 'bg-red-500/10 border-red-500/40 text-red-500'
-                    : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
-                }`}
-                title={T('voiceSearch')}
-                aria-label={T('voiceSearch')}
-              >
-                <Mic className="w-4 h-4" strokeWidth={1.75} />
-              </button>
-
-              {/* Global search — refined input */}
-              <form
-                onSubmit={(e) => e.preventDefault()}
-                className="relative hidden sm:flex items-center group"
-              >
-                <Search
-                  className="absolute left-2.5 w-3.5 h-3.5 text-slate-400 group-focus-within:text-slate-600 dark:group-focus-within:text-slate-300 transition-colors pointer-events-none"
-                  strokeWidth={1.75}
-                />
-                <input
-                  ref={searchInputRef}
-                  type="text"
-                  placeholder={pendingVoiceTranscript ? T('listening') : (langKey === 'ar' ? 'بحث...' : 'Search...')}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className={`w-56 lg:w-64 bg-slate-100 dark:bg-slate-900 border rounded-md py-1.5 pl-8 pr-12 text-[13px] focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/40 transition-all text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 ${
-                    pendingVoiceTranscript ? 'border-cyan-500/40' : 'border-slate-200 dark:border-slate-800'
-                  }`}
-                />
-                <kbd className="absolute right-2 text-[10px] font-mono text-slate-400 dark:text-slate-600 bg-white dark:bg-slate-950 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-800 select-none">
-                  ⌘K
-                </kbd>
-
-                {speechError && (
-                  <div className="absolute top-11 right-0 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-400 text-[11px] px-2.5 py-1.5 rounded-md shadow-sm whitespace-nowrap z-50">
-                    {speechError}
-                  </div>
-                )}
-                {pendingVoiceTranscript && voiceCountdown > 0 && (
-                  <div className="absolute top-11 right-0 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/50 text-blue-700 dark:text-blue-300 text-[11px] px-2.5 py-1.5 rounded-md shadow-sm whitespace-nowrap z-50 flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
-                    {voiceCountdown}s
-                  </div>
-                )}
-
-                {searchQuery && !pendingVoiceTranscript && (
-                  <button
-                    type="button"
-                    onClick={() => setSearchQuery('')}
-                    className="absolute right-9 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition"
-                    aria-label="Clear"
-                  >
-                    <X className="w-3.5 h-3.5" strokeWidth={1.75} />
-                  </button>
-                )}
-              </form>
-            </div>
-          </header>
-
-          <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 custom-scrollbar bg-slate-50 dark:bg-slate-950">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={tab}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.18, ease: "easeOut" }}
-                className="h-full w-full mx-auto max-w-7xl"
-              >
-                {renderActiveProductPage()}
-              </motion.div>
-            </AnimatePresence>
-          </main>
-        </div>
-      </div>
+      <ClientHub
+        T={T}
+        langKey={langKey}
+        theme={theme}
+        setTheme={setTheme}
+        setTab={setTab}
+        onEnterAdminSession={() => setViewMode('admin')}
+      />
     );
-  };
+  }
+
+  // Enforce zero-trust authenticated admin login screen
+  if (!currentUser || !isAdminUser) {
+    return (
+      <LoginPage
+        onLoginSuccess={() => setTab('overview')}
+        isAdminUser={isAdminUser}
+        currentUser={currentUser}
+        loading={loading}
+      />
+    );
+  }
 
   return (
-    <>
-      <Routes>
-        <Route path="/" element={<AdminPortal />} />
-        <Route 
-          path="/client" 
-          element={
-            <ClientHub
+    <div className={`flex h-screen overflow-hidden bg-[#05080f] text-slate-300 selection:bg-cyan-500/30 font-sans ${isAr ? 'font-serif' : ''}`}>
+      {/* Mobile Drawer sidebar overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden animate-fade-in"
+          onClick={() => setMobileOpen(false)}
+        >
+          <div className="w-56 h-full" onClick={(e) => e.stopPropagation()}>
+            <Sidebar
               T={T}
-              langKey={langKey}
+              tab={tab}
+              setTab={setTab}
+              collapsed={false}
+              setCollapsed={() => {}}
+              onClose={() => setMobileOpen(false)}
               theme={theme}
               setTheme={setTheme}
-              setTab={setTab}
-              onEnterAdminSession={() => navigate('/')}
+              langKey={langKey}
+              setLangKey={setLangKey}
             />
-          } 
+          </div>
+        </div>
+      )}
+
+      {/* Desktop Main Sidebar */}
+      <aside className="hidden md:block shrink-0 h-full border-r border-slate-800">
+        <Sidebar
+          T={T}
+          tab={tab}
+          setTab={setTab}
+          collapsed={collapsed}
+          setCollapsed={setCollapsed}
+          onClose={null}
+          theme={theme}
+          setTheme={setTheme}
+          langKey={langKey}
+          setLangKey={setLangKey}
         />
-      </Routes>
-      <SpeedInsights />
-    </>
+      </aside>
+
+      {/* Primary viewport stage */}
+      <div className="flex-1 flex flex-col min-w-0 h-full relative">
+        {/* Top Header bar */}
+        <header className="h-[64px] border-b border-slate-800 bg-[#0a0f1d]/80 backdrop-blur-md px-6 flex items-center gap-4 shrink-0 select-none z-20">
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="md:hidden p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 active:scale-95 transition"
+            id="mobile-drawer-toggle"
+          >
+            ☰
+          </button>
+          <h1 className="text-sm font-serif md:text-[#F0EDE5] font-semibold tracking-wide shrink-0">
+            {activeTitle}
+          </h1>
+
+          {/* Real-time Global Search Input */}
+          <div className="hidden sm:flex items-center relative max-w-xs w-full ml-1" id="global-header-search-container">
+            <span className="absolute left-3 text-slate-500 pointer-events-none text-xs select-none">
+              🔍
+            </span>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={isAr ? "البحث بالترجمة الفورية..." : "Real-time multilingual search..."}
+              className="w-full bg-[#05080f]/90 border border-slate-800 rounded px-3.5 py-1.5 text-xs text-slate-200 placeholder-slate-600 outline-none focus:border-cyan-500/50 transition-all font-mono pl-8 pr-7"
+              id="global-header-search-input"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2 text-slate-500 hover:text-white transition duration-100 text-[10px] w-4 h-4 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10"
+                title="Clear Search"
+                id="btn-global-search-clear"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          <div className="ml-auto inline-flex items-center gap-3">
+            {/* Lang toggler */}
+            <button
+              onClick={() => setLangKey((l) => (l === 'en' ? 'ar' : 'en'))}
+              className="text-[10px] uppercase font-bold tracking-widest font-mono border border-slate-800 rounded-full px-2.5 py-1 text-slate-400 hover:text-white hover:border-cyan-500/40 transition duration-150 active:scale-95 select-none"
+              id="btn-toggle-lang"
+            >
+              {isAr ? 'English' : 'عربي'}
+            </button>
+
+            {/* Dark & light theme toggler */}
+            <button
+              onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
+              className="p-1 rounded-full border border-slate-800 text-slate-400 hover:text-white hover:border-cyan-500/40 transition duration-150 active:scale-95 text-xs select-none"
+              id="btn-toggle-theme"
+            >
+              {theme === 'dark' ? '☀️' : '🌙'}
+            </button>
+
+            {/* View client hub public link */}
+            <button
+              onClick={() => setViewMode('client')}
+              className="text-[10px] uppercase font-bold tracking-widest font-mono border border-[#C8961A]/20 hover:border-[#C8961A]/40 rounded-full px-2.5 py-1 text-[#C8961A] hover:text-[#E9C176] transition duration-150 active:scale-95 select-none cursor-pointer"
+              id="btn-client-hub-link"
+            >
+              ↗ {T('livesite')}
+            </button>
+
+            {/* Real-time Administrative Notification Center */}
+            <NotificationCenter isAr={isAr} />
+
+            {/* Live active connection tag */}
+            <div className="px-3 py-1 bg-green-500/10 text-green-400 border border-green-500/20 text-[9.5px] rounded-full font-bold inline-flex items-center gap-1.5 uppercase font-mono tracking-widest select-none shadow">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-ping" />
+              <span>3.0 AI Connect</span>
+            </div>
+          </div>
+        </header>
+
+        {/* Dynamic page container viewport */}
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 bg-[#05080f]" id="main-content-viewport">
+          {renderActiveProductPage()}
+        </div>
+      </div>
+    </div>
   );
 }

@@ -1,318 +1,185 @@
-import { Feather } from "@expo/vector-icons";
-import * as Haptics from "expo-haptics";
-import { router } from "expo-router";
-import React from "react";
-import { Image, Platform, Pressable, StyleSheet, Text, View } from "react-native";
-import Animated, { FadeInDown, FadeInUp, useAnimatedStyle, useSharedValue, withSpring, withTiming, withDelay, Easing } from "react-native-reanimated";
+'use client';
 
-import { useFavorites } from "@/context/FavoritesContext";
-import { useColors } from "@/hooks/useColors";
-import type { Property } from "@/data/properties";
+import Image from 'next/image';
+import Link from 'next/link';
+import { useState } from 'react';
 
-const isWeb = Platform.OS === "web";
+// ── Icons ─────────────────────────────────────────────────────────────────────
+const BedIcon   = () => <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>;
+const BathIcon  = () => <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 5 7.621 3.621A2.121 2.121 0 0 0 4 5v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/><path d="M2 12h20"/><path d="M7 19v2"/><path d="M17 19v2"/></svg>;
+const AreaIcon  = () => <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="18" height="18" x="3" y="3" rx="2"/></svg>;
+const HeartIcon = ({ filled }: { filled: boolean }) => (
+  <svg className="w-4 h-4" viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/>
+  </svg>
+);
+
+// ── Types ─────────────────────────────────────────────────────────────────────
+export interface Property {
+  id:         string | number;
+  title:      string;
+  compound:   string;
+  price:      number;
+  priceLabel: string;
+  beds:       number;
+  baths:      number;
+  area:       string;
+  type:       string;
+  purpose:    'rent' | 'resale';
+  img:        string;
+  status?:    'verified' | 'owner';
+  badge?:     string;
+  pf_id?:     string;
+}
 
 interface PropertyCardProps {
-  property: Property;
-  horizontal?: boolean;
-  compareMode?: boolean;
-  isCompared?: boolean;
-  onCompare?: (id: string) => void;
-  index?: number;
+  property:  Property;
+  index?:    number;
+  onClick?:  () => void;
+  href?:     string;
 }
 
-export function PropertyCard({ property, horizontal = false, compareMode = false, isCompared = false, onCompare, index = 0 }: PropertyCardProps) {
-  const colors = useColors();
-  const { isFavorite, toggleFavorite } = useFavorites();
-  const fav = isFavorite(property.id);
+// ── Badge Colors ──────────────────────────────────────────────────────────────
+const BADGE_COLORS: Record<string, string> = {
+  PREMIUM:  'bg-[var(--gold)]',
+  HOT:      'bg-[var(--red)]',
+  NEW:      'bg-blue-500',
+  FEATURED: 'bg-purple-600',
+  TRENDING: 'bg-emerald-600',
+};
 
-  // Animated scale for press feedback
-  const scale = useSharedValue(1);
+export default function PropertyCard({ property: p, index = 0, onClick, href }: PropertyCardProps) {
+  const [saved, setSaved]   = useState(false);
+  const [imgErr, setImgErr] = useState(false);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
+  const delay = `${index * 80}ms`;
+  const cardHref = href || `/listings/${p.id}`;
 
-  function onFav() {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    // Heart pop animation
-    scale.value = withSequence(
-      withTiming(1.3, { duration: 150 }),
-      withSpring(1, { damping: 12, stiffness: 200 }),
-    );
-    toggleFavorite(property.id);
-  }
-
-  function onPress() {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    // Card press feedback
-    scale.value = withSequence(
-      withTiming(0.97, { duration: 100 }),
-      withSpring(1, { damping: 15, stiffness: 200 }),
-    );
-    if (compareMode && onCompare) {
-      onCompare(property.id);
-    } else {
-      router.push(`/property/${property.id}` as any);
-    }
-  }
-
-  // Staggered entrance animation
-  const entranceDelay = Math.min(index * 80, 400);
-
-  if (horizontal) {
-    return (
-      <Animated.View
-        entering={isWeb ? undefined : FadeInDown.delay(entranceDelay).springify().damping(16).mass(0.8)}
-        style={isWeb ? undefined : animatedStyle}
-      >
-        <Pressable
-          style={({ pressed }) => [
-            styles.hCard,
-            {
-              backgroundColor: colors.card,
-              borderColor: colors.border,
-              opacity: pressed ? 0.92 : 1,
-              transform: [{ scale: pressed ? 0.98 : 1 }],
-            },
-          ]}
-          onPress={onPress}
-        >
-          <View style={styles.hImageWrap}>
-            <Image source={property.image} style={styles.hImage} />
-            {property.isOffPlan && (
-              <View style={[styles.offPlanBadge, { backgroundColor: colors.card }]}>
-                <Text style={[styles.offPlanText, { color: colors.text }]}>Off-Plan</Text>
-              </View>
-            )}
-          </View>
-          <View style={styles.hContent}>
-            <Text style={[styles.hPrice, { color: colors.gold }]} numberOfLines={1}>{property.priceLabel}</Text>
-            <Text style={[styles.hTitle, { color: colors.text }]} numberOfLines={1}>{property.title}</Text>
-            <Text style={[styles.hLocation, { color: colors.mutedForeground }]} numberOfLines={1}>{property.location}</Text>
-            <View style={styles.hMeta}>
-              <MetaPill icon="maximize" label={`${(property.sqft / 1000).toFixed(1)}k ft²`} colors={colors} />
-              <MetaPill icon="trending-up" label={`${property.yieldPercent}%`} colors={colors} highlight />
-            </View>
-          </View>
-          <Pressable style={styles.hFav} onPress={onFav} hitSlop={12}>
-            <Animated.View style={isWeb ? undefined : animatedStyle}>
-              <Feather name={fav ? "heart" : "heart"} size={18} color={fav ? colors.gold : colors.mutedForeground} />
-            </Animated.View>
-          </Pressable>
-        </Pressable>
-      </Animated.View>
-    );
-  }
+  const badgeColor = BADGE_COLORS[p.badge || ''] || 'bg-[var(--gold)]';
+  const purposeClass = p.purpose === 'rent'
+    ? 'bg-blue-500/85 text-white'
+    : 'bg-emerald-600/85 text-white';
 
   return (
-    <Animated.View
-      entering={isWeb ? undefined : FadeInDown.delay(entranceDelay).springify().damping(16).mass(0.8)}
-      style={[{ width: horizontal ? "auto" : "100%" }, isWeb ? undefined : animatedStyle]}
+    <article
+      className="stagger-child"
+      style={{ animationDelay: delay }}
+      itemScope
+      itemType="https://schema.org/RealEstateListing"
     >
-      <Pressable
-        style={({ pressed }) => [
-          styles.card,
-          {
-            backgroundColor: colors.card,
-            borderColor: isCompared ? colors.gold : colors.border,
-            borderWidth: isCompared ? 2 : 1,
-            opacity: pressed ? 0.95 : 1,
-          },
-        ]}
-        onPress={onPress}
+      <div
+        onClick={onClick}
+        className="group bg-[var(--bg-card)] border border-[var(--navy-08)] rounded-[var(--radius-xl)] overflow-hidden cursor-pointer"
+        style={{
+          transition: `all var(--transition-slow) var(--ease-silk)`,
+        }}
+        onMouseEnter={(e) => {
+          (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)';
+          (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-lg)';
+        }}
+        onMouseLeave={(e) => {
+          (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
+          (e.currentTarget as HTMLElement).style.boxShadow = '';
+        }}
       >
-        {compareMode && (
-          <View style={[styles.compareOverlay, isCompared && { backgroundColor: colors.gold + "22" }]}>
-            <View style={[styles.compareCheckbox, {
-              backgroundColor: isCompared ? colors.gold : "transparent",
-              borderColor: isCompared ? colors.gold : colors.border,
-            }]}>
-              {isCompared && <Feather name="check" size={12} color={colors.navyDeep} />}
-            </View>
-            <Text style={[styles.compareLabel, { color: isCompared ? colors.gold : colors.mutedForeground }]}>
-              {isCompared ? "Selected" : "Select to Compare"}
-            </Text>
-          </View>
-        )}
-
-        <View style={styles.imageContainer}>
-          <Image source={property.image} style={styles.image} />
-
-          {/* Gradient overlay for better text readability */}
-          <View style={styles.imageGradient} />
-
-          {property.isOffPlan && (
-            <View style={styles.offPlanRow}>
-              <View style={[styles.offPlanPill, { backgroundColor: "rgba(4,12,22,0.85)" }]}>
-                <Text style={[styles.offPlanPillText, { color: "#FAF8F5" }]}>Off-Plan</Text>
-              </View>
-              {property.deliveryDate && (
-                <View style={[styles.offPlanPill, { backgroundColor: "rgba(4,12,22,0.85)" }]}>
-                  <Text style={[styles.offPlanPillText, { color: "#FAF8F5" }]}>Delivery: {property.deliveryDate}</Text>
-                </View>
-              )}
-            </View>
+        {/* ── Image Area ─────────────────────────────────────── */}
+        <div className="relative h-56 overflow-hidden bg-[var(--ivory-mid)]">
+          {!imgErr ? (
+            <img
+              src={p.img}
+              alt={p.title}
+              onError={() => setImgErr(true)}
+              className="w-full h-full object-cover transition-transform duration-700 ease-silk group-hover:scale-105"
+              loading="lazy"
+              decoding="async"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[var(--ivory)] to-[var(--ivory-mid)]">
+              <span className="text-[var(--navy-40)] text-sm font-medium">Image unavailable</span>
+            </div>
           )}
 
-          <View style={styles.imageTopRight}>
-            <Animated.View
-              entering={isWeb ? undefined : withDelay(entranceDelay + 200, withTiming(1, { duration: 300 }))}
-              style={[styles.scoreTag, { backgroundColor: "rgba(4,12,22,0.85)" }]}
+          {/* Badge row */}
+          <div className="absolute top-3 left-3 right-3 flex items-start justify-between pointer-events-none">
+            {p.badge && (
+              <span
+                className={`${badgeColor} text-white px-2.5 py-1 rounded text-[9px] font-bold uppercase tracking-[0.15em] shadow-sm`}
+              >
+                {p.badge}
+              </span>
+            )}
+            <span
+              className={`${purposeClass} ml-auto px-2.5 py-1 rounded text-[9px] font-bold uppercase tracking-[0.15em] backdrop-blur-md`}
             >
-              <Feather name="cpu" size={9} color={colors.gold} />
-              <Text style={[styles.scoreText, { color: colors.gold }]}>{property.aiScore}</Text>
-            </Animated.View>
-            <Pressable style={[styles.favBtn, { backgroundColor: "rgba(4,12,22,0.6)" }]} onPress={onFav} hitSlop={10}>
-              <Animated.View style={isWeb ? undefined : animatedStyle}>
-                <Feather
-                  name={fav ? "heart" : "heart"}
-                  size={17}
-                  color={fav ? colors.gold : "#ffffff"}
-                />
-              </Animated.View>
-            </Pressable>
-          </View>
+              {p.purpose === 'rent' ? 'For Rent' : 'For Resale'}
+            </span>
+          </div>
 
-          {property.isFeatured && (
-            <View style={[styles.featuredTag, { backgroundColor: colors.gold }]}>
-              <Text style={[styles.featuredText, { color: colors.navyDeep }]}>FEATURED</Text>
-            </View>
+          {/* Live indicator */}
+          {p.status === 'owner' && (
+            <div className="absolute bottom-3 left-3 flex items-center gap-1.5 px-2.5 py-1 bg-white/95 backdrop-blur-md rounded-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-500 pulse-live" />
+              <span className="text-[9px] font-bold text-green-600 uppercase tracking-wide" style={{ fontFamily: 'var(--font-mono)' }}>
+                Live
+              </span>
+            </div>
           )}
 
-          <View style={[styles.tourHint, { backgroundColor: "rgba(4,12,22,0.7)" }]}>
-            <Feather name="camera" size={11} color={colors.gold} />
-            <Text style={[styles.tourHintText, { color: colors.gold }]}>Virtual Tour</Text>
-          </View>
-        </View>
-
-        <View style={styles.content}>
-          {/* Price + yield with staggered entrance */}
-          <Animated.View
-            entering={isWeb ? undefined : FadeInUp.delay(entranceDelay + 100).duration(400)}
-            style={styles.priceRow}
+          {/* Save / Heart */}
+          <button
+            aria-label={saved ? 'Remove from saved' : 'Save property'}
+            className="absolute bottom-3 right-3 w-8 h-8 bg-white/95 backdrop-blur-md rounded-full flex items-center justify-center pointer-events-auto transition-all duration-200 hover:bg-[var(--red)] hover:text-white"
+            style={{ color: saved ? 'var(--red)' : 'var(--navy-60)' }}
+            onClick={(e) => { e.stopPropagation(); setSaved((s) => !s); }}
           >
-            <Text style={[styles.price, { color: colors.gold }]}>{property.priceLabel}</Text>
-            <View style={[styles.yieldBadge, { borderColor: colors.gold + "44", backgroundColor: colors.gold + "12" }]}>
-              <Feather name="trending-up" size={10} color={colors.gold} />
-              <Text style={[styles.yieldText, { color: colors.gold }]}>{property.yieldPercent}% yield</Text>
-            </View>
-          </Animated.View>
+            <HeartIcon filled={saved} />
+          </button>
+        </div>
 
-          {/* Title */}
-          <Animated.View
-            entering={isWeb ? undefined : FadeInUp.delay(entranceDelay + 150).duration(400)}
+        {/* ── Content ─────────────────────────────────────────── */}
+        <div className="p-5">
+          <p className="text-[11px] font-medium mb-1" style={{ color: 'var(--navy-40)' }} itemProp="name">
+            {p.compound}
+          </p>
+          <h3
+            className="text-xl font-semibold mb-2 leading-tight"
+            style={{ fontFamily: 'var(--font-serif)', color: 'var(--navy)' }}
+            itemProp="name"
           >
-            <Text style={[styles.title, { color: colors.text }]} numberOfLines={1}>{property.title}</Text>
-            <View style={styles.locRow}>
-              <Feather name="map-pin" size={11} color={colors.mutedForeground} />
-              <Text style={[styles.location, { color: colors.mutedForeground }]} numberOfLines={1}>
-                {property.location} · {property.city}
-              </Text>
-            </View>
-          </Animated.View>
+            {p.title}
+          </h3>
+          <p className="text-2xl font-bold mb-3" style={{ color: 'var(--gold)' }} itemProp="price">
+            {p.priceLabel}
+            {p.purpose === 'rent' && (
+              <span className="text-xs font-normal ml-1" style={{ color: 'var(--navy-40)' }}>/mo</span>
+            )}
+          </p>
 
-          <View style={[styles.divider, { backgroundColor: colors.border }]} />
-
-          {/* Meta pills with staggered entrance */}
-          <Animated.View
-            entering={isWeb ? undefined : FadeInUp.delay(entranceDelay + 200).duration(400)}
-            style={styles.meta}
+          {/* Specs */}
+          <div
+            className="flex gap-4 text-[12px] pt-3 border-t"
+            style={{ borderColor: 'var(--navy-08)', color: 'var(--navy-60)' }}
           >
-            <MetaPill icon="home" label={`${property.beds} beds`} colors={colors} />
-            <MetaPill icon="droplet" label={`${property.baths} baths`} colors={colors} />
-            <MetaPill icon="maximize" label={`${(property.sqft / 1000).toFixed(1)}k ft²`} colors={colors} />
-          </Animated.View>
-
-          {/* Compound row */}
-          <Animated.View
-            entering={isWeb ? undefined : FadeInUp.delay(entranceDelay + 250).duration(400)}
-            style={[styles.compoundRow, { borderTopColor: colors.border }]}
-          >
-            <Feather name="layers" size={11} color={colors.mutedForeground} />
-            <Text style={[styles.compoundText, { color: colors.mutedForeground }]}>{property.compound}</Text>
-          </Animated.View>
-        </View>
-      </Pressable>
-    </Animated.View>
+            <span className="flex items-center gap-1.5">
+              <span style={{ color: 'var(--gold)' }}><BedIcon /></span>
+              {p.beds} bd
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span style={{ color: 'var(--gold)' }}><BathIcon /></span>
+              {p.baths} ba
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span style={{ color: 'var(--gold)' }}><AreaIcon /></span>
+              {p.area} sqft
+            </span>
+            {p.pf_id && (
+              <span className="ml-auto text-[10px]" style={{ color: 'var(--navy-40)', fontFamily: 'var(--font-mono)' }}>
+                {p.pf_id}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </article>
   );
 }
-
-function MetaPill({ icon, label, colors, highlight }: any) {
-  return (
-    <View style={styles.metaPill}>
-      <Feather name={icon} size={11} color={highlight ? colors.gold : colors.mutedForeground} />
-      <Text style={[styles.metaText, { color: highlight ? colors.gold : colors.mutedForeground }]}>{label}</Text>
-    </View>
-  );
-}
-
-// Helper for sequence (not available in all RN versions)
-function withSequence(...animations: any[]) {
-  'worklet';
-  // Fallback: just run the last animation if sequence isn't available
-  return animations[animations.length - 1];
-}
-
-const styles = StyleSheet.create({
-  card: {
-    borderRadius: 16,
-    borderWidth: 1,
-    overflow: "hidden",
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 3,
-  },
-  imageContainer: { position: "relative", height: 220 },
-  image: { width: "100%", height: "100%", resizeMode: "cover" },
-  imageGradient: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 60,
-    backgroundColor: "transparent",
-    backgroundImage: "linear-gradient(to top, rgba(0,0,0,0.4), transparent)",
-  } as any,
-  offPlanRow: { position: "absolute", top: 12, left: 12, flexDirection: "row", gap: 6 },
-  offPlanPill: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
-  offPlanPillText: { fontSize: 12, fontWeight: "700" },
-  imageTopRight: { position: "absolute", top: 12, right: 12, flexDirection: "row", alignItems: "center", gap: 8 },
-  scoreTag: { flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
-  scoreText: { fontSize: 12, fontWeight: "700" },
-  favBtn: { width: 44, height: 44, borderRadius: 22, alignItems: "center", justifyContent: "center" },
-  featuredTag: { position: "absolute", bottom: 12, left: 12, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6 },
-  featuredText: { fontSize: 12, fontWeight: "800", letterSpacing: 1 },
-  tourHint: { position: "absolute", bottom: 12, right: 12, flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
-  tourHintText: { fontSize: 12, fontWeight: "600" },
-  content: { padding: 16 },
-  priceRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 6 },
-  price: { fontSize: 22, fontWeight: "800" },
-  yieldBadge: { flexDirection: "row", alignItems: "center", gap: 4, borderWidth: 1, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  yieldText: { fontSize: 12, fontWeight: "700" },
-  title: { fontSize: 15, fontWeight: "700", marginBottom: 4 },
-  locRow: { flexDirection: "row", alignItems: "center", gap: 4, marginBottom: 12 },
-  location: { fontSize: 14 },
-  divider: { height: 1, marginBottom: 12 },
-  meta: { flexDirection: "row", gap: 14, marginBottom: 10 },
-  metaPill: { flexDirection: "row", alignItems: "center", gap: 4 },
-  metaText: { fontSize: 12, fontWeight: "500" },
-  compoundRow: { flexDirection: "row", alignItems: "center", gap: 6, paddingTop: 10, borderTopWidth: 1 },
-  compoundText: { fontSize: 12 },
-  compareOverlay: { flexDirection: "row", alignItems: "center", gap: 10, padding: 12, paddingBottom: 0 },
-  compareCheckbox: { width: 20, height: 20, borderRadius: 10, borderWidth: 2, alignItems: "center", justifyContent: "center" },
-  compareLabel: { fontSize: 14, fontWeight: "600" },
-  hCard: { flexDirection: "row", borderRadius: 16, borderWidth: 1, overflow: "hidden", marginBottom: 12, alignItems: "stretch" },
-  hImageWrap: { position: "relative", width: 100 },
-  hImage: { width: 100, height: "100%", resizeMode: "cover" },
-  offPlanBadge: { position: "absolute", top: 8, left: 6, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
-  offPlanText: { fontSize: 12, fontWeight: "700" },
-  hContent: { flex: 1, padding: 12 },
-  hPrice: { fontSize: 16, fontWeight: "800", marginBottom: 2 },
-  hTitle: { fontSize: 14, fontWeight: "600", marginBottom: 2 },
-  hLocation: { fontSize: 12, marginBottom: 6 },
-  hMeta: { flexDirection: "row", gap: 10 },
-  hFav: { paddingHorizontal: 14, alignItems: "center", justifyContent: "center" },
-});

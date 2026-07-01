@@ -1,0 +1,88 @@
+name: Deploy · Vercel
+
+# Deploys the Sierra Estates web app to Vercel FROM GitHub (not Vercel's own
+# git integration). Vercel's automatic git deploys are disabled via
+# `git.deploymentEnabled: false` in vercel.json — this workflow is the single
+# source of deploys.
+#
+# Required repo secret:
+#   VERCEL_TOKEN  — a Vercel access token (Account Settings → Tokens)
+# Project/org IDs are non-secret and already committed in .vercel/project.json.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deploy target'
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - preview
+
+concurrency:
+  group: vercel-deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  VERCEL_ORG_ID: team_k2jaWfzeatcYG6Qpl0ooCxQh
+  VERCEL_PROJECT_ID: prj_theA731k4WdFVhgd6DJUP6pAry6n
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # pnpm must be set up BEFORE setup-node so the cache key is correct
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Determine deploy target
+        id: target
+        run: |
+          ENV="${{ github.event.inputs.environment || 'production' }}"
+          echo "name=$ENV" >> "$GITHUB_OUTPUT"
+          if [ "$ENV" = "production" ]; then
+            echo "flag=--prod" >> "$GITHUB_OUTPUT"
+          else
+            echo "flag=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Pin project Root Directory to the web app (monorepo)
+        run: |
+          # Best-effort self-heal of the Vercel project Root Directory. The deploy
+          # steps below work regardless of this PATCH, so a non-2xx response (e.g.
+          # a VERCEL_TOKEN without project-write scope returning 403) must NOT
+          # abort the deploy — otherwise production never ships.
+          code=$(curl -sS -o /dev/null -w '%{http_code}' -X PATCH \
+            "https://api.vercel.com/v9/projects/${VERCEL_PROJECT_ID}?teamId=${VERCEL_ORG_ID}" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"rootDirectory":"apps/sierra-estates-realty"}' || echo "000")
+          if [ "$code" = "200" ] || [ "$code" = "204" ]; then
+            echo "Root Directory pinned to apps/sierra-estates-realty (HTTP $code)"
+          else
+            echo "::warning::Could not re-pin Vercel Root Directory (HTTP $code). Continuing deploy — verify VERCEL_TOKEN has project-write scope and that the dashboard Root Directory is apps/sierra-estates-realty."
+          fi
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Pull Vercel project settings
+        run: vercel pull --yes --environment=${{ steps.target.outputs.name }} --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build
+        run: vercel build ${{ steps.target.outputs.flag }} --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy (prebuilt)
+        run: vercel deploy --prebuilt ${{ steps.target.outputs.flag }} --token=${{ secrets.VERCEL_TOKEN }}

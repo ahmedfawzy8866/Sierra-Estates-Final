@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "sierra-blu"
-  }
+    "default": "sierra-blu",
+    "production": "sierra-blu"
+  },
+  "etags": {}
 }

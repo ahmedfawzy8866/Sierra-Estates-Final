@@ -17,17 +17,11 @@ service cloud.firestore {
     }
 
     function isBootstrappedAdmin() {
-      return isEmailVerified() && (
-        request.auth.token.email == "A.fawzy8866@gmail.com" || 
-        request.auth.token.email == "a.fawzy8866@gmail.com" || 
-        request.auth.token.email == "emeraldestatesegypt@gmail.com"
-      );
+      return isEmailVerified() && (request.auth.token.email == "A.fawzy8866@gmail.com" || request.auth.token.email == "a.fawzy8866@gmail.com");
     }
 
     function isRegisteredAdmin() {
-      return isEmailVerified()
-        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'superadmin'];
+      return isEmailVerified() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
     function isAdmin() {
@@ -268,24 +262,5 @@ service cloud.firestore {
     match /partners/{id} { allow read, write: if isStaff() || isAdmin(); }
     match /syncQueue/{id} { allow read, write: if isStaff() || isAdmin(); }
     match /syncLog/{id} { allow read, write: if isStaff() || isAdmin(); }
-
-    // Analytics, Logs and Telemetry System Collections
-    match /searches/{id} {
-      allow read: if isStaff() || isAdmin();
-      allow create: if true;
-      allow update, delete: if isAdmin();
-    }
-    match /system_logs/{id} {
-      allow read, write: if isStaff() || isAdmin();
-    }
-    match /system_health/{id} {
-      allow read, write: if isStaff() || isAdmin();
-    }
-    match /bots/{id} {
-      allow read, write: if isStaff() || isAdmin();
-    }
-    match /bot_commands/{id} {
-      allow read, write: if isStaff() || isAdmin();
-    }
   }
 }

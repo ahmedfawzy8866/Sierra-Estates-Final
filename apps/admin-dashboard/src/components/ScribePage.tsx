@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType, createSierraNotification } from '../firebase';
-import { Bot, Save } from 'lucide-react';
 
 interface ScribePageProps {
   T: (key: string) => string;
@@ -407,14 +406,14 @@ export default function ScribePage({ T }: ScribePageProps) {
                 {/* Simulated trigger for iframes */}
                 <button
                   onClick={startSimulation}
-                  className={`py-3 px-3.5 rounded font-bold text-xs select-none border transition duration-150 cursor-pointer flex items-center justify-center gap-1.5 ${
+                  className={`py-3 px-3.5 rounded font-bold text-xs select-none border transition duration-150 cursor-pointer ${
                     isSimulating
                       ? 'bg-teal-950/40 text-teal-400 border-teal-500/30'
                       : 'bg-white/5 hover:bg-white/10 border-white/10 text-[#F0EDE5]'
                   }`}
                   title="Simulate Speech feed on Sandbox"
                 >
-                  <Bot className="w-4 h-4" /> {isSimulating ? 'Stop Demo' : 'Simulate Voice'}
+                  🤖 {isSimulating ? 'Stop Demo' : 'Simulate Voice'}
                 </button>
               </div>
 
@@ -550,13 +549,9 @@ export default function ScribePage({ T }: ScribePageProps) {
                   <button
                     onClick={handleSaveToFirestore}
                     disabled={saving}
-                    className="flex-1 py-2.5 bg-cyan-500 hover:bg-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)] text-black rounded font-bold text-xs select-none transition duration-150 disabled:opacity-40 disabled:scale-100 cursor-pointer flex items-center justify-center gap-1.5"
+                    className="flex-1 py-2.5 bg-cyan-500 hover:bg-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)] text-black rounded font-bold text-xs select-none transition duration-150 disabled:opacity-40 disabled:scale-100 cursor-pointer"
                   >
-                    {saving ? 'Registering...' : (
-                      <>
-                        <Save className="w-4 h-4" /> Publish to CRM Database
-                      </>
-                    )}
+                    {saving ? 'Registering...' : '💾 Publish to CRM Database'}
                   </button>
                   <button
                     onClick={() => {

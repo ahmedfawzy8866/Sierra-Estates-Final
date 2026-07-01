@@ -1,184 +1,7 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import {
-  ReactFlow,
-  MiniMap,
-  Controls,
-  Background,
-  useNodesState,
-  useEdgesState,
-  addEdge,
-  Connection,
-  Edge,
-  Node,
-  Handle,
-  Position,
-  Panel,
-} from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
-import { api } from '../lib/apiClient';
-import {
-  Calendar,
-  Zap,
-  UserPlus,
-  Cpu,
-  Layers,
-  ShieldCheck,
-  Database,
-  Bell,
-  Mail,
-  Lock,
-  Sliders,
-  Play,
-  Settings,
-  FolderOpen,
-  Boxes,
-  Globe,
-  Clock
-} from 'lucide-react';
-
-// ---------------------------------------------------------
-// Custom Icons & Node Visual Styles
-// ---------------------------------------------------------
-
-const getIcon = (name?: string) => {
-  switch (name) {
-    case 'timer': return <Calendar className="w-4 h-4" />;
-    case 'webhook': return <Zap className="w-4 h-4" />;
-    case 'user': return <UserPlus className="w-4 h-4" />;
-    case 'transform': return <Cpu className="w-4 h-4" />;
-    case 'parse': return <Layers className="w-4 h-4" />;
-    case 'check': return <ShieldCheck className="w-4 h-4" />;
-    case 'db': return <Database className="w-4 h-4" />;
-    case 'alert': return <Bell className="w-4 h-4" />;
-    case 'email': return <Mail className="w-4 h-4" />;
-    case 'lock': return <Lock className="w-4 h-4" />;
-    case 'sliders': return <Sliders className="w-4 h-4" />;
-    default: return <Settings className="w-4 h-4" />;
-  }
-};
-
-const TriggerNode = ({ data }: any) => {
-  return (
-    <div className="bg-[#0a0f1d] dark:bg-[#070b16] border border-emerald-500/40 w-52 p-4 rounded-xl shadow-[0_4px_25px_rgba(16,185,129,0.12)] transition-all hover:shadow-[0_4px_30px_rgba(16,185,129,0.22)] hover:border-emerald-400">
-      <Handle type="source" position={Position.Right} className="w-3 h-3 !bg-emerald-500 !border-none !right-[-6px]" />
-      <div className="flex items-center justify-between mb-2">
-        <div className="text-[9px] text-emerald-500 font-mono uppercase tracking-wider font-bold">Trigger / Source</div>
-        <div className="text-emerald-500">{getIcon(data.icon)}</div>
-      </div>
-      <div className="text-slate-900 dark:text-slate-100 text-xs font-semibold tracking-tight">{data.label}</div>
-      {data.desc && <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-normal font-medium">{data.desc}</div>}
-    </div>
-  );
-};
-
-const ProcessNode = ({ data }: any) => {
-  return (
-    <div className="bg-[#0a0f1d] dark:bg-[#070b16] border border-purple-500/40 w-52 p-4 rounded-xl shadow-[0_4px_25px_rgba(168,85,247,0.12)] transition-all hover:shadow-[0_4px_30px_rgba(168,85,247,0.22)] hover:border-purple-400">
-      <Handle type="target" position={Position.Left} className="w-3 h-3 !bg-purple-500 !border-none !left-[-6px]" />
-      <Handle type="source" position={Position.Right} className="w-3 h-3 !bg-purple-500 !border-none !right-[-6px]" />
-      <div className="flex items-center justify-between mb-2">
-        <div className="text-[9px] text-purple-400 font-mono uppercase tracking-wider font-bold">Processing Block</div>
-        <div className="text-purple-400">{getIcon(data.icon)}</div>
-      </div>
-      <div className="text-slate-900 dark:text-slate-100 text-xs font-semibold tracking-tight">{data.label}</div>
-      {data.desc && <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-normal font-medium">{data.desc}</div>}
-    </div>
-  );
-};
-
-const ActionNode = ({ data }: any) => {
-  return (
-    <div className="bg-[#0a0f1d] dark:bg-[#070b16] border border-amber-500/40 w-52 p-4 rounded-xl shadow-[0_4px_25px_rgba(245,158,11,0.12)] transition-all hover:shadow-[0_4px_30px_rgba(245,158,11,0.22)] hover:border-amber-400">
-      <Handle type="target" position={Position.Left} className="w-3 h-3 !bg-amber-500 !border-none !left-[-6px]" />
-      <div className="flex items-center justify-between mb-2">
-        <div className="text-[9px] text-amber-500 font-mono uppercase tracking-wider font-bold">Action / Output</div>
-        <div className="text-amber-500">{getIcon(data.icon)}</div>
-      </div>
-      <div className="text-slate-900 dark:text-slate-100 text-xs font-semibold tracking-tight">{data.label}</div>
-      {data.desc && <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-normal font-medium">{data.desc}</div>}
-    </div>
-  );
-};
-
-const GateNode = ({ data }: any) => {
-  return (
-    <div className="bg-[#0a0f1d] dark:bg-[#070b16] border border-rose-500/40 w-52 p-4 rounded-xl shadow-[0_4px_25px_rgba(244,63,94,0.12)] transition-all hover:shadow-[0_4px_30px_rgba(244,63,94,0.22)] hover:border-rose-400">
-      <Handle type="target" position={Position.Left} className="w-3 h-3 !bg-rose-500 !border-none !left-[-6px]" />
-      <Handle type="source" position={Position.Right} className="w-3 h-3 !bg-rose-500 !border-none !right-[-6px]" />
-      <div className="flex items-center justify-between mb-2">
-        <div className="text-[9px] text-rose-500 font-mono uppercase tracking-wider font-bold">Gate / Policy</div>
-        <div className="text-rose-500">{getIcon(data.icon)}</div>
-      </div>
-      <div className="text-slate-900 dark:text-slate-100 text-xs font-semibold tracking-tight">{data.label}</div>
-      {data.desc && <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-normal font-medium">{data.desc}</div>}
-    </div>
-  );
-};
-
-const nodeTypes = {
-  trigger: TriggerNode,
-  process: ProcessNode,
-  action: ActionNode,
-  gate: GateNode,
-};
-
-// ---------------------------------------------------------
-// Preset Templates Definitions
-// ---------------------------------------------------------
-
-const TEMPLATES: Record<string, { name: string; desc: string; nodes: Node[]; edges: Edge[] }> = {
-  automation: {
-    name: 'System Automation Flow',
-    desc: 'Default backend workflow mapping events to DB writes.',
-    nodes: [
-      { id: 'auto-1', type: 'trigger', position: { x: 50, y: 150 }, data: { label: 'Webhook Event', icon: 'webhook', desc: 'Listen for external property uploads' } },
-      { id: 'auto-2', type: 'process', position: { x: 320, y: 150 }, data: { label: 'Data Transformation', icon: 'transform', desc: 'Sanitize strings & adjust currencies' } },
-      { id: 'auto-3', type: 'action', position: { x: 600, y: 150 }, data: { label: 'Database Sync', icon: 'db', desc: 'Write output into listings collection' } },
-    ],
-    edges: [
-      { id: 'e-auto-1-2', source: 'auto-1', target: 'auto-2', animated: true, style: { stroke: '#10b981', strokeWidth: 2 } },
-      { id: 'e-auto-2-3', source: 'auto-2', target: 'auto-3', animated: true, style: { stroke: '#a855f7', strokeWidth: 2 } },
-    ]
-  },
-  pipeline: {
-    name: 'CI/CD Deployment Pipeline',
-    desc: 'Architecture patterns for multi-stage deployments with approval gates.',
-    nodes: [
-      { id: 'pipe-1', type: 'trigger', position: { x: 50, y: 150 }, data: { label: 'Source Push (main)', icon: 'webhook', desc: 'Triggers on github branch merge' } },
-      { id: 'pipe-2', type: 'process', position: { x: 320, y: 150 }, data: { label: 'Docker Compile & Build', icon: 'transform', desc: 'Compiles admin dashboard bundle' } },
-      { id: 'pipe-3', type: 'process', position: { x: 600, y: 150 }, data: { label: 'Trivy Scan & Unit Suite', icon: 'check', desc: 'Security audit & unit suite check' } },
-      { id: 'pipe-4', type: 'gate', position: { x: 880, y: 150 }, data: { label: 'Staging Approval Gate', icon: 'lock', desc: 'Requires Lead Engineer manual sign-off' } },
-      { id: 'pipe-5', type: 'action', position: { x: 1160, y: 150 }, data: { label: 'Canary Deploy (10%)', icon: 'db', desc: 'Deploy rolling updates to Cloud Run' } },
-    ],
-    edges: [
-      { id: 'e-pipe-1-2', source: 'pipe-1', target: 'pipe-2', animated: true, style: { stroke: '#10b981', strokeWidth: 2 } },
-      { id: 'e-pipe-2-3', source: 'pipe-2', target: 'pipe-3', animated: true, style: { stroke: '#a855f7', strokeWidth: 2 } },
-      { id: 'e-pipe-3-4', source: 'pipe-3', target: 'pipe-4', animated: true, style: { stroke: '#a855f7', strokeWidth: 2 } },
-      { id: 'e-pipe-4-5', source: 'pipe-4', target: 'pipe-5', animated: true, style: { stroke: '#f43f5e', strokeWidth: 2 } },
-    ]
-  },
-  api: {
-    name: 'API Design Lifecycle',
-    desc: 'REST & GraphQL endpoint lifecycle with validation & rate limiting.',
-    nodes: [
-      { id: 'api-1', type: 'trigger', position: { x: 50, y: 150 }, data: { label: 'HTTP /api/v1/leads', icon: 'webhook', desc: 'Client GET/POST request inbound' } },
-      { id: 'api-2', type: 'process', position: { x: 320, y: 150 }, data: { label: 'Pydantic Input Validator', icon: 'sliders', desc: 'Enforces type check & schema matching' } },
-      { id: 'api-3', type: 'gate', position: { x: 600, y: 150 }, data: { label: 'Rate Limiter Guard', icon: 'lock', desc: 'Limit 60 calls/min per client IP' } },
-      { id: 'api-4', type: 'process', position: { x: 880, y: 150 }, data: { label: 'DataLoader Resolver', icon: 'parse', desc: 'Prevent N+1 database batch query loop' } },
-      { id: 'api-5', type: 'action', position: { x: 1160, y: 150 }, data: { label: 'JSON Payload Response', icon: 'db', desc: 'HATEOAS compliant status response' } },
-    ],
-    edges: [
-      { id: 'e-api-1-2', source: 'api-1', target: 'api-2', animated: true, style: { stroke: '#10b981', strokeWidth: 2 } },
-      { id: 'e-api-2-3', source: 'api-2', target: 'api-3', animated: true, style: { stroke: '#a855f7', strokeWidth: 2 } },
-      { id: 'e-api-3-4', source: 'api-3', target: 'api-4', animated: true, style: { stroke: '#f43f5e', strokeWidth: 2 } },
-      { id: 'e-api-4-5', source: 'api-4', target: 'api-5', animated: true, style: { stroke: '#a855f7', strokeWidth: 2 } },
-    ]
-  }
-};
-
-// ---------------------------------------------------------
-// Page Component
-// ---------------------------------------------------------
+import React, { useEffect, useState, useMemo } from 'react';
+import { collection, onSnapshot, doc, updateDoc } from 'firebase/firestore';
+import { db, handleFirestoreError, OperationType } from '../firebase';
+import { Workflow } from '../types';
 
 interface WorkflowsPageProps {
   T: (key: string) => string;
@@ -186,300 +9,274 @@ interface WorkflowsPageProps {
   searchQuery?: string;
 }
 
-export default function WorkflowsPage({ T, isAr }: WorkflowsPageProps) {
-  const [nodes, setNodes, onNodesChange] = useNodesState(TEMPLATES.automation.nodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(TEMPLATES.automation.edges);
-  const [saving, setSaving] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [workflowId, setWorkflowId] = useState<string>('');
-  const [activeTemplateKey, setActiveTemplateKey] = useState<string>('automation');
+const WORKFLOW_FALLBACKS: Record<string, { nameAr: string; descEn: string; descAr: string }> = {
+  'Lead Ingestion → Firestore': {
+    nameAr: 'معالجة وتوجيه العملاء الجدد',
+    descEn: 'Processes raw WhatsApp text and routes parsed leads info into Firestore.',
+    descAr: 'تحليل وتنسيق معلومات المعاينات من نصوص واتس اب الخام وتوجيهها إلى قاعدة البيانات.'
+  },
+  'WhatsApp Scraper Cron (30m)': {
+    nameAr: 'مراقب مجموعات الواتساب والمواقع',
+    descEn: 'Periodically audits WhatsApp broker communities for raw listing postings.',
+    descAr: 'سحب البيانات التلقائي وعمل فحص دوري لمجموعات السماسرة والمواقع العقارية.'
+  },
+  'Listing Price AVM Sync': {
+    nameAr: 'مزامنة الأسعار مع محرك التقييم',
+    descEn: 'Synchronizes listing prices with actual Sierra valuation models.',
+    descAr: 'مراجعة أسعار السوق المعروضة وتعديلها تلقائياً بالاعتماد على ذكاء نماذج سييرا.'
+  },
+  'Stage-9 Contract Generator': {
+    nameAr: 'توليد العقود للمرحلة الختامية',
+    descEn: 'Prepares contract PDFs and logs legal signatures dynamic events.',
+    descAr: 'إعداد مسودات العقود القانونية النهائية وتسجيل تواقيع العملاء وإيداع الدفعات.'
+  },
+  'Broker KPI Report (Daily)': {
+    nameAr: 'تقرير مؤشرات الأداء اليومي للوسطاء',
+    descEn: 'Synthesizes daily metrics on agent activity and lead progression rates.',
+    descAr: 'استخلاص وتقييم تقارير الأداء اليومية ونشاط الوكلاء ونسب الإغلاق الفعلي.'
+  },
+  'Stale Listing Monitor': {
+    nameAr: 'مراقب العقود والوحدات الراكدة',
+    descEn: 'Audits old database entries and changes status of stale units to Review.',
+    descAr: 'فلترة العقارات القديمة والوحدات غير المحدثة وتغيير حالتها تلقائياً للمراجعة.'
+  },
+  'Email Follow-Up Sequence': {
+    nameAr: 'سلسلة رسائل المتابعة البريدية',
+    descEn: 'Dispatches periodic reminders to prospects showing interest.',
+    descAr: 'إرسال رسائل بريد تذكيرية آلية دورية للعملاء المهتمين بوحدات محددة.'
+  },
+  'Telegram Alert Dispatcher': {
+    nameAr: 'مرسل تنبيهات تيليجرام للعمليات الإدارية',
+    descEn: 'Pushes high-priority bot matches instantly to team Telegram channels.',
+    descAr: 'بث فوري لأحدث ترشيحات العقارات ومطابقة العملاء لقنوات العمل الإدارية.'
+  }
+};
 
-  const onConnect = useCallback((params: Connection | Edge) => {
-    setEdges((eds) => addEdge({ ...params, animated: true, style: { strokeWidth: 2, stroke: '#94a3b8' } }, eds));
-  }, [setEdges]);
+export default function WorkflowsPage({ T, isAr, searchQuery = '' }: WorkflowsPageProps) {
+  const [workflows, setWorkflows] = useState<Workflow[]>([]);
+  const [runningAll, setRunningAll] = useState(false);
 
-  // Load selected template setup
-  const loadTemplate = useCallback((key: string) => {
-    const tmpl = TEMPLATES[key];
-    if (!tmpl) return;
-    setActiveTemplateKey(key);
-    setNodes(tmpl.nodes);
-    setEdges(tmpl.edges);
-  }, [setNodes, setEdges]);
-
-  // Fetch workflow state from API on initial load
   useEffect(() => {
-    const fetchWorkflow = async () => {
-      try {
-        const res = await api.get<{ workflows: any[] }>('/api/admin/workflows');
-        const defaultWf = res.workflows.find(w => w.name === 'DataFlow Editor') || res.workflows[0];
+    const unsub = onSnapshot(collection(db, 'workflows'), (snap) => {
+      const loaded: Workflow[] = [];
+      snap.forEach((doc) => {
+        const d = doc.data();
+        const key = d.name || '';
+        const fallback = WORKFLOW_FALLBACKS[key];
+        loaded.push({
+          id: doc.id,
+          name: d.name,
+          nameAr: d.nameAr || fallback?.nameAr || d.name,
+          desc: d.desc || fallback?.descEn || '',
+          descAr: d.descAr || fallback?.descAr || '',
+          status: d.status,
+          runs: d.runs,
+          last: d.last,
+          color: d.color,
+          updatedAt: d.updatedAt?.toDate ? d.updatedAt.toDate() : new Date(),
+        });
+      });
+      // Sort in logical workflow order
+      setWorkflows(loaded.sort((a,b) => a.id.localeCompare(b.id)));
+    }, (err) => {
+      handleFirestoreError(err, OperationType.LIST, 'workflows');
+    });
 
-        if (defaultWf && defaultWf.graphData) {
-          setWorkflowId(defaultWf.id);
-          setNodes(defaultWf.graphData.nodes || TEMPLATES.automation.nodes);
-          setEdges(defaultWf.graphData.edges || TEMPLATES.automation.edges);
-        } else if (defaultWf) {
-          setWorkflowId(defaultWf.id);
-        } else {
-          // Create default document in DB
-          const createRes = await api.post<{ id: string }>('/api/admin/workflows', {
-            name: 'DataFlow Editor',
-            desc: 'Primary visual execution graph',
-            status: 'active',
-            runs: 0,
-            last: 'Never',
-            graphData: { nodes: TEMPLATES.automation.nodes, edges: TEMPLATES.automation.edges }
-          });
-          if (createRes.id) setWorkflowId(createRes.id);
-        }
-      } catch (err) {
-        console.error('Failed to load workflow data', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchWorkflow();
-  }, [setNodes, setEdges]);
+    return () => unsub();
+  }, []);
 
-  const onSave = async () => {
-    if (!workflowId) return;
-    setSaving(true);
+  const filteredWorkflows = useMemo(() => {
+    if (!searchQuery) return workflows;
+    const qLower = searchQuery.toLowerCase();
+    return workflows.filter((w) => {
+      const statusKey = w.status === 'active' ? 'online' : w.status === 'paused' ? 'idle' : 'config';
+      const statusTranslated = T(statusKey);
+      return (
+        w.name.toLowerCase().includes(qLower) ||
+        (w.nameAr && w.nameAr.toLowerCase().includes(qLower)) ||
+        w.desc.toLowerCase().includes(qLower) ||
+        (w.descAr && w.descAr.toLowerCase().includes(qLower)) ||
+        statusTranslated.toLowerCase().includes(qLower) ||
+        w.status.toLowerCase().includes(qLower)
+      );
+    });
+  }, [workflows, searchQuery, T]);
+
+  const toggleWorkflow = async (wf: Workflow) => {
+    const ref = doc(db, 'workflows', wf.id);
+    const nextStatus = wf.status === 'paused' ? 'active' : 'paused';
     try {
-      await api.patch(`/api/admin/workflows/${workflowId}`, {
-        graphData: { nodes, edges },
+      await updateDoc(ref, {
+        status: nextStatus,
+        updatedAt: new Date()
       });
     } catch (err) {
-      console.error('Save failed:', err);
-    } finally {
-      setTimeout(() => setSaving(false), 500);
+      handleFirestoreError(err, OperationType.UPDATE, `workflows/${wf.id}`);
     }
   };
 
-  const onDragStart = (event: React.DragEvent, nodeType: string, label: string, icon: string, desc: string) => {
-    event.dataTransfer.setData('application/reactflow', JSON.stringify({ type: nodeType, label, icon, desc }));
-    event.dataTransfer.effectAllowed = 'move';
+  const triggerRunAll = async () => {
+    setRunningAll(true);
+    try {
+      // Loop through running ones and increment run counts in Firestore
+      for (const wf of workflows) {
+        if (wf.status === 'active') {
+          const ref = doc(db, 'workflows', wf.id);
+          await updateDoc(ref, {
+            runs: wf.runs + 1,
+            last: 'Just now',
+            updatedAt: new Date()
+          });
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setTimeout(() => setRunningAll(false), 800);
+    }
   };
 
-  const onDragOver = useCallback((event: React.DragEvent) => {
-    event.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
-  }, []);
-
-  const onDrop = useCallback(
-    (event: React.DragEvent) => {
-      event.preventDefault();
-
-      const reactFlowBounds = document.querySelector('.react-flow')?.getBoundingClientRect();
-      const dataStr = event.dataTransfer.getData('application/reactflow');
-
-      if (!dataStr || !reactFlowBounds) return;
-
-      const data = JSON.parse(dataStr);
-      const position = {
-        x: event.clientX - reactFlowBounds.left,
-        y: event.clientY - reactFlowBounds.top,
-      };
-
-      const newNode: Node = {
-        id: `node-${Date.now()}`,
-        type: data.type,
-        position,
-        data: { label: data.label, icon: data.icon, desc: data.desc },
-      };
-
-      setNodes((nds) => nds.concat(newNode));
-    },
-    [setNodes]
-  );
-
-  if (loading) {
-    return (
-      <div className="h-full flex items-center justify-center text-slate-500 font-mono animate-pulse">
-        Initializing DataFlow Engine...
-      </div>
-    );
-  }
+  const translateTime = (timeStr: string) => {
+    if (!isAr) return timeStr;
+    const lower = timeStr.toLowerCase().trim();
+    if (lower.includes('just now')) return 'الآن';
+    if (lower.includes('2 min ago')) return 'منذ دقيقتين';
+    if (lower.includes('28 min ago')) return 'منذ ٢٨ دقيقة';
+    if (lower.includes('15 min ago')) return 'منذ ١٥ دقيقة';
+    if (lower.includes('4 min ago')) return 'منذ ٤ دقائق';
+    if (lower.includes('1 hr ago')) return 'منذ ساعة';
+    if (lower.includes('2 hrs ago')) return 'منذ ساعتين';
+    if (lower.includes('6 hrs ago')) return 'منذ ٦ ساعات';
+    if (lower.includes('1 day ago')) return 'منذ يوم من العجز';
+    return timeStr;
+  };
 
   return (
-    <div className="h-full flex flex-col lg:flex-row gap-6 animate-fade-in-up">
-      {/* Sidebar Nodes Palette */}
-      <div className="w-full lg:w-80 shrink-0 bg-white dark:bg-[#0a0f1d]/50 backdrop-blur-md border border-slate-200 dark:border-slate-800/80 rounded-xl p-5 shadow-lg flex flex-col z-10">
-        
-        {/* Template Selector Panel */}
-        <div className="mb-6 pb-5 border-b border-slate-200 dark:border-slate-800">
-          <label className="text-[10px] text-slate-500 dark:text-slate-400 font-mono uppercase tracking-widest font-bold block mb-2">
-            📂 Presets & Architectures
-          </label>
-          <div className="grid grid-cols-1 gap-1.5">
-            {Object.entries(TEMPLATES).map(([key, value]) => (
-              <button
-                key={key}
-                onClick={() => loadTemplate(key)}
-                className={`w-full py-2 px-3 rounded-lg text-left transition-all flex items-center gap-2.5 ${
-                  activeTemplateKey === key
-                    ? 'bg-blue-500/10 border border-blue-500/30 text-blue-500 dark:text-blue-400'
-                    : 'bg-slate-50 dark:bg-slate-900/30 border border-transparent hover:bg-slate-100 dark:hover:bg-slate-800/40 text-slate-700 dark:text-slate-300'
-                }`}
+    <div className="space-y-6 animate-fade-in-up">
+      {/* Upper Control Bar */}
+      <div className="flex gap-2.5 flex-wrap">
+        <button
+          onClick={triggerRunAll}
+          disabled={runningAll}
+          className="px-4 py-2 text-xs font-bold bg-cyan-500 text-black hover:bg-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)] rounded flex items-center gap-2 select-none transition active:scale-95 disabled:opacity-50 disabled:scale-100 duration-100 cursor-pointer"
+          id="btn-trigger-all-workflows"
+        >
+          <span>⚡</span>
+          <span>
+            {runningAll 
+              ? (isAr ? "يجري تنفيذ مهام الأتمتة..." : "Pipelining crons...") 
+              : (isAr ? "تشغيل كافة مهام الأتمتة" : "Activate All Routines")}
+          </span>
+        </button>
+        <button
+          onClick={triggerRunAll}
+          className="px-4 py-2 text-xs font-bold bg-white/5 border border-slate-800 text-white rounded flex items-center gap-1.5 hover:bg-white/10 transition select-none active:scale-95 duration-100 cursor-pointer"
+          id="btn-refresh-workflows"
+        >
+          <span>🔄</span>
+          <span>{isAr ? "مزامنة سير العمل الكلي" : "Sync Pipelines"}</span>
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* n8n Workflows */}
+        <div className="bg-[#0a0f1d] border border-slate-800 rounded-xl overflow-hidden shadow-xl">
+          <div className="px-5 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/40">
+            <span className="font-mono text-[10px] uppercase tracking-wider text-cyan-400 font-bold select-none">
+              {isAr ? "تفاصيل عمليات الأتمتة · نظام n8n الذكي" : "Automation Workflows · n8n System"}
+            </span>
+            <span className="text-[9px] font-mono text-slate-500 uppercase select-none">
+              {workflows.length} {isAr ? "أتمتة مبرمجة" : "Configured"}
+            </span>
+          </div>
+          <div className="p-4 space-y-2 max-h-[460px] overflow-y-auto">
+            {filteredWorkflows.map((w) => (
+              <div
+                key={w.id}
+                className="flex flex-col gap-2 px-4 py-3 bg-slate-900/40 border border-slate-800 rounded hover:border-slate-700 hover:bg-white/5 transition group"
               >
-                <FolderOpen className="w-3.5 h-3.5" />
-                <div>
-                  <div className="text-xs font-semibold">{value.name}</div>
-                  <div className="text-[9px] opacity-75 truncate max-w-[200px]">{value.desc}</div>
+                <div className="flex items-center gap-3.5">
+                  <div
+                    className="w-2.5 h-2.5 rounded-full shrink-0 group-hover:scale-110 transition duration-150 animate-pulse"
+                    style={{ backgroundColor: w.status === 'paused' ? '#E63946' : w.color }}
+                  />
+                  
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold text-white truncate mb-0.5">
+                      {isAr ? w.nameAr : w.name}
+                    </p>
+                    <p className="text-[11px] text-slate-400 leading-relaxed mb-1">
+                      {isAr ? w.descAr : w.desc}
+                    </p>
+                    <p className="font-mono text-[9px] text-slate-500 uppercase tracking-widest mt-1">
+                      {w.runs.toLocaleString()} {isAr ? "تشغيلات" : "RUNS"} · {isAr ? "آخر عمل: " : "LAST: "}{translateTime(w.last)}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className={`text-[9px] font-mono uppercase tracking-wider text-right font-bold py-0.5 px-2 rounded-full border ${
+                      w.status === 'active'
+                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                        : w.status === 'warning'
+                        ? 'bg-amber-500/10 text-amber-500 border-amber-500/20'
+                        : 'bg-red-500/10 text-red-400 border-red-500/20'
+                    }`}>
+                      {w.status === 'active' ? (isAr ? "نشط" : "active") : w.status === 'paused' ? (isAr ? "موقف" : "paused") : (isAr ? "تنبيه" : "warning")}
+                    </span>
+
+                    <button
+                      onClick={() => toggleWorkflow(w)}
+                      className="p-1.5 hover:bg-white/5 border border-slate-800 rounded text-xs text-slate-400 hover:text-cyan-400 transition shadow shrink-0 cursor-pointer"
+                      title={w.status === 'paused' ? 'Activate' : 'Pause'}
+                    >
+                      {w.status === 'paused' ? '▶' : '⏸'}
+                    </button>
+                  </div>
                 </div>
-              </button>
+              </div>
             ))}
           </div>
         </div>
 
-        {/* Node library palette list */}
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-slate-900 dark:text-white font-bold text-xs font-mono uppercase tracking-wider flex items-center gap-2">
-            <Boxes className="w-4 h-4 text-gold-lt" />
-            {isAr ? 'كتلة الأوامر' : 'Node Palette Library'}
-          </h2>
-        </div>
-
-        <div className="flex-1 overflow-y-auto space-y-5 pr-1 custom-scrollbar">
-          {/* CI/CD Category */}
-          <div>
-            <div className="text-[9px] text-cyan-500 mb-2 uppercase font-mono tracking-widest font-bold">Deployment & CI/CD</div>
-            <div className="space-y-1.5">
-              <div
-                className="p-2.5 bg-white dark:bg-[#040710] border border-emerald-500/30 rounded-lg cursor-grab hover:border-emerald-500 hover:shadow-[0_0_15px_rgba(16,185,129,0.12)] transition-all flex items-center gap-3 group"
-                onDragStart={(e) => onDragStart(e, 'trigger', 'Source Pipeline Push', 'webhook', 'Triggers build on push/merge to repo')}
-                draggable
-              >
-                <div className="w-6 h-6 rounded bg-emerald-500/10 flex items-center justify-center text-emerald-500">📥</div>
-                <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 group-hover:text-emerald-500 transition-colors">Source Code Push</span>
-              </div>
-              <div
-                className="p-2.5 bg-white dark:bg-[#040710] border border-purple-500/30 rounded-lg cursor-grab hover:border-purple-500 hover:shadow-[0_0_15px_rgba(168,85,247,0.12)] transition-all flex items-center gap-3 group"
-                onDragStart={(e) => onDragStart(e, 'process', 'Docker Build & Package', 'transform', 'Build container images')}
-                draggable
-              >
-                <div className="w-6 h-6 rounded bg-purple-500/10 flex items-center justify-center text-purple-500">🐳</div>
-                <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 group-hover:text-purple-500 transition-colors">Docker Build</span>
-              </div>
-              <div
-                className="p-2.5 bg-white dark:bg-[#040710] border border-rose-500/30 rounded-lg cursor-grab hover:border-rose-500 hover:shadow-[0_0_15px_rgba(244,63,94,0.12)] transition-all flex items-center gap-3 group"
-                onDragStart={(e) => onDragStart(e, 'gate', 'Staging Approval Gate', 'lock', 'Manual review gate before prod release')}
-                draggable
-              >
-                <div className="w-6 h-6 rounded bg-rose-500/10 flex items-center justify-center text-rose-500"><Lock className="w-3.5 h-3.5" /></div>
-                <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 group-hover:text-rose-500 transition-colors">Approval Gate</span>
-              </div>
-            </div>
+        {/* Lead Pipeline Funnel Status */}
+        <div className="bg-[#0a0f1d] border border-slate-800 rounded-xl overflow-hidden shadow-xl">
+          <div className="px-5 py-4 border-b border-slate-805 bg-slate-900/40">
+            <span className="font-mono text-[10px] uppercase tracking-wider text-cyan-400 font-bold select-none">
+              {isAr ? "مراحل تصنيف وتدفق العملاء الفعالة" : "Lead Pipeline · Stage Funnel"}
+            </span>
           </div>
-
-          {/* API Design Category */}
-          <div>
-            <div className="text-[9px] text-purple-400 mb-2 uppercase font-mono tracking-widest font-bold">API Architecture</div>
-            <div className="space-y-1.5">
-              <div
-                className="p-2.5 bg-white dark:bg-[#040710] border border-emerald-500/30 rounded-lg cursor-grab hover:border-emerald-500 hover:shadow-[0_0_15px_rgba(16,185,129,0.12)] transition-all flex items-center gap-3 group"
-                onDragStart={(e) => onDragStart(e, 'trigger', 'HTTP Request Noun', 'webhook', 'Inbound REST API or GraphQL call')}
-                draggable
-              >
-                <div className="w-6 h-6 rounded bg-emerald-500/10 flex items-center justify-center text-emerald-500"><Globe className="w-3.5 h-3.5" /></div>
-                <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 group-hover:text-emerald-500 transition-colors">Client Request</span>
+          <div className="p-5 space-y-4">
+            {[
+              { s: 'S1-2', label: isAr ? 'استقبال وتحليل البيانات المتكامل' : 'Ingestion & Parsing', count: 4821, pct: 100, color: '#1E88D9' },
+              { s: 'S3-5', label: isAr ? 'إدارة المخزون والتسعير التلقائي' : 'Inventory & Pricing', count: 3102, pct: 64, color: '#06b6d4' },
+              { s: 'S6-8', label: isAr ? 'المطابقة والتواصل الذكي النشط' : 'Matching & Outreach', count: 1240, pct: 26, color: '#34D399' },
+              { s: 'S9', label: isAr ? 'المفاوضات وصياغة العقود الفورية' : 'Negotiation', count: 421, pct: 8.7, color: '#7C3AED' },
+              { s: 'S10', label: isAr ? 'الصفقات المغلقة المنجزة بالكامل' : 'Closed Deals', count: 97, pct: 2, color: '#E63946' }
+            ].map((row, i) => (
+              <div key={i} className="space-y-1.5 animate-slide-in">
+                <div className="flex justify-between items-center text-xs select-none">
+                  <span className="text-slate-350 font-medium flex items-center gap-1.5">
+                    <strong className="font-mono text-sm tracking-wide" style={{ color: row.color }}>
+                      {row.s}
+                    </strong>
+                    <span>{row.label}</span>
+                  </span>
+                  <span className="font-mono text-slate-500 font-bold">{row.count.toLocaleString()}</span>
+                </div>
+                <div className="w-full bg-slate-850 h-1.5 rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-1000 ease-out"
+                    style={{
+                      width: `${row.pct}%`,
+                      background: `linear-gradient(to right, ${row.color}50, ${row.color})`
+                    }}
+                  />
+                </div>
               </div>
-              <div
-                className="p-2.5 bg-white dark:bg-[#040710] border border-purple-500/30 rounded-lg cursor-grab hover:border-purple-500 hover:shadow-[0_0_15px_rgba(168,85,247,0.12)] transition-all flex items-center gap-3 group"
-                onDragStart={(e) => onDragStart(e, 'process', 'Joi Input Validation', 'sliders', 'Validates JSON request payload structure')}
-                draggable
-              >
-                <div className="w-6 h-6 rounded bg-purple-500/10 flex items-center justify-center text-purple-500"><ShieldCheck className="w-3.5 h-3.5" /></div>
-                <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 group-hover:text-purple-500 transition-colors">Request Validator</span>
-              </div>
-              <div
-                className="p-2.5 bg-white dark:bg-[#040710] border border-rose-500/30 rounded-lg cursor-grab hover:border-rose-500 hover:shadow-[0_0_15px_rgba(244,63,94,0.12)] transition-all flex items-center gap-3 group"
-                onDragStart={(e) => onDragStart(e, 'gate', 'Rate Limit Guard', 'lock', 'Limit connections by client IP')}
-                draggable
-              >
-                <div className="w-6 h-6 rounded bg-rose-500/10 flex items-center justify-center text-rose-500"><Clock className="w-3.5 h-3.5" /></div>
-                <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 group-hover:text-rose-500 transition-colors">Rate Limiter</span>
-              </div>
-              <div
-                className="p-2.5 bg-white dark:bg-[#040710] border border-purple-500/30 rounded-lg cursor-grab hover:border-purple-500 hover:shadow-[0_0_15px_rgba(168,85,247,0.12)] transition-all flex items-center gap-3 group"
-                onDragStart={(e) => onDragStart(e, 'process', 'DataLoader DB Resolver', 'parse', 'Batches SQL/NoSQL queries to avoid N+1 load')}
-                draggable
-              >
-                <div className="w-6 h-6 rounded bg-purple-500/10 flex items-center justify-center text-purple-500"><Layers className="w-3.5 h-3.5" /></div>
-                <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 group-hover:text-purple-500 transition-colors">DataLoader Resolver</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Standard Automations Category */}
-          <div>
-            <div className="text-[9px] text-amber-500 mb-2 uppercase font-mono tracking-widest font-bold">Standard Actions</div>
-            <div className="space-y-1.5">
-              <div
-                className="p-2.5 bg-white dark:bg-[#040710] border border-amber-500/30 rounded-lg cursor-grab hover:border-amber-500 hover:shadow-[0_0_15px_rgba(245,158,11,0.12)] transition-all flex items-center gap-3 group"
-                onDragStart={(e) => onDragStart(e, 'action', 'Database Sync Action', 'db', 'Save/Patch record into Firestore')}
-                draggable
-              >
-                <div className="w-6 h-6 rounded bg-amber-500/10 flex items-center justify-center text-amber-500"><Database className="w-3.5 h-3.5" /></div>
-                <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 group-hover:text-amber-500 transition-colors">Database Sync</span>
-              </div>
-              <div
-                className="p-2.5 bg-white dark:bg-[#040710] border border-amber-500/30 rounded-lg cursor-grab hover:border-amber-500 hover:shadow-[0_0_15px_rgba(245,158,11,0.12)] transition-all flex items-center gap-3 group"
-                onDragStart={(e) => onDragStart(e, 'action', 'Slack/Telegram Dispatch', 'alert', 'Notify team of build status')}
-                draggable
-              >
-                <div className="w-6 h-6 rounded bg-amber-500/10 flex items-center justify-center text-amber-500"><Bell className="w-3.5 h-3.5" /></div>
-                <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 group-hover:text-amber-500 transition-colors">Dispatch Alert</span>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
-
-        <button
-          onClick={onSave}
-          disabled={saving}
-          className="mt-5 w-full py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-bold text-xs shadow-[0_4px_14px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_0_20px_rgba(255,255,255,0.25)] transition-all disabled:opacity-50 active:scale-95"
-        >
-          {saving ? 'Saving...' : 'Deploy DataFlow'}
-        </button>
-      </div>
-
-      {/* Editor Canvas */}
-      <div className="flex-1 min-h-[500px] lg:min-h-0 bg-white dark:bg-[#040710] border border-slate-200 dark:border-slate-800/80 rounded-xl overflow-hidden shadow-inner relative z-0">
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          nodeTypes={nodeTypes}
-          onDrop={onDrop}
-          onDragOver={onDragOver}
-          fitView
-          className="bg-slate-50 dark:bg-[#02040a]"
-        >
-          <Background color="#808080" gap={24} size={1} />
-          
-          <Controls className="!bg-white/80 dark:!bg-[#0a0f1d]/80 backdrop-blur border border-slate-200 dark:border-slate-800 shadow-xl rounded-md overflow-hidden !fill-slate-700 dark:!fill-slate-300" />
-          
-          <MiniMap
-            className="!bg-white/80 dark:!bg-[#0a0f1d]/80 backdrop-blur border border-slate-200 dark:border-slate-800 shadow-xl rounded-md"
-            nodeColor={(node) => {
-              if (node.type === 'trigger') return '#10b981';
-              if (node.type === 'process') return '#a855f7';
-              if (node.type === 'action') return '#f59e0b';
-              if (node.type === 'gate') return '#f43f5e';
-              return '#475569';
-            }}
-            maskColor="rgba(0,0,0,0.1)"
-            nodeBorderRadius={8}
-          />
-          
-          <Panel position="top-left" className="bg-white/80 dark:bg-slate-900/80 backdrop-blur text-slate-900 dark:text-white px-4 py-2 rounded-lg text-xs font-mono font-bold shadow-sm border border-slate-200 dark:border-slate-700">
-            System DataFlow Editor V2
-          </Panel>
-        </ReactFlow>
       </div>
     </div>
   );
 }
-

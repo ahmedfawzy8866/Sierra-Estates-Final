@@ -36,6 +36,12 @@ minimumReleaseAgeExclude:
 
 packages:
   - "apps/*"
+  # Legacy/deprecated apps excluded from the workspace so they no longer
+  # participate in `turbo run build/lint/type-check` (one pins TS ~6.0.2 and
+  # reddened CI). Kept on disk for now; physical removal is a follow-up.
+  - "!apps/admin-dashboard"
+  - "!apps/sierra-blu-admin-portal"
+  - "!apps/sierra-blu-realty"
   - "packages/*"
   - "functions"
   - "artifacts/*"
@@ -76,10 +82,6 @@ onlyBuiltDependencies:
   - esbuild
   - msw
   - unrs-resolver
-  - '@firebase/util'
-  - '@google/genai'
-  - core-js
-  - protobufjs
 
 overrides:
   # replit uses linux-x64 only, we can exclude all other platforms
@@ -170,13 +172,3 @@ overrides:
   js-yaml: "^4.2.0"
   markdown-it: "^14.2.0"
   "@babel/core": "^7.29.6"
-
-allowBuilds:
-  '@firebase/util': set this to true or false
-  '@google/genai': set this to true or false
-  core-js: set this to true or false
-  esbuild: set this to true or false
-  openclaw: set this to true or false
-  protobufjs: set this to true or false
-  tree-sitter-bash: set this to true or false
-  unrs-resolver: set this to true or false

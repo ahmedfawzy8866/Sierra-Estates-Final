@@ -1,30 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { auth, createSierraNotification } from '../firebase';
-import { api } from '../lib/apiClient';
+import { collection, onSnapshot, addDoc, serverTimestamp, deleteDoc, doc, writeBatch, updateDoc } from 'firebase/firestore';
+import { db, handleFirestoreError, OperationType, createSierraNotification } from '../firebase';
 import { Lead } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
-import HighlightText from './HighlightText';
-import { recordAccess, getRelevanceScore } from '../utils/relevance';
-import {
-  Sparkles,
-  AlertTriangle,
-  RefreshCw,
-  FileText,
-  CheckCircle2,
-  ChevronRight,
-  UserPlus,
-  FileSpreadsheet,
-  Search,
-  Zap,
-  UserCheck,
-  Inbox,
-  FolderArchive,
-  Trash2,
-  Globe,
-  Clock,
-  ShieldAlert,
-  Flame
-} from 'lucide-react';
 
 interface LeadsPageProps {
   T: (key: string) => string;
@@ -57,16 +35,6 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
   const [onlyHot, setOnlyHot] = useState<boolean>(false);
   const [showArchived, setShowArchived] = useState<boolean>(false);
   const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([]);
-  const [sortByRelevance, setSortByRelevance] = useState<boolean>(true);
-  const [accessUpdateTrigger, setAccessUpdateTrigger] = useState<number>(0);
-
-  useEffect(() => {
-    const handleUpdate = () => {
-      setAccessUpdateTrigger(prev => prev + 1);
-    };
-    window.addEventListener('sierra_access_updated', handleUpdate);
-    return () => window.removeEventListener('sierra_access_updated', handleUpdate);
-  }, []);
   
   // Modals state
   const [showAddModal, setShowAddModal] = useState(false);
@@ -89,51 +57,64 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
   const [importSuccessMsg, setImportSuccessMsg] = useState<string | null>(null);
   const [importErrorMsg, setImportErrorMsg] = useState<string | null>(null);
 
-  // Twilio CRM communication modal state
-  const [twilioModalLead, setTwilioModalLead] = useState<Lead | null>(null);
-  const [twilioMode, setTwilioMode] = useState<'sms' | 'whatsapp'>('sms');
-  const [twilioMessage, setTwilioMessage] = useState('');
-  const [twilioSending, setTwilioSending] = useState(false);
-  const [twilioStatus, setTwilioStatus] = useState<string | null>(null);
-  const [twilioNote, setTwilioNote] = useState('');
-
-  const refreshAgents = async () => {
-    try {
-      const { agents: loaded } = await api.get<{ agents: any[] }>('/api/admin/agents');
-      setAgents(loaded);
-    } catch (err) {
-      console.error('Failed to fetch agents:', err);
-    }
-  };
-
-  const refreshLeads = async () => {
-    try {
-      const { leads: loaded } = await api.get<{ leads: any[] }>('/api/admin/leads');
-      setLeads(
-        loaded.map((d) => ({
-          ...d,
-          createdAt: d.createdAt ? new Date(d.createdAt) : new Date(),
-          updatedAt: d.updatedAt ? new Date(d.updatedAt) : new Date(),
-        }))
-      );
-    } catch (err) {
-      console.error('Failed to fetch leads:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Backend-polled lists (replaces Firestore onSnapshot — see ARCHITECTURE_INTEGRATION.md).
   useEffect(() => {
-    refreshAgents();
-    const interval = setInterval(refreshAgents, 20000);
-    return () => clearInterval(interval);
+    // Subscribe to agents collection
+    const unsubAgents = onSnapshot(
+      collection(db, 'agents'),
+      (snap) => {
+        const loaded: any[] = [];
+        snap.forEach((doc) => {
+          const d = doc.data();
+          loaded.push({
+            id: doc.id,
+            name: d.name,
+            emoji: d.emoji || '👤',
+            color: d.color || '#06b6d4',
+            status: d.status || 'Offline',
+            load: d.load || 0,
+            tasks: d.tasks || 0
+          });
+        });
+        setAgents(loaded);
+      },
+      (err) => {
+        console.error("Agents subscription failed: ", err);
+      }
+    );
+    return () => unsubAgents();
   }, []);
 
   useEffect(() => {
-    refreshLeads();
-    const interval = setInterval(refreshLeads, 15000);
-    return () => clearInterval(interval);
+    // Standard real-time listener conforming to "Secure List Queries"
+    const unsub = onSnapshot(
+      collection(db, 'leads'),
+      (snap) => {
+        const loaded: Lead[] = [];
+        snap.forEach((doc) => {
+          const d = doc.data();
+          loaded.push({
+            id: doc.id,
+            name: d.name,
+            phone: d.phone,
+            interest: d.interest,
+            stage: d.stage,
+            color: d.color || '#C8961A',
+            hot: d.hot,
+            archived: !!d.archived,
+            ownerId: d.ownerId || '',
+            createdAt: d.createdAt?.toDate ? d.createdAt.toDate() : new Date(),
+            updatedAt: d.updatedAt?.toDate ? d.updatedAt.toDate() : new Date(),
+          });
+        });
+        setLeads(loaded);
+        setLoading(false);
+      },
+      (err) => {
+        handleFirestoreError(err, OperationType.LIST, 'leads');
+      }
+    );
+
+    return () => unsub();
   }, []);
 
   // Compute most available agent ID (fewest active assigned leads)
@@ -186,7 +167,7 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
   }, [leads]);
 
   const filtered = useMemo(() => {
-    const res = leads.filter((l) => {
+    return leads.filter((l) => {
       // archived filter
       const matchesArchive = showArchived ? !!l.archived : !l.archived;
 
@@ -211,21 +192,7 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
 
       return matchesArchive && matchesQ && matchesStage && matchesHot;
     });
-
-    if (sortByRelevance && q.trim()) {
-      return [...res].sort((a, b) => {
-        const scoreA = getRelevanceScore(a.id);
-        const scoreB = getRelevanceScore(b.id);
-        if (scoreB !== scoreA) {
-          return scoreB - scoreA;
-        }
-        // secondary sort by newest first
-        return b.updatedAt.getTime() - a.updatedAt.getTime();
-      });
-    }
-
-    return res;
-  }, [q, selectedStage, onlyHot, showArchived, leads, sortByRelevance, accessUpdateTrigger]);
+  }, [q, selectedStage, onlyHot, showArchived, leads]);
 
   const handleAddLead = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -249,7 +216,7 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
     }
 
     try {
-      await api.post('/api/admin/leads', {
+      await addDoc(collection(db, 'leads'), {
         name: name.trim(),
         phone: phone.trim(),
         interest: interest.trim(),
@@ -257,8 +224,9 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
         hot,
         color: randomColor,
         ownerId: finalOwnerId,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
       });
-      await refreshLeads();
 
       let assignedText = 'unassigned';
       let assignedTextAr = 'غير معين';
@@ -287,64 +255,19 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
       setOwnerId('auto');
       setShowAddModal(false);
     } catch (err) {
-      console.error('Failed to create lead:', err);
-      setFormError(err instanceof Error ? err.message : 'Failed to create lead.');
+      handleFirestoreError(err, OperationType.CREATE, 'leads');
     }
   };
 
   const handleDeleteLead = async (id: string, name: string) => {
     if (!confirm(`Are you sure you want to delete lead ${name}?`)) return;
     try {
-      await api.delete(`/api/admin/leads/${id}`);
-      await refreshLeads();
+      await deleteDoc(doc(db, 'leads', id));
       if (selectedLeadIds.includes(id)) {
         setSelectedLeadIds(prev => prev.filter(x => x !== id));
       }
     } catch (err) {
-      console.error('Failed to delete lead:', err);
-    }
-  };
-
-  const handleSendTwilio = async () => {
-    if (!twilioModalLead) return;
-    setTwilioSending(true);
-    setTwilioStatus(null);
-    try {
-      const endpoint = twilioMode === 'sms' ? '/api/twilio/sms' : '/api/twilio/whatsapp';
-      const response = await api.post<{ success: boolean; sid?: string; error?: string }>(endpoint, {
-        to: twilioModalLead.phone,
-        body: twilioMessage
-      });
-
-      if (response.success) {
-        setTwilioStatus(`Success! Sent message via Twilio. SID: ${response.sid}`);
-        
-        // Log note if provided
-        if (twilioNote.trim()) {
-          await api.post('/api/twilio/call-note', {
-            leadId: twilioModalLead.id,
-            note: `[Twilio ${twilioMode.toUpperCase()}] ${twilioNote.trim()}`,
-            agentEmail: auth.currentUser?.email || 'admin'
-          });
-        }
-        
-        await refreshLeads();
-        
-        // Clear message input but keep modal open for a second to show status
-        setTwilioMessage('');
-        setTwilioNote('');
-        setTimeout(() => {
-          setTwilioModalLead(null);
-          setTwilioStatus(null);
-        }, 1500);
-      } else {
-        setTwilioStatus(`Error: ${response.error || 'Failed to send message'}`);
-      }
-    } catch (err: any) {
-      console.error('Failed to send Twilio message:', err);
-      setTwilioStatus(`Error: ${err.message || 'Server error occurred'}`);
-    } finally {
-      setTwilioSending(false);
+      handleFirestoreError(err, OperationType.DELETE, `leads/${id}`);
     }
   };
 
@@ -352,8 +275,11 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
     if (selectedLeadIds.length === 0) return;
     if (!confirm(`Are you sure you want to permanently delete these ${selectedLeadIds.length} leads?`)) return;
     try {
-      await api.post('/api/admin/leads/bulk', { ids: selectedLeadIds, action: 'delete' });
-      await refreshLeads();
+      const batch = writeBatch(db);
+      selectedLeadIds.forEach((id) => {
+        batch.delete(doc(db, 'leads', id));
+      });
+      await batch.commit();
 
       await createSierraNotification(
         'system',
@@ -365,15 +291,18 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
 
       setSelectedLeadIds([]);
     } catch (err) {
-      console.error('Failed to bulk-delete leads:', err);
+      handleFirestoreError(err, OperationType.DELETE, 'leads/bulk');
     }
   };
 
   const handleBulkArchive = async (archiveState: boolean) => {
     if (selectedLeadIds.length === 0) return;
     try {
-      await api.post('/api/admin/leads/bulk', { ids: selectedLeadIds, action: 'update', patch: { archived: archiveState } });
-      await refreshLeads();
+      const batch = writeBatch(db);
+      selectedLeadIds.forEach((id) => {
+        batch.update(doc(db, 'leads', id), { archived: archiveState, updatedAt: serverTimestamp() });
+      });
+      await batch.commit();
 
       await createSierraNotification(
         'system',
@@ -387,15 +316,18 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
 
       setSelectedLeadIds([]);
     } catch (err) {
-      console.error('Failed to bulk-archive leads:', err);
+      handleFirestoreError(err, OperationType.UPDATE, 'leads/bulk-archive');
     }
   };
 
   const handleBulkReassign = async (newStage: Lead['stage']) => {
     if (selectedLeadIds.length === 0) return;
     try {
-      await api.post('/api/admin/leads/bulk', { ids: selectedLeadIds, action: 'update', patch: { stage: newStage } });
-      await refreshLeads();
+      const batch = writeBatch(db);
+      selectedLeadIds.forEach((id) => {
+        batch.update(doc(db, 'leads', id), { stage: newStage, updatedAt: serverTimestamp() });
+      });
+      await batch.commit();
 
       await createSierraNotification(
         'system',
@@ -407,15 +339,16 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
 
       setSelectedLeadIds([]);
     } catch (err) {
-      console.error('Failed to bulk-reassign leads:', err);
+      handleFirestoreError(err, OperationType.UPDATE, 'leads/bulk-reassign');
     }
   };
 
   const handleBulkAutoAssign = async () => {
     if (selectedLeadIds.length === 0 || agents.length === 0) return;
     try {
-      // Each lead can go to a different agent, so this can't use the uniform bulk-patch endpoint —
-      // patch one lead at a time, tracking running counts locally same as before.
+      const batch = writeBatch(db);
+
+      // Create a local count tracker to distribute leads evenly in a single batch operation!
       const runningCounts: Record<string, number> = {};
       agents.forEach(a => {
         runningCounts[a.id] = 0;
@@ -427,7 +360,8 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
         }
       });
 
-      for (const id of selectedLeadIds) {
+      selectedLeadIds.forEach((id) => {
+        // Find the agent with the lowest running lead count
         let minCount = Infinity;
         let selectedAgentId = '';
 
@@ -440,12 +374,14 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
         });
 
         if (selectedAgentId) {
-          await api.patch(`/api/admin/leads/${id}`, { ownerId: selectedAgentId });
+          // Assign lead to this agent
+          batch.update(doc(db, 'leads', id), { ownerId: selectedAgentId, updatedAt: serverTimestamp() });
+          // Increment count in our local tracker so the next lead in the batch goes to the next available agent!
           runningCounts[selectedAgentId]++;
         }
-      }
+      });
 
-      await refreshLeads();
+      await batch.commit();
 
       await createSierraNotification(
         'system',
@@ -457,7 +393,7 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
 
       setSelectedLeadIds([]);
     } catch (err) {
-      console.error('Failed to bulk-auto-assign leads:', err);
+      handleFirestoreError(err, OperationType.UPDATE, 'leads/bulk-auto-assign');
     }
   };
 
@@ -612,7 +548,7 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
             runningCounts[selectedAgentId]++;
           }
 
-          await api.post('/api/admin/leads', {
+          await addDoc(collection(db, 'leads'), {
             name: lName,
             phone: lPhone,
             interest: lInterest,
@@ -620,12 +556,12 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
             hot: lHot,
             color: randomColor,
             ownerId: selectedAgentId,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
           });
 
           importedCount++;
         }
-
-        await refreshLeads();
 
         await createSierraNotification(
           'lead',
@@ -695,7 +631,7 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
                   : 'bg-[#05080f]/40 text-slate-400 border-slate-800 hover:text-slate-200'
               }`}
             >
-              <Flame className="w-3.5 h-3.5 text-red-500" />
+              <span>🔥</span>
               <span>{isAr ? 'الأكثر تفاعلاً فقط' : 'Hot Leads Only'}</span>
             </button>
 
@@ -713,25 +649,9 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
               }`}
               id="btn-archived-leads-toggle"
             >
-              <FolderArchive className="w-3.5 h-3.5 text-amber-500" />
+              <span>📁</span>
               <span>{isAr ? 'عرض الأرشيف' : 'Show Archived'}</span>
             </button>
-
-            {/* 🎯 Relevance toggle pill */}
-            {q && (
-              <button
-                onClick={() => setSortByRelevance(!sortByRelevance)}
-                className={`px-3.5 py-2.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer border ${
-                  sortByRelevance
-                    ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.15)]'
-                    : 'bg-[#05080f]/40 text-slate-400 border-slate-800 hover:text-slate-200'
-                }`}
-                id="btn-relevance-sort-toggle"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
-                <span>{isAr ? 'ترتيب حسب الأهمية' : 'Sort by Relevance'}</span>
-              </button>
-            )}
 
             {/* Register lead CTA */}
             <button
@@ -748,7 +668,7 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
         {/* Hot Buttons / Horizontal Stage Filters */}
         <div className="border-t border-slate-900/60 pt-3.5 animate-fade-in-up">
           <p className={`text-[10px] font-mono uppercase tracking-wider text-slate-500 mb-2 select-none ${isAr ? 'text-right' : 'text-left'}`}>
-            {isAr ? 'تصفية حسب حالة الاهتمام' : 'Filter by Interest Status (stage)'}
+            ⚡ {isAr ? 'تصفية حسب حالة الاهتمام' : 'Filter by Interest Status (stage)'}
           </p>
           <div className={`flex gap-2 overflow-x-auto pb-1.5 custom-scrollbar ${isAr ? 'flex-row-reverse' : 'flex-row'}`}>
             {[
@@ -866,18 +786,13 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
                 {filtered.map((l) => {
                   const isSelected = selectedLeadIds.includes(l.id);
                   return (
-                    <motion.tr
-                      layout
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.2 }}
+                    <tr
                       key={l.id}
-                      className={`hover:bg-white/5 transition duration-100 border-b border-slate-800/50 cursor-pointer ${
+                      className={`hover:bg-white/5 transition duration-100 border-b border-slate-800/50 ${
                         isSelected ? 'bg-cyan-500/5 hover:bg-cyan-500/10' : ''
                       }`}
-                      onClick={() => recordAccess(l.id, 'leads')}
                     >
-                      <td className="p-4 text-center select-none w-10" onClick={(e) => e.stopPropagation()}>
+                      <td className="p-4 text-center select-none w-10">
                         <input
                           type="checkbox"
                           checked={isSelected}
@@ -899,26 +814,19 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
                           </div>
                           <div className="min-w-0">
                             <span className="font-semibold text-white inline-flex items-center gap-1.5 uppercase tracking-wide">
-                              <HighlightText text={l.name} highlight={searchQuery} />
-                              {l.hot && <Flame className="w-3.5 h-3.5 text-red-500 animate-pulse shrink-0" />}
-                              {getRelevanceScore(l.id) > 0 && (
-                                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-cyan-950/60 border border-cyan-800/40 text-[9px] font-mono text-cyan-400 font-medium cursor-help" title={`Relevance Score: ${getRelevanceScore(l.id)}`} onClick={(e) => { e.stopPropagation(); }}>
-                                  Score: {getRelevanceScore(l.id)}
-                                </span>
-                              )}
+                              {l.name}
+                              {l.hot && <span className="text-[10px] animate-bounce shrink-0">🔥</span>}
                             </span>
                           </div>
                         </div>
                       </td>
                       <td className="p-4 font-mono text-slate-400 hover:text-white transition duration-150 select-text">
-                        <HighlightText text={l.phone} highlight={searchQuery} />
+                        {l.phone}
                       </td>
-                      <td className="p-4 text-slate-300 max-w-[240px] truncate">
-                        <HighlightText text={l.interest} highlight={searchQuery} />
-                      </td>
+                      <td className="p-4 text-slate-300 max-w-[240px] truncate">{l.interest}</td>
                       <td className="p-4">
                         <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full uppercase tracking-wide shrink-0 ${stageChipClass(l.stage)}`}>
-                          <HighlightText text={isAr ? T(getStageTranslationKey(l.stage)) : l.stage} highlight={searchQuery} />
+                          {l.stage}
                         </span>
                       </td>
                       <td className="p-4">
@@ -927,8 +835,10 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
                           onChange={async (e) => {
                             const newOwnerId = e.target.value === 'unassigned' ? '' : e.target.value;
                             try {
-                              await api.patch(`/api/admin/leads/${l.id}`, { ownerId: newOwnerId });
-                              await refreshLeads();
+                              await updateDoc(doc(db, 'leads', l.id), {
+                                ownerId: newOwnerId,
+                                updatedAt: serverTimestamp()
+                              });
                               if (newOwnerId) {
                                 const targetAg = agents.find(ag => ag.id === newOwnerId);
                                 await createSierraNotification(
@@ -940,21 +850,21 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
                                 );
                               }
                             } catch (err) {
-                              console.error(`Failed to reassign lead ${l.id}:`, err);
+                              handleFirestoreError(err, OperationType.UPDATE, `leads/${l.id}`);
                             }
                           }}
                           className="bg-slate-950/60 border border-slate-850 hover:border-cyan-500/30 text-white rounded px-2 py-1 text-[10px] font-mono outline-none transition duration-150 cursor-pointer focus:border-cyan-500/50"
                         >
-                          <option value="unassigned">Unassigned</option>
+                          <option value="unassigned">👤 Unassigned</option>
                           {agents.map((ag) => (
                             <option key={ag.id} value={ag.id}>
-                              {ag.name}
+                              {ag.emoji} {ag.name}
                             </option>
                           ))}
                         </select>
                       </td>
                       <td className="p-4 text-right">
-                        <div className="inline-flex gap-2" onClick={(e) => e.stopPropagation()}>
+                        <div className="inline-flex gap-2">
                           <a
                             href={`https://wa.me/${l.phone.replace(/[^0-9]/g, '')}`}
                             target="_blank"
@@ -964,12 +874,6 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
                             WhatsApp
                           </a>
                           <button
-                            onClick={() => setTwilioModalLead(l)}
-                            className="px-2 py-1 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 font-mono text-[10px] uppercase font-bold rounded border border-cyan-500/20 transition-all duration-150 shrink-0 cursor-pointer"
-                          >
-                            Twilio
-                          </button>
-                          <button
                             onClick={() => handleDeleteLead(l.id, l.name)}
                             className="px-2 py-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 font-mono text-[10px] uppercase font-bold rounded border border-red-500/20 transition-all duration-150 shrink-0 select-none cursor-pointer"
                           >
@@ -977,7 +881,7 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
                           </button>
                         </div>
                       </td>
-                    </motion.tr>
+                    </tr>
                   );
                 })}
               </tbody>
@@ -1077,7 +981,7 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
                       onChange={(e) => setHot(e.target.checked)}
                       className="rounded border-slate-800 text-cyan-500 focus:ring-0 bg-transparent shrink-0 cursor-pointer"
                     />
-                    <span className="font-mono text-[9px] uppercase tracking-widest text-cyan-400">Flag Hot (Urgent)</span>
+                    <span className="font-mono text-[9px] uppercase tracking-widest text-cyan-400">Flag Hot 🔥</span>
                   </label>
                 </div>
               </div>
@@ -1091,11 +995,11 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
                   onChange={(e) => setOwnerId(e.target.value)}
                   className="w-full bg-[#05080f] border border-slate-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-cyan-500/50 transition duration-150 cursor-pointer"
                 >
-                  <option value="auto" className="bg-[#0a0f1d] text-cyan-400 font-bold">Auto-Assign (Lowest Lead Burden)</option>
-                  <option value="unassigned" className="bg-[#0a0f1d] text-slate-400">Unassigned</option>
+                  <option value="auto" className="bg-[#0a0f1d] text-cyan-400 font-bold">⚡ Auto-Assign (Lowest Lead Burden)</option>
+                  <option value="unassigned" className="bg-[#0a0f1d] text-slate-400">👤 Unassigned</option>
                   {agents.map((ag) => (
                     <option key={ag.id} value={ag.id} className="bg-[#0a0f1d] text-white">
-                      {ag.name}
+                      {ag.emoji} {ag.name}
                     </option>
                   ))}
                 </select>
@@ -1149,27 +1053,27 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
               </p>
 
               {importSuccessMsg && (
-                <div className="text-emerald-400 text-xs py-2 px-3 bg-emerald-950/20 border border-emerald-500/15 rounded-lg select-none flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> {importSuccessMsg}
+                <div className="text-emerald-400 text-xs py-2 px-3 bg-emerald-950/20 border border-emerald-500/15 rounded-lg select-none">
+                  🎉 {importSuccessMsg}
                 </div>
               )}
 
               {importErrorMsg && (
-                <div className="text-red-400 text-xs py-2 px-3 bg-red-950/20 border border-red-500/15 rounded-lg select-none flex items-center gap-1.5">
-                  <ShieldAlert className="w-3.5 h-3.5 text-red-400" /> {importErrorMsg}
+                <div className="text-red-400 text-xs py-2 px-3 bg-red-950/20 border border-red-500/15 rounded-lg select-none">
+                  ⚠️ {importErrorMsg}
                 </div>
               )}
 
               <div className="p-6 border border-dashed border-slate-800 hover:border-cyan-500/40 rounded flex flex-col items-center justify-center text-center gap-1.5 cursor-pointer hover:bg-white/1 transition duration-150 relative">
                 {importing ? (
                   <>
-                    <RefreshCw className="w-8 h-8 text-cyan-400 animate-spin mb-1" />
+                    <span className="text-2xl mt-1 select-none animate-spin">🔄</span>
                     <p className="text-xs font-medium text-slate-350">Processing file...</p>
                     <p className="text-[10px] text-slate-500 uppercase tracking-widest">Adding leads to CRM database</p>
                   </>
                 ) : (
                   <>
-                    <FileSpreadsheet className="w-8 h-8 text-slate-500 mb-1" />
+                    <span className="text-2xl mt-1 select-none">📂</span>
                     <p className="text-xs font-medium text-slate-300">Select spreadsheet CSV</p>
                     <p className="text-[10px] text-slate-500 uppercase tracking-wider">Click or drag a file here</p>
                     <input
@@ -1200,118 +1104,6 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
         </div>
       )}
 
-      {/* Twilio SMS & WhatsApp Communication Modal */}
-      {twilioModalLead && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setTwilioModalLead(null)}>
-          <div className="bg-[#0a0f1d] border border-slate-800 rounded-xl w-full max-w-md overflow-hidden shadow-2xl animate-scale-up" onClick={(e) => e.stopPropagation()}>
-            <div className="px-5 py-4 border-b border-slate-800 flex items-center justify-between">
-              <span className="font-mono text-xs uppercase tracking-wider text-cyan-400 font-bold select-none">
-                💬 Twilio Contact Hub
-              </span>
-              <button
-                onClick={() => setTwilioModalLead(null)}
-                className="p-1 text-slate-500 hover:text-white transition duration-150 cursor-pointer"
-              >
-                ✕
-              </button>
-            </div>
-            
-            <div className="p-5 space-y-4">
-              <div className="bg-slate-900/60 border border-slate-800 rounded-lg p-3 text-xs space-y-1">
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Recipient Name:</span>
-                  <span className="text-white font-bold">{twilioModalLead.name}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Phone:</span>
-                  <span className="text-white font-mono">{twilioModalLead.phone}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Interest:</span>
-                  <span className="text-slate-350 truncate max-w-[200px]">{twilioModalLead.interest}</span>
-                </div>
-              </div>
-
-              {/* Channel Selector */}
-              <div>
-                <label className="block text-[9px] font-mono uppercase tracking-widest text-cyan-400 mb-1.5 select-none">
-                  Communication Channel
-                </label>
-                <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800">
-                  <button
-                    type="button"
-                    onClick={() => setTwilioMode('sms')}
-                    className={`flex-1 py-1.5 text-xs font-semibold rounded transition-all ${twilioMode === 'sms' ? 'bg-cyan-500 text-slate-950 shadow font-bold' : 'text-slate-400 hover:text-white'}`}
-                  >
-                    📱 SMS Message
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setTwilioMode('whatsapp')}
-                    className={`flex-1 py-1.5 text-xs font-semibold rounded transition-all ${twilioMode === 'whatsapp' ? 'bg-green-500 text-white shadow font-bold' : 'text-slate-400 hover:text-white'}`}
-                  >
-                    💬 WhatsApp Direct
-                  </button>
-                </div>
-              </div>
-
-              {/* Message Body */}
-              <div>
-                <label className="block text-[9px] font-mono uppercase tracking-widest text-cyan-400 mb-1.5 select-none">
-                  Message Content
-                </label>
-                <textarea
-                  required
-                  rows={4}
-                  value={twilioMessage}
-                  onChange={(e) => setTwilioMessage(e.target.value)}
-                  placeholder={`Type your ${twilioMode === 'sms' ? 'SMS' : 'WhatsApp'} message to send via Twilio...`}
-                  className="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-cyan-500/50 transition duration-150 font-sans resize-none"
-                />
-              </div>
-
-              {/* Log Note */}
-              <div>
-                <label className="block text-[9px] font-mono uppercase tracking-widest text-cyan-400 mb-1.5 select-none">
-                  Add Interaction Note (Optional)
-                </label>
-                <input
-                  type="text"
-                  value={twilioNote}
-                  onChange={(e) => setTwilioNote(e.target.value)}
-                  placeholder="e.g. Discussed pricing details for compound villa"
-                  className="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-cyan-500/50 transition duration-150"
-                />
-              </div>
-
-              {twilioStatus && (
-                <div className={`p-2.5 rounded text-[11px] font-mono border ${twilioStatus.startsWith('Error') ? 'bg-red-950/20 border-red-500/20 text-red-400' : 'bg-emerald-950/20 border-emerald-500/20 text-emerald-400'}`}>
-                  {twilioStatus}
-                </div>
-              )}
-
-              <div className="pt-2 flex gap-3">
-                <button
-                  type="button"
-                  onClick={handleSendTwilio}
-                  disabled={twilioSending || !twilioMessage.trim()}
-                  className={`flex-1 py-2.5 rounded text-xs font-bold font-mono uppercase transition duration-150 active:scale-98 disabled:opacity-50 cursor-pointer ${twilioMode === 'sms' ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950' : 'bg-green-500 hover:bg-green-400 text-white'}`}
-                >
-                  {twilioSending ? 'Sending...' : '📨 Dispatch Message'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setTwilioModalLead(null)}
-                  className="py-2.5 px-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded text-xs font-bold transition select-none cursor-pointer"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Floating Administrative Bulk Action Toolbar inside AnimatePresence */}
       <AnimatePresence>
         {selectedLeadIds.length > 0 && (
@@ -1324,7 +1116,7 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
             id="bulk-action-toolbar"
           >
             <div className={`flex items-center gap-2 font-semibold text-white ${isAr ? 'flex-row-reverse' : ''}`}>
-              <Zap className="w-4 h-4 text-cyan-400" />
+              <span className="text-sm">⚡</span>
               <span>
                 {isAr 
                   ? `تم تحديد ${selectedLeadIds.length} من العملاء` 
@@ -1348,7 +1140,7 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
                   id="bulk-action-reassign-select"
                 >
                   <option value="">
-                    {isAr ? 'نقل العملاء إلى...' : 'Transition status...'}
+                    {isAr ? '🔗 نقل العملاء إلى...' : '🔗 Transition status...'}
                   </option>
                   <option value="Initial Contact">Initial Contact</option>
                   <option value="Viewing Scheduled">Viewing Scheduled</option>
@@ -1361,44 +1153,34 @@ export default function LeadsPage({ T, isAr = false, searchQuery = '' }: LeadsPa
               {/* Archive / Restore Button */}
               <button
                 onClick={() => handleBulkArchive(!showArchived)}
-                className={`px-3 py-1.5 text-[11px] font-medium border rounded transition cursor-pointer select-none active:scale-95 duration-100 flex items-center gap-1 ${
+                className={`px-3 py-1.5 text-[11px] font-medium border rounded transition cursor-pointer select-none active:scale-95 duration-100 ${
                   showArchived
                     ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20'
                     : 'bg-amber-500/10 text-amber-500 border-amber-500/20 hover:bg-amber-500/20'
                 }`}
                 id="bulk-action-archive-btn"
               >
-                {showArchived ? (
-                  <>
-                    <Inbox className="w-3.5 h-3.5" />
-                    <span>{isAr ? 'استعادة إلى النشط' : 'Restore to Active'}</span>
-                  </>
-                ) : (
-                  <>
-                    <FolderArchive className="w-3.5 h-3.5" />
-                    <span>{isAr ? 'أرشفة جماعية' : 'Bulk Archive'}</span>
-                  </>
-                )}
+                {showArchived 
+                  ? (isAr ? '📥 استعادة إلى النشط' : '📥 Restore to Active')
+                  : (isAr ? '📁 أرشفة جماعية' : '📁 Bulk Archive')}
               </button>
 
               {/* Bulk Auto-Assign Button */}
               <button
                 onClick={handleBulkAutoAssign}
-                className="px-3 py-1.5 text-[11px] font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/15 rounded transition cursor-pointer select-none active:scale-95 duration-100 uppercase tracking-wider font-mono flex items-center gap-1"
+                className="px-3 py-1.5 text-[11px] font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/15 rounded transition cursor-pointer select-none active:scale-95 duration-100 uppercase tracking-wider font-mono"
                 id="bulk-action-auto-assign-btn"
               >
-                <Zap className="w-3 h-3 text-cyan-400" />
-                <span>{isAr ? 'توزيع تلقائي' : 'Auto-Assign'}</span>
+                ⚡ {isAr ? 'توزيع تلقائي' : 'Auto-Assign'}
               </button>
 
               {/* Delete Button */}
               <button
                 onClick={handleBulkDelete}
-                className="px-3 py-1.5 text-[11px] font-medium bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 rounded transition cursor-pointer select-none active:scale-95 duration-100 flex items-center gap-1"
+                className="px-3 py-1.5 text-[11px] font-medium bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 rounded transition cursor-pointer select-none active:scale-95 duration-100"
                 id="bulk-action-delete-btn"
               >
-                <Trash2 className="w-3.5 h-3.5" />
-                <span>{isAr ? 'حذف نهائي' : 'Delete Permanent'}</span>
+                🗑️ {isAr ? 'حذف نهائي' : 'Delete Permanent'}
               </button>
             </div>
 

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sierra Estates Realty — Beyond Brokerage</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Jost:wght@200;300;400;500;600;700&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:#071422}
+::-webkit-scrollbar-thumb{background:#C8961A;border-radius:2px}
+body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulseRing{0%,100%{transform:scale(1);opacity:.45}50%{transform:scale(2);opacity:0}}
+@keyframes shimmerLine{0%,100%{opacity:.3}50%{opacity:1}}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes goldShimmer{0%{background-position:0% center}100%{background-position:200% center}}
+@keyframes particleFloat{0%{opacity:0;transform:translateY(100px) scale(0)}10%{opacity:.7}90%{opacity:.3}100%{opacity:0;transform:translateY(-30px) scale(1.5)}}
+
+.gold-text{
+  background:linear-gradient(135deg,#E9C176 0%,#C8961A 40%,#F5D78E 70%,#987734 100%);
+  background-size:200% auto;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;animation:goldShimmer 4s linear infinite;
+}
+.navlink{font-size:11px;font-weight:500;letter-spacing:.13em;text-transform:uppercase;cursor:pointer;transition:color .25s;text-decoration:none}
+.diff-card{border-radius:14px;padding:32px 26px;transition:all .3s;cursor:default}
+.diff-card:hover{transform:translateY(-5px)}
+.zone-row{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:10px;cursor:pointer;transition:all .2s}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-d1{transition-delay:.1s}.reveal-d2{transition-delay:.2s}.reveal-d3{transition-delay:.3s}
+.card-img{overflow:hidden}
+.card-img img{transition:transform .6s cubic-bezier(.16,1,.3,1)}
+.prop-card:hover .card-img img{transform:scale(1.07)!important}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+/* ════════════════════════════════════════
+   DESIGN TOKENS V2.0
+   ════════════════════════════════════════ */
+const G  = "#E9C176";   /* gold standard */
+const G2 = "#C8961A";   /* gold deep */
+const GR = "#D4821A";   /* gold warm-red edge */
+const GB = "#A89C50";   /* gold cool blue-tint */
+const NAVY = "#060D2E";
+
+const THEMES = {
+  dark:{
+    bg:"#060D2E", bg2:"#0A1547", bgAlt:"#040924",
+    surface:"rgba(255,255,255,0.04)", surfaceHover:"rgba(233,193,118,0.09)",
+    card:"#0C1A50", cardBorder:"rgba(233,193,118,0.12)",
+    border:"rgba(100,150,255,0.18)", borderHover:"rgba(233,193,118,0.45)",
+    text:"#EEF2FF", textSub:"rgba(220,228,255,0.65)", textMuted:"rgba(200,215,255,0.32)",
+    navBg:"rgba(6,13,46,0.97)", footerBg:"#030820",
+    heroBg:"#040924",
+  },
+  light:{
+    bg:"#E8F2FA", bg2:"#FFFFFF", bgAlt:"#D0E6F5",
+    surface:"rgba(6,13,46,0.04)", surfaceHover:"rgba(200,150,26,0.09)",
+    card:"#FFFFFF", cardBorder:"rgba(6,13,46,0.08)",
+    border:"rgba(6,13,46,0.10)", borderHover:"rgba(200,150,26,0.45)",
+    text:"#060D2E", textSub:"rgba(6,13,46,0.62)", textMuted:"rgba(6,13,46,0.36)",
+    navBg:"rgba(232,242,250,0.97)", footerBg:"#030820",
+    heroBg:"#D0E6F5",
+  }
+};
+
+/* ════════════════════════════════════════
+   TRANSLATIONS
+   ════════════════════════════════════════ */
+const COPY = {
+  en:{
+    dir:"ltr",brand:"SIERRA ESTATES",sub:"REALTY",
+    tagline:"FIRST AI-POWERED ARABIC REAL ESTATE PLATFORM · FIFTH SETTLEMENT SPECIALISTS",
+    nav:["Properties","Intelligence","About","Contact"],
+    cta:"Enter Portal",
+    heroTag:"Beyond Brokerage",
+    heroH1:["Smarter","Decisions."],
+    heroItalic:"AI‑Driven.",
+    heroSub:"The Real in Real Estate",
+    heroDesc:"Exceptional homes, intelligently matched. We connect discerning investors with Egypt's finest properties — curated by humans, powered by AI.",
+    btnDiscover:"Explore Properties",
+    btnView:"Meet Sierra AI",
+    stats:[["1,200+","Properties"],["98%","Match Accuracy"],["8+","Compounds"],["4s","Avg. Response"]],
+    scroll:"Scroll",
+    secListings:"Exclusive Listings",
+    h2Listings:"Homes worth knowing.",
+    viewAll:"View All →",
+    searchType:"Property Type",
+    searchCompound:"Compound",
+    searchBudget:"Budget",
+    searchBtn:"Search Now",
+    pfBadge:"Property Finder",
+    beds:"bed",baths:"bath",
+    secWhy:"Why Sierra Estates",
+    h2Why:"The Sierra Estates Difference",
+    why:[
+      {icon:"◆",title:"Curated Selection",desc:"Every listing is personally vetted by our senior advisors. No overpriced inventory — only properties worth your attention."},
+      {icon:"◈",title:"Smart Investment",desc:"AI-driven ROI analysis, market comparison, and growth corridor mapping. Decisions backed by data, not guesswork."},
+      {icon:"◉",title:"Trusted Guidance",desc:"From first inquiry to final signature, a dedicated advisor who knows your goals and answers in 4 seconds."},
+    ],
+    bannerH:"Exceptional Homes, Intelligent Matching",
+    bannerSub:"منازل استثنائية، مطابقة ذكية",
+    bannerBtn:"View Properties",
+    secMap:"Market Intelligence",
+    mapH1:"New Cairo",mapH2:"Investment Map",
+    mapDesc:"Real-time data across New Cairo's premium zones. Track growth corridors, rental yields, and exclusive off-market signals.",
+    zones:[
+      {area:"Fifth Settlement",stat:"Growth +12%",color:"#4ECDC4"},
+      {area:"Madinaty",stat:"High Demand",color:G},
+      {area:"Mountain View",stat:"Yield 8%",color:"#7EA8B4"},
+      {area:"Mostakbal City",stat:"Off‑Market",color:"#C084FC"},
+    ],
+    mapBtn:"Explore AI Insights →",
+    secAI:"Meet Sierra",
+    aiH:"Your AI Real Estate Consultant",
+    aiSub:"First Official AI Real Estate Bot Consultant in Egypt",
+    aiDesc:"Sierra is always on — analyzing market data, answering your questions, and matching you with properties that fit your exact criteria. Start a conversation and see the difference intelligence makes.",
+    aiCTA:"Start on Telegram →",
+    aiFeatures:["Instant property matching","Market analytics & ROI","Arabic & English support","24/7 availability"],
+    aiChat:[
+      {from:"user",text:"Looking for a 4‑bed villa under 15M EGP in Fifth Settlement"},
+      {from:"bot",text:"Found 7 matching properties. Top pick: Villa Lumière — 5 beds, 480 m², EGP 14.2M. ROI: 8.3% annual yield. Shall I send the full report?"},
+    ],
+    secTesti:"Client Stories",
+    h2Testi:"What our clients say",
+    testimonials:[
+      {q:"Sierra matched me with a villa I hadn't even considered. The AI understood my investment criteria better than I explained them.",name:"Ahmed Fawzy",role:"Investor · Cairo",i:"AF"},
+      {q:"A question at 2am, answered in seconds. That's not service — that's a different category.",name:"Layla Hassan",role:"Buyer · Dubai",i:"LH"},
+      {q:"We found our compound home in 48 hours. The filtering, the data, the advisor — everything worked like it was built for us.",name:"Omar Mansour",role:"Family Buyer · Fifth Settlement",i:"OM"},
+    ],
+    ctaTag:"Find Your Place",
+    ctaH:"Find Your Place in New Cairo",
+    ctaSub:"Leave your details — a Sierra advisor reaches out within 4 seconds.",
+    formName:"Your name",formPhone:"Mobile number",formSubmit:"Get in Touch",
+    formSuccess:"Thank you! A Sierra advisor will reach out within 4 seconds.",
+    footDesc:"Beyond Brokerage. AI-powered real estate intelligence for discerning investors in New Cairo and beyond.",
+    footNav:"Navigation",footNavLinks:["Properties","Intelligence","About Us","Careers","Contact"],
+    footMarkets:"Markets",footMarketLinks:["New Cairo","Fifth Settlement","Madinaty","Mostakbal City","Mountain View"],
+    footContact:"Contact",
+    copyright:"© 2026 Sierra Estates Realty. All rights reserved.",
+    legal:["Privacy Policy","Terms of Service","Cookies"],
+  },
+  ar:{
+    dir:"rtl",brand:"سييرا بلو",sub:"للعقارات",
+    tagline:"أول منصة عقارية عربية مدعومة بالـ AI · متخصصة في بيع وإيجار التجمع الخامس",
+    nav:["العقارات","الذكاء","عنّا","اتصل"],
+    cta:"الدخول للبوابة",
+    heroTag:"أبعد من الوساطة",
+    heroH1:["قرارات","أذكى."],
+    heroItalic:"مدعومة بالـ AI.",
+    heroSub:"الحقيقي في العقارات",
+    heroDesc:"منازل استثنائية، مطابقة ذكية. نربط المستثمرين بأفخر عقارات مصر — منتقاة بشرياً، مدعومة بالذكاء الاصطناعي.",
+    btnDiscover:"اكتشف العقارات",
+    btnView:"تعرّف على سييرا",
+    stats:[["١٢٠٠+","عقار"],["٩٨٪","دقة المطابقة"],["٨+","كمباوند"],["٤ث","متوسط الرد"]],
+    scroll:"اسحب",
+    secListings:"قوائم حصرية",
+    h2Listings:"منازل تستحق الاهتمام.",
+    viewAll:"← عرض الكل",
+    searchType:"نوع العقار",
+    searchCompound:"الكمباوند",
+    searchBudget:"الميزانية",
+    searchBtn:"ابحث الآن",
+    pfBadge:"Property Finder",
+    beds:"غرف",baths:"حمامات",
+    secWhy:"لماذا سييرا بلو",
+    h2Why:"الفارق في سييرا بلو",
+    why:[
+      {icon:"◆",title:"اختيار منتقى",desc:"كل قائمة يراجعها مستشارونا الكبار شخصياً. لا مخزون مبالغ في سعره — فقط عقارات تستحق اهتمامك."},
+      {icon:"◈",title:"استثمار ذكي",desc:"تحليل عائد الاستثمار بالذكاء الاصطناعي، ومقارنة السوق، وخرائط ممرات النمو. قرارات مدعومة بالبيانات."},
+      {icon:"◉",title:"توجيه موثوق",desc:"من أول استفسار لآخر توقيع، مستشار مخصص يعرف أهدافك ويجيب خلال ٤ ثوانٍ."},
+    ],
+    bannerH:"منازل استثنائية، مطابقة ذكية",
+    bannerSub:"Exceptional Homes, Intelligent Matching",
+    bannerBtn:"عرض العقارات",
+    secMap:"ذكاء السوق",
+    mapH1:"القاهرة الجديدة",mapH2:"خريطة الاستثمار",
+    mapDesc:"بيانات فورية عبر مناطق الاستثمار المميزة في القاهرة الجديدة. تتبع ممرات النمو وعوائد الإيجار.",
+    zones:[
+      {area:"التجمع الخامس",stat:"نمو +١٢٪",color:"#4ECDC4"},
+      {area:"مدينتي",stat:"طلب مرتفع",color:G},
+      {area:"ماونتن فيو",stat:"عائد ٨٪",color:"#7EA8B4"},
+      {area:"مستقبل سيتي",stat:"خارج السوق",color:"#C084FC"},
+    ],
+    mapBtn:"← استكشف رؤى الذكاء الاصطناعي",
+    secAI:"تعرّف على سييرا",
+    aiH:"مستشارتك العقارية الذكية",
+    aiSub:"أول بوت استشاري عقاري رسمي بالذكاء الاصطناعي في مصر",
+    aiDesc:"سييرا تعمل على مدار الساعة — تحلل بيانات السوق، تجيب أسئلتك، وتطابقك مع عقارات تناسب معاييرك بالضبط.",
+    aiCTA:"ابدأ على تيليجرام ←",
+    aiFeatures:["مطابقة فورية للعقارات","تحليلات السوق وعائد الاستثمار","دعم عربي وإنجليزي","متاح ٢٤/٧"],
+    aiChat:[
+      {from:"user",text:"بدور على فيلا ٤ غرف أقل من ١٥م في التجمع الخامس"},
+      {from:"bot",text:"وجدت ٧ عقارات تطابق معاييرك. أفضل خيار: فيلا لوميير — ٥ غرف، ٤٨٠م²، ١٤.٢م ج.م. عائد: ٨.٣٪ سنوياً. أرسل لك التقرير الكامل؟"},
+    ],
+    secTesti:"قصص عملائنا",
+    h2Testi:"ماذا يقول عملاؤنا",
+    testimonials:[
+      {q:"سييرا طابقتني مع فيلا لم أكن لأفكر فيها. الذكاء الاصطناعي فهم معايير استثماري أفضل مما شرحتها.",name:"أحمد فوزي",role:"مستثمر · القاهرة",i:"AF"},
+      {q:"سؤال الساعة ٢ صباحاً، والرد في ثوانٍ. هذه ليست خدمة — هذه فئة مختلفة.",name:"ليلى حسن",role:"مشترية · دبي",i:"LH"},
+      {q:"وجدنا منزل الكمباوند في ٤٨ ساعة. التصفية، البيانات، المستشار — كل شيء عمل كأنه بُني لنا.",name:"عمر منصور",role:"مشتري عائلي · التجمع الخامس",i:"OM"},
+    ],
+    ctaTag:"ابحث عن مكانك",
+    ctaH:"ابحث عن مكانك في القاهرة الجديدة",
+    ctaSub:"اترك بياناتك — مستشار سييرا سيتواصل معك خلال ٤ ثوانٍ.",
+    formName:"اسمك",formPhone:"رقم الموبايل",formSubmit:"تواصل معنا",
+    formSuccess:"شكراً! مستشار سييرا سيتواصل معك خلال ٤ ثوانٍ.",
+    footDesc:"أبعد من الوساطة. ذكاء عقاري مدعوم بالذكاء الاصطناعي للمستثمرين في القاهرة الجديدة.",
+    footNav:"روابط التنقل",footNavLinks:["العقارات","الذكاء","عنّا","الوظائف","اتصل"],
+    footMarkets:"الأسواق",footMarketLinks:["القاهرة الجديدة","التجمع الخامس","مدينتي","مستقبل سيتي","ماونتن فيو"],
+    footContact:"تواصل معنا",
+    copyright:"© ٢٠٢٦ سييرا بلو للعقارات. جميع الحقوق محفوظة.",
+    legal:["سياسة الخصوصية","شروط الخدمة","ملفات الارتباط"],
+  }
+};
+
+/* ════════════════════════════════════════
+   PROPERTY DATA  (PF Integration ready)
+   ════════════════════════════════════════ */
+const LISTINGS = [
+  {id:1,title:"Aurora Penthouse",titleAr:"بنتهاوس أورورا",location:"Madinaty · New Cairo",locationAr:"مدينتي · القاهرة الجديدة",price:"EGP 8,500,000",beds:4,baths:3,sqft:"320 m²",badge:"Hidden Gem",badgeColor:"#7C3AED",pfId:"PF-10234",img:"https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=700&q=80"},
+  {id:2,title:"Villa Lumière",titleAr:"فيلا لوميير",location:"Mountain View · 5th Settlement",locationAr:"ماونتن فيو · التجمع الخامس",price:"EGP 14,200,000",beds:5,baths:4,sqft:"480 m²",badge:"Featured",badgeColor:"#C8961A

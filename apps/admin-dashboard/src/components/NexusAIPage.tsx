@@ -1,97 +1,100 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+  subscribeAllExchange,
+  sendAdminSignal,
+  type ExchangeRecord,
+} from '@sierra-estates/exchange';
 import { createSierraNotification } from '../firebase';
 
-interface ScrapeFeed {
-  id: string;
-  ts: string;
-  src: string;
-  raw: string;
-  compound: string;
-  type: string;
-  code: string;
-  status: 'parsed' | 'processing';
+function StatusBadge({ status }: { status: string }) {
+  const colors: Record<string, string> = {
+    pending:   'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
+    running:   'bg-blue-500/10 text-blue-400 border-blue-500/20 animate-pulse',
+    done:      'bg-emerald-500/10 text-emerald-400 border-emerald-500/10',
+    error:     'bg-red-500/10 text-red-400 border-red-500/10',
+    cancelled: 'bg-slate-500/10 text-slate-400 border-slate-500/20',
+  };
+  return (
+    <span className={`px-2 py-0.5 rounded text-[10px] font-mono border uppercase tracking-wider ${colors[status] ?? colors.pending}`}>
+      {status}
+    </span>
+  );
 }
 
-const COMPOUNDS = ['Mivida', 'Hyde Park', 'Mountain View iCity', 'Uptown Cairo', 'Madinaty', 'Eastown', 'Villette'];
-
-const INITIAL_FEEDS: ScrapeFeed[] = [
-  { id: 'WA-0041', ts: '14:23:01', src: 'Group: New Cairo Properties', raw: 'شقة 3 غرف ميفيدا · دور 3 · 95م² · 14,500/شهر', compound: 'Mivida', type: 'Apartment', code: 'SE-MVD-APT-0041-2026', status: 'parsed' },
-  { id: 'WA-0040', ts: '14:19:44', src: 'PropertyFinder Monitor', raw: 'Villa Hyde Park · 5+1 BHK · 450m² · private pool · EGP 35M', compound: 'Hyde Park', type: 'Villa', code: 'SE-HYP-VLA-0040-2026', status: 'parsed' },
-  { id: 'WA-0039', ts: '14:17:12', src: 'OLX Scraper', raw: 'Penthouse Uptown Cairo · 320m · 4bed+maid · lake view · EGP 18.5M', compound: 'Uptown Cairo', type: 'Penthouse', code: 'SE-UPC-PTH-0039-2026', status: 'parsed' },
-  { id: 'WA-0038', ts: '14:14:55', src: 'Group: Cairo Rentals', raw: 'توين هاوس ماونتن فيو · 240م · 4 غرف · 28,000/شهر', compound: 'Mountain View iCity', type: 'Twin House', code: 'SE-MVI-TWH-0038-2026', status: 'processing' },
-  { id: 'WA-0037', ts: '14:11:03', src: 'Telegram: MadinatyGroups', raw: 'Apartment Madinaty B10 · 165m · 3bed · EGP 4.2M · owner direct', compound: 'Madinaty', type: 'Apartment', code: 'SE-MDN-APT-0037-2026', status: 'parsed' },
-];
+function TypeBadge({ type }: { type: string }) {
+  const icons: Record<string, string> = {
+    agent_task:     '🤖',
+    workflow_run:   '⚡',
+    admin_signal:   '🎛️',
+    crm_event:      '👥',
+    lead_update:    '📋',
+    property_match: '🏠',
+    proposal_ready: '📄',
+  };
+  return (
+    <span className="text-[10px] text-slate-400 font-mono uppercase tracking-wider">
+      {icons[type] ?? '📌'} {type.replace('_', ' ')}
+    </span>
+  );
+}
 
 export default function NexusAIPage() {
-  const [feed, setFeed] = useState<ScrapeFeed[]>(INITIAL_FEEDS);
-  const [counter, setCounter] = useState(41);
+  const [records, setRecords] = useState<ExchangeRecord[]>([]);
   const [filter, setFilter] = useState('All');
+  const [agentId, setAgentId] = useState('');
+  const [signalPayload, setSignalPayload] = useState('');
+  const [sending, setSending] = useState(false);
+  const [lastSignalId, setLastSignalId] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   useEffect(() => {
-    // Emulate new listings scraping alerts every 3.5 seconds
-    const interval = setInterval(() => {
-      const cpd = COMPOUNDS[Math.floor(Math.random() * COMPOUNDS.length)];
-      const types = ['Apartment', 'Villa', 'Twin House', 'Duplex', 'Penthouse'];
-      const typ = types[Math.floor(Math.random() * types.length)];
-      
-      const d = new Date();
-      const ts = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
-      
-      const area = Math.floor(Math.random() * 280) + 100;
-      const priceVal = (Math.random() * 22 + 3).toFixed(1);
-
-      setCounter((prev) => {
-        const nextCount = prev + 1;
-        const prefix = cpd.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 3);
-        const code = `SE-${prefix}-${typ.slice(0, 3).toUpperCase()}-${String(nextCount).padStart(4, '0')}-2026`;
-
-        const newFeedItem: ScrapeFeed = {
-          id: `WA-00${nextCount}`,
-          ts,
-          src: 'WhatsApp Scraper Bot',
-          raw: `${typ} ${cpd} · ${area}m² · EGP ${priceVal}M`,
-          compound: cpd,
-          type: typ,
-          code,
-          status: Math.random() > 0.15 ? 'parsed' : 'processing'
-        };
-
-        const isErrorTriggerObj = nextCount % 10 === 0;
-        const isListingTriggerObj = nextCount % 4 === 0;
-
-        if (isErrorTriggerObj) {
-          createSierraNotification(
-            'error',
-            `Scraper Engine Warning: OLX Rate Limit`,
-            `The OLX scraping crawler was rate-limited on IP gateway node-02. Re-routing through proxy proxy-04.`,
-            `تحذير نظام البحث: حد الطلبات في OLX`,
-            `تم تجاوز حد الطلبات في محرك جمع OLX على العقدة node-02. يتم الآن تحويل المسار عبر خادم بروكسي proxy-04.`
-          );
-        } else if (isListingTriggerObj) {
-          createSierraNotification(
-            'listing',
-            `Ingested listing via Scraper: ${code}`,
-            `Standardised a new ${typ} in ${cpd} with Area ${area}m². Extracted price: EGP ${priceVal}M.`,
-            `تم استخلاص عقار جديد: ${code}`,
-            `تم جمع وتصنيف وحدة ${typ} جديدة في كمبوند ${cpd} بمساحة ${area}م² بسعر EGP ${priceVal}M.`
-          );
-        }
-
-        setFeed((prevFeed) => [newFeedItem, ...prevFeed].slice(0, 12));
-        return nextCount;
-      });
-    }, 3500);
-
-    return () => clearInterval(interval);
+    const unsub = subscribeAllExchange((data) => {
+      setRecords(data);
+    });
+    return () => unsub();
   }, []);
 
-  const filteredFeeds = filter === 'All' ? feed : feed.filter((m) => m.compound === filter);
+  const handleSendSignal = useCallback(async () => {
+    if (!signalPayload.trim()) return;
+    setSending(true);
+    try {
+      const id = await sendAdminSignal({
+        action: signalPayload.trim(),
+        targetAgentId: agentId.trim() || undefined,
+      });
+      setLastSignalId(id);
+      setSignalPayload('');
+      setAgentId('');
+      
+      createSierraNotification(
+        'system',
+        'Admin Signal Dispatched',
+        `Dispatched signal: "${signalPayload.trim()}" to exchange hub.`,
+        'إرسال إشارة التحكم',
+        `تم إرسال إشارة التحكم: "${signalPayload.trim()}" إلى لوحة التبادل.`
+      );
+    } catch (err) {
+      console.error('[Nexus] Failed to send signal:', err);
+    } finally {
+      setSending(false);
+    }
+  }, [signalPayload, agentId]);
+
+  const filteredRecords = filter === 'All' ? records : records.filter((r) => r.type === filter);
+
+  // Compute stats from real database exchange
+  const stats = {
+    total: records.length,
+    running: records.filter((r) => r.status === 'running').length,
+    done: records.filter((r) => r.status === 'done').length,
+    error: records.filter((r) => r.status === 'error').length,
+  };
 
   const KPIS = [
-    { label: 'Scraped Today', value: counter, color: '#06b6d4' },
-    { label: 'Successfully Parsed', value: Math.round(counter * 0.93), color: '#34D399' },
-    { label: 'Ingestion Queue', value: Math.max(0, Math.round(counter * 0.06)), color: '#1E88D9' },
-    { label: 'Misfires / Warnings', value: Math.max(0, Math.round(counter * 0.01)), color: '#E63946' },
+    { label: 'Total Tasks', value: stats.total, color: '#06b6d4' },
+    { label: 'Active Running', value: stats.running, color: '#1E88D9' },
+    { label: 'Completed', value: stats.done, color: '#34D399' },
+    { label: 'Failures / Errors', value: stats.error, color: '#E63946' },
   ];
 
   return (
@@ -112,12 +115,46 @@ export default function NexusAIPage() {
         ))}
       </div>
 
+      {/* Control Panel: Send Admin Signal */}
+      <div className="bg-[#0a0f1d] border border-slate-800 rounded-xl p-5 shadow-xl space-y-4">
+        <h3 className="font-mono text-[10px] uppercase tracking-wider text-cyan-400 font-bold select-none">
+          🎛️ Disconnect &amp; Control Plane (Admin Signals)
+        </h3>
+        <div className="flex flex-col md:flex-row gap-3">
+          <input
+            type="text"
+            value={agentId}
+            onChange={(e) => setAgentId(e.target.value)}
+            placeholder="Target Agent ID (optional)"
+            className="bg-slate-950 border border-slate-850 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-cyan-500/50 w-full md:w-48 font-mono"
+          />
+          <input
+            type="text"
+            value={signalPayload}
+            onChange={(e) => setSignalPayload(e.target.value)}
+            placeholder="Action (e.g. start_closer, sync_listings, ingest_property_finder)"
+            className="flex-1 bg-slate-950 border border-slate-850 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-cyan-500/50 font-mono"
+            onKeyDown={(e) => e.key === 'Enter' && handleSendSignal()}
+          />
+          <button
+            onClick={handleSendSignal}
+            disabled={sending || !signalPayload.trim()}
+            className="px-5 py-2 bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xs rounded-lg disabled:opacity-40 transition cursor-pointer active:scale-95 duration-100"
+          >
+            {sending ? 'Sending…' : 'Dispatch'}
+          </button>
+        </div>
+        {lastSignalId && (
+          <p className="text-emerald-400 text-[10px] font-mono select-all">✓ Signal sent successfully — ID: {lastSignalId}</p>
+        )}
+      </div>
+
       {/* Filter Chips Toolbar */}
       <div className="flex gap-2.5 items-center flex-wrap">
-        <span className="font-mono text-[9px] uppercase tracking-wide text-slate-550 select-none">
-          Filter Scraped Nodes:
+        <span className="font-mono text-[9px] uppercase tracking-wide text-slate-500 select-none">
+          Filter telemetry feed:
         </span>
-        {['All', ...COMPOUNDS].map((c) => {
+        {['All', 'agent_task', 'workflow_run', 'admin_signal', 'crm_event'].map((c) => {
           const isSelected = filter === c;
           return (
             <button
@@ -129,7 +166,7 @@ export default function NexusAIPage() {
                   : 'bg-[#0a0f1d] hover:bg-white/5 border-slate-800 text-slate-400'
               }`}
             >
-              {c}
+              {c.replace('_', ' ')}
             </button>
           );
         })}
@@ -137,38 +174,81 @@ export default function NexusAIPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Real-time Feeds scroll */}
-        <div className="bg-[#0a0f1d] border border-slate-800 rounded-xl overflow-hidden shadow-xl">
+        <div className="bg-[#0a0f1d] border border-slate-800 rounded-xl overflow-hidden shadow-xl lg:col-span-2">
           <div className="px-5 py-4 border-b border-slate-800 bg-slate-900/40 flex items-center justify-between">
             <span className="font-mono text-[10px] uppercase tracking-wider text-cyan-400 font-bold select-none">
-              📥 Scraper Active Feeds
+              📥 Active Exchange Telemetry
             </span>
             <span className="text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 px-2 py-0.5 rounded-full font-bold animate-pulse">
-              ● SCANNING
+              ● REAL-TIME MONITOR ACTIVE
             </span>
           </div>
-          <div className="max-h-[380px] overflow-y-auto divide-y divide-slate-800/40">
-            {filteredFeeds.map((feedItem) => (
-              <div
-                key={feedItem.id}
-                className="p-3.5 hover:bg-white/2 transition duration-200"
-              >
-                <div className="flex justify-between font-mono text-[9px] text-slate-400 mb-1 leading-none select-none">
-                  <span className="text-cyan-400 font-bold">{feedItem.id}</span>
-                  <span>{feedItem.ts}</span>
-                </div>
-                <p className="text-xs text-slate-200 leading-relaxed select-all font-sans">{feedItem.raw}</p>
-                <div className="flex items-center gap-2 mt-2 select-none">
-                  <span className={`text-[8px] px-1.5 py-0.5 font-bold uppercase rounded border ${
-                    feedItem.status === 'parsed'
-                      ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/10'
-                      : 'bg-amber-500/10 text-amber-500 border-amber-500/10'
-                  }`}>
-                    {feedItem.status}
-                  </span>
-                  <span className="font-mono text-[8.5px] text-cyan-400/50">{feedItem.code}</span>
-                </div>
+          <div className="max-h-[480px] overflow-y-auto divide-y divide-slate-800/40">
+            {filteredRecords.length === 0 ? (
+              <div className="text-center py-20 text-slate-500 font-mono select-none">
+                No active exchange records found in telemetry store.
               </div>
-            ))}
+            ) : (
+              filteredRecords.map((record) => {
+                const isExpanded = expandedId === record.id;
+                const ts = record.createdAt?.toDate?.()?.toLocaleTimeString() ?? '—';
+                return (
+                  <div
+                    key={record.id}
+                    className="p-4 hover:bg-white/2 transition duration-200 cursor-pointer"
+                    onClick={() => setExpandedId(isExpanded ? null : record.id)}
+                  >
+                    <div className="flex justify-between font-mono text-[9px] text-slate-400 mb-2 leading-none select-none">
+                      <div className="flex items-center gap-2">
+                        <span className="text-cyan-400 font-bold">#{record.id.slice(0, 8)}</span>
+                        <TypeBadge type={record.type} />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <StatusBadge status={record.status} />
+                        <span>{ts}</span>
+                      </div>
+                    </div>
+                    
+                    {record.stepName && (
+                      <p className="text-xs text-slate-200 leading-relaxed font-sans font-semibold mb-1">
+                        {record.stepName}
+                      </p>
+                    )}
+
+                    {record.progress !== undefined && (
+                      <div className="mt-2">
+                        <div className="flex justify-between text-[9px] text-slate-500 mb-1">
+                          <span>Task Progress</span>
+                          <span>{record.progress}%</span>
+                        </div>
+                        <div className="h-1 bg-slate-950 rounded-full overflow-hidden border border-slate-850">
+                          <div
+                            className="h-full bg-cyan-500 rounded-full transition-all duration-300"
+                            style={{ width: `${record.progress}%` }}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {isExpanded && (
+                      <div className="mt-3 p-3 bg-slate-950/60 border border-slate-850 rounded text-[11px] font-mono text-slate-400 overflow-auto max-h-48 selection:bg-cyan-500/20">
+                        <pre className="whitespace-pre-wrap">
+                          {JSON.stringify(
+                            {
+                              payload: record.payload,
+                              result: record.result,
+                              error: record.error,
+                            },
+                            null,
+                            2
+                          )}
+                        </pre>
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
 
@@ -176,16 +256,14 @@ export default function NexusAIPage() {
         <div className="bg-[#0a0f1d] border border-slate-800 rounded-xl overflow-hidden shadow-xl">
           <div className="px-5 py-4 border-b border-slate-800 bg-slate-900/40">
             <span className="font-mono text-[10px] uppercase tracking-wider text-cyan-400 font-bold select-none">
-              📊 Live Parsing Success Indicators
+              📊 Task Ingestion Ratios
             </span>
           </div>
           <div className="p-5 space-y-4">
             {[
-              { label: 'Fully Extracted', val: 93, color: '#34D399' },
-              { label: 'Under Verification', val: 6, color: '#1E88D9' },
-              { label: 'Parsing Failures', val: 1, color: '#E63946' },
-              { label: 'Arabic Entries Scraped', val: 38, color: '#06b6d4' },
-              { label: 'English Entries Scraped', val: 62, color: '#7C3AED' },
+              { label: 'Completed Tasks', val: stats.total ? Math.round((stats.done / stats.total) * 100) : 0, color: '#34D399' },
+              { label: 'Failed / Terminated', val: stats.total ? Math.round((stats.error / stats.total) * 100) : 0, color: '#E63946' },
+              { label: 'Active Telemetry Runs', val: stats.total ? Math.round((stats.running / stats.total) * 100) : 0, color: '#1E88D9' },
             ].map((col, i) => (
               <div key={i} className="space-y-1">
                 <div className="flex justify-between items-center text-xs font-mono select-none">
@@ -198,41 +276,6 @@ export default function NexusAIPage() {
                     style={{ width: `${col.val}%`, backgroundColor: col.color }}
                   />
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Scraped assets table registry */}
-        <div className="bg-[#0a0f1d] border border-slate-800 rounded-xl overflow-hidden shadow-xl flex flex-col">
-          <div className="px-5 py-4 border-b border-slate-800 bg-slate-900/40 flex items-center justify-between">
-            <span className="font-mono text-[10px] uppercase tracking-wider text-cyan-400 font-bold select-none">
-              🔢 Ingestion Code Ledger
-            </span>
-            <span className="text-[9.5px] font-mono font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-2.5 py-0.5 rounded">
-              {counter} Total
-            </span>
-          </div>
-          <div className="flex-1 max-h-[380px] overflow-y-auto divide-y divide-slate-800/40">
-            {filteredFeeds.map((lst) => (
-              <div key={lst.id} className="p-3 flex items-center gap-3 hover:bg-white/1 transition duration-100">
-                <div
-                  className="w-2.5 h-2.5 rounded-full shrink-0"
-                  style={{ backgroundColor: lst.status === 'parsed' ? '#34D399' : '#06b6d4' }}
-                />
-                <div className="flex-1 min-w-0 font-mono text-[10px]">
-                  <p className="font-bold text-white truncate">{lst.code}</p>
-                  <p className="text-slate-500 mt-0.5 truncate uppercase">
-                    {lst.compound} · {lst.type}
-                  </p>
-                </div>
-                <span className={`text-[8.5px] font-mono px-2 py-0.5 rounded border uppercase shrink-0 ${
-                  lst.status === 'parsed'
-                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/10'
-                    : 'bg-amber-500/10 text-amber-550 border-amber-500/10'
-                }`}>
-                  {lst.status}
-                </span>
               </div>
             ))}
           </div>
