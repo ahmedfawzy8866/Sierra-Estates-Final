@@ -1,10 +1,10 @@
 {
-  "projectId": "sierra-estates",
-  "appId": "1:34912869778:web:d37103f736922e5f10b54b",
-  "apiKey": "AIzaSyDfuCbwIYTsOQBkjQGR5U7x_S3lc_SVGzs",
-  "authDomain": "sierra-estates.firebaseapp.com",
+  "projectId": "sierra-blu",
+  "appId": "1:941030513456:web:56209a1495d69f217086f5",
+  "apiKey": "AIzaSyBZLN2jTTKV34SneGPoWRz1zoRpX5uODjs",
+  "authDomain": "sierra-blu.firebaseapp.com",
   "firestoreDatabaseId": "ai-studio-db40d221-878c-4a6e-8c31-0d8dbbe5b956",
-  "storageBucket": "sierra-estates.firebasestorage.app",
-  "messagingSenderId": "34912869778",
-  "measurementId": ""
+  "storageBucket": "sierra-blu.firebasestorage.app",
+  "messagingSenderId": "941030513456",
+  "measurementId": "G-ZP054BPJ8Q"
 }

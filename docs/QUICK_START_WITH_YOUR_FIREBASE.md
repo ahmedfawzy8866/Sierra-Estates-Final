@@ -5,11 +5,11 @@ Your Firebase project is ready! Here's exactly what to do next.
 ## ✅ Your Firebase Details
 
 ```
-Project Name: sierra-estates
+Project Name: sierra-blu
 API Key: AIzaSy...your-own-key-from-firebase-console ✓
-Auth Domain: sierra-estates.firebaseapp.com ✓
-Project ID: sierra-estates ✓
-Storage Bucket: sierra-estates.firebasestorage.app ✓
+Auth Domain: sierra-blu.firebaseapp.com ✓
+Project ID: sierra-blu ✓
+Storage Bucket: sierra-blu.firebasestorage.app ✓
 Sender ID: 941030513456 ✓
 App ID: 1:941030513456:web:56209a1495d69f217086f5 ✓
 ```
@@ -326,8 +326,8 @@ vercel --prod
 ```
 Firebase Project: sierra-estates
 API Key: AIzaSy...your-own-key-from-firebase-console
-Project ID: sierra-estates
-Auth Domain: sierra-estates.firebaseapp.com
+Project ID: sierra-blu
+Auth Domain: sierra-blu.firebaseapp.com
 
 ⚠️  NEVER share these publicly!
 ⚠️  NEVER commit .env.local to git!
