@@ -2,9 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { cookies } from 'next/headers';
 import { Providers } from './providers';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import './styles/design.css';
+import './designTokens.css';
 import './globals.css';
 
 const LOCALE_COOKIE_KEY = 'sb_locale';
@@ -47,14 +45,9 @@ export default async function RootLayout({
       </head>
       <body>
         <Providers>
-          {/* Sticky Header with embedded compact FilterBar */}
-          <Header />
-          {/* Page content padded below fixed header */}
           <main id="main-content">
             {children}
           </main>
-          {/* Global Footer */}
-          <Footer />
         </Providers>
       </body>
     </html>
