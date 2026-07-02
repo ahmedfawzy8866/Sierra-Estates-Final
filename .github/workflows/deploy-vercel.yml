@@ -27,9 +27,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # Team "Sierra" (slug sierra-c1f2616f) / project sierra-estates-realty
-  VERCEL_ORG_ID: team_cBgoihqdLBgniLtFNx83V0DV
-  VERCEL_PROJECT_ID: prj_xRUwauCrw0BAJ9IhXgiaQuGEjPI8
+  VERCEL_ORG_ID: team_k2jaWfzeatcYG6Qpl0ooCxQh
+  VERCEL_PROJECT_ID: prj_cJSEzNFE1JOAHzIdjrsJtVaqq7vJ
 
 jobs:
   deploy:

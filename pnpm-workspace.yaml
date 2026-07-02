@@ -36,11 +36,8 @@ minimumReleaseAgeExclude:
 
 packages:
   - "apps/*"
-  # Legacy/deprecated apps excluded from the workspace so they no longer
-  # participate in `turbo run build/lint/type-check` (one pinned TS ~6.0.2 and
-  # reddened CI). `apps/admin-dashboard` has now been physically removed.
-  - "!apps/sierra-blu-admin-portal"
-  - "!apps/sierra-blu-realty"
+  # apps/admin-dashboard (removed in PR #86) and the dead apps/frontend (no
+  # package.json) were taken out of the tree; no per-app exclusions are needed.
   - "packages/*"
   - "functions"
   - "artifacts/*"
