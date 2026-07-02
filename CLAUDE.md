@@ -16,7 +16,7 @@ Next.js 16 (App Router, Turbopack) · React 19 · TypeScript 5 (strict) · Tailw
 > every app deploys, domains/DNS, secrets, CI gates, and how to add a new app. Read it
 > before any deployment/infra change. The summary below must stay consistent with it.
 
-Production domain: **sierra-estates.net** (Vercel). Firebase project: **sierra-estates**.
+Production domain: **sierra-estates.net** (Vercel). Firebase project: **sierra-blu**.
 
 ```
 Vercel → apps/sierra-estates-realty (Next.js)        [auto-deploys on push to main]
@@ -29,10 +29,10 @@ Vercel → apps/sierra-estates-realty (Next.js)        [auto-deploys on push to 
     /admin/...                 env var (host-split in middleware.ts); INERT until that
                                subdomain + its Vercel project exist (single-deploy today).
 
-Firebase (project sierra-estates) — backend + one redirect (NOT the web host)
+Firebase (project sierra-blu) — backend + one redirect (NOT the web host)
   Firestore / Storage / Auth   Database, media, authentication (staff-gated rules)
   Functions                    Background jobs (functions/)
-  Hosting (admin-sierra-estates)   302-redirects the legacy admin URL → the Vercel /admin
+  Hosting (admin-sierra-blu)   302-redirects the legacy admin URL → the Vercel /admin
 
 Workers — where the heavy / long-running work runs (NEVER inside the website)
   n8n (Docker/VPS, :5678)      WhatsApp scraping + workflow automation
@@ -46,15 +46,15 @@ and `lib/server/python-api-client.ts`) — scrapers/agents never run in the Next
 path, so they cannot affect public-site performance.
 
 **Admin lives in ONE place**: `apps/sierra-estates-realty/app/admin/`. The duplicate
-`apps/admin-dashboard` (Vite SPA) is no longer a deployed admin — its Firebase Hosting site
-now redirects to the Vercel `/admin`. (The older `sierra-estates-admin-portal` was removed
-June 2026.)
+`apps/admin-dashboard` (Vite SPA) has been **removed** — its Firebase Hosting site now serves
+only a 302 redirect to the Vercel `/admin` (wired in `firebase.json` → `firebase/admin-redirect/`).
+(The older `sierra-estates-admin-portal` was removed June 2026.)
 
 ## Config files
 - `vercel.json` (root) — Vercel config when root dir = repo root (buildCommand points to the realty app)
 - `apps/sierra-estates-realty/vercel.json` — Vercel config when root dir = `apps/sierra-estates-realty` in Vercel dashboard
-- `firebase.json` — Functions + Firestore rules + Storage rules + emulators + Hosting (the `admin-sierra-estates` site is a 302 redirect to the Vercel `/admin`, not a real web host)
-- `.firebaserc` — Firebase project: `sierra-estates` (hosting target `sierra-estates-admin` → site `admin-sierra-estates`)
+- `firebase.json` — Functions + Firestore rules + Storage rules + emulators + Hosting (the `admin-sierra-blu` site is a 302 redirect to the Vercel `/admin`, not a real web host)
+- `.firebaserc` — Firebase project: `sierra-blu` (hosting target `sierra-estates-admin` → site `admin-sierra-blu`)
 
 ## Layout
 

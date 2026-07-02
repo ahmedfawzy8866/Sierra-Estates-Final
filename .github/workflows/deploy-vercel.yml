@@ -28,7 +28,7 @@ concurrency:
 
 env:
   VERCEL_ORG_ID: team_k2jaWfzeatcYG6Qpl0ooCxQh
-  VERCEL_PROJECT_ID: prj_theA731k4WdFVhgd6DJUP6pAry6n
+  VERCEL_PROJECT_ID: prj_cJSEzNFE1JOAHzIdjrsJtVaqq7vJ
 
 jobs:
   deploy:
@@ -58,21 +58,24 @@ jobs:
             echo "flag=" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Pin project Root Directory to the web app (monorepo)
+      - name: Normalize Vercel project settings (monorepo self-heal)
         run: |
-          # Best-effort self-heal of the Vercel project Root Directory. The deploy
-          # steps below work regardless of this PATCH, so a non-2xx response (e.g.
-          # a VERCEL_TOKEN without project-write scope returning 403) must NOT
+          # Best-effort self-heal of the Vercel project settings. The target
+          # project previously hosted the removed Vite admin-dashboard and
+          # carried its overrides (buildCommand "pnpm --filter admin-dashboard
+          # build", outputDirectory "dist"), which broke every deploy of the
+          # Next.js app ("output directory dist not found"). Reset to Next.js
+          # zero-config with the monorepo root directory. Non-2xx must NOT
           # abort the deploy — otherwise production never ships.
           code=$(curl -sS -o /dev/null -w '%{http_code}' -X PATCH \
             "https://api.vercel.com/v9/projects/${VERCEL_PROJECT_ID}?teamId=${VERCEL_ORG_ID}" \
             -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
             -H "Content-Type: application/json" \
-            -d '{"rootDirectory":"apps/sierra-estates-realty"}' || echo "000")
+            -d '{"rootDirectory":"apps/sierra-estates-realty","framework":"nextjs","buildCommand":null,"installCommand":null,"outputDirectory":null,"devCommand":null}' || echo "000")
           if [ "$code" = "200" ] || [ "$code" = "204" ]; then
-            echo "Root Directory pinned to apps/sierra-estates-realty (HTTP $code)"
+            echo "Project settings normalized: Next.js zero-config, root apps/sierra-estates-realty (HTTP $code)"
           else
-            echo "::warning::Could not re-pin Vercel Root Directory (HTTP $code). Continuing deploy — verify VERCEL_TOKEN has project-write scope and that the dashboard Root Directory is apps/sierra-estates-realty."
+            echo "::warning::Could not normalize Vercel project settings (HTTP $code). Continuing deploy — verify VERCEL_TOKEN has project-write scope and that the dashboard settings are framework=Next.js, root=apps/sierra-estates-realty, no build/install/output overrides."
           fi
 
       - name: Install Vercel CLI

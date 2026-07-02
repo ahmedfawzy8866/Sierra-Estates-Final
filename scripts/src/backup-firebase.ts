@@ -6,7 +6,7 @@ async function backupDatabase(databaseId: string, outputFilename: string) {
   console.log(`\n🚀 Starting backup for database: ${databaseId}...`);
   try {
     const db = new Firestore({
-      projectId: 'sierra-blu-494404',
+      projectId: 'sierra-blu',
       databaseId: databaseId
     });
 
