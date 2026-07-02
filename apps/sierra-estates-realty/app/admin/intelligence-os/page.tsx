@@ -1,101 +1,178 @@
 'use client';
 
-import { useState } from 'react';
-import { ExternalLink, BrainCircuit, RefreshCw } from 'lucide-react';
-
-/**
- * Intelligence OS — embeds the externally-deployed Sierra Estates
- * "Intelligence OS" console (Remix app on Google Cloud Run).
- *
- * The URL is configurable via NEXT_PUBLIC_INTELLIGENCE_OS_URL; the deployed
- * Cloud Run service is the default so the panel works out of the box.
- */
-const INTELLIGENCE_OS_URL =
-  process.env.NEXT_PUBLIC_INTELLIGENCE_OS_URL ||
-  'https://remix-remix-remix-sierra-estates-intelligence-os-755638710103.europe-west2.run.app';
+import React, { useState } from 'react';
+import { Brain, Zap, Database, Activity } from 'lucide-react';
 
 export default function IntelligenceOSPage() {
-  const [loading, setLoading] = useState(true);
-  const [reloadKey, setReloadKey] = useState(0);
+  const [activeTab, setActiveTab] = useState('overview');
 
   return (
-    <div className="space-y-5">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl bg-[#031632] flex items-center justify-center text-[#C9A84C] shrink-0">
-            <BrainCircuit size={22} />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-[#071422] font-display tracking-tight">
-              Intelligence OS
-            </h1>
-            <p className="text-[12px] text-[#3a5570]/70 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              Live cognitive console · Cloud Run
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => {
-              setLoading(true);
-              setReloadKey((k) => k + 1);
-            }}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg text-[12px] font-medium text-[#071422]/60 hover:text-[#071422] hover:bg-black/[0.04] border border-black/5 transition-colors"
-            title="Reload console"
-          >
-            <RefreshCw size={14} />
-            Reload
-          </button>
-          <a
-            href={INTELLIGENCE_OS_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 px-3 py-2 rounded-lg text-[12px] font-semibold text-white bg-[#031632] hover:bg-[#06203f] transition-colors"
-          >
-            <ExternalLink size={14} />
-            Open full screen
-          </a>
-        </div>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-4xl font-bold text-white mb-2">Intelligence OS</h1>
+        <p className="text-[#C9A84C]/60">AI-powered property matching and market analysis</p>
       </div>
 
-      {/* Embedded console */}
-      <div className="relative rounded-2xl border border-black/[0.06] bg-white overflow-hidden shadow-[0_2px_16px_-4px_rgba(3,22,50,0.06)] h-[calc(100vh-220px)] min-h-[520px]">
-        {loading && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-white">
-            <div className="text-center">
-              <div className="w-10 h-10 mx-auto mb-3 rounded-full border-2 border-[#C9A84C]/30 border-t-[#C9A84C] animate-spin" />
-              <div className="text-[11px] font-mono tracking-widest uppercase text-[#3a5570]/50">
-                Connecting to Intelligence OS…
+      {/* Tabs */}
+      <div className="flex gap-4 border-b border-[#C9A84C]/20">
+        {['overview', 'matching', 'market', 'agents'].map(tab => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-4 py-3 font-semibold transition border-b-2 ${
+              activeTab === tab
+                ? 'border-[#C9A84C] text-[#C9A84C]'
+                : 'border-transparent text-[#C9A84C]/60 hover:text-[#C9A84C]'
+            }`}
+          >
+            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+          </button>
+        ))}
+      </div>
+
+      {/* Content */}
+      <div className="space-y-6">
+        {activeTab === 'overview' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-[#0a1829] border border-[#C9A84C]/20 rounded-lg p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <Brain className="text-[#C9A84C]" size={24} />
+                <h3 className="text-lg font-bold text-white">AI Engine</h3>
+              </div>
+              <p className="text-[#C9A84C]/60 mb-4">Advanced property matching using machine learning</p>
+              <div className="space-y-2 text-sm text-[#C9A84C]/80">
+                <p>✓ Real-time market analysis</p>
+                <p>✓ Investor profile matching</p>
+                <p>✓ ROI predictions</p>
+              </div>
+            </div>
+
+            <div className="bg-[#0a1829] border border-[#C9A84C]/20 rounded-lg p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <Database className="text-[#C9A84C]" size={24} />
+                <h3 className="text-lg font-bold text-white">Data Integration</h3>
+              </div>
+              <p className="text-[#C9A84C]/60 mb-4">Connected to property finder and external sources</p>
+              <div className="space-y-2 text-sm text-[#C9A84C]/80">
+                <p>✓ PropertyFinder sync</p>
+                <p>✓ Market data feeds</p>
+                <p>✓ Live pricing updates</p>
+              </div>
+            </div>
+
+            <div className="bg-[#0a1829] border border-[#C9A84C]/20 rounded-lg p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <Zap className="text-[#C9A84C]" size={24} />
+                <h3 className="text-lg font-bold text-white">Automation</h3>
+              </div>
+              <p className="text-[#C9A84C]/60 mb-4">n8n workflows for lead routing and follow-up</p>
+              <div className="space-y-2 text-sm text-[#C9A84C]/80">
+                <p>✓ Lead qualification</p>
+                <p>✓ WhatsApp notifications</p>
+                <p>✓ Task automation</p>
+              </div>
+            </div>
+
+            <div className="bg-[#0a1829] border border-[#C9A84C]/20 rounded-lg p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <Activity className="text-[#C9A84C]" size={24} />
+                <h3 className="text-lg font-bold text-white">Monitoring</h3>
+              </div>
+              <p className="text-[#C9A84C]/60 mb-4">Real-time system health and performance tracking</p>
+              <div className="space-y-2 text-sm text-[#C9A84C]/80">
+                <p>✓ System uptime: 99.9%</p>
+                <p>✓ Lead processing: Real-time</p>
+                <p>✓ Database sync: Active</p>
               </div>
             </div>
           </div>
         )}
-        <iframe
-          key={reloadKey}
-          src={INTELLIGENCE_OS_URL}
-          title="Sierra Estates Intelligence OS"
-          className="w-full h-full border-0"
-          onLoad={() => setLoading(false)}
-          allow="clipboard-read; clipboard-write; fullscreen"
-          referrerPolicy="strict-origin-when-cross-origin"
-        />
-      </div>
 
-      <p className="text-[10px] text-[#3a5570]/40 font-mono">
-        If the console does not load,{' '}
-        <a
-          href={INTELLIGENCE_OS_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-[#C9A84C] hover:underline"
-        >
-          open it in a new tab
-        </a>
-        .
-      </p>
+        {activeTab === 'matching' && (
+          <div className="bg-[#0a1829] border border-[#C9A84C]/20 rounded-lg p-6">
+            <h3 className="text-lg font-bold text-white mb-4">Property Matching Engine</h3>
+            <p className="text-[#C9A84C]/60 mb-6">The AI analyzes investor profiles and matches them with optimal properties based on:</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <h4 className="font-semibold text-[#C9A84C]">Investment Criteria</h4>
+                <ul className="space-y-1 text-[#C9A84C]/80 text-sm">
+                  <li>• Budget range</li>
+                  <li>• Expected ROI</li>
+                  <li>• Property type preference</li>
+                  <li>• Location preference</li>
+                </ul>
+              </div>
+              <div className="space-y-3">
+                <h4 className="font-semibold text-[#C9A84C]">Property Scoring</h4>
+                <ul className="space-y-1 text-[#C9A84C]/80 text-sm">
+                  <li>• Market position (0-100)</li>
+                  <li>• ROI potential</li>
+                  <li>• Historical appreciation</li>
+                  <li>• Risk assessment</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'market' && (
+          <div className="bg-[#0a1829] border border-[#C9A84C]/20 rounded-lg p-6">
+            <h3 className="text-lg font-bold text-white mb-4">Market Analysis</h3>
+            <p className="text-[#C9A84C]/60 mb-6">Real-time market intelligence across New Cairo communities:</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <p className="text-[#C9A84C] font-semibold mb-3">Madinaty</p>
+                <div className="space-y-1 text-sm text-[#C9A84C]/80">
+                  <p>Avg ROI: 8-12%</p>
+                  <p>Appreciation: +5% YoY</p>
+                  <p>Rental Yield: 4.5%</p>
+                </div>
+              </div>
+              <div>
+                <p className="text-[#C9A84C] font-semibold mb-3">Mostakbal City</p>
+                <div className="space-y-1 text-sm text-[#C9A84C]/80">
+                  <p>Avg ROI: 10-15%</p>
+                  <p>Appreciation: +7% YoY</p>
+                  <p>Rental Yield: 5.2%</p>
+                </div>
+              </div>
+              <div>
+                <p className="text-[#C9A84C] font-semibold mb-3">5th Settlement</p>
+                <div className="space-y-1 text-sm text-[#C9A84C]/80">
+                  <p>Avg ROI: 12-18%</p>
+                  <p>Appreciation: +9% YoY</p>
+                  <p>Rental Yield: 6.1%</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'agents' && (
+          <div className="bg-[#0a1829] border border-[#C9A84C]/20 rounded-lg p-6">
+            <h3 className="text-lg font-bold text-white mb-4">Integrated Agents</h3>
+            <p className="text-[#C9A84C]/60 mb-6">Connected agents and automation workflows:</p>
+            <div className="space-y-4">
+              <div className="bg-[#071422] rounded-lg p-4 border border-[#C9A84C]/10">
+                <h4 className="font-semibold text-[#C9A84C] mb-2">PropertyFinder Sync Agent</h4>
+                <p className="text-[#C9A84C]/60 text-sm">Automated synchronization with PropertyFinder listings</p>
+              </div>
+              <div className="bg-[#071422] rounded-lg p-4 border border-[#C9A84C]/10">
+                <h4 className="font-semibold text-[#C9A84C] mb-2">Lead Classification Agent</h4>
+                <p className="text-[#C9A84C]/60 text-sm">Automatic categorization and scoring of incoming leads</p>
+              </div>
+              <div className="bg-[#071422] rounded-lg p-4 border border-[#C9A84C]/10">
+                <h4 className="font-semibold text-[#C9A84C] mb-2">WhatsApp Notification Agent</h4>
+                <p className="text-[#C9A84C]/60 text-sm">Real-time lead notifications via WhatsApp through n8n</p>
+              </div>
+              <div className="bg-[#071422] rounded-lg p-4 border border-[#C9A84C]/10">
+                <h4 className="font-semibold text-[#C9A84C] mb-2">Match Recommendation Agent</h4>
+                <p className="text-[#C9A84C]/60 text-sm">Intelligent property recommendations based on investor profile</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

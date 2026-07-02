@@ -289,12 +289,17 @@ section {
   --navy: #0A1628;
   --navy-deep: #142850;
   --navy-light: #1A2F4D;
-  
+
+  /* Gold Accent (Primary Brand Color) */
+  --gold: #C9A84C;
+  --gold-light: #D9B86B;
+  --gold-dark: #B89639;
+
   /* Sky Blue (Accent) */
   --sky: #2B5A9E;
   --sky-light: #4A7BC4;
   --sky-lighter: #6FA8E0;
-  
+
   /* Text & Surfaces */
   --ivory: #F4F0E8;
   --ivory-90: rgba(244, 240, 232, 0.90);
@@ -302,33 +307,33 @@ section {
   --ivory-60: rgba(244, 240, 232, 0.60);
   --ivory-40: rgba(244, 240, 232, 0.40);
   --ivory-20: rgba(244, 240, 232, 0.20);
-  
+
   /* Status Colors */
   --status-success: #1E8B7A;
   --status-info: #3B82F6;
   --status-warning: #C97D3D;
   --status-error: #DC2626;
-  
+
   /* Semantic Surface Colors */
   --bg-primary: var(--navy);
   --bg-secondary: var(--navy-deep);
   --bg-surface: rgba(255, 255, 255, 0.04);
   --bg-surface-hover: rgba(255, 255, 255, 0.08);
   --bg-elevation-1: rgba(255, 255, 255, 0.06);
-  
+
   /* Border Colors */
   --border-default: rgba(255, 255, 255, 0.05);
   --border-light: rgba(255, 255, 255, 0.02);
-  --border-accent: rgba(43, 90, 158, 0.15);
-  --border-focus: var(--sky);
-  
+  --border-accent: rgba(201, 168, 76, 0.15);
+  --border-focus: var(--gold);
+
   /* Text Colors */
   --text-primary: var(--ivory);
   --text-secondary: var(--ivory-80);
   --text-tertiary: var(--ivory-60);
   --text-muted: var(--ivory-40);
   --text-disabled: var(--ivory-20);
-  
+
   /* Interactive Colors */
   --link-default: var(--sky);
   --link-hover: var(--sky-light);
