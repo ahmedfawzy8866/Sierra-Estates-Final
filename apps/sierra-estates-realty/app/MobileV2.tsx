@@ -1,4 +1,5 @@
 ﻿"use client";
+import { motion, AnimatePresence } from 'framer-motion';
 import React, { useState, useEffect, useRef, useMemo, createContext, useContext } from 'react';
 import { collection, query, limit, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db as clientDb } from '@/lib/firebase';
@@ -831,8 +832,12 @@ function MapSec(props) {
   /* Init map once */
   useEffect(function () {
     if (!mapRef.current || leafRef.current) return;
-    var LL = window.L;if (!LL || typeof LL.map !== 'function') return;
-    var map = LL.map(mapRef.current, { center: [30.03, 31.58], zoom: 11, zoomControl: false, attributionControl: false, scrollWheelZoom: false });
+    let map;
+    import('leaflet').then(function(module) {
+      require('leaflet/dist/leaflet.css');
+      var LL = module.default || module;
+      window.L = LL;
+      map = LL.map(mapRef.current, { center: [30.03, 31.58], zoom: 11, zoomControl: false, attributionControl: false, scrollWheelZoom: false });
     LL.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
     LL.control.zoom({ position: 'bottomright' }).addTo(map);
     leafRef.current = map;
@@ -845,7 +850,9 @@ function MapSec(props) {
       landmarkRef.current.push(mk);
     });
     setTimeout(function () {try {map.invalidateSize();} catch (e) {}}, 200);
-    return function () {try {map.remove();} catch (e) {}leafRef.current = null;};
+      setSel(s => [...s]); // trigger markers render
+    }).catch(e => console.error('Failed to load leaflet', e));
+    return function () {try {leafRef.current && leafRef.current.remove();} catch (e) {}leafRef.current = null; window.L = undefined;};
   }, []);
 
   /* Sync markers with selection */
@@ -936,8 +943,13 @@ function TourSec() {
   var openS = useState(false);var setOpen = openS[1];var open = openS[0];
   var rv = useScrollAnim(60);var ref = rv[0],vis = rv[1];
   return (
-    <section id="s-tour" style={{ background: dark ? '#050E18' : '#EEF2F7', transition: 'background .3s', paddingBottom: 4 }}>
-      <div ref={ref} style={{ opacity: vis ? 1 : 0, transform: vis ? 'none' : 'translateY(20px)', transition: 'all .55s cubic-bezier(.16,1,.3,1)' }}>
+    <motion.section id="s-tour" 
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-50px' }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        style={{ background: dark ? '#050E18' : '#EEF2F7', transition: 'background .3s', paddingBottom: 4 }}>
+      <div>
         <SH eye={t.eyeTour} title={t.tourTit} />
         {/* Room thumbnails */}
         <div style={{ overflowX: 'auto', paddingBottom: 4 }}>
@@ -974,7 +986,7 @@ function TourSec() {
           <button onClick={function () {setOpen(false);}} style={{ position: 'absolute', top: 14, right: 14, width: 38, height: 38, borderRadius: '50%', background: 'rgba(7,17,30,.92)', border: '1px solid rgba(200,150,26,.45)', color: G, fontSize: 20, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10, lineHeight: 1 }}>×</button>
         </div>
       }
-    </section>);
+    </motion.section>);
 
 }
 
