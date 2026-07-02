@@ -7,7 +7,7 @@ import { db as clientDb } from '@/lib/firebase';
 const dynamic = (_fn: any, _opts?: any) => (_fn().default || _fn());
 const Link = ({ href, className, children, ...rest }: any) =>
   React.createElement('a', { href, className, ...rest }, children);
-const useI18n = () => ({ locale: 'en', t: (k: string) => k });
+const useI18n = () => ({ locale: 'en', t: (k: string) => k, setLocale: (l: string) => {} });
 const useTheme = () => ({ theme: 'dark', setTheme: (_: string) => {} });
 class InventoryService {
   static async getFeaturedListings(num: number) {
@@ -22,15 +22,15 @@ class InventoryService {
   }
 }
 type Property = { id: string; title: string; price: number; beds: number; baths: number; area: number; [k: string]: any };
-const ShieldLogo = ({ className = '' }: { className?: string }) =>
-  React.createElement('div', { className, style: { width: 40, height: 40, background: 'linear-gradient(135deg,#C8961A,#E9C176)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'serif', fontSize: 20, fontWeight: 700, color: '#0D2035' } }, 'S');
+const ShieldLogo = ({ className = '', size = 40 }: { className?: string, size?: number }) =>
+  React.createElement('div', { className, style: { width: size, height: size, background: 'linear-gradient(135deg,#C8961A,#E9C176)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'serif', fontSize: size/2, fontWeight: 700, color: '#0D2035' } }, 'S');
 const PropCard = ({ property, onClick }: { property: Property; onClick?: () => void }) =>
   React.createElement('div', { onClick, style: { padding: 16, border: '1px solid rgba(200,150,26,.2)', borderRadius: 12, cursor: 'pointer' } },
     React.createElement('div', { style: { fontWeight: 700, color: '#E9C176' } }, property.title),
     React.createElement('div', { style: { fontSize: 12, color: 'rgba(240,237,229,.6)', marginTop: 4 } }, `EGP ${(property.price/1e6).toFixed(1)}M · ${property.beds}BR`)
   );
 const ParticleCanvas = () => null;
-const LiveMap = () => React.createElement('div', { className: 'w-full h-full bg-slate-900/50 flex items-center justify-center text-slate-500 font-serif' }, 'Intelligence Map');
+const LiveMap = ({ mode }: { mode?: 'dark' | 'light' }) => React.createElement('div', { className: 'w-full h-full bg-slate-900/50 flex items-center justify-center text-slate-500 font-serif' }, 'Intelligence Map');
 
 // ══════════════════════════════════════════════════════════
 //  DESIGN TOKENS
@@ -429,19 +429,7 @@ export default function LandingPage() {
             {listings.map((p, i) => (
               <PropCard
                 key={p.id}
-                id={p.id}
-                title={isAr ? p.titleAr : p.title}
-                location={isAr ? p.locationAr : p.location}
-                price={p.price}
-                beds={p.beds}
-                baths={p.baths}
-                sqft={p.sqft}
-                badge={p.badge}
-                badgeColor={p.badgeColor}
-                img={p.img}
-                dealDelay={i * 0.09}
-                dealt={listingsDealt}
-                isAr={isAr}
+                property={p}
               />
             ))}
           </div>
